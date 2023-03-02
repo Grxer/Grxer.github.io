@@ -148,6 +148,146 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2023/03/02/AsisCTF2016b00ks-OBO/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Grxer">
+      <meta itemprop="description" content="major in security">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Computer Security">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2023/03/02/AsisCTF2016b00ks-OBO/" class="post-title-link" itemprop="url">OFF-BY-ONE AsisCTF2016b00ks</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2023-03-02 00:58:28 / 修改时间：15:24:47" itemprop="dateCreated datePublished" datetime="2023-03-02T00:58:28+08:00">2023-03-02</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="AsisCTF-2016-b00ks-OFF-BY-ONE"><a href="#AsisCTF-2016-b00ks-OFF-BY-ONE" class="headerlink" title="AsisCTF-2016-b00ks OFF-BY-ONE"></a>AsisCTF-2016-b00ks OFF-BY-ONE</h1><p>题目链接：<a target="_blank" rel="noopener" href="https://github.com/ctf-wiki/ctf-challenges/tree/master/pwn/heap/off_by_one/Asis_2016_b00ks">https://github.com/ctf-wiki/ctf-challenges/tree/master/pwn/heap/off_by_one/Asis_2016_b00ks</a></p>
+<p>__free_hook and off by one</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2023/03/02/AsisCTF2016b00ks-OBO/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2023/03/01/malloc%20hook&&free%20hook/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Grxer">
+      <meta itemprop="description" content="major in security">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Computer Security">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2023/03/01/malloc%20hook&&free%20hook/" class="post-title-link" itemprop="url">malloc_hook和free_hook劫持原理</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2023-03-01 17:09:02" itemprop="dateCreated datePublished" datetime="2023-03-01T17:09:02+08:00">2023-03-01</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2023-03-02 00:56:52" itemprop="dateModified" datetime="2023-03-02T00:56:52+08:00">2023-03-02</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="malloc-hook和-free-hook劫持原理"><a href="#malloc-hook和-free-hook劫持原理" class="headerlink" title="__malloc_hook和__free_hook劫持原理"></a>__malloc_hook和__free_hook劫持原理</h1><p>Hook即钩子，截获API调用的技术，是将执行流程劫持到你自己的代码。</p>
+<p>刚开始在Ubuntu22上做实验，一直不成功，又换了kali，还是不行，最后发现__free_hook,__malloc_hook,__realloc_hook,<em>_memalign_hook,</em>_after_morecore_hookg在libc-2.34的patch中被移除了，换了Ubuntu16 libc版本2.23，但是发现只是在ld链接时会找不到definition，也就是无法通过链接的环节，但是在libc库里还是有的，可能是考虑之前使用hook程序的兼容。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2023/03/01/malloc%20hook&&free%20hook/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://example.com/2023/02/25/23-2-25-heap/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -501,7 +641,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">4</span>
+          <span class="site-state-item-count">6</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>

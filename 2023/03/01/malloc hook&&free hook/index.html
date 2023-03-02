@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="__malloc_hook和__free_hook劫持原理Hook即钩子，截获API调用的技术，是将执行流程劫持到你自己的代码。 刚开始在Ubuntu22上做实验，一直不成功，又换了kali，还是不行，最后发现__free_hook,__malloc_hook,__realloc_hook,_memalign_hook,_after_morecore_hookg在libc-2.34的patch中被">
+<meta property="og:type" content="article">
+<meta property="og:title" content="malloc_hook和free_hook劫持原理">
+<meta property="og:url" content="http://example.com/2023/03/01/malloc%20hook&&free%20hook/index.html">
+<meta property="og:site_name" content="Computer Security">
+<meta property="og:description" content="__malloc_hook和__free_hook劫持原理Hook即钩子，截获API调用的技术，是将执行流程劫持到你自己的代码。 刚开始在Ubuntu22上做实验，一直不成功，又换了kali，还是不行，最后发现__free_hook,__malloc_hook,__realloc_hook,_memalign_hook,_after_morecore_hookg在libc-2.34的patch中被">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2023-03-01T09:09:02.000Z">
+<meta property="article:modified_time" content="2023-03-01T16:56:52.437Z">
+<meta property="article:author" content="Grxer">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://example.com/2023/03/01/malloc%20hook&&free%20hook/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>malloc_hook和free_hook劫持原理 | Computer Security</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Computer Security</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">Grxer</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2023/03/01/malloc%20hook&&free%20hook/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Grxer">
+      <meta itemprop="description" content="major in security">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Computer Security">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          malloc_hook和free_hook劫持原理
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2023-03-01 17:09:02" itemprop="dateCreated datePublished" datetime="2023-03-01T17:09:02+08:00">2023-03-01</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2023-03-02 00:56:52" itemprop="dateModified" datetime="2023-03-02T00:56:52+08:00">2023-03-02</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="malloc-hook和-free-hook劫持原理"><a href="#malloc-hook和-free-hook劫持原理" class="headerlink" title="__malloc_hook和__free_hook劫持原理"></a>__malloc_hook和__free_hook劫持原理</h1><p>Hook即钩子，截获API调用的技术，是将执行流程劫持到你自己的代码。</p>
+<p>刚开始在Ubuntu22上做实验，一直不成功，又换了kali，还是不行，最后发现__free_hook,__malloc_hook,__realloc_hook,<em>_memalign_hook,</em>_after_morecore_hookg在libc-2.34的patch中被移除了，换了Ubuntu16 libc版本2.23，但是发现只是在ld链接时会找不到definition，也就是无法通过链接的环节，但是在libc库里还是有的，可能是考虑之前使用hook程序的兼容。</p>
+<span id="more"></span>
+
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">grxer@Ubuntu16:/usr/include$ ldd --version</span><br><span class="line">ldd (Ubuntu GLIBC 2.23-0ubuntu11.3) 2.23</span><br><span class="line">Copyright (C) 2016 Free Software Foundation, Inc.</span><br><span class="line">This is free software; see the source for copying conditions.  There is NO</span><br><span class="line">warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.</span><br><span class="line">Written by Roland McGrath and Ulrich Drepper.</span><br></pre></td></tr></table></figure>
+
+<h2 id="malloc-free"><a href="#malloc-free" class="headerlink" title="malloc free"></a>malloc free</h2><p>先看一下malloc和free函数具体调用</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;malloc.h&gt;</span></span></span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">()</span> &#123;</span><br><span class="line">  <span class="type">void</span> *x=<span class="built_in">malloc</span>(<span class="number">8</span>);</span><br><span class="line">  <span class="built_in">free</span>(x);</span><br><span class="line">  <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="malloc"><a href="#malloc" class="headerlink" title="malloc"></a>malloc</h3><p>![image-20230301205645710](malloc hook&amp;&amp;free hook&#x2F;image-20230301205645710.png)</p>
+<p>由于版本不一样__malloc_hook在main_arena的上方偏移是不确定的，这里可以看到在malloc时会从取出__malloc_hook的值进行test，不为0则跳转，为0则继续malloc，这里采用了rip的寻址方式，很6，不利于我们分析，看静态汇编吧</p>
+<p>![image-20230301210214619](malloc hook&amp;&amp;free hook&#x2F;image-20230301210214619.png)</p>
+<p>不为0跳转到，为0直接get_free_list去fastbins找free chunk了（ glibc 2.26才引入tcache）</p>
+<p> ![image-20230301210558248](malloc hook&amp;&amp;free hook&#x2F;image-20230301210558248.png)</p>
+<p>最后jmp到malloc_hook地址函数里，同时rdi的参数也未变，如果我们把hook改为system地址，那么只要在malloc时填入binsh地址就可以getshell</p>
+<h3 id="free同理"><a href="#free同理" class="headerlink" title="free同理"></a>free同理</h3><p>![image-20230301211127857](malloc hook&amp;&amp;free hook&#x2F;image-20230301211127857.png)</p>
+<p>![image-20230301211206232](malloc hook&amp;&amp;free hook&#x2F;image-20230301211206232.png)</p>
+<p>![image-20230301211304185](malloc hook&amp;&amp;free hook&#x2F;image-20230301211304185.png)</p>
+<p>free hook不同的是采用了call的形式转移pc</p>
+<h2 id="malloc-hook"><a href="#malloc-hook" class="headerlink" title="malloc hook"></a>malloc hook</h2><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span><span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span><span class="string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span><span class="string">&lt;string.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;malloc.h&gt;</span></span></span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">()</span></span><br><span class="line">&#123;</span><br><span class="line">    __malloc_hook =system;</span><br><span class="line">    <span class="type">char</span> str[<span class="number">10</span>]=<span class="string">&quot;/bin/sh&quot;</span>;</span><br><span class="line">	<span class="type">char</span> *s = <span class="built_in">malloc</span>(str);	</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//gcc -g -o malloc_hook malloc_hook.c </span></span><br></pre></td></tr></table></figure>
+
+<p>![image-20230301212355513](malloc hook&amp;&amp;free hook&#x2F;image-20230301212355513.png)</p>
+<p>![image-20230301212937121](malloc hook&amp;&amp;free hook&#x2F;image-20230301212937121.png)</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">.text:000000000041F220                               malloc_hook_ini proc near               ; CODE XREF: calloc+2C8↑p</span><br><span class="line">.text:000000000041F220                                                                       ; DATA XREF: .data:__malloc_hook↓o</span><br><span class="line">.text:000000000041F220                               ; __unwind &#123;</span><br><span class="line">.text:000000000041F220 55                            push    rbp</span><br><span class="line">.text:000000000041F221 53                            push    rbx</span><br><span class="line">.text:000000000041F222 48 89 FD                      mov     rbp, rdi</span><br><span class="line">.text:000000000041F225 48 83 EC 08                   sub     rsp, 8</span><br><span class="line">.text:000000000041F229 8B 05 35 B5 2A 00             mov     eax, cs:__libc_malloc_initialized</span><br><span class="line">.text:000000000041F22F 48 C7 05 4E B5 2A 00 00 00 00+mov     cs:__malloc_hook, 0</span><br><span class="line">.text:000000000041F22F 00</span><br><span class="line">.text:000000000041F23A 85 C0                         test    eax, eax</span><br></pre></td></tr></table></figure>
+
+<p>这时候我们发现malloc_hook并没有为0，而是malloc_hook_ini，会在mov cs:__malloc_hook, 0 置为0</p>
+<p>![image-20230301213351476](malloc hook&amp;&amp;free hook&#x2F;image-20230301213351476.png)</p>
+<p>![image-20230301213534133](malloc hook&amp;&amp;free hook&#x2F;image-20230301213534133.png)</p>
+<h2 id="free-hook同理"><a href="#free-hook同理" class="headerlink" title="free hook同理"></a>free hook同理</h2><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span><span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span><span class="string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span><span class="string">&lt;string.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;malloc.h&gt;</span></span></span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">()</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="type">char</span> *str = <span class="built_in">malloc</span>(<span class="number">160</span>);</span><br><span class="line">	<span class="built_in">strcpy</span>(str,<span class="string">&quot;/bin/sh&quot;</span>);</span><br><span class="line">	</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">&quot;__free_hook: 0x%016X\n&quot;</span>,__free_hook);</span><br><span class="line">	__free_hook = system;</span><br><span class="line">	<span class="built_in">free</span>(str);</span><br><span class="line">	<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//gcc -g -o free_hook free_hook.c </span></span><br></pre></td></tr></table></figure>
+
+<p>![image-20230301213905560](malloc hook&amp;&amp;free hook&#x2F;image-20230301213905560.png)</p>
+<p>![image-20230301214108772](malloc hook&amp;&amp;free hook&#x2F;image-20230301214108772.png)</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2023/02/25/23-2-25-heap/" rel="prev" title="HEAP MANAGER">
+      <i class="fa fa-chevron-left"></i> HEAP MANAGER
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2023/03/02/AsisCTF2016b00ks-OBO/" rel="next" title="OFF-BY-ONE AsisCTF2016b00ks">
+      OFF-BY-ONE AsisCTF2016b00ks <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#malloc-hook%E5%92%8C-free-hook%E5%8A%AB%E6%8C%81%E5%8E%9F%E7%90%86"><span class="nav-number">1.</span> <span class="nav-text">__malloc_hook和__free_hook劫持原理</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#malloc-free"><span class="nav-number">1.1.</span> <span class="nav-text">malloc free</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#malloc"><span class="nav-number">1.1.1.</span> <span class="nav-text">malloc</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#free%E5%90%8C%E7%90%86"><span class="nav-number">1.1.2.</span> <span class="nav-text">free同理</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#malloc-hook"><span class="nav-number">1.2.</span> <span class="nav-text">malloc hook</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#free-hook%E5%90%8C%E7%90%86"><span class="nav-number">1.3.</span> <span class="nav-text">free hook同理</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Grxer</p>
+  <div class="site-description" itemprop="description">major in security</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">6</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Grxer</span>
+</div>
+
+<!--
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>-->
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>
