@@ -215,7 +215,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2023/03/01/malloc%20hook&&free%20hook/">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2023/03/01/malloc-hook&free-hook/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -229,7 +229,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2023/03/01/malloc%20hook&&free%20hook/" class="post-title-link" itemprop="url">malloc_hook和free_hook劫持原理</a>
+            <a href="/2023/03/01/malloc-hook&free-hook/" class="post-title-link" itemprop="url">malloc_hook和free_hook劫持原理</a>
         </h2>
 
         <div class="post-meta">
@@ -246,7 +246,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2023-03-02 00:56:52" itemprop="dateModified" datetime="2023-03-02T00:56:52+08:00">2023-03-02</time>
+                <time title="修改时间：2023-03-02 15:45:53" itemprop="dateModified" datetime="2023-03-02T15:45:53+08:00">2023-03-02</time>
               </span>
 
           
@@ -264,7 +264,7 @@
 <p>刚开始在Ubuntu22上做实验，一直不成功，又换了kali，还是不行，最后发现__free_hook,__malloc_hook,__realloc_hook,<em>_memalign_hook,</em>_after_morecore_hookg在libc-2.34的patch中被移除了，换了Ubuntu16 libc版本2.23，但是发现只是在ld链接时会找不到definition，也就是无法通过链接的环节，但是在libc库里还是有的，可能是考虑之前使用hook程序的兼容。</p>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/2023/03/01/malloc%20hook&&free%20hook/#more" rel="contents">
+              <a class="btn" href="/2023/03/01/malloc-hook&free-hook/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
