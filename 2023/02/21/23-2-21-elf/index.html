@@ -18,10 +18,11 @@
 <meta property="og:image" content="http://example.com/2023/02/21/23-2-21-elf/image-20230223004348967.png">
 <meta property="og:image" content="http://example.com/2023/02/21/23-2-21-elf/image-20230223163500827.png">
 <meta property="og:image" content="http://example.com/2023/02/21/23-2-21-elf/image-20230223165238248.png">
+<meta property="og:image" content="http://example.com/2023/02/21/23-2-21-elf/image-20230309185924942.png">
 <meta property="og:image" content="http://example.com/2023/02/21/23-2-21-elf/image-20230223005339928.png">
 <meta property="og:image" content="http://example.com/2023/02/21/23-2-21-elf/image-20230222232634953.png">
 <meta property="article:published_time" content="2023-02-21T02:03:34.000Z">
-<meta property="article:modified_time" content="2023-02-25T08:08:17.418Z">
+<meta property="article:modified_time" content="2023-03-09T11:10:41.619Z">
 <meta property="article:author" content="Grxer">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="http://example.com/2023/02/21/23-2-21-elf/image-20230221233642860.png">
@@ -393,6 +394,10 @@
 <p>表示在文件偏移offset 为0x318的位置读取LENGTH为28字节的解释器地址，来加载下面的loadable段到进程内存</p>
 <p><code>/lib64/ld-linux-x86-64.so.2</code> 是 Linux x86-64 系统下的动态链接器（dynamic linker）文件，它的主要作用是在程序运行时，将程序所需的共享库（shared library）加载到内存中，并将这些共享库中未定义的符号与程序中定义的符号进行链接，从而使程序能够正常执行。</p>
 </li>
+<li><p>Loadable segment</p>
+<p><img src="/2023/02/21/23-2-21-elf/image-20230309185924942.png" alt="image-20230309185924942"></p>
+<p>利用mmap向pie+virtual_address处映射从file_begin开始raw_length大小的数据，前面映射必须从页对齐开始，后面必须按4096对齐(页对齐)结束</p>
+</li>
 </ul>
 <p>加载到内存重定位后最后一个segment还会指导进行只读改写</p>
 <p><img src="/2023/02/21/23-2-21-elf/image-20230223005339928.png" alt="image-20230223005339928"></p>
@@ -405,7 +410,7 @@
 </ul>
 </li>
 </ul>
-<p>section Header Table内容对程序执行完全不影响，可以完全改掉，正常执行</p>
+<p>section Header Table内容对程序执行完全不影响，可以完全改掉，正常执行(这个也和动态linker版本有关)</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> &#123;</span></span><br><span class="line">    Elf32_Word  sh_name;        <span class="comment">// 节名称在 .shstrtab 节中的索引</span></span><br><span class="line">    Elf32_Word  sh_type;        <span class="comment">// 节类型</span></span><br><span class="line">    Elf32_Word  sh_flags;       <span class="comment">// 节标志</span></span><br><span class="line">    Elf32_Addr  sh_addr;        <span class="comment">// 节的内存地址</span></span><br><span class="line">    Elf32_Off   sh_offset;      <span class="comment">// 节在文件中的偏移量</span></span><br><span class="line">    Elf32_Word  sh_size;        <span class="comment">// 节的大小（字节数）</span></span><br><span class="line">    Elf32_Word  sh_link;        <span class="comment">// 链接到的其他节的索引</span></span><br><span class="line">    Elf32_Word  sh_info;        <span class="comment">// 额外信息</span></span><br><span class="line">    Elf32_Word  sh_addralign;   <span class="comment">// 对齐方式</span></span><br><span class="line">    Elf32_Word  sh_entsize;     <span class="comment">// 节包含实体的大小</span></span><br><span class="line">&#125; Elf32_Shdr;</span><br></pre></td></tr></table></figure>
 
 <p><img src="/2023/02/21/23-2-21-elf/image-20230222232634953.png" alt="image-20230222232634953"></p>
