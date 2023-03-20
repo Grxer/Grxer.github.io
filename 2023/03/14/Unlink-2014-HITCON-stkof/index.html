@@ -7,6 +7,7 @@
     <meta name="HandheldFriendly" content="True">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
     <meta name="baidu-site-verification" content="codeva-ROfYcqLkCh" />
+    <meta name="msvalidate.01" content="ECA3E06A0E52A2AC90C4B06F12981FB2" />
     <meta name="description" content="Unlink在free堆块时，要满足释放的该chunk不在tcache(0x420)或fastbin(0x80)范围内，free的chunk物理地址前或后有freechunk时会进行unlink操作，unlink就是把这个chunk从双向链表里拿下来 调用关系大致如下 12345678#define unlink(AV, P, BK, FD)static void _int_free (mstat">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Unlink-2014-HITCON-stkof">
