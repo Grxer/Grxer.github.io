@@ -11,26 +11,26 @@
     <meta name="description" content="SandBox链接：https:&#x2F;&#x2F;pan.baidu.com&#x2F;s&#x2F;1l3NhZ1xYwca48nf1p88iDg提取码：05zg 题目开启了沙箱机制  沙箱(Sandbox)是程序运行过程中的一种隔离机制，其目的是限制不可信进程和不可信代码的访问权限。计算机领域的虚拟技术，常见于安全方向。会禁用一些系统调用 实现沙箱机制  一种采用prctl函数调用  一种是使用seccomp库函数。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="2023黄河流域公安院校网络空间安全技能挑战赛 PWN">
-<meta property="og:url" content="http://example.com/2023/03/05/sd-police2023-pwn/index.html">
+<meta property="og:url" content="https://grxer.gitee.io/2023/03/05/sd-police2023-pwn/index.html">
 <meta property="og:site_name" content="Computer Security">
 <meta property="og:description" content="SandBox链接：https:&#x2F;&#x2F;pan.baidu.com&#x2F;s&#x2F;1l3NhZ1xYwca48nf1p88iDg提取码：05zg 题目开启了沙箱机制  沙箱(Sandbox)是程序运行过程中的一种隔离机制，其目的是限制不可信进程和不可信代码的访问权限。计算机领域的虚拟技术，常见于安全方向。会禁用一些系统调用 实现沙箱机制  一种采用prctl函数调用  一种是使用seccomp库函数。">
 <meta property="og:locale" content="en_US">
-<meta property="og:image" content="http://example.com/2023/03/05/sd-police2023-pwn/image-20230305122657981.png">
-<meta property="og:image" content="http://example.com/2023/03/05/sd-police2023-pwn/image-20230305154743044.png">
-<meta property="og:image" content="http://example.com/2023/03/05/sd-police2023-pwn/image-20230305155002168.png">
-<meta property="og:image" content="http://example.com/2023/03/05/sd-police2023-pwn/image-20230305155441801.png">
-<meta property="og:image" content="http://example.com/2023/03/05/sd-police2023-pwn/image-20230305161933424.png">
-<meta property="og:image" content="http://example.com/2023/03/05/sd-police2023-pwn/image-20230305231637179.png">
-<meta property="og:image" content="http://example.com/2023/03/05/sd-police2023-pwn/image-20230306010914175.png">
-<meta property="og:image" content="http://example.com/2023/03/05/sd-police2023-pwn/image-20230306012654458.png">
-<meta property="og:image" content="http://example.com/2023/03/05/sd-police2023-pwn/image-20230306122938871.png">
-<meta property="og:image" content="http://example.com/2023/03/05/sd-police2023-pwn/image-20230306141247754.png">
-<meta property="og:image" content="http://example.com/2023/03/05/sd-police2023-pwn/image-20230307000430195.png">
+<meta property="og:image" content="https://grxer.gitee.io/2023/03/05/sd-police2023-pwn/image-20230305122657981.png">
+<meta property="og:image" content="https://grxer.gitee.io/2023/03/05/sd-police2023-pwn/image-20230305154743044.png">
+<meta property="og:image" content="https://grxer.gitee.io/2023/03/05/sd-police2023-pwn/image-20230305155002168.png">
+<meta property="og:image" content="https://grxer.gitee.io/2023/03/05/sd-police2023-pwn/image-20230305155441801.png">
+<meta property="og:image" content="https://grxer.gitee.io/2023/03/05/sd-police2023-pwn/image-20230305161933424.png">
+<meta property="og:image" content="https://grxer.gitee.io/2023/03/05/sd-police2023-pwn/image-20230305231637179.png">
+<meta property="og:image" content="https://grxer.gitee.io/2023/03/05/sd-police2023-pwn/image-20230306010914175.png">
+<meta property="og:image" content="https://grxer.gitee.io/2023/03/05/sd-police2023-pwn/image-20230306012654458.png">
+<meta property="og:image" content="https://grxer.gitee.io/2023/03/05/sd-police2023-pwn/image-20230306122938871.png">
+<meta property="og:image" content="https://grxer.gitee.io/2023/03/05/sd-police2023-pwn/image-20230306141247754.png">
+<meta property="og:image" content="https://grxer.gitee.io/2023/03/05/sd-police2023-pwn/image-20230307000430195.png">
 <meta property="article:published_time" content="2023-03-05T03:39:52.000Z">
 <meta property="article:modified_time" content="2023-03-06T16:29:56.408Z">
 <meta property="article:author" content="Grxer">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://example.com/2023/03/05/sd-police2023-pwn/image-20230305122657981.png">
+<meta name="twitter:image" content="https://grxer.gitee.io/2023/03/05/sd-police2023-pwn/image-20230305122657981.png">
     
     
       
@@ -102,16 +102,16 @@
     <br/>
     <div id="share" style="display: none">
       <ul>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=http://example.com/2023/03/05/sd-police2023-pwn/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=http://example.com/2023/03/05/sd-police2023-pwn/&text=2023黄河流域公安院校网络空间安全技能挑战赛 PWN"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=http://example.com/2023/03/05/sd-police2023-pwn/&title=2023黄河流域公安院校网络空间安全技能挑战赛 PWN"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=http://example.com/2023/03/05/sd-police2023-pwn/&is_video=false&description=2023黄河流域公安院校网络空间安全技能挑战赛 PWN"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
-  <li><a class="icon" href="mailto:?subject=2023黄河流域公安院校网络空间安全技能挑战赛 PWN&body=Check out this article: http://example.com/2023/03/05/sd-police2023-pwn/"><i class="fas fa-envelope " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=http://example.com/2023/03/05/sd-police2023-pwn/&title=2023黄河流域公安院校网络空间安全技能挑战赛 PWN"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=http://example.com/2023/03/05/sd-police2023-pwn/&title=2023黄河流域公安院校网络空间安全技能挑战赛 PWN"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=http://example.com/2023/03/05/sd-police2023-pwn/&title=2023黄河流域公安院校网络空间安全技能挑战赛 PWN"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=http://example.com/2023/03/05/sd-police2023-pwn/&title=2023黄河流域公安院校网络空间安全技能挑战赛 PWN"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=http://example.com/2023/03/05/sd-police2023-pwn/&name=2023黄河流域公安院校网络空间安全技能挑战赛 PWN&description=&lt;h1 id=&#34;SandBox&#34;&gt;&lt;a href=&#34;#SandBox&#34; class=&#34;headerlink&#34; title=&#34;SandBox&#34;&gt;&lt;/a&gt;SandBox&lt;/h1&gt;&lt;p&gt;链接：&lt;a href=&#34;https://pan.baidu.com/s/1l3NhZ1xYwca48nf1p88iDg&#34;&gt;https://pan.baidu.com/s/1l3NhZ1xYwca48nf1p88iDg&lt;/a&gt;&lt;br&gt;提取码：05zg&lt;/p&gt;
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://grxer.gitee.io/2023/03/05/sd-police2023-pwn/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://grxer.gitee.io/2023/03/05/sd-police2023-pwn/&text=2023黄河流域公安院校网络空间安全技能挑战赛 PWN"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://grxer.gitee.io/2023/03/05/sd-police2023-pwn/&title=2023黄河流域公安院校网络空间安全技能挑战赛 PWN"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://grxer.gitee.io/2023/03/05/sd-police2023-pwn/&is_video=false&description=2023黄河流域公安院校网络空间安全技能挑战赛 PWN"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=2023黄河流域公安院校网络空间安全技能挑战赛 PWN&body=Check out this article: https://grxer.gitee.io/2023/03/05/sd-police2023-pwn/"><i class="fas fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://grxer.gitee.io/2023/03/05/sd-police2023-pwn/&title=2023黄河流域公安院校网络空间安全技能挑战赛 PWN"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://grxer.gitee.io/2023/03/05/sd-police2023-pwn/&title=2023黄河流域公安院校网络空间安全技能挑战赛 PWN"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://grxer.gitee.io/2023/03/05/sd-police2023-pwn/&title=2023黄河流域公安院校网络空间安全技能挑战赛 PWN"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://grxer.gitee.io/2023/03/05/sd-police2023-pwn/&title=2023黄河流域公安院校网络空间安全技能挑战赛 PWN"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://grxer.gitee.io/2023/03/05/sd-police2023-pwn/&name=2023黄河流域公安院校网络空间安全技能挑战赛 PWN&description=&lt;h1 id=&#34;SandBox&#34;&gt;&lt;a href=&#34;#SandBox&#34; class=&#34;headerlink&#34; title=&#34;SandBox&#34;&gt;&lt;/a&gt;SandBox&lt;/h1&gt;&lt;p&gt;链接：&lt;a href=&#34;https://pan.baidu.com/s/1l3NhZ1xYwca48nf1p88iDg&#34;&gt;https://pan.baidu.com/s/1l3NhZ1xYwca48nf1p88iDg&lt;/a&gt;&lt;br&gt;提取码：05zg&lt;/p&gt;
 &lt;p&gt;题目开启了沙箱机制&lt;/p&gt;
 &lt;blockquote&gt;
 &lt;p&gt;沙箱(Sandbox)是程序运行过程中的一种隔离机制，其目的是限制不可信进程和不可信代码的访问权限。计算机领域的虚拟技术，常见于安全方向。会禁用一些系统调用&lt;/p&gt;
@@ -123,7 +123,7 @@
 &lt;/li&gt;
 &lt;/ul&gt;
 &lt;/blockquote&gt;"><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=http://example.com/2023/03/05/sd-police2023-pwn/&t=2023黄河流域公安院校网络空间安全技能挑战赛 PWN"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://grxer.gitee.io/2023/03/05/sd-police2023-pwn/&t=2023黄河流域公安院校网络空间安全技能挑战赛 PWN"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
 </ul>
 
     </div>
@@ -327,16 +327,16 @@
 
     <div id="share-footer" style="display: none">
       <ul>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=http://example.com/2023/03/05/sd-police2023-pwn/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=http://example.com/2023/03/05/sd-police2023-pwn/&text=2023黄河流域公安院校网络空间安全技能挑战赛 PWN"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=http://example.com/2023/03/05/sd-police2023-pwn/&title=2023黄河流域公安院校网络空间安全技能挑战赛 PWN"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=http://example.com/2023/03/05/sd-police2023-pwn/&is_video=false&description=2023黄河流域公安院校网络空间安全技能挑战赛 PWN"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" href="mailto:?subject=2023黄河流域公安院校网络空间安全技能挑战赛 PWN&body=Check out this article: http://example.com/2023/03/05/sd-police2023-pwn/"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=http://example.com/2023/03/05/sd-police2023-pwn/&title=2023黄河流域公安院校网络空间安全技能挑战赛 PWN"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=http://example.com/2023/03/05/sd-police2023-pwn/&title=2023黄河流域公安院校网络空间安全技能挑战赛 PWN"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=http://example.com/2023/03/05/sd-police2023-pwn/&title=2023黄河流域公安院校网络空间安全技能挑战赛 PWN"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=http://example.com/2023/03/05/sd-police2023-pwn/&title=2023黄河流域公安院校网络空间安全技能挑战赛 PWN"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=http://example.com/2023/03/05/sd-police2023-pwn/&name=2023黄河流域公安院校网络空间安全技能挑战赛 PWN&description=&lt;h1 id=&#34;SandBox&#34;&gt;&lt;a href=&#34;#SandBox&#34; class=&#34;headerlink&#34; title=&#34;SandBox&#34;&gt;&lt;/a&gt;SandBox&lt;/h1&gt;&lt;p&gt;链接：&lt;a href=&#34;https://pan.baidu.com/s/1l3NhZ1xYwca48nf1p88iDg&#34;&gt;https://pan.baidu.com/s/1l3NhZ1xYwca48nf1p88iDg&lt;/a&gt;&lt;br&gt;提取码：05zg&lt;/p&gt;
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://grxer.gitee.io/2023/03/05/sd-police2023-pwn/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://grxer.gitee.io/2023/03/05/sd-police2023-pwn/&text=2023黄河流域公安院校网络空间安全技能挑战赛 PWN"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://grxer.gitee.io/2023/03/05/sd-police2023-pwn/&title=2023黄河流域公安院校网络空间安全技能挑战赛 PWN"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://grxer.gitee.io/2023/03/05/sd-police2023-pwn/&is_video=false&description=2023黄河流域公安院校网络空间安全技能挑战赛 PWN"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=2023黄河流域公安院校网络空间安全技能挑战赛 PWN&body=Check out this article: https://grxer.gitee.io/2023/03/05/sd-police2023-pwn/"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://grxer.gitee.io/2023/03/05/sd-police2023-pwn/&title=2023黄河流域公安院校网络空间安全技能挑战赛 PWN"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://grxer.gitee.io/2023/03/05/sd-police2023-pwn/&title=2023黄河流域公安院校网络空间安全技能挑战赛 PWN"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://grxer.gitee.io/2023/03/05/sd-police2023-pwn/&title=2023黄河流域公安院校网络空间安全技能挑战赛 PWN"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://grxer.gitee.io/2023/03/05/sd-police2023-pwn/&title=2023黄河流域公安院校网络空间安全技能挑战赛 PWN"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://grxer.gitee.io/2023/03/05/sd-police2023-pwn/&name=2023黄河流域公安院校网络空间安全技能挑战赛 PWN&description=&lt;h1 id=&#34;SandBox&#34;&gt;&lt;a href=&#34;#SandBox&#34; class=&#34;headerlink&#34; title=&#34;SandBox&#34;&gt;&lt;/a&gt;SandBox&lt;/h1&gt;&lt;p&gt;链接：&lt;a href=&#34;https://pan.baidu.com/s/1l3NhZ1xYwca48nf1p88iDg&#34;&gt;https://pan.baidu.com/s/1l3NhZ1xYwca48nf1p88iDg&lt;/a&gt;&lt;br&gt;提取码：05zg&lt;/p&gt;
 &lt;p&gt;题目开启了沙箱机制&lt;/p&gt;
 &lt;blockquote&gt;
 &lt;p&gt;沙箱(Sandbox)是程序运行过程中的一种隔离机制，其目的是限制不可信进程和不可信代码的访问权限。计算机领域的虚拟技术，常见于安全方向。会禁用一些系统调用&lt;/p&gt;
@@ -348,7 +348,7 @@
 &lt;/li&gt;
 &lt;/ul&gt;
 &lt;/blockquote&gt;"><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=http://example.com/2023/03/05/sd-police2023-pwn/&t=2023黄河流域公安院校网络空间安全技能挑战赛 PWN"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://grxer.gitee.io/2023/03/05/sd-police2023-pwn/&t=2023黄河流域公安院校网络空间安全技能挑战赛 PWN"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
 </ul>
 
     </div>

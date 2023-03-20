@@ -11,28 +11,28 @@
     <meta name="description" content="HITCON Trainging lab13https:&#x2F;&#x2F;github.com&#x2F;ctf-wiki&#x2F;ctf-challenges&#x2F;tree&#x2F;master&#x2F;pwn&#x2F;heap&#x2F;chunk-extend-shrink&#x2F;hitcontraning_lab13 1234567grxer@grxer ~&#x2F;D&#x2F;c&#x2F;p&#x2F;heap&gt; checksec heapcreator[*] &amp;#x27;&#x2F;home&#x2F;gr">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Chunk Extend and Overlapping">
-<meta property="og:url" content="http://example.com/2023/03/10/Chunk-Extend-and-Overlapping/index.html">
+<meta property="og:url" content="https://grxer.gitee.io/2023/03/10/Chunk-Extend-and-Overlapping/index.html">
 <meta property="og:site_name" content="Computer Security">
 <meta property="og:description" content="HITCON Trainging lab13https:&#x2F;&#x2F;github.com&#x2F;ctf-wiki&#x2F;ctf-challenges&#x2F;tree&#x2F;master&#x2F;pwn&#x2F;heap&#x2F;chunk-extend-shrink&#x2F;hitcontraning_lab13 1234567grxer@grxer ~&#x2F;D&#x2F;c&#x2F;p&#x2F;heap&gt; checksec heapcreator[*] &amp;#x27;&#x2F;home&#x2F;gr">
 <meta property="og:locale" content="en_US">
-<meta property="og:image" content="http://example.com/2023/03/10/Chunk-Extend-and-Overlapping/image-20230311010202508.png">
-<meta property="og:image" content="http://example.com/2023/03/10/Chunk-Extend-and-Overlapping/image-20230311010444200.png">
-<meta property="og:image" content="http://example.com/2023/03/10/Chunk-Extend-and-Overlapping/image-20230311011034574.png">
-<meta property="og:image" content="http://example.com/2023/03/10/Chunk-Extend-and-Overlapping/image-20230311012105213.png">
-<meta property="og:image" content="http://example.com/2023/03/10/Chunk-Extend-and-Overlapping/image-20230311014939768.png">
-<meta property="og:image" content="http://example.com/2023/03/10/Chunk-Extend-and-Overlapping/image-20230311172008247.png">
-<meta property="og:image" content="http://example.com/2023/03/10/Chunk-Extend-and-Overlapping/image-20230311172557368.png">
-<meta property="og:image" content="http://example.com/2023/03/10/Chunk-Extend-and-Overlapping/image-20230311172648818.png">
-<meta property="og:image" content="http://example.com/2023/03/10/Chunk-Extend-and-Overlapping/image-20230311175311347.png">
-<meta property="og:image" content="http://example.com/2023/03/10/Chunk-Extend-and-Overlapping/image-20230311175610680.png">
-<meta property="og:image" content="http://example.com/2023/03/10/Chunk-Extend-and-Overlapping/image-20230311180117794.png">
-<meta property="og:image" content="http://example.com/2023/03/10/Chunk-Extend-and-Overlapping/image-20230311181810289.png">
-<meta property="og:image" content="http://example.com/2023/03/10/Chunk-Extend-and-Overlapping/image-20230311181846332.png">
+<meta property="og:image" content="https://grxer.gitee.io/2023/03/10/Chunk-Extend-and-Overlapping/image-20230311010202508.png">
+<meta property="og:image" content="https://grxer.gitee.io/2023/03/10/Chunk-Extend-and-Overlapping/image-20230311010444200.png">
+<meta property="og:image" content="https://grxer.gitee.io/2023/03/10/Chunk-Extend-and-Overlapping/image-20230311011034574.png">
+<meta property="og:image" content="https://grxer.gitee.io/2023/03/10/Chunk-Extend-and-Overlapping/image-20230311012105213.png">
+<meta property="og:image" content="https://grxer.gitee.io/2023/03/10/Chunk-Extend-and-Overlapping/image-20230311014939768.png">
+<meta property="og:image" content="https://grxer.gitee.io/2023/03/10/Chunk-Extend-and-Overlapping/image-20230311172008247.png">
+<meta property="og:image" content="https://grxer.gitee.io/2023/03/10/Chunk-Extend-and-Overlapping/image-20230311172557368.png">
+<meta property="og:image" content="https://grxer.gitee.io/2023/03/10/Chunk-Extend-and-Overlapping/image-20230311172648818.png">
+<meta property="og:image" content="https://grxer.gitee.io/2023/03/10/Chunk-Extend-and-Overlapping/image-20230311175311347.png">
+<meta property="og:image" content="https://grxer.gitee.io/2023/03/10/Chunk-Extend-and-Overlapping/image-20230311175610680.png">
+<meta property="og:image" content="https://grxer.gitee.io/2023/03/10/Chunk-Extend-and-Overlapping/image-20230311180117794.png">
+<meta property="og:image" content="https://grxer.gitee.io/2023/03/10/Chunk-Extend-and-Overlapping/image-20230311181810289.png">
+<meta property="og:image" content="https://grxer.gitee.io/2023/03/10/Chunk-Extend-and-Overlapping/image-20230311181846332.png">
 <meta property="article:published_time" content="2023-03-10T15:21:24.000Z">
 <meta property="article:modified_time" content="2023-03-11T13:58:16.187Z">
 <meta property="article:author" content="Grxer">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://example.com/2023/03/10/Chunk-Extend-and-Overlapping/image-20230311010202508.png">
+<meta name="twitter:image" content="https://grxer.gitee.io/2023/03/10/Chunk-Extend-and-Overlapping/image-20230311010202508.png">
     
     
       
@@ -104,17 +104,17 @@
     <br/>
     <div id="share" style="display: none">
       <ul>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=http://example.com/2023/03/10/Chunk-Extend-and-Overlapping/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=http://example.com/2023/03/10/Chunk-Extend-and-Overlapping/&text=Chunk Extend and Overlapping"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=http://example.com/2023/03/10/Chunk-Extend-and-Overlapping/&title=Chunk Extend and Overlapping"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=http://example.com/2023/03/10/Chunk-Extend-and-Overlapping/&is_video=false&description=Chunk Extend and Overlapping"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
-  <li><a class="icon" href="mailto:?subject=Chunk Extend and Overlapping&body=Check out this article: http://example.com/2023/03/10/Chunk-Extend-and-Overlapping/"><i class="fas fa-envelope " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=http://example.com/2023/03/10/Chunk-Extend-and-Overlapping/&title=Chunk Extend and Overlapping"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=http://example.com/2023/03/10/Chunk-Extend-and-Overlapping/&title=Chunk Extend and Overlapping"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=http://example.com/2023/03/10/Chunk-Extend-and-Overlapping/&title=Chunk Extend and Overlapping"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=http://example.com/2023/03/10/Chunk-Extend-and-Overlapping/&title=Chunk Extend and Overlapping"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=http://example.com/2023/03/10/Chunk-Extend-and-Overlapping/&name=Chunk Extend and Overlapping&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=http://example.com/2023/03/10/Chunk-Extend-and-Overlapping/&t=Chunk Extend and Overlapping"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://grxer.gitee.io/2023/03/10/Chunk-Extend-and-Overlapping/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://grxer.gitee.io/2023/03/10/Chunk-Extend-and-Overlapping/&text=Chunk Extend and Overlapping"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://grxer.gitee.io/2023/03/10/Chunk-Extend-and-Overlapping/&title=Chunk Extend and Overlapping"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://grxer.gitee.io/2023/03/10/Chunk-Extend-and-Overlapping/&is_video=false&description=Chunk Extend and Overlapping"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Chunk Extend and Overlapping&body=Check out this article: https://grxer.gitee.io/2023/03/10/Chunk-Extend-and-Overlapping/"><i class="fas fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://grxer.gitee.io/2023/03/10/Chunk-Extend-and-Overlapping/&title=Chunk Extend and Overlapping"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://grxer.gitee.io/2023/03/10/Chunk-Extend-and-Overlapping/&title=Chunk Extend and Overlapping"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://grxer.gitee.io/2023/03/10/Chunk-Extend-and-Overlapping/&title=Chunk Extend and Overlapping"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://grxer.gitee.io/2023/03/10/Chunk-Extend-and-Overlapping/&title=Chunk Extend and Overlapping"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://grxer.gitee.io/2023/03/10/Chunk-Extend-and-Overlapping/&name=Chunk Extend and Overlapping&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://grxer.gitee.io/2023/03/10/Chunk-Extend-and-Overlapping/&t=Chunk Extend and Overlapping"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
 </ul>
 
     </div>
@@ -274,17 +274,17 @@
 
     <div id="share-footer" style="display: none">
       <ul>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=http://example.com/2023/03/10/Chunk-Extend-and-Overlapping/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=http://example.com/2023/03/10/Chunk-Extend-and-Overlapping/&text=Chunk Extend and Overlapping"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=http://example.com/2023/03/10/Chunk-Extend-and-Overlapping/&title=Chunk Extend and Overlapping"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=http://example.com/2023/03/10/Chunk-Extend-and-Overlapping/&is_video=false&description=Chunk Extend and Overlapping"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" href="mailto:?subject=Chunk Extend and Overlapping&body=Check out this article: http://example.com/2023/03/10/Chunk-Extend-and-Overlapping/"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=http://example.com/2023/03/10/Chunk-Extend-and-Overlapping/&title=Chunk Extend and Overlapping"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=http://example.com/2023/03/10/Chunk-Extend-and-Overlapping/&title=Chunk Extend and Overlapping"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=http://example.com/2023/03/10/Chunk-Extend-and-Overlapping/&title=Chunk Extend and Overlapping"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=http://example.com/2023/03/10/Chunk-Extend-and-Overlapping/&title=Chunk Extend and Overlapping"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=http://example.com/2023/03/10/Chunk-Extend-and-Overlapping/&name=Chunk Extend and Overlapping&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=http://example.com/2023/03/10/Chunk-Extend-and-Overlapping/&t=Chunk Extend and Overlapping"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://grxer.gitee.io/2023/03/10/Chunk-Extend-and-Overlapping/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://grxer.gitee.io/2023/03/10/Chunk-Extend-and-Overlapping/&text=Chunk Extend and Overlapping"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://grxer.gitee.io/2023/03/10/Chunk-Extend-and-Overlapping/&title=Chunk Extend and Overlapping"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://grxer.gitee.io/2023/03/10/Chunk-Extend-and-Overlapping/&is_video=false&description=Chunk Extend and Overlapping"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Chunk Extend and Overlapping&body=Check out this article: https://grxer.gitee.io/2023/03/10/Chunk-Extend-and-Overlapping/"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://grxer.gitee.io/2023/03/10/Chunk-Extend-and-Overlapping/&title=Chunk Extend and Overlapping"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://grxer.gitee.io/2023/03/10/Chunk-Extend-and-Overlapping/&title=Chunk Extend and Overlapping"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://grxer.gitee.io/2023/03/10/Chunk-Extend-and-Overlapping/&title=Chunk Extend and Overlapping"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://grxer.gitee.io/2023/03/10/Chunk-Extend-and-Overlapping/&title=Chunk Extend and Overlapping"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://grxer.gitee.io/2023/03/10/Chunk-Extend-and-Overlapping/&name=Chunk Extend and Overlapping&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://grxer.gitee.io/2023/03/10/Chunk-Extend-and-Overlapping/&t=Chunk Extend and Overlapping"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
 </ul>
 
     </div>
