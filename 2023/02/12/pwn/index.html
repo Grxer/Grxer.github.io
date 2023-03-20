@@ -6,6 +6,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="HandheldFriendly" content="True">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="baidu-site-verification" content="codeva-ROfYcqLkCh" />
     <meta name="description" content="格式化字符串漏洞点不在栈上怎么打一般在栈上的格式会字符串漏洞，我们可以先泄露导致格式化字符串漏洞的函数的got表，然后利用%$hhn进行一个一个byte的写入，payload自己可以写函数去生成，或者利用pwntools库的fmtstr_payload(,{:})去自动生成，自己构造payload要注意payload是否有被‘\x00’截断，导致利用不成功，这种方法需要我们可控值是存储在栈上的参数">
 <meta property="og:type" content="article">
 <meta property="og:title" content="非栈上的格式化字符串漏洞">
