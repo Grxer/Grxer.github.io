@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="baidu-site-verification" content="codeva-ROfYcqLkCh" />
+    <meta name="msvalidate.01" content="ECA3E06A0E52A2AC90C4B06F12981FB2" />
+    <meta name="description" content="参考资料:https:&#x2F;&#x2F;www.ibiblio.org&#x2F;gferg&#x2F;ldp&#x2F;GCC-Inline-Assembly-HOWTO.html Asm Syntaxlinux上我一般都在用GNU C 编译器 GCC，支持AT&amp;T和intel格式的内联汇编，gcc默认是att，我个人是习惯了intel格式的汇编，但是大部分操作系统源码都是att格式的内联汇编，cao 1234567891011">
+<meta property="og:type" content="article">
+<meta property="og:title" content="HOW 2 GCC Inline Assembly">
+<meta property="og:url" content="https://grxer.gitee.io/2023/03/22/GCC-Inline-Assembly/index.html">
+<meta property="og:site_name" content="Computer Security">
+<meta property="og:description" content="参考资料:https:&#x2F;&#x2F;www.ibiblio.org&#x2F;gferg&#x2F;ldp&#x2F;GCC-Inline-Assembly-HOWTO.html Asm Syntaxlinux上我一般都在用GNU C 编译器 GCC，支持AT&amp;T和intel格式的内联汇编，gcc默认是att，我个人是习惯了intel格式的汇编，但是大部分操作系统源码都是att格式的内联汇编，cao 1234567891011">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://grxer.gitee.io/2023/03/22/GCC-Inline-Assembly/image-20230322143535231.png">
+<meta property="og:image" content="https://grxer.gitee.io/2023/03/22/GCC-Inline-Assembly/image-20230322144433403.png">
+<meta property="og:image" content="https://grxer.gitee.io/2023/03/22/GCC-Inline-Assembly/image-20230322163200644.png">
+<meta property="og:image" content="https://grxer.gitee.io/2023/03/22/GCC-Inline-Assembly/image-20230322162844426.png">
+<meta property="og:image" content="https://grxer.gitee.io/2023/03/22/GCC-Inline-Assembly/image-20230322153906189.png">
+<meta property="og:image" content="https://grxer.gitee.io/2023/03/22/GCC-Inline-Assembly/image-20230322153828870.png">
+<meta property="og:image" content="https://grxer.gitee.io/2023/03/22/GCC-Inline-Assembly/image-20230322154308379.png">
+<meta property="article:published_time" content="2023-03-22T06:14:42.000Z">
+<meta property="article:modified_time" content="2023-03-22T13:31:36.232Z">
+<meta property="article:author" content="Grxer">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://grxer.gitee.io/2023/03/22/GCC-Inline-Assembly/image-20230322143535231.png">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
+    
+    <!-- title -->
+    <title>HOW 2 GCC Inline Assembly</title>
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="Menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="Menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="Top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fas fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a href="/search/">Search</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" aria-label="Previous post" href="/2023/03/23/NJUOS%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E4%B8%8A%E7%9A%84%E7%A8%8B%E5%BA%8F/"><i class="fas fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" aria-label="Next post" href="/2023/03/21/Unsorted-Bin-Attack/"><i class="fas fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="Back to top" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="Share post" href="#"><i class="fas fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://grxer.gitee.io/2023/03/22/GCC-Inline-Assembly/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://grxer.gitee.io/2023/03/22/GCC-Inline-Assembly/&text=HOW 2 GCC Inline Assembly"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://grxer.gitee.io/2023/03/22/GCC-Inline-Assembly/&title=HOW 2 GCC Inline Assembly"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://grxer.gitee.io/2023/03/22/GCC-Inline-Assembly/&is_video=false&description=HOW 2 GCC Inline Assembly"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=HOW 2 GCC Inline Assembly&body=Check out this article: https://grxer.gitee.io/2023/03/22/GCC-Inline-Assembly/"><i class="fas fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://grxer.gitee.io/2023/03/22/GCC-Inline-Assembly/&title=HOW 2 GCC Inline Assembly"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://grxer.gitee.io/2023/03/22/GCC-Inline-Assembly/&title=HOW 2 GCC Inline Assembly"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://grxer.gitee.io/2023/03/22/GCC-Inline-Assembly/&title=HOW 2 GCC Inline Assembly"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://grxer.gitee.io/2023/03/22/GCC-Inline-Assembly/&title=HOW 2 GCC Inline Assembly"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://grxer.gitee.io/2023/03/22/GCC-Inline-Assembly/&name=HOW 2 GCC Inline Assembly&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://grxer.gitee.io/2023/03/22/GCC-Inline-Assembly/&t=HOW 2 GCC Inline Assembly"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    <div id="toc">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Asm-Syntax"><span class="toc-number">1.</span> <span class="toc-text">Asm Syntax</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Basic-Inline"><span class="toc-number">2.</span> <span class="toc-text">Basic Inline</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Extended-Asm"><span class="toc-number">3.</span> <span class="toc-text">Extended Asm</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#operands"><span class="toc-number">3.1.</span> <span class="toc-text">operands</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Clobber-List"><span class="toc-number">3.2.</span> <span class="toc-text">Clobber List</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Volatile%E4%BF%AE%E9%A5%B0%E7%AC%A6"><span class="toc-number">3.3.</span> <span class="toc-text">Volatile修饰符</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#constraints"><span class="toc-number">4.</span> <span class="toc-text">constraints</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AF%84%E5%AD%98%E5%99%A8%E7%BA%A6%E6%9D%9F"><span class="toc-number">4.1.</span> <span class="toc-text">寄存器约束</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%86%85%E5%AD%98%E6%93%8D%E4%BD%9C%E6%95%B0%E7%BA%A6%E6%9D%9F"><span class="toc-number">4.2.</span> <span class="toc-text">内存操作数约束</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8C%B9%E9%85%8D%EF%BC%88%E6%95%B0%E5%AD%97%EF%BC%89%E7%BA%A6%E6%9D%9F"><span class="toc-number">4.3.</span> <span class="toc-text">匹配（数字）约束</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#amp"><span class="toc-number">4.4.</span> <span class="toc-text">&amp;</span></a></li></ol></li></ol>
+    </div>
+  </span>
+</div>
+
+    
+    <div class="content index py4">
+        
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle" itemprop="name headline">
+        HOW 2 GCC Inline Assembly
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span itemprop="name">Grxer</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2023-03-22T06:14:42.000Z" itemprop="datePublished">2023-03-22</time>
+        
+      
+    </div>
+
+
+      
+
+      
+
+    </div>
+  </header>
+  
+
+  <div class="content" itemprop="articleBody">
+    <p> 参考资料:<a target="_blank" rel="noopener" href="https://www.ibiblio.org/gferg/ldp/GCC-Inline-Assembly-HOWTO.html">https://www.ibiblio.org/gferg/ldp/GCC-Inline-Assembly-HOWTO.html</a></p>
+<h2 id="Asm-Syntax"><a href="#Asm-Syntax" class="headerlink" title="Asm Syntax"></a>Asm Syntax</h2><p>linux上我一般都在用GNU C 编译器 GCC，支持AT&amp;T和intel格式的内联汇编，gcc默认是att，我个人是习惯了intel格式的汇编，但是大部分操作系统源码都是att格式的内联汇编，cao</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">+------------------------------+------------------------------------+</span><br><span class="line">|       Intel Code             |      AT&amp;T Code                     |</span><br><span class="line">+------------------------------+------------------------------------+</span><br><span class="line">| mov     eax,1                |  movl    $1,%eax                   |   </span><br><span class="line">| mov     ebx,0ffh             |  movl    $0xff,%ebx                |   </span><br><span class="line">| int     80h                  |  int     $0x80                     |   </span><br><span class="line">| mov     ebx, eax             |  movl    %eax, %ebx                |</span><br><span class="line">| mov     eax,[ecx]            |  movl    (%ecx),%eax               |</span><br><span class="line">| mov     eax,[ebx+3]          |  movl    3(%ebx),%eax              | </span><br><span class="line">| mov     eax,[ebx+20h]        |  movl    0x20(%ebx),%eax           |</span><br><span class="line">| add     eax,[ebx+ecx*2h]     |  addl    (%ebx,%ecx,0x2),%eax      |</span><br><span class="line">| lea     eax,[ebx+ecx]        |  leal    (%ebx,%ecx),%eax          |</span><br><span class="line">| sub     eax,[ebx+ecx*4h-20h] |  subl    -0x20(%ebx,%ecx,0x4),%eax |</span><br><span class="line">+------------------------------+------------------------------------+</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>源操作数和目的操作数顺序相反</li>
+<li>att寄存器%前缀</li>
+<li>att立即数前有$，16进制0x而不是后加h</li>
+<li>att mov 操作大小’b’、’w’、’l’ 分别指明了字节（8位）、字（16位）、长型（32位）替代intel”byte ptr”、 “word ptr” 和 “dword ptr” 前缀</li>
+<li>intel：section:[base + index*scale + disp]—&gt;att：section:disp(base, index, scale),这里立即数不用$</li>
+</ul>
+<h2 id="Basic-Inline"><a href="#Basic-Inline" class="headerlink" title="Basic Inline"></a>Basic Inline</h2><p>两种语法都可以</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">asm(&quot;assembly code&quot;)</span><br><span class="line">__asm__(&quot;assembly code&quot;)</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">asm(&quot;assembly code1;&quot;</span><br><span class="line">	&quot;assembly code2;&quot;)</span><br><span class="line">asm(&quot;assembly code1\n\t&quot;</span><br><span class="line">	&quot;assembly code2\n\t&quot;)</span><br></pre></td></tr></table></figure>
+
+
+
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;unistd.h&gt;</span></span></span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">()</span> &#123;   </span><br><span class="line">    <span class="keyword">asm</span>(<span class="string">&quot;mov rcx,0x666;&quot;</span></span><br><span class="line">        <span class="string">&quot;mov rax, rcx;&quot;</span>);</span><br><span class="line">    <span class="keyword">asm</span>(<span class="string">&quot;mov rcx,0x666\n\t;&quot;</span></span><br><span class="line">        <span class="string">&quot;mov rax, rcx;\n\t&quot;</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//切换到intel格式gcc -g -masm=intel -o test test.c</span></span><br></pre></td></tr></table></figure>
+
+<p><img src="/2023/03/22/GCC-Inline-Assembly/image-20230322143535231.png" alt="image-20230322143535231"></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;unistd.h&gt;</span></span></span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">()</span> &#123;   </span><br><span class="line">__asm__(<span class="string">&quot;mov %rax, %rbx\n\t&quot;</span></span><br><span class="line">        <span class="string">&quot;mov $56, %rsi\n\t&quot;</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//gcc -g -o test test.c</span></span><br><span class="line"><span class="comment">//gdb改变汇编风格set disassembly-flavor intel | att</span></span><br></pre></td></tr></table></figure>
+
+<p><img src="/2023/03/22/GCC-Inline-Assembly/image-20230322144433403.png" alt="image-20230322144433403"></p>
+<p>这样插入汇编很简单但是gcc并不知道我们改变了那些寄存器的值，gcc可能进行某些代码优化时，会用到这些寄存器但是它里面的值已经被我们插入汇编修改掉了，就会导致一些error</p>
+<h2 id="Extended-Asm"><a href="#Extended-Asm" class="headerlink" title="Extended Asm"></a>Extended Asm</h2><p>为了解决上述问题并且和c有个更好的交互，就有了拓展汇编</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">asm</span> ( assembler template </span><br><span class="line">         : output operands                  <span class="comment">/* optional */</span></span><br><span class="line">         : input operands                   <span class="comment">/* optional */</span></span><br><span class="line">         : <span class="built_in">list</span> of clobbered registers      <span class="comment">/* optional */</span></span><br><span class="line">         );</span><br></pre></td></tr></table></figure>
+
+<h3 id="operands"><a href="#operands" class="headerlink" title="operands"></a>operands</h3><p>总操作数的数目限制在 10 个，或者机器描述中的任何指令格式中的最大操作数数目，以较大者为准。</p>
+<p>在汇编程序模板中，每个操作数用数字引用。编号方式从0开始，从上往下</p>
+<ul>
+<li>r表示我们让gcc自动帮我们去选择一个输入寄存器一个输出寄存器</li>
+</ul>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">asm</span> (<span class="string">&quot;leal (%1,%1,4), %0&quot;</span></span><br><span class="line">     : <span class="string">&quot;=r&quot;</span> (five_times_x)</span><br><span class="line">     : <span class="string">&quot;r&quot;</span> (x) </span><br><span class="line">     );</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2023/03/22/GCC-Inline-Assembly/image-20230322163200644.png" alt="image-20230322163200644"></p>
+<ul>
+<li>如果我们想要输入和输出放在同一个寄存器</li>
+</ul>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">asm</span> (<span class="string">&quot;leal (%0,%0,4), %0&quot;</span></span><br><span class="line">     : <span class="string">&quot;=r&quot;</span> (five_times_x)</span><br><span class="line">     : <span class="string">&quot;0&quot;</span> (x) </span><br><span class="line">     );</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>指定ecx寄存器,为了和操作数进行区分，寄存器我们采用两个%</li>
+</ul>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">asm</span> (<span class="string">&quot;leal (%%ecx,%%ecx,4), %%ecx&quot;</span></span><br><span class="line">     : <span class="string">&quot;=c&quot;</span> (x)</span><br><span class="line">     : <span class="string">&quot;c&quot;</span> (x) </span><br><span class="line">     );</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2023/03/22/GCC-Inline-Assembly/image-20230322162844426.png" alt="image-20230322162844426"></p>
+<p>我们没有往list of clobbered registers去添加寄存器，因为目前情况gcc知道我们破坏了哪个,因为它们被显式地指定为约束了</p>
+<h3 id="Clobber-List"><a href="#Clobber-List" class="headerlink" title="Clobber List"></a>Clobber List</h3><p><strong>如果指令隐式或显式地使用了任何其他寄存器，（并且寄存器没有出现在输出或者输出约束列表里），那么就需要在Clobber List中指定这些寄存器。</strong></p>
+<p>如果我们的指令可以修改条件码寄存器（cc），我们必须将 “cc” 添加进修饰寄存器列表。</p>
+<p>如果我们的指令以不可预测的方式修改了内存，那么需要将 “memory” 添加进修饰寄存器列表。</p>
+<h3 id="Volatile修饰符"><a href="#Volatile修饰符" class="headerlink" title="Volatile修饰符"></a>Volatile修饰符</h3><p>gcc会在source–&gt;code的过程中会进行一些优化，例如删除一些代码改变一些代码位置等</p>
+<p>为了不让gcc去优化我们的inline asm将关键词volatile 或者 __volatile__ 放置在 asm 后面、()的前面。</p>
+<h2 id="constraints"><a href="#constraints" class="headerlink" title="constraints"></a>constraints</h2><h3 id="寄存器约束"><a href="#寄存器约束" class="headerlink" title="寄存器约束"></a>寄存器约束</h3><p>“reg constraints”(variable),输出操作数还要有“&#x3D;”的约束在”&#x3D;reg constraints”(variable)</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">+---+--------------------+</span><br><span class="line">| r |    Register(s)     |</span><br><span class="line">+---+--------------------+</span><br><span class="line">| a |   %eax, %ax, %al   |</span><br><span class="line">| b |   %ebx, %bx, %bl   |</span><br><span class="line">| c |   %ecx, %cx, %cl   |</span><br><span class="line">| d |   %edx, %dx, %dl   |</span><br><span class="line">| S |   %esi, %si        |</span><br><span class="line">| D |   %edi, %di        |</span><br><span class="line">+---+--------------------+</span><br><span class="line"> q   eax, ebx, ecx, edx</span><br></pre></td></tr></table></figure>
+
+<h3 id="内存操作数约束"><a href="#内存操作数约束" class="headerlink" title="内存操作数约束"></a>内存操作数约束</h3><p>“m”(variable),使用memory而不是reg作为temp来做运算</p>
+<h3 id="匹配（数字）约束"><a href="#匹配（数字）约束" class="headerlink" title="匹配（数字）约束"></a>匹配（数字）约束</h3><p>在某些情况下，一个变量可能既充当输入操作数，也充当输出操作数。可以通过使用匹配约束在 “asm” 中指定这种情况。</p>
+<p>asm (“incl %0” :”&#x3D;a”(var):”0”(var));</p>
+<h3 id="amp"><a href="#amp" class="headerlink" title="&amp;"></a>&amp;</h3><p>“&amp;” : 意味着这个操作数为一个早期改动的操作数，其在该指令完成前通过使用输入操作数被修改了。因此，这个操作数不可以位于一个被用作输出操作数或任何内存地址部分的寄存器。如果在旧值被写入之前它仅用作输入而已，一个输入操作数可以为一个早期改动操作数。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;unistd.h&gt;</span></span></span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="type">int</span> count = <span class="number">10</span>, fill_value = <span class="number">0x6</span>;</span><br><span class="line">    <span class="type">char</span> dest[<span class="number">10</span>] = &#123;<span class="number">0</span>&#125;;</span><br><span class="line">    <span class="keyword">asm</span>(<span class="string">&quot;cld\n\t&quot;</span></span><br><span class="line">        <span class="string">&quot;rep\n\t&quot;</span></span><br><span class="line">        <span class="string">&quot;stosb\n\t&quot;</span></span><br><span class="line">        :</span><br><span class="line">        : <span class="string">&quot;c&quot;</span> (count), <span class="string">&quot;a&quot;</span> (fill_value), <span class="string">&quot;D&quot;</span> (dest)</span><br><span class="line">        : </span><br><span class="line">            );</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">size_t</span> i = <span class="number">0</span>; i &lt; <span class="number">10</span>; i++)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;%d\n&quot;</span>, dest[i]); </span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//gcc -g -o test test.c</span></span><br><span class="line"><span class="comment">//cld将标志寄存器Flag的方向标志位DF清零。DI的地址指针自动增加</span></span><br><span class="line"><span class="comment">//rep重新rcx次数的stosb把al里面的数据往rdi指向地址去写</span></span><br></pre></td></tr></table></figure>
+
+<p><img src="/2023/03/22/GCC-Inline-Assembly/image-20230322153906189.png" alt="image-20230322153906189"></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line">0x0000000000001169 &lt;+0&gt;:	endbr64 </span><br><span class="line">0x000000000000116d &lt;+4&gt;:	push   rbp</span><br><span class="line">0x000000000000116e &lt;+5&gt;:	mov    rbp,rsp</span><br><span class="line">0x0000000000001171 &lt;+8&gt;:	sub    rsp,0x30</span><br><span class="line">0x0000000000001175 &lt;+12&gt;:	mov    rax,QWORD PTR fs:0x28</span><br><span class="line">0x000000000000117e &lt;+21&gt;:	mov    QWORD PTR [rbp-0x8],rax</span><br><span class="line">0x0000000000001182 &lt;+25&gt;:	xor    eax,eax</span><br><span class="line">0x0000000000001184 &lt;+27&gt;:	mov    DWORD PTR [rbp-0x28],0xa</span><br><span class="line">0x000000000000118b &lt;+34&gt;:	mov    DWORD PTR [rbp-0x24],0x6</span><br><span class="line">0x0000000000001192 &lt;+41&gt;:	mov    QWORD PTR [rbp-0x12],0x0</span><br><span class="line">0x000000000000119a &lt;+49&gt;:	mov    WORD PTR [rbp-0xa],0x0</span><br><span class="line">0x00000000000011a0 &lt;+55&gt;:	mov    edx,DWORD PTR [rbp-0x28]</span><br><span class="line">0x00000000000011a3 &lt;+58&gt;:	mov    eax,DWORD PTR [rbp-0x24]</span><br><span class="line">0x00000000000011a6 &lt;+61&gt;:	lea    rsi,[rbp-0x12]</span><br><span class="line">0x00000000000011aa &lt;+65&gt;:	mov    ecx,edx</span><br><span class="line">0x00000000000011ac &lt;+67&gt;:	mov    rdi,rsi</span><br><span class="line">0x00000000000011af &lt;+70&gt;:	cld                   </span><br><span class="line">0x00000000000011b0 &lt;+71&gt;:	rep stos BYTE PTR es:[rdi],al</span><br><span class="line">0x00000000000011b2 &lt;+73&gt;:	mov    QWORD PTR [rbp-0x20],0x0</span><br><span class="line">0x00000000000011ba &lt;+81&gt;:	jmp    0x11e8 &lt;main+127&gt;</span><br><span class="line">0x00000000000011bc &lt;+83&gt;:	lea    rdx,[rbp-0x12]</span><br><span class="line">0x00000000000011c0 &lt;+87&gt;:	mov    rax,QWORD PTR [rbp-0x20]</span><br><span class="line">0x00000000000011c4 &lt;+91&gt;:	add    rax,rdx</span><br><span class="line">0x00000000000011c7 &lt;+94&gt;:	movzx  eax,BYTE PTR [rax]</span><br><span class="line">0x00000000000011ca &lt;+97&gt;:	movsx  eax,al</span><br><span class="line">0x00000000000011cd &lt;+100&gt;:	mov    esi,eax</span><br><span class="line">0x00000000000011cf &lt;+102&gt;:	lea    rax,[rip+0xe2e]        # 0x2004</span><br><span class="line">0x00000000000011d6 &lt;+109&gt;:	mov    rdi,rax</span><br><span class="line">0x00000000000011d9 &lt;+112&gt;:	mov    eax,0x0</span><br><span class="line">0x00000000000011de &lt;+117&gt;:	call   0x1070 &lt;printf@plt&gt;</span><br><span class="line">0x00000000000011e3 &lt;+122&gt;:	add    QWORD PTR [rbp-0x20],0x1</span><br><span class="line">0x00000000000011e8 &lt;+127&gt;:	cmp    QWORD PTR [rbp-0x20],0x9</span><br><span class="line">0x00000000000011ed &lt;+132&gt;:	jbe    0x11bc &lt;main+83&gt;</span><br><span class="line">0x00000000000011ef &lt;+134&gt;:	mov    eax,0x0</span><br><span class="line">0x00000000000011f4 &lt;+139&gt;:	mov    rdx,QWORD PTR [rbp-0x8]</span><br><span class="line">0x00000000000011f8 &lt;+143&gt;:	sub    rdx,QWORD PTR fs:0x28</span><br><span class="line">0x0000000000001201 &lt;+152&gt;:	je     0x1208 &lt;main+159&gt;</span><br><span class="line">0x0000000000001203 &lt;+154&gt;:	call   0x1060 &lt;__stack_chk_fail@plt&gt;</span><br><span class="line">0x0000000000001208 &lt;+159&gt;:	leave  </span><br><span class="line">0x0000000000001209 &lt;+160&gt;:	ret    </span><br></pre></td></tr></table></figure>
+
+<p>一直到+67处做好准备工作，去提升堆栈，初始化局部变量</p>
+<p><img src="/2023/03/22/GCC-Inline-Assembly/image-20230322153828870.png" alt="image-20230322153828870"></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;unistd.h&gt;</span></span></span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">()</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="type">int</span> a=<span class="number">10</span>, b=<span class="number">0</span>;</span><br><span class="line">    <span class="keyword">asm</span> (<span class="string">&quot;mov %1, %%eax;&quot;</span></span><br><span class="line">      <span class="string">&quot;mov %%eax, %0;&quot;</span></span><br><span class="line">     :<span class="string">&quot;=r&quot;</span>(b)       </span><br><span class="line">     :<span class="string">&quot;r&quot;</span>(a)        </span><br><span class="line">     :<span class="string">&quot;%eax&quot;</span>     </span><br><span class="line">     ); </span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;%d,%d&quot;</span>, a, b);</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2023/03/22/GCC-Inline-Assembly/image-20230322154308379.png" alt="image-20230322154308379"></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">0x0000000000001149 &lt;+0&gt;:	endbr64 </span><br><span class="line">0x000000000000114d &lt;+4&gt;:	push   rbp</span><br><span class="line">0x000000000000114e &lt;+5&gt;:	mov    rbp,rsp</span><br><span class="line">0x0000000000001151 &lt;+8&gt;:	sub    rsp,0x10</span><br><span class="line">0x0000000000001155 &lt;+12&gt;:	mov    DWORD PTR [rbp-0x8],0xa</span><br><span class="line">0x000000000000115c &lt;+19&gt;:	mov    DWORD PTR [rbp-0x4],0x0</span><br><span class="line">0x0000000000001163 &lt;+26&gt;:	mov    eax,DWORD PTR [rbp-0x8]</span><br><span class="line">0x0000000000001166 &lt;+29&gt;:	mov    eax,eax</span><br><span class="line">0x0000000000001168 &lt;+31&gt;:	mov    eax,eax</span><br><span class="line">0x000000000000116a &lt;+33&gt;:	mov    DWORD PTR [rbp-0x4],eax</span><br><span class="line">0x000000000000116d &lt;+36&gt;:	mov    edx,DWORD PTR [rbp-0x4]</span><br><span class="line">0x0000000000001170 &lt;+39&gt;:	mov    eax,DWORD PTR [rbp-0x8]</span><br><span class="line">0x0000000000001173 &lt;+42&gt;:	mov    esi,eax</span><br><span class="line">0x0000000000001175 &lt;+44&gt;:	lea    rax,[rip+0xe88]        # 0x2004</span><br><span class="line">0x000000000000117c &lt;+51&gt;:	mov    rdi,rax</span><br><span class="line">0x000000000000117f &lt;+54&gt;:	mov    eax,0x0</span><br><span class="line">0x0000000000001184 &lt;+59&gt;:	call   0x1050 &lt;printf@plt&gt;</span><br><span class="line">0x0000000000001189 &lt;+64&gt;:	mov    eax,0x0</span><br><span class="line">0x000000000000118e &lt;+69&gt;:	leave  </span><br><span class="line">0x000000000000118f &lt;+70&gt;:	ret    </span><br></pre></td></tr></table></figure>
+
+
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+         
+          <li><a href="/">Home</a></li>
+         
+          <li><a href="/archives/">Writing</a></li>
+         
+          <li><a href="/search/">Search</a></li>
+        
+      </ul>
+    </div>
+
+    <div id="toc-footer" style="display: none">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Asm-Syntax"><span class="toc-number">1.</span> <span class="toc-text">Asm Syntax</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Basic-Inline"><span class="toc-number">2.</span> <span class="toc-text">Basic Inline</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Extended-Asm"><span class="toc-number">3.</span> <span class="toc-text">Extended Asm</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#operands"><span class="toc-number">3.1.</span> <span class="toc-text">operands</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Clobber-List"><span class="toc-number">3.2.</span> <span class="toc-text">Clobber List</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Volatile%E4%BF%AE%E9%A5%B0%E7%AC%A6"><span class="toc-number">3.3.</span> <span class="toc-text">Volatile修饰符</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#constraints"><span class="toc-number">4.</span> <span class="toc-text">constraints</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AF%84%E5%AD%98%E5%99%A8%E7%BA%A6%E6%9D%9F"><span class="toc-number">4.1.</span> <span class="toc-text">寄存器约束</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%86%85%E5%AD%98%E6%93%8D%E4%BD%9C%E6%95%B0%E7%BA%A6%E6%9D%9F"><span class="toc-number">4.2.</span> <span class="toc-text">内存操作数约束</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8C%B9%E9%85%8D%EF%BC%88%E6%95%B0%E5%AD%97%EF%BC%89%E7%BA%A6%E6%9D%9F"><span class="toc-number">4.3.</span> <span class="toc-text">匹配（数字）约束</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#amp"><span class="toc-number">4.4.</span> <span class="toc-text">&amp;</span></a></li></ol></li></ol>
+    </div>
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://grxer.gitee.io/2023/03/22/GCC-Inline-Assembly/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://grxer.gitee.io/2023/03/22/GCC-Inline-Assembly/&text=HOW 2 GCC Inline Assembly"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://grxer.gitee.io/2023/03/22/GCC-Inline-Assembly/&title=HOW 2 GCC Inline Assembly"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://grxer.gitee.io/2023/03/22/GCC-Inline-Assembly/&is_video=false&description=HOW 2 GCC Inline Assembly"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=HOW 2 GCC Inline Assembly&body=Check out this article: https://grxer.gitee.io/2023/03/22/GCC-Inline-Assembly/"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://grxer.gitee.io/2023/03/22/GCC-Inline-Assembly/&title=HOW 2 GCC Inline Assembly"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://grxer.gitee.io/2023/03/22/GCC-Inline-Assembly/&title=HOW 2 GCC Inline Assembly"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://grxer.gitee.io/2023/03/22/GCC-Inline-Assembly/&title=HOW 2 GCC Inline Assembly"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://grxer.gitee.io/2023/03/22/GCC-Inline-Assembly/&title=HOW 2 GCC Inline Assembly"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://grxer.gitee.io/2023/03/22/GCC-Inline-Assembly/&name=HOW 2 GCC Inline Assembly&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://grxer.gitee.io/2023/03/22/GCC-Inline-Assembly/&t=HOW 2 GCC Inline Assembly"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fas fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
+        <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fas fa-list fa-lg" aria-hidden="true"></i> TOC</a>
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fas fa-share-alt fa-lg" aria-hidden="true"></i> Share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2023
+    Grxer
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a href="/search/">Search</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+ 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script> 
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script> 
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"Copy to clipboard!\">";
+    btn += '<i class="far fa-clone"></i>';
+    btn += '</span>'; 
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "Copied!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Google Analytics -->
+
+<!-- Baidu Analytics -->
+
+  <script type="text/javascript">
+        var _hmt = _hmt || [];
+        (function() {
+          var hm = document.createElement("script");
+          hm.src = "https://hm.baidu.com/hm.js?a22ef0bec4e4a9c7337bea6e37ff55c1";
+          var s = document.getElementsByTagName("script")[0];
+          s.parentNode.insertBefore(hm, s);
+        })();
+        </script>
+
+<!-- Cloudflare Analytics -->
+
+<!-- Umami Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+</body>
+</html>
