@@ -19,7 +19,7 @@
 <meta property="og:image" content="https://grxer.gitee.io/2023/03/23/NJUOS%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E4%B8%8A%E7%9A%84%E7%A8%8B%E5%BA%8F/image-20230323013006789.png">
 <meta property="og:image" content="https://grxer.gitee.io/2023/03/23/NJUOS%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E4%B8%8A%E7%9A%84%E7%A8%8B%E5%BA%8F/image-20230323013037782.png">
 <meta property="article:published_time" content="2023-03-23T09:07:06.000Z">
-<meta property="article:modified_time" content="2023-03-22T17:38:47.393Z">
+<meta property="article:modified_time" content="2023-03-22T17:51:31.105Z">
 <meta property="article:author" content="Grxer">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://grxer.gitee.io/2023/03/23/NJUOS%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E4%B8%8A%E7%9A%84%E7%A8%8B%E5%BA%8F/image-20230323012323212.png">
@@ -211,7 +211,7 @@
 <h3 id="main-的开始-x2F-结束并不是整个程序的开始-x2F-结束"><a href="#main-的开始-x2F-结束并不是整个程序的开始-x2F-结束" class="headerlink" title="main() 的开始&#x2F;结束并不是整个程序的开始&#x2F;结束"></a><code>main()</code> 的开始&#x2F;结束并不是整个程序的开始&#x2F;结束</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"></span><br><span class="line">__attribute__((constructor)) <span class="type">void</span> <span class="title function_">hello</span><span class="params">()</span> &#123;</span><br><span class="line">  <span class="built_in">printf</span>(<span class="string">&quot;Hello, World\n&quot;</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// See also: atexit(3)</span></span><br><span class="line">__attribute__((destructor)) <span class="type">void</span> <span class="title function_">goodbye</span><span class="params">()</span> &#123;</span><br><span class="line">  <span class="built_in">printf</span>(<span class="string">&quot;Goodbye, Cruel OS World!\n&quot;</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">()</span> &#123;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <p><img src="/2023/03/23/NJUOS%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E4%B8%8A%E7%9A%84%E7%A8%8B%E5%BA%8F/image-20230323012323212.png" alt="image-20230323012323212"></p>
-<p>这个我们在<a href="https://grxer.gitee.io/2023/03/10/Chunk-Extend-and-Overlapping/%E5%81%9A%E8%BF%87**fini_array">https://grxer.gitee.io/2023/03/10/Chunk-Extend-and-Overlapping/做过**fini_array</a> hook**分析</p>
+<p>这个我们在<a href="https://grxer.gitee.io/2023/03/10/Chunk-Extend-and-Overlapping/">https://grxer.gitee.io/2023/03/10/Chunk-Extend-and-Overlapping/</a>    做过<strong>fini_array hook</strong>分析</p>
 <p>其实就是和这个有关</p>
 <blockquote>
 <p><code>.init_array</code>和 <code>.fini_array</code>中存放了指向初始化代码和终止代码的函数指针。</p>
@@ -225,7 +225,7 @@
 <p><img src="/2023/03/23/NJUOS%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E4%B8%8A%E7%9A%84%E7%A8%8B%E5%BA%8F/image-20230323013037782.png" alt="image-20230323013037782"></p>
 <h3 id="谁规定是-ld-linux-x86-64-so，而不是-rtfm-so？"><a href="#谁规定是-ld-linux-x86-64-so，而不是-rtfm-so？" class="headerlink" title="谁规定是 ld-linux-x86-64.so，而不是 rtfm.so？"></a>谁规定是 <code>ld-linux-x86-64.so</code>，而不是 <code>rtfm.so</code>？</h3><p>这个我们之前也做过分析<a href="https://grxer.gitee.io/2023/03/19/23-2-21-elf/">https://grxer.gitee.io/2023/03/19/23-2-21-elf/</a></p>
 <p>在ELF的Program Header Table 的Interpreter Path segment里规定了解释器地址，我们在有一个属于自己合理的解释器的前提下，可以完全hack掉这个程序执行流</p>
-<h3 id="starce"><a href="#starce" class="headerlink" title="starce"></a>starce</h3><p><a href="https://grxer.gitee.io/2023/03/05/sd-police2023-pwn/%E9%87%8C%E6%8B%BF%E6%9D%A5%E5%88%86%E6%9E%90%E8%BF%87ls%E7%B3%BB%E7%BB%9F%E8%B0%83%E7%94%A8">https://grxer.gitee.io/2023/03/05/sd-police2023-pwn/里拿来分析过ls系统调用</a></p>
+<h3 id="starce"><a href="#starce" class="headerlink" title="starce"></a>starce</h3><p><a href="https://grxer.gitee.io/2023/03/05/sd-police2023-pwn/">https://grxer.gitee.io/2023/03/05/sd-police2023-pwn/</a>   里拿来分析过ls系统调用</p>
 <h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>RTFM—-Read The Fucking Manual</p>
 <p>STFW—-Search The Fucking Web</p>
 
