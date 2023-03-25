@@ -2,6 +2,24 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>https://grxer.gitee.io/2023/03/25/NJUOS-M1-pstree/</loc>
+    
+    <lastmod>2023-03-25</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://grxer.gitee.io/2023/03/25/How2Makefile/</loc>
+    
+    <lastmod>2023-03-24</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
     <loc>https://grxer.gitee.io/2023/03/24/Large-bin-attack/</loc>
     
     <lastmod>2023-03-23</lastmod>
@@ -202,7 +220,7 @@
 
   <url>
     <loc>https://grxer.gitee.io/</loc>
-    <lastmod>2023-03-23</lastmod>
+    <lastmod>2023-03-25</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
