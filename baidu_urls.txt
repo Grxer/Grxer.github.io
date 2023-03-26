@@ -1,3 +1,5 @@
+https://grxer.gitee.io/2023/03/26/Tcache/
+https://grxer.gitee.io/2023/03/26/TLS-Hijack/
 https://grxer.gitee.io/2023/03/25/NJUOS-M1-pstree/
 https://grxer.gitee.io/2023/03/25/How2Makefile/
 https://grxer.gitee.io/2023/03/24/Large-bin-attack/

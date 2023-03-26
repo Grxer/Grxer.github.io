@@ -8,12 +8,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
     <meta name="baidu-site-verification" content="codeva-ROfYcqLkCh" />
     <meta name="msvalidate.01" content="ECA3E06A0E52A2AC90C4B06F12981FB2" />
-    <meta name="description" content="Unlink在free堆块时，要满足释放的该chunk不在tcache(0x420)或fastbin(0x80)范围内，free的chunk物理地址前或后有freechunk时会进行unlink操作，unlink就是把这个chunk从双向链表里拿下来 调用关系大致如下 12345678#define unlink(AV, P, BK, FD)static void _int_free (mstat">
+    <meta name="description" content="Unlink在free堆块时，要满足释放的该chunk不在tcache(带着chunkhead，0x410)或fastbin(0x80)范围内，free的chunk物理地址前或后有freechunk时会进行unlink操作，unlink就是把这个chunk从双向链表里拿下来 调用关系大致如下 12345678#define unlink(AV, P, BK, FD)static void _int">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Unlink-2014-HITCON-stkof">
 <meta property="og:url" content="https://grxer.gitee.io/2023/03/14/Unlink-2014-HITCON-stkof/index.html">
 <meta property="og:site_name" content="Computer Security">
-<meta property="og:description" content="Unlink在free堆块时，要满足释放的该chunk不在tcache(0x420)或fastbin(0x80)范围内，free的chunk物理地址前或后有freechunk时会进行unlink操作，unlink就是把这个chunk从双向链表里拿下来 调用关系大致如下 12345678#define unlink(AV, P, BK, FD)static void _int_free (mstat">
+<meta property="og:description" content="Unlink在free堆块时，要满足释放的该chunk不在tcache(带着chunkhead，0x410)或fastbin(0x80)范围内，free的chunk物理地址前或后有freechunk时会进行unlink操作，unlink就是把这个chunk从双向链表里拿下来 调用关系大致如下 12345678#define unlink(AV, P, BK, FD)static void _int">
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="https://grxer.gitee.io/2023/03/14/Unlink-2014-HITCON-stkof/image-20230314233831972.png">
 <meta property="og:image" content="https://grxer.gitee.io/2023/03/14/Unlink-2014-HITCON-stkof/image-20230315001634637.png">
@@ -22,7 +22,7 @@
 <meta property="og:image" content="https://grxer.gitee.io/2023/03/14/Unlink-2014-HITCON-stkof/image-20230315005329559.png">
 <meta property="og:image" content="https://grxer.gitee.io/2023/03/14/Unlink-2014-HITCON-stkof/image-20230315010413491.png">
 <meta property="article:published_time" content="2023-03-14T12:18:14.000Z">
-<meta property="article:modified_time" content="2023-03-15T14:31:35.802Z">
+<meta property="article:modified_time" content="2023-03-26T03:57:36.675Z">
 <meta property="article:author" content="Grxer">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://grxer.gitee.io/2023/03/14/Unlink-2014-HITCON-stkof/image-20230314233831972.png">
@@ -151,7 +151,7 @@
   
 
   <div class="content" itemprop="articleBody">
-    <h2 id="Unlink"><a href="#Unlink" class="headerlink" title="Unlink"></a>Unlink</h2><p>在free堆块时，要满足释放的该chunk不在tcache(0x420)或fastbin(0x80)范围内，free的chunk物理地址前或后有freechunk时会进行unlink操作，unlink就是把这个chunk从双向链表里拿下来</p>
+    <h2 id="Unlink"><a href="#Unlink" class="headerlink" title="Unlink"></a>Unlink</h2><p>在free堆块时，要满足释放的该chunk不在tcache(带着chunkhead，0x410)或fastbin(0x80)范围内，free的chunk物理地址前或后有freechunk时会进行unlink操作，unlink就是把这个chunk从双向链表里拿下来</p>
 <p>调用关系大致如下</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">define</span> unlink(AV, P, BK, FD)</span></span><br><span class="line"><span class="type">static</span> <span class="type">void</span> _int_free (mstate av, mchunkptr p, <span class="type">int</span> have_lock)</span><br><span class="line"><span class="built_in">free</span>()&#123;</span><br><span class="line">	_int_free()&#123;</span><br><span class="line">		unlink();</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
 

@@ -8,12 +8,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
     <meta name="baidu-site-verification" content="codeva-ROfYcqLkCh" />
     <meta name="msvalidate.01" content="ECA3E06A0E52A2AC90C4B06F12981FB2" />
-    <meta name="description" content="__malloc_hook和__free_hook劫持原理Hook即钩子，截获API调用的技术，是将执行流程劫持到你自己的代码。 刚开始在Ubuntu22上做实验，一直不成功，又换了kali，还是不行，最后发现__free_hook,__malloc_hook,__realloc_hook,_memalign_hook,_after_morecore_hookg在libc-2.34的patch中被">
+    <meta name="description" content="__malloc_hook和__free_hook hijack原理Hook即钩子，截获API调用的技术，是将执行流程劫持到你自己的代码。 刚开始在Ubuntu22上做实验，一直不成功，又换了kali，还是不行，最后发现__free_hook,__malloc_hook,__realloc_hook,_memalign_hook,_after_morecore_hookg在libc-2.34的pa">
 <meta property="og:type" content="article">
-<meta property="og:title" content="malloc_hook和free_hook劫持原理">
+<meta property="og:title" content="malloc_hook&amp;&amp;free_hook hijack原理">
 <meta property="og:url" content="https://grxer.gitee.io/2023/03/01/malloc-hook&free-hook/index.html">
 <meta property="og:site_name" content="Computer Security">
-<meta property="og:description" content="__malloc_hook和__free_hook劫持原理Hook即钩子，截获API调用的技术，是将执行流程劫持到你自己的代码。 刚开始在Ubuntu22上做实验，一直不成功，又换了kali，还是不行，最后发现__free_hook,__malloc_hook,__realloc_hook,_memalign_hook,_after_morecore_hookg在libc-2.34的patch中被">
+<meta property="og:description" content="__malloc_hook和__free_hook hijack原理Hook即钩子，截获API调用的技术，是将执行流程劫持到你自己的代码。 刚开始在Ubuntu22上做实验，一直不成功，又换了kali，还是不行，最后发现__free_hook,__malloc_hook,__realloc_hook,_memalign_hook,_after_morecore_hookg在libc-2.34的pa">
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="https://grxer.gitee.io/2023/03/01/malloc-hook&free-hook/image-20230301205645710.png">
 <meta property="og:image" content="https://grxer.gitee.io/2023/03/01/malloc-hook&free-hook/image-20230301210214619.png">
@@ -28,7 +28,7 @@
 <meta property="og:image" content="https://grxer.gitee.io/2023/03/01/malloc-hook&free-hook/image-20230301213905560.png">
 <meta property="og:image" content="https://grxer.gitee.io/2023/03/01/malloc-hook&free-hook/image-20230301214108772.png">
 <meta property="article:published_time" content="2023-03-01T09:09:02.000Z">
-<meta property="article:modified_time" content="2023-03-02T07:45:53.694Z">
+<meta property="article:modified_time" content="2023-03-26T08:17:02.920Z">
 <meta property="article:author" content="Grxer">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://grxer.gitee.io/2023/03/01/malloc-hook&free-hook/image-20230301205645710.png">
@@ -51,7 +51,7 @@
       
     
     <!-- title -->
-    <title>malloc_hook和free_hook劫持原理</title>
+    <title>malloc_hook&amp;&amp;free_hook hijack原理</title>
     <!-- styles -->
     
 <link rel="stylesheet" href="/css/style.css">
@@ -104,22 +104,22 @@
     <div id="share" style="display: none">
       <ul>
   <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://grxer.gitee.io/2023/03/01/malloc-hook&amp;free-hook/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://grxer.gitee.io/2023/03/01/malloc-hook&amp;free-hook/&text=malloc_hook和free_hook劫持原理"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://grxer.gitee.io/2023/03/01/malloc-hook&amp;free-hook/&title=malloc_hook和free_hook劫持原理"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://grxer.gitee.io/2023/03/01/malloc-hook&amp;free-hook/&is_video=false&description=malloc_hook和free_hook劫持原理"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
-  <li><a class="icon" href="mailto:?subject=malloc_hook和free_hook劫持原理&body=Check out this article: https://grxer.gitee.io/2023/03/01/malloc-hook&amp;free-hook/"><i class="fas fa-envelope " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://grxer.gitee.io/2023/03/01/malloc-hook&amp;free-hook/&title=malloc_hook和free_hook劫持原理"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://grxer.gitee.io/2023/03/01/malloc-hook&amp;free-hook/&title=malloc_hook和free_hook劫持原理"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://grxer.gitee.io/2023/03/01/malloc-hook&amp;free-hook/&title=malloc_hook和free_hook劫持原理"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://grxer.gitee.io/2023/03/01/malloc-hook&amp;free-hook/&title=malloc_hook和free_hook劫持原理"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://grxer.gitee.io/2023/03/01/malloc-hook&amp;free-hook/&name=malloc_hook和free_hook劫持原理&description=&lt;h1 id=&#34;malloc-hook和-free-hook劫持原理&#34;&gt;&lt;a href=&#34;#malloc-hook和-free-hook劫持原理&#34; class=&#34;headerlink&#34; title=&#34;__malloc_hook和__free_hook劫持原理&#34;&gt;&lt;/a&gt;__malloc_hook和__free_hook劫持原理&lt;/h1&gt;&lt;p&gt;Hook即钩子，截获API调用的技术，是将执行流程劫持到你自己的代码。&lt;/p&gt;
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://grxer.gitee.io/2023/03/01/malloc-hook&amp;free-hook/&text=malloc_hook&amp;&amp;free_hook hijack原理"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://grxer.gitee.io/2023/03/01/malloc-hook&amp;free-hook/&title=malloc_hook&amp;&amp;free_hook hijack原理"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://grxer.gitee.io/2023/03/01/malloc-hook&amp;free-hook/&is_video=false&description=malloc_hook&amp;&amp;free_hook hijack原理"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=malloc_hook&amp;&amp;free_hook hijack原理&body=Check out this article: https://grxer.gitee.io/2023/03/01/malloc-hook&amp;free-hook/"><i class="fas fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://grxer.gitee.io/2023/03/01/malloc-hook&amp;free-hook/&title=malloc_hook&amp;&amp;free_hook hijack原理"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://grxer.gitee.io/2023/03/01/malloc-hook&amp;free-hook/&title=malloc_hook&amp;&amp;free_hook hijack原理"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://grxer.gitee.io/2023/03/01/malloc-hook&amp;free-hook/&title=malloc_hook&amp;&amp;free_hook hijack原理"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://grxer.gitee.io/2023/03/01/malloc-hook&amp;free-hook/&title=malloc_hook&amp;&amp;free_hook hijack原理"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://grxer.gitee.io/2023/03/01/malloc-hook&amp;free-hook/&name=malloc_hook&amp;&amp;free_hook hijack原理&description=&lt;h1 id=&#34;malloc-hook和-free-hook-hijack原理&#34;&gt;&lt;a href=&#34;#malloc-hook和-free-hook-hijack原理&#34; class=&#34;headerlink&#34; title=&#34;__malloc_hook和__free_hook hijack原理&#34;&gt;&lt;/a&gt;__malloc_hook和__free_hook hijack原理&lt;/h1&gt;&lt;p&gt;Hook即钩子，截获API调用的技术，是将执行流程劫持到你自己的代码。&lt;/p&gt;
 &lt;p&gt;刚开始在Ubuntu22上做实验，一直不成功，又换了kali，还是不行，最后发现__free_hook,__malloc_hook,__realloc_hook,&lt;em&gt;_memalign_hook,&lt;/em&gt;_after_morecore_hookg在libc-2.34的patch中被移除了，换了Ubuntu16 libc版本2.23，但是发现只是在ld链接时会找不到definition，也就是无法通过链接的环节，但是在libc库里还是有的，可能是考虑之前使用hook程序的兼容。&lt;/p&gt;"><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://grxer.gitee.io/2023/03/01/malloc-hook&amp;free-hook/&t=malloc_hook和free_hook劫持原理"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://grxer.gitee.io/2023/03/01/malloc-hook&amp;free-hook/&t=malloc_hook&amp;&amp;free_hook hijack原理"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
 </ul>
 
     </div>
     <div id="toc">
-      <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#malloc-hook%E5%92%8C-free-hook%E5%8A%AB%E6%8C%81%E5%8E%9F%E7%90%86"><span class="toc-number">1.</span> <span class="toc-text">__malloc_hook和__free_hook劫持原理</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#malloc-free"><span class="toc-number">1.1.</span> <span class="toc-text">malloc free</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#malloc"><span class="toc-number">1.1.1.</span> <span class="toc-text">malloc</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#free%E5%90%8C%E7%90%86"><span class="toc-number">1.1.2.</span> <span class="toc-text">free同理</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#malloc-hook"><span class="toc-number">1.2.</span> <span class="toc-text">malloc hook</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#free-hook%E5%90%8C%E7%90%86"><span class="toc-number">1.3.</span> <span class="toc-text">free hook同理</span></a></li></ol></li></ol>
+      <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#malloc-hook%E5%92%8C-free-hook-hijack%E5%8E%9F%E7%90%86"><span class="toc-number">1.</span> <span class="toc-text">__malloc_hook和__free_hook hijack原理</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#malloc-free"><span class="toc-number">1.1.</span> <span class="toc-text">malloc free</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#malloc"><span class="toc-number">1.1.1.</span> <span class="toc-text">malloc</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#free%E5%90%8C%E7%90%86"><span class="toc-number">1.1.2.</span> <span class="toc-text">free同理</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#malloc-hook"><span class="toc-number">1.2.</span> <span class="toc-text">malloc hook</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#free-hook%E5%90%8C%E7%90%86"><span class="toc-number">1.3.</span> <span class="toc-text">free hook同理</span></a></li></ol></li></ol>
     </div>
   </span>
 </div>
@@ -131,7 +131,7 @@
   <header>
     
     <h1 class="posttitle" itemprop="name headline">
-        malloc_hook和free_hook劫持原理
+        malloc_hook&amp;&amp;free_hook hijack原理
     </h1>
 
 
@@ -158,7 +158,7 @@
   
 
   <div class="content" itemprop="articleBody">
-    <h1 id="malloc-hook和-free-hook劫持原理"><a href="#malloc-hook和-free-hook劫持原理" class="headerlink" title="__malloc_hook和__free_hook劫持原理"></a>__malloc_hook和__free_hook劫持原理</h1><p>Hook即钩子，截获API调用的技术，是将执行流程劫持到你自己的代码。</p>
+    <h1 id="malloc-hook和-free-hook-hijack原理"><a href="#malloc-hook和-free-hook-hijack原理" class="headerlink" title="__malloc_hook和__free_hook hijack原理"></a>__malloc_hook和__free_hook hijack原理</h1><p>Hook即钩子，截获API调用的技术，是将执行流程劫持到你自己的代码。</p>
 <p>刚开始在Ubuntu22上做实验，一直不成功，又换了kali，还是不行，最后发现__free_hook,__malloc_hook,__realloc_hook,<em>_memalign_hook,</em>_after_morecore_hookg在libc-2.34的patch中被移除了，换了Ubuntu16 libc版本2.23，但是发现只是在ld链接时会找不到definition，也就是无法通过链接的环节，但是在libc库里还是有的，可能是考虑之前使用hook程序的兼容。</p>
 <span id="more"></span>
 
@@ -213,23 +213,23 @@
     </div>
 
     <div id="toc-footer" style="display: none">
-      <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#malloc-hook%E5%92%8C-free-hook%E5%8A%AB%E6%8C%81%E5%8E%9F%E7%90%86"><span class="toc-number">1.</span> <span class="toc-text">__malloc_hook和__free_hook劫持原理</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#malloc-free"><span class="toc-number">1.1.</span> <span class="toc-text">malloc free</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#malloc"><span class="toc-number">1.1.1.</span> <span class="toc-text">malloc</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#free%E5%90%8C%E7%90%86"><span class="toc-number">1.1.2.</span> <span class="toc-text">free同理</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#malloc-hook"><span class="toc-number">1.2.</span> <span class="toc-text">malloc hook</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#free-hook%E5%90%8C%E7%90%86"><span class="toc-number">1.3.</span> <span class="toc-text">free hook同理</span></a></li></ol></li></ol>
+      <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#malloc-hook%E5%92%8C-free-hook-hijack%E5%8E%9F%E7%90%86"><span class="toc-number">1.</span> <span class="toc-text">__malloc_hook和__free_hook hijack原理</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#malloc-free"><span class="toc-number">1.1.</span> <span class="toc-text">malloc free</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#malloc"><span class="toc-number">1.1.1.</span> <span class="toc-text">malloc</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#free%E5%90%8C%E7%90%86"><span class="toc-number">1.1.2.</span> <span class="toc-text">free同理</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#malloc-hook"><span class="toc-number">1.2.</span> <span class="toc-text">malloc hook</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#free-hook%E5%90%8C%E7%90%86"><span class="toc-number">1.3.</span> <span class="toc-text">free hook同理</span></a></li></ol></li></ol>
     </div>
 
     <div id="share-footer" style="display: none">
       <ul>
   <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://grxer.gitee.io/2023/03/01/malloc-hook&amp;free-hook/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://grxer.gitee.io/2023/03/01/malloc-hook&amp;free-hook/&text=malloc_hook和free_hook劫持原理"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://grxer.gitee.io/2023/03/01/malloc-hook&amp;free-hook/&title=malloc_hook和free_hook劫持原理"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://grxer.gitee.io/2023/03/01/malloc-hook&amp;free-hook/&is_video=false&description=malloc_hook和free_hook劫持原理"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" href="mailto:?subject=malloc_hook和free_hook劫持原理&body=Check out this article: https://grxer.gitee.io/2023/03/01/malloc-hook&amp;free-hook/"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://grxer.gitee.io/2023/03/01/malloc-hook&amp;free-hook/&title=malloc_hook和free_hook劫持原理"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://grxer.gitee.io/2023/03/01/malloc-hook&amp;free-hook/&title=malloc_hook和free_hook劫持原理"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://grxer.gitee.io/2023/03/01/malloc-hook&amp;free-hook/&title=malloc_hook和free_hook劫持原理"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://grxer.gitee.io/2023/03/01/malloc-hook&amp;free-hook/&title=malloc_hook和free_hook劫持原理"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://grxer.gitee.io/2023/03/01/malloc-hook&amp;free-hook/&name=malloc_hook和free_hook劫持原理&description=&lt;h1 id=&#34;malloc-hook和-free-hook劫持原理&#34;&gt;&lt;a href=&#34;#malloc-hook和-free-hook劫持原理&#34; class=&#34;headerlink&#34; title=&#34;__malloc_hook和__free_hook劫持原理&#34;&gt;&lt;/a&gt;__malloc_hook和__free_hook劫持原理&lt;/h1&gt;&lt;p&gt;Hook即钩子，截获API调用的技术，是将执行流程劫持到你自己的代码。&lt;/p&gt;
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://grxer.gitee.io/2023/03/01/malloc-hook&amp;free-hook/&text=malloc_hook&amp;&amp;free_hook hijack原理"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://grxer.gitee.io/2023/03/01/malloc-hook&amp;free-hook/&title=malloc_hook&amp;&amp;free_hook hijack原理"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://grxer.gitee.io/2023/03/01/malloc-hook&amp;free-hook/&is_video=false&description=malloc_hook&amp;&amp;free_hook hijack原理"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=malloc_hook&amp;&amp;free_hook hijack原理&body=Check out this article: https://grxer.gitee.io/2023/03/01/malloc-hook&amp;free-hook/"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://grxer.gitee.io/2023/03/01/malloc-hook&amp;free-hook/&title=malloc_hook&amp;&amp;free_hook hijack原理"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://grxer.gitee.io/2023/03/01/malloc-hook&amp;free-hook/&title=malloc_hook&amp;&amp;free_hook hijack原理"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://grxer.gitee.io/2023/03/01/malloc-hook&amp;free-hook/&title=malloc_hook&amp;&amp;free_hook hijack原理"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://grxer.gitee.io/2023/03/01/malloc-hook&amp;free-hook/&title=malloc_hook&amp;&amp;free_hook hijack原理"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://grxer.gitee.io/2023/03/01/malloc-hook&amp;free-hook/&name=malloc_hook&amp;&amp;free_hook hijack原理&description=&lt;h1 id=&#34;malloc-hook和-free-hook-hijack原理&#34;&gt;&lt;a href=&#34;#malloc-hook和-free-hook-hijack原理&#34; class=&#34;headerlink&#34; title=&#34;__malloc_hook和__free_hook hijack原理&#34;&gt;&lt;/a&gt;__malloc_hook和__free_hook hijack原理&lt;/h1&gt;&lt;p&gt;Hook即钩子，截获API调用的技术，是将执行流程劫持到你自己的代码。&lt;/p&gt;
 &lt;p&gt;刚开始在Ubuntu22上做实验，一直不成功，又换了kali，还是不行，最后发现__free_hook,__malloc_hook,__realloc_hook,&lt;em&gt;_memalign_hook,&lt;/em&gt;_after_morecore_hookg在libc-2.34的patch中被移除了，换了Ubuntu16 libc版本2.23，但是发现只是在ld链接时会找不到definition，也就是无法通过链接的环节，但是在libc库里还是有的，可能是考虑之前使用hook程序的兼容。&lt;/p&gt;"><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://grxer.gitee.io/2023/03/01/malloc-hook&amp;free-hook/&t=malloc_hook和free_hook劫持原理"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://grxer.gitee.io/2023/03/01/malloc-hook&amp;free-hook/&t=malloc_hook&amp;&amp;free_hook hijack原理"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
 </ul>
 
     </div>
