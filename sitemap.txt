@@ -1,5 +1,8 @@
-https://grxer.gitee.io/2023/03/26/Tcache/
+https://grxer.gitee.io/2023/03/27/Tcache_house_of_spirit-unlink/
+https://grxer.gitee.io/2023/02/25/23-2-25-heap/
+https://grxer.gitee.io/2023/03/27/Tcache_poisoning_dup/
 https://grxer.gitee.io/2023/03/26/TLS-Hijack/
+https://grxer.gitee.io/2023/03/26/Tcache/
 https://grxer.gitee.io/2023/03/01/malloc-hook&free-hook/
 https://grxer.gitee.io/2023/03/14/Unlink-2014-HITCON-stkof/
 https://grxer.gitee.io/2023/03/25/NJUOS-M1-pstree/
@@ -17,7 +20,6 @@ https://grxer.gitee.io/2023/03/19/23-2-21-elf/
 https://grxer.gitee.io/2023/03/17/2014-hack-lu-oreo/
 https://grxer.gitee.io/2023/03/16/2017-insomn-hack-wheelofrobots/
 https://grxer.gitee.io/2023/03/15/2016-ZCTF-note2-and-note3/
-https://grxer.gitee.io/2023/02/25/23-2-25-heap/
 https://grxer.gitee.io/2023/03/13/ciscn-2019-s-3/
 https://grxer.gitee.io/2023/03/12/ciscn-2019-es-2/
 https://grxer.gitee.io/2023/03/04/Using-After-Free/

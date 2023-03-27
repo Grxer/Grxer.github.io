@@ -18,7 +18,7 @@
 <meta property="og:image" content="https://grxer.gitee.io/2023/03/26/TLS-Hijack/image-20230326174219767.png">
 <meta property="og:image" content="https://grxer.gitee.io/2023/03/26/TLS-Hijack/image-20230326174414780.png">
 <meta property="article:published_time" content="2023-03-26T08:12:35.000Z">
-<meta property="article:modified_time" content="2023-03-26T12:21:26.094Z">
+<meta property="article:modified_time" content="2023-03-27T06:34:53.459Z">
 <meta property="article:author" content="Grxer">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://grxer.gitee.io/2023/03/26/TLS-Hijack/image-20230326174219767.png">
@@ -193,7 +193,7 @@
 <p>(4)运行全部的线程：set scheduler-locking off</p>
 <p>(5)指定某线程执行某gdb命令：thread apply 线程id gdb_cmd</p>
 <p>(6)全部的线程执行某gdb命令：thread apply all gdb_cmd</p>
-<p>**<code>x/x pthread_self()</code>**可以查看线程tcbhead_t位置</p>
+<p>**x&#x2F;x pthread_self()**可以查看线程tcbhead_t位置</p>
 <p>断点断到子线程函数</p>
 <p><img src="/2023/03/26/TLS-Hijack/image-20230326174219767.png" alt="image-20230326174219767"></p>
 <p>distance计算偏移，覆盖canary和stack_guard为用一个值即可,rop puts输出flag即可</p>

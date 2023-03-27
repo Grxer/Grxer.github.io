@@ -22,7 +22,7 @@
 <meta property="og:image" content="https://grxer.gitee.io/2023/02/25/23-2-25-heap/image-20230225151846846.png">
 <meta property="og:image" content="https://grxer.gitee.io/2023/02/25/23-2-25-heap/image-20230225152540343.png">
 <meta property="article:published_time" content="2023-02-25T02:03:34.000Z">
-<meta property="article:modified_time" content="2023-03-14T06:27:38.488Z">
+<meta property="article:modified_time" content="2023-03-27T13:52:13.851Z">
 <meta property="article:author" content="Grxer">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://grxer.gitee.io/2023/02/25/23-2-25-heap/image-20230225111848174.png">
@@ -281,7 +281,8 @@
 <li>malloc时，内存分配器首先会尝试从<code>fastbin</code>中分配空闲内存块，当分配器需要分配大于<code>FASTBIN_MAX_SIZE</code>的内存时，它会尝试从<code>unsorted bin</code>中分配内存块。如果分配器发现<code>unsorted bin</code>中有适合大小的空闲块，它将选择其中一个，并返回给应用程序。如果没有适合的空闲块，则分配器会将<code>unsorted bin</code>中的空闲块合并，并将合并后的大块添加到<code>large bin</code>中。会依次查找<code>small bin</code>、<code>large bin</code>、<code>mmapped</code>等其他内存块，直到找到合适的内存块。</li>
 <li><img src="/2023/02/25/23-2-25-heap/image-20230225150843293.png" alt="image-20230225150843293" style="zoom:50%;"></li>
 </ol>
-<h3 id="smallbin"><a href="#smallbin" class="headerlink" title="smallbin"></a>smallbin</h3><table>
+<h3 id="smallbin"><a href="#smallbin" class="headerlink" title="smallbin"></a>smallbin</h3><p>size&#x3D; 2* size_sz * index</p>
+<table>
 <thead>
 <tr>
 <th align="left">下标</th>
@@ -311,8 +312,8 @@
 </tr>
 <tr>
 <td align="left">x</td>
-<td align="left">2<em>4</em>x</td>
-<td align="left">2<em>8</em>x</td>
+<td align="left">2*4*x</td>
+<td align="left">2*8*x</td>
 </tr>
 <tr>
 <td align="left">63</td>
