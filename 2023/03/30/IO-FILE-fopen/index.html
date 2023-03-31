@@ -8,16 +8,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
     <meta name="baidu-site-verification" content="codeva-ROfYcqLkCh" />
     <meta name="msvalidate.01" content="ECA3E06A0E52A2AC90C4B06F12981FB2" />
-    <meta name="description" content="实验环境glibc2.23 下载对应版本Ubuntu glibc源码 https:&#x2F;&#x2F;launchpad.net&#x2F;ubuntu&#x2F;+source&#x2F;glibc&#x2F; 在.gdbinit里写入dir path进行源码级调试,也可以直接在gdb里dir path fopen1FILE *fopen(const char *filename, const char *mode)  &#x2F;include&amp;#">
+    <meta name="description" content="实验环境glibc2.23 下载对应版本Ubuntu glibc源码 https:&#x2F;&#x2F;launchpad.net&#x2F;ubuntu&#x2F;+source&#x2F;glibc&#x2F; 或者 1234sudo apt-get install glibc-sourcesudo apt-get install libc6-dbgsudo apt-get install libc6-dbg:i386到&#x2F;usr&#x2F;src&#x2F;glibc">
 <meta property="og:type" content="article">
 <meta property="og:title" content="IO FILE fopen">
 <meta property="og:url" content="https://grxer.gitee.io/2023/03/30/IO-FILE-fopen/index.html">
 <meta property="og:site_name" content="Computer Security">
-<meta property="og:description" content="实验环境glibc2.23 下载对应版本Ubuntu glibc源码 https:&#x2F;&#x2F;launchpad.net&#x2F;ubuntu&#x2F;+source&#x2F;glibc&#x2F; 在.gdbinit里写入dir path进行源码级调试,也可以直接在gdb里dir path fopen1FILE *fopen(const char *filename, const char *mode)  &#x2F;include&amp;#">
+<meta property="og:description" content="实验环境glibc2.23 下载对应版本Ubuntu glibc源码 https:&#x2F;&#x2F;launchpad.net&#x2F;ubuntu&#x2F;+source&#x2F;glibc&#x2F; 或者 1234sudo apt-get install glibc-sourcesudo apt-get install libc6-dbgsudo apt-get install libc6-dbg:i386到&#x2F;usr&#x2F;src&#x2F;glibc">
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="https://grxer.gitee.io/2023/03/30/IO-FILE-fopen/image-20230330202938679.png">
 <meta property="article:published_time" content="2023-03-30T09:37:05.000Z">
-<meta property="article:modified_time" content="2023-03-30T16:06:00.636Z">
+<meta property="article:modified_time" content="2023-03-31T01:00:34.165Z">
 <meta property="article:author" content="Grxer">
 <meta property="article:tag" content="IO FILE">
 <meta name="twitter:card" content="summary">
@@ -154,6 +154,9 @@
   <div class="content" itemprop="articleBody">
     <h2 id="实验环境"><a href="#实验环境" class="headerlink" title="实验环境"></a>实验环境</h2><p>glibc2.23</p>
 <p>下载对应版本Ubuntu glibc源码 <a target="_blank" rel="noopener" href="https://launchpad.net/ubuntu/+source/glibc/">https://launchpad.net/ubuntu/+source/glibc/</a></p>
+<p>或者</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get install glibc-source</span><br><span class="line">sudo apt-get install libc6-dbg</span><br><span class="line">sudo apt-get install libc6-dbg:i386</span><br><span class="line">到/usr/src/glibc</span><br></pre></td></tr></table></figure>
+
 <p>在.gdbinit里写入dir path进行源码级调试,也可以直接在gdb里dir path</p>
 <h2 id="fopen"><a href="#fopen" class="headerlink" title="fopen"></a>fopen</h2><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">FILE *<span class="title function_">fopen</span><span class="params">(<span class="type">const</span> <span class="type">char</span> *filename, <span class="type">const</span> <span class="type">char</span> *mode)</span></span><br></pre></td></tr></table></figure>
 
