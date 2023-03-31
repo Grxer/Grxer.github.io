@@ -16,8 +16,9 @@
 <meta property="og:description" content="实验环境glibc2.23 下载对应版本Ubuntu glibc源码 https:&#x2F;&#x2F;launchpad.net&#x2F;ubuntu&#x2F;+source&#x2F;glibc&#x2F; 或者 1234sudo apt-get install glibc-sourcesudo apt-get install libc6-dbgsudo apt-get install libc6-dbg:i386到&#x2F;usr&#x2F;src&#x2F;glibc">
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="https://grxer.gitee.io/2023/03/30/IO-FILE-fopen/image-20230330202938679.png">
+<meta property="og:image" content="https://grxer.gitee.io/2023/03/30/IO-FILE-fopen/image-20230331133757733.png">
 <meta property="article:published_time" content="2023-03-30T09:37:05.000Z">
-<meta property="article:modified_time" content="2023-03-31T01:00:34.165Z">
+<meta property="article:modified_time" content="2023-03-31T13:17:57.055Z">
 <meta property="article:author" content="Grxer">
 <meta property="article:tag" content="IO FILE">
 <meta name="twitter:card" content="summary">
@@ -78,6 +79,8 @@
     <br/>
     <span id="actions">
       <ul>
+        
+        <li><a class="icon" aria-label="Previous post" href="/2023/03/31/IO-FILE-fread/"><i class="fas fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
         
         
         <li><a class="icon" aria-label="Next post" href="/2023/03/29/IO-FILE/"><i class="fas fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
@@ -222,7 +225,9 @@
 <p><strong>_IO_file_open</strong></p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line">_IO_FILE *</span><br><span class="line">_IO_file_open (_IO_FILE *fp, <span class="type">const</span> <span class="type">char</span> *filename, <span class="type">int</span> posix_mode, <span class="type">int</span> prot,</span><br><span class="line">	       <span class="type">int</span> read_write, <span class="type">int</span> is32not64)</span><br><span class="line">&#123;</span><br><span class="line">  <span class="type">int</span> fdesc;</span><br><span class="line"><span class="meta">#<span class="keyword">ifdef</span> _LIBC</span></span><br><span class="line">  <span class="keyword">if</span> (__glibc_unlikely (fp-&gt;_flags2 &amp; _IO_FLAGS2_NOTCANCEL))</span><br><span class="line">     </span><br><span class="line">    fdesc = open_not_cancel (filename,</span><br><span class="line">			     posix_mode | (is32not64 ? <span class="number">0</span> : O_LARGEFILE), prot);</span><br><span class="line">  <span class="keyword">else</span></span><br><span class="line">      </span><br><span class="line">    fdesc = open (filename, posix_mode | (is32not64 ? <span class="number">0</span> : O_LARGEFILE), prot);</span><br><span class="line"><span class="meta">#<span class="keyword">else</span></span></span><br><span class="line">  fdesc = open (filename, posix_mode, prot);</span><br><span class="line"><span class="meta">#<span class="keyword">endif</span></span></span><br><span class="line">  <span class="keyword">if</span> (fdesc &lt; <span class="number">0</span>)</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">NULL</span>;</span><br><span class="line">  fp-&gt;_fileno = fdesc;</span><br><span class="line">  _IO_mask_flags (fp, read_write,_IO_NO_READS+_IO_NO_WRITES+_IO_IS_APPENDING);</span><br><span class="line">  <span class="comment">/* For append mode, send the file offset to the end of the file.  Don&#x27;t</span></span><br><span class="line"><span class="comment">     update the offset cache though, since the file handle is not active.  */</span></span><br><span class="line">  <span class="keyword">if</span> ((read_write &amp; (_IO_IS_APPENDING | _IO_NO_READS))</span><br><span class="line">      == (_IO_IS_APPENDING | _IO_NO_READS))</span><br><span class="line">    &#123;</span><br><span class="line">      _IO_off64_t new_pos = _IO_SYSSEEK (fp, <span class="number">0</span>, _IO_seek_end);</span><br><span class="line">      <span class="keyword">if</span> (new_pos == _IO_pos_BAD &amp;&amp; errno != ESPIPE)</span><br><span class="line">	&#123;</span><br><span class="line">	  close_not_cancel (fdesc);</span><br><span class="line">	  <span class="keyword">return</span> <span class="literal">NULL</span>;</span><br><span class="line">	&#125;</span><br><span class="line">    &#125;</span><br><span class="line">  _IO_link_in ((<span class="keyword">struct</span> _IO_FILE_plus *) fp);</span><br><span class="line">  <span class="keyword">return</span> fp;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<p>调用系统函数open打开文件,把返回值给到_fileno字段，再次<code>_IO_link_in</code>函数加入<code>_IO_list_all</code>链表</p>
+<p>调用系统函数open打开文件</p>
+<p><img src="/2023/03/30/IO-FILE-fopen/image-20230331133757733.png" alt="image-20230331133757733"></p>
+<p>,把返回值给到_fileno字段，再次<code>_IO_link_in</code>函数加入<code>_IO_list_all</code>链表</p>
 
   </div>
 </article>
