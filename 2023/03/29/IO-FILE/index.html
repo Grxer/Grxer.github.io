@@ -33,7 +33,7 @@
 <meta property="og:image" content="https://grxer.gitee.io/2023/03/29/IO-FILE/image-20230330001359527.png">
 <meta property="og:image" content="https://grxer.gitee.io/2023/03/29/IO-FILE/image-20230330001235259.png">
 <meta property="article:published_time" content="2023-03-29T10:13:55.000Z">
-<meta property="article:modified_time" content="2023-03-31T14:43:39.234Z">
+<meta property="article:modified_time" content="2023-04-01T14:12:58.450Z">
 <meta property="article:author" content="Grxer">
 <meta property="article:tag" content="IO FILE">
 <meta name="twitter:card" content="summary">
@@ -190,6 +190,7 @@
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">_IO_2_1_stderr_</span><br><span class="line">_IO_2_1_stdout_</span><br><span class="line">_IO_2_1_stdin_</span><br></pre></td></tr></table></figure>
 
 <p>进程里用_IO_FILE._chain构成一个单向链表,链表头部在libc全局变量<strong>_IO_list_all</strong>处</p>
+<p>_IO_list_all_stamp是一个全局变量，它是用于记录所有打开的流（stream）的时间戳（timestamp）的。</p>
 <p><code>extern struct _IO_FILE_plus *_IO_list_all;</code></p>
 <p>初始时单链表是这样的</p>
 <p><code>_IO_list_all--&gt;_IO_2_1_stderr_--&gt;_IO_2_1_stdout_--&gt;_IO_2_1_stdin_</code></p>
