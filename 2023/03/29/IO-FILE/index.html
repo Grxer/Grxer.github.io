@@ -33,7 +33,7 @@
 <meta property="og:image" content="https://grxer.gitee.io/2023/03/29/IO-FILE/image-20230330001359527.png">
 <meta property="og:image" content="https://grxer.gitee.io/2023/03/29/IO-FILE/image-20230330001235259.png">
 <meta property="article:published_time" content="2023-03-29T10:13:55.000Z">
-<meta property="article:modified_time" content="2023-04-01T14:12:58.450Z">
+<meta property="article:modified_time" content="2023-04-02T13:53:50.399Z">
 <meta property="article:author" content="Grxer">
 <meta property="article:tag" content="IO FILE">
 <meta name="twitter:card" content="summary">
@@ -184,6 +184,11 @@
 
 <p>_flag的<code>高两位</code>字节是由libc固定的Magic number</p>
 <p><code>低两位</code>字节的位数规则决定了程序的执行状态</p>
+<blockquote>
+<p>为什么要有输入输出缓冲区？</p>
+<p>主要原因是为了提高程序的性能。输入输出操作通常比内存操作慢得多，因为它们涉及到从硬盘、网络等设备读取或写入数据。使用缓冲区可以减少实际的IO操作次数，从而提高程序的效率。</p>
+<p>考虑IO性能和CPU性能的差距，会缓存一段buffer，这段buffer满或者外部触发时就可以出发写入或者读出操作了。</p>
+</blockquote>
 <p>FILE 在 Linux 系统的标准 IO 库中是用于描述文件的结构，称为文件流。	</p>
 <p>FILE 结构在程序执行 fopen 等函数时会进行创建，并分配在堆中。</p>
 <p>在标准 I&#x2F;O 库中，每个程序启动时有三个文件流是自动打开的：stdin、stdout、stderr在libc.so的数据段的</p>
