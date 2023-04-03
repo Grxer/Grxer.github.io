@@ -15,11 +15,13 @@
 <meta property="og:site_name" content="Computer Security">
 <meta property="og:description" content="main函数的return我们平时写代码的时候可能并没有注意到缓冲区的问题，但是我们的printf还是输出了 举个简单例子 123456789#include &lt;stdio.h&gt;#include &lt;stdlib.h&gt;int main() &amp;#123;    printf(&quot;hello&quot;);    sleep(3);    printf(&quot;wor">
 <meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://grxer.gitee.io/2023/04/02/main-return/image-20230403005428232.png">
 <meta property="article:published_time" content="2023-04-02T09:59:50.000Z">
-<meta property="article:modified_time" content="2023-04-03T05:05:33.189Z">
+<meta property="article:modified_time" content="2023-04-03T05:14:53.493Z">
 <meta property="article:author" content="Grxer">
 <meta property="article:tag" content="Exit">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://grxer.gitee.io/2023/04/02/main-return/image-20230403005428232.png">
     
     
       
@@ -176,7 +178,9 @@
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">grxer@grxer /m/h/S/c/p/io_file&gt; gcc -nostartfiles -e my_main -g -o test test.c</span><br><span class="line">grxer@grxer /m/h/S/c/p/io_file&gt; ./test</span><br><span class="line">fish: “./test” terminated by signal <span class="title function_">SIGSEGV</span> <span class="params">(Address boundary error)</span></span><br></pre></td></tr></table></figure>
 
 <p>直接终止了，没有输出</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">```</span><br><span class="line"></span><br><span class="line">gdb看下，发现printf函数执行完了，ret时程序返回非法地址崩溃，没有输出是因为没有刷新缓冲区</span><br><span class="line"></span><br><span class="line">![image-20230403005428232](main-return/image-20230403005428232.png)</span><br><span class="line"></span><br><span class="line">```c</span><br><span class="line">#include &lt;stdio.h&gt;</span><br><span class="line">int my_main() &#123;</span><br><span class="line">    puts(&quot;This is a program without a main() function! printf&quot;);</span><br><span class="line">  return 0; </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>gdb看下，发现printf函数执行完了，ret时程序返回非法地址崩溃，没有输出是因为没有刷新缓冲区</p>
+<p><img src="/2023/04/02/main-return/image-20230403005428232.png" alt="image-20230403005428232"></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="type">int</span> <span class="title function_">my_main</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="built_in">puts</span>(<span class="string">&quot;This is a program without a main() function! printf&quot;</span>);</span><br><span class="line">  <span class="keyword">return</span> <span class="number">0</span>; </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">grxer@grxer /m/h/S/c/p/io_file&gt; gcc -nostartfiles -e my_main -g -o test test.c</span><br><span class="line">grxer@grxer /m/h/S/c/p/io_file&gt; ./test</span><br><span class="line">This is a program without a <span class="title function_">main</span><span class="params">()</span> function! <span class="built_in">puts</span></span><br><span class="line">fish: “./test” terminated by signal <span class="title function_">SIGSEGV</span> <span class="params">(Address boundary error)</span></span><br></pre></td></tr></table></figure>
 
@@ -282,35 +286,21 @@
     <!-- styles -->
 
 
- 
-  <link
-    rel="preload"
-    href="/lib/font-awesome/css/all.min.css"
-    as="style"
-    onload="this.onload=null;this.rel='stylesheet'"
-  />
-  <noscript
-    ><link
-      rel="stylesheet"
-      href="/lib/font-awesome/css/all.min.css"
-  /></noscript>
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
 
 
     <!-- jquery -->
  
-  
-<script src="/lib/jquery/jquery.min.js"></script>
-
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script> 
 
 
 
 
 <!-- clipboard -->
 
-   
-    
-<script src="/lib/clipboard/clipboard.min.js"></script>
-
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script> 
   
   <script type="text/javascript">
   $(function() {
