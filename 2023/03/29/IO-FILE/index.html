@@ -33,7 +33,7 @@
 <meta property="og:image" content="https://grxer.gitee.io/2023/03/29/IO-FILE/image-20230330001359527.png">
 <meta property="og:image" content="https://grxer.gitee.io/2023/03/29/IO-FILE/image-20230330001235259.png">
 <meta property="article:published_time" content="2023-03-29T10:13:55.000Z">
-<meta property="article:modified_time" content="2023-04-02T13:53:50.399Z">
+<meta property="article:modified_time" content="2023-04-03T03:36:22.398Z">
 <meta property="article:author" content="Grxer">
 <meta property="article:tag" content="IO FILE">
 <meta name="twitter:card" content="summary">
@@ -184,6 +184,19 @@
 
 <p>_flag的<code>高两位</code>字节是由libc固定的Magic number</p>
 <p><code>低两位</code>字节的位数规则决定了程序的执行状态</p>
+<p>_mode 字段</p>
+<ul>
+<li><code>_IOFBF</code>（0）：文件流是全缓冲模式。</li>
+<li><code>_IOLBF</code>（1）：文件流是行缓冲模式。</li>
+<li><code>_IONBF</code>（2）：文件流是无缓冲模式。</li>
+<li><code>_IOREADING</code>（3）：文件流当前正在进行读操作。</li>
+<li><code>_IOWRITING</code>（4）：文件流当前正在进行写操作。</li>
+<li><code>_IOAPPEND</code>（8）：文件流是以追加模式打开的。</li>
+<li><code>_IOEOF</code>（16）：文件流已经到达了文件的末尾。</li>
+<li><code>_IOERR</code>（32）：文件流出现了错误。</li>
+<li><code>_IOSTRG</code>（64）：文件流是一个字符串流。</li>
+<li><code>_IORW</code>（128）：文件流是读写模式。</li>
+</ul>
 <blockquote>
 <p>为什么要有输入输出缓冲区？</p>
 <p>主要原因是为了提高程序的性能。输入输出操作通常比内存操作慢得多，因为它们涉及到从硬盘、网络等设备读取或写入数据。使用缓冲区可以减少实际的IO操作次数，从而提高程序的效率。</p>

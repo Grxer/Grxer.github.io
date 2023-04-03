@@ -26,7 +26,7 @@
 <meta property="og:image" content="https://grxer.gitee.io/2023/04/02/exit/image-20230402224642501.png">
 <meta property="og:image" content="https://grxer.gitee.io/2023/04/02/exit/image-20230402230052468.png">
 <meta property="article:published_time" content="2023-04-02T08:29:01.000Z">
-<meta property="article:modified_time" content="2023-04-02T17:03:01.899Z">
+<meta property="article:modified_time" content="2023-04-03T04:36:51.932Z">
 <meta property="article:author" content="Grxer">
 <meta property="article:tag" content="Exit">
 <meta name="twitter:card" content="summary">
@@ -88,10 +88,10 @@
     <span id="actions">
       <ul>
         
-        <li><a class="icon" aria-label="Previous post" href="/2023/04/03/main-return/"><i class="fas fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="Previous post" href="/2023/04/03/vtable-hijack/"><i class="fas fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
         
         
-        <li><a class="icon" aria-label="Next post" href="/2023/04/01/IO-FILE-fclose/"><i class="fas fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="Next post" href="/2023/04/02/main-return/"><i class="fas fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
         
         <li><a class="icon" aria-label="Back to top" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
         <li><a class="icon" aria-label="Share post" href="#"><i class="fas fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
@@ -222,6 +222,7 @@
 <p>_IO_SETBUF (fp, NULL, 0)</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">define</span> _IO_SETBUF(*FP*, *BUFFER*, *LENGTH*) JUMP2 (__setbuf, FP, BUFFER, LENGTH)</span></span><br></pre></td></tr></table></figure>
 
+<p><strong>! (fp-&gt;_flags &amp; _IO_UNBUFFERED) &amp;&amp; fp-&gt;_mode !&#x3D; 0</strong></p>
 <p>循环调用每个文件流的<mark>&#x3D;&#x3D;vatble里__setbuf对应的_IO_new_file_setbuf&#x3D;&#x3D;<mark></mark></mark></p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta"># <span class="keyword">define</span> _IO_new_file_setbuf _IO_file_setbuf</span></span><br><span class="line">_IO_FILE *</span><br><span class="line">_IO_new_file_setbuf (_IO_FILE *fp, <span class="type">char</span> *p, _IO_ssize_t len)</span><br><span class="line">&#123;</span><br><span class="line">  <span class="keyword">if</span> (_IO_default_setbuf (fp, p, len) == <span class="literal">NULL</span>)</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">NULL</span>;</span><br><span class="line"></span><br><span class="line">  fp-&gt;_IO_write_base = fp-&gt;_IO_write_ptr = fp-&gt;_IO_write_end</span><br><span class="line">    = fp-&gt;_IO_buf_base;</span><br><span class="line">  _IO_setg (fp, fp-&gt;_IO_buf_base, fp-&gt;_IO_buf_base, fp-&gt;_IO_buf_base);</span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> fp;</span><br><span class="line">&#125;</span><br><span class="line">libc_hidden_ver (_IO_new_file_setbuf, _IO_file_setbuf)</span><br></pre></td></tr></table></figure>
 
