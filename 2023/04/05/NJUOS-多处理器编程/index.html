@@ -27,7 +27,7 @@
 <meta property="og:image" content="https://grxer.gitee.io/2023/04/05/NJUOS-%E5%A4%9A%E5%A4%84%E7%90%86%E5%99%A8%E7%BC%96%E7%A8%8B/image-20230405000145046.png">
 <meta property="og:image" content="https://grxer.gitee.io/2023/04/05/NJUOS-%E5%A4%9A%E5%A4%84%E7%90%86%E5%99%A8%E7%BC%96%E7%A8%8B/image-20230405004225147.png">
 <meta property="article:published_time" content="2023-04-05T05:03:59.000Z">
-<meta property="article:modified_time" content="2023-04-05T13:35:48.600Z">
+<meta property="article:modified_time" content="2023-04-07T10:57:14.688Z">
 <meta property="article:author" content="Grxer">
 <meta property="article:tag" content="NJUOS">
 <meta name="twitter:card" content="summary">
@@ -226,7 +226,7 @@
 <h3 id="thread浅谈"><a href="#thread浅谈" class="headerlink" title="__thread浅谈"></a>__thread浅谈</h3><p><strong>Thread Local Storage</strong>，之前劫持过tls来bypass canary，但是对底层理解并不深，这次有了新的体会，但是也只是浅谈，好多东西还没搞懂，要去补补保护模式</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">get_cur</span><br><span class="line">.text:0000000000001388 55                            push    rbp</span><br><span class="line">.text:0000000000001389 48 89 E5                      mov     rbp, rsp</span><br><span class="line">.text:000000000000138C 64 48 8B 04 25 F0 FF FF FF    mov     rax, fs:0FFFFFFFFFFFFFFF0h</span><br><span class="line">.text:0000000000001395 5D                            pop     rbp</span><br></pre></td></tr></table></figure>
 
-<p>还是和fs段寄存器有关，其实准确来说，自从8086的实模式过后，cs ss ds es等段寄存器里面存的不再是为了满足20位地址总线的4位基地址，在保护模式下变为了段选择字，现在应该叫段选择器，保护模式下会有用户态不可见的部分，叫做描述符高速缓冲器，由处理器自动使用，而真正的段地址就在这里面</p>
+<p>还是和fs段寄存器有关，其实准确来说，自从8086的实模式过后，cs ss ds es等段寄存器里面存的不再是为了满足20位地址总线和重定位的物理段基地址，在保护模式下变为了段选择字，现在更应该叫段选择器，保护模式下会有用户态不可见的部分，叫做描述符高速缓冲器，由处理器自动使用，而真正的段地址就在这里面</p>
 <p><strong>有以下方式去获得fs段地址</strong></p>
 <p>&gt;&gt;&gt;通过内联汇编的方式</p>
 <p>&gt;&gt;&gt;<a target="_blank" rel="noopener" href="https://www.onitroad.com/jc/linux/man-pages/linux/man2/arch_prctl.2.html">系统调用int arch_prctl(int code, unsigned long *addr)</a></p>
