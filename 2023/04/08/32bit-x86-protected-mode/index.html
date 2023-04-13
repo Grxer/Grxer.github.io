@@ -27,7 +27,7 @@
 <meta property="og:image" content="https://grxer.gitee.io/2023/04/08/32bit-x86-protected-mode/image-20230408224016360.png">
 <meta property="og:image" content="https://grxer.gitee.io/2023/04/08/32bit-x86-protected-mode/image-20230408220726748.png">
 <meta property="article:published_time" content="2023-04-08T10:44:24.000Z">
-<meta property="article:modified_time" content="2023-04-08T17:27:34.392Z">
+<meta property="article:modified_time" content="2023-04-13T08:12:34.391Z">
 <meta property="article:author" content="Grxer">
 <meta property="article:tag" content="Protected Mode">
 <meta property="article:tag" content="OS">
@@ -233,7 +233,7 @@
 </li>
 </ul>
 <p>在分段的前提上在加一层东西</p>
-<p>分页把线性地址和物理地址空间都划分为页面，X86使用4k大小的页面，分页机制的主要目的是高效地利用内存，按页来组织和管理内存空间，把暂时不用的数据交换到空间较大的外部存储器（通常是硬盘）上（称为page out，换出），需要时再交换回来（称为page in，换进）同时，可以将逻辑上连续的线性地址映射的物理地址可以不连续，把内存碎片利用起来。现用现映射，不用不映射，所以从理论上，我们只需要8k的内存就可以跑一个程序，4k数据，4k代码，不断进行内存和硬盘的转换</p>
+<p>分页把线性地址和物理地址空间都划分为页面，linux一般使用4k大小的页面，分页机制的主要目的是高效地利用内存，按页来组织和管理内存空间，把暂时不用的数据交换到空间较大的外部存储器（通常是硬盘）上（称为page out，换出），需要时再交换回来（称为page in，换进）同时，可以将逻辑上连续的线性地址映射的物理地址可以不连续，把内存碎片利用起来。现用现映射，不用不映射，所以从理论上，我们只需要8k的内存就可以跑一个程序，4k数据，4k代码，不断进行内存和硬盘的转换</p>
 <p>操作系统的虚拟内存也是利用分页来实现的</p>
 <p>CRO寄存器的PG为为1时开启分页</p>
 <p><strong>创建进程时，就会为这个进程创建页表，进程空间隔离主要因为每个进程都有一套相对独立的页表,映射过的物理内存会在页表里登记这个映射关系，进程的切换会伴随着页表的切换</strong></p>
