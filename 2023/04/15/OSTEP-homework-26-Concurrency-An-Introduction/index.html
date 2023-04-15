@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="baidu-site-verification" content="codeva-ROfYcqLkCh" />
+    <meta name="msvalidate.01" content="ECA3E06A0E52A2AC90C4B06F12981FB2" />
+    <meta name="description" content="临界区（critical section）是访问共享资源的一段代码，资源通常是一个变量或数据结构 竞态条件（race condition）出现在多个执行线程大致同时进入临界区时，它们都试图更新共享的数据结构     没有共享变量，哪来的竞态条件    1234567891011121314151617181920212223242526272829303132333435363738394041">
+<meta property="og:type" content="article">
+<meta property="og:title" content="OSTEP-homework:26-Concurrency:An-Introduction">
+<meta property="og:url" content="https://grxer.gitee.io/2023/04/15/OSTEP-homework-26-Concurrency-An-Introduction/index.html">
+<meta property="og:site_name" content="Computer Security">
+<meta property="og:description" content="临界区（critical section）是访问共享资源的一段代码，资源通常是一个变量或数据结构 竞态条件（race condition）出现在多个执行线程大致同时进入临界区时，它们都试图更新共享的数据结构     没有共享变量，哪来的竞态条件    1234567891011121314151617181920212223242526272829303132333435363738394041">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2023-04-15T08:50:09.000Z">
+<meta property="article:modified_time" content="2023-04-15T09:51:27.730Z">
+<meta property="article:author" content="Grxer">
+<meta property="article:tag" content="OSTEP">
+<meta name="twitter:card" content="summary">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
+    
+    <!-- title -->
+    <title>OSTEP-homework:26-Concurrency:An-Introduction</title>
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="Menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="Menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="Top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fas fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a href="/search/">Search</a></li><!--
+     --><!--
+       --><li><a href="/tags/">Tag</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" aria-label="Previous post" href="/2023/04/15/OSTEP-27-Thread-Api/"><i class="fas fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" aria-label="Next post" href="/2023/04/15/OSTEP-homework-6-Mechanism-Limited-Direct-Execution/"><i class="fas fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="Back to top" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="Share post" href="#"><i class="fas fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://grxer.gitee.io/2023/04/15/OSTEP-homework-26-Concurrency-An-Introduction/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://grxer.gitee.io/2023/04/15/OSTEP-homework-26-Concurrency-An-Introduction/&text=OSTEP-homework:26-Concurrency:An-Introduction"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://grxer.gitee.io/2023/04/15/OSTEP-homework-26-Concurrency-An-Introduction/&title=OSTEP-homework:26-Concurrency:An-Introduction"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://grxer.gitee.io/2023/04/15/OSTEP-homework-26-Concurrency-An-Introduction/&is_video=false&description=OSTEP-homework:26-Concurrency:An-Introduction"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=OSTEP-homework:26-Concurrency:An-Introduction&body=Check out this article: https://grxer.gitee.io/2023/04/15/OSTEP-homework-26-Concurrency-An-Introduction/"><i class="fas fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://grxer.gitee.io/2023/04/15/OSTEP-homework-26-Concurrency-An-Introduction/&title=OSTEP-homework:26-Concurrency:An-Introduction"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://grxer.gitee.io/2023/04/15/OSTEP-homework-26-Concurrency-An-Introduction/&title=OSTEP-homework:26-Concurrency:An-Introduction"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://grxer.gitee.io/2023/04/15/OSTEP-homework-26-Concurrency-An-Introduction/&title=OSTEP-homework:26-Concurrency:An-Introduction"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://grxer.gitee.io/2023/04/15/OSTEP-homework-26-Concurrency-An-Introduction/&title=OSTEP-homework:26-Concurrency:An-Introduction"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://grxer.gitee.io/2023/04/15/OSTEP-homework-26-Concurrency-An-Introduction/&name=OSTEP-homework:26-Concurrency:An-Introduction&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://grxer.gitee.io/2023/04/15/OSTEP-homework-26-Concurrency-An-Introduction/&t=OSTEP-homework:26-Concurrency:An-Introduction"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    <div id="toc">
+      
+    </div>
+  </span>
+</div>
+
+    
+    <div class="content index py4">
+        
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle" itemprop="name headline">
+        OSTEP-homework:26-Concurrency:An-Introduction
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span itemprop="name">Grxer</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2023-04-15T08:50:09.000Z" itemprop="datePublished">2023-04-15</time>
+        
+      
+    </div>
+
+
+      
+
+      
+    <div class="article-tag">
+        <i class="fas fa-tag"></i>
+        <a class="tag-link-link" href="/tags/OSTEP/" rel="tag">OSTEP</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content" itemprop="articleBody">
+    <ul>
+<li>临界区（critical section）是访问共享资源的一段代码，资源通常是一个变量或数据结构</li>
+<li>竞态条件（race condition）出现在多个执行线程大致同时进入临界区时，它们都试图更新共享的数据结构</li>
+</ul>
+<ol start="3">
+<li></li>
+</ol>
+<p>没有共享变量，哪来的竞态条件</p>
+<ol start="6">
+<li></li>
+</ol>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br></pre></td><td class="code"><pre><span class="line">grxer@grxer ~/D/s/O/o/threads-intro&gt; cat looping-race-nolock.s</span><br><span class="line"><span class="meta"># assumes %bx has loop count in it</span></span><br><span class="line"></span><br><span class="line">.main</span><br><span class="line">.top</span><br><span class="line"><span class="meta"># critical section</span></span><br><span class="line">mov <span class="number">2000</span>, %ax  <span class="meta"># get <span class="string">&#x27;value&#x27;</span> at address 2000</span></span><br><span class="line">add $<span class="number">1</span>, %ax    <span class="meta"># increment it</span></span><br><span class="line">mov %ax, <span class="number">2000</span>  <span class="meta"># store it back</span></span><br><span class="line"></span><br><span class="line"><span class="meta"># see <span class="keyword">if</span> we<span class="string">&#x27;re still looping</span></span></span><br><span class="line"><span class="string"><span class="meta">sub  $1, %bx</span></span></span><br><span class="line"><span class="string"><span class="meta">test $0, %bx</span></span></span><br><span class="line"><span class="string"><span class="meta">jgt .top</span></span></span><br><span class="line"><span class="string"><span class="meta"></span></span></span><br><span class="line"><span class="string"><span class="meta">halt</span></span></span><br><span class="line"><span class="string"><span class="meta">grxer@grxer ~/D/s/O/o/threads-intro&gt; python ./x86.py -p looping-race-nolock.s -t 2 -M 2000  -i 4 -r -s 0 -c</span></span></span><br><span class="line"><span class="string"><span class="meta">ARG seed 0</span></span></span><br><span class="line"><span class="string"><span class="meta">ARG numthreads 2</span></span></span><br><span class="line"><span class="string"><span class="meta">ARG program looping-race-nolock.s</span></span></span><br><span class="line"><span class="string"><span class="meta">ARG interrupt frequency 4</span></span></span><br><span class="line"><span class="string"><span class="meta">ARG interrupt randomness True</span></span></span><br><span class="line"><span class="string"><span class="meta">ARG argv</span></span></span><br><span class="line"><span class="string"><span class="meta">ARG load address 1000</span></span></span><br><span class="line"><span class="string"><span class="meta">ARG memsize 128</span></span></span><br><span class="line"><span class="string"><span class="meta">ARG memtrace 2000</span></span></span><br><span class="line"><span class="string"><span class="meta">ARG regtrace</span></span></span><br><span class="line"><span class="string"><span class="meta">ARG cctrace False</span></span></span><br><span class="line"><span class="string"><span class="meta">ARG printstats False</span></span></span><br><span class="line"><span class="string"><span class="meta">ARG verbose False</span></span></span><br><span class="line"><span class="string"><span class="meta"></span></span></span><br><span class="line"><span class="string"><span class="meta"> 2000          Thread 0                Thread 1</span></span></span><br><span class="line"><span class="string"><span class="meta">    0</span></span></span><br><span class="line"><span class="string"><span class="meta">    0   1000 mov 2000, %ax</span></span></span><br><span class="line"><span class="string"><span class="meta">    0   1001 add $1, %ax</span></span></span><br><span class="line"><span class="string"><span class="meta">    1   1002 mov %ax, 2000</span></span></span><br><span class="line"><span class="string"><span class="meta">    1   1003 sub  $1, %bx</span></span></span><br><span class="line"><span class="string"><span class="meta">    1   ------ Interrupt ------  ------ Interrupt ------</span></span></span><br><span class="line"><span class="string"><span class="meta">    1                            1000 mov 2000, %ax</span></span></span><br><span class="line"><span class="string"><span class="meta">    1                            1001 add $1, %ax</span></span></span><br><span class="line"><span class="string"><span class="meta">    2                            1002 mov %ax, 2000</span></span></span><br><span class="line"><span class="string"><span class="meta">    2                            1003 sub  $1, %bx</span></span></span><br><span class="line"><span class="string"><span class="meta">    2   ------ Interrupt ------  ------ Interrupt ------</span></span></span><br><span class="line"><span class="string"><span class="meta">    2   1004 test $0, %bx</span></span></span><br><span class="line"><span class="string"><span class="meta">    2   1005 jgt .top</span></span></span><br><span class="line"><span class="string"><span class="meta">    2   ------ Interrupt ------  ------ Interrupt ------</span></span></span><br><span class="line"><span class="string"><span class="meta">    2                            1004 test $0, %bx</span></span></span><br><span class="line"><span class="string"><span class="meta">    2                            1005 jgt .top</span></span></span><br><span class="line"><span class="string"><span class="meta">    2   ------ Interrupt ------  ------ Interrupt ------</span></span></span><br><span class="line"><span class="string"><span class="meta">    2   1006 halt</span></span></span><br><span class="line"><span class="string"><span class="meta">    2   ----- Halt;Switch -----  ----- Halt;Switch -----</span></span></span><br><span class="line"><span class="string"><span class="meta">    2                            1006 halt</span></span></span><br><span class="line"><span class="string"><span class="meta">grxer@grxer ~/D/s/O/o/threads-intro&gt; python ./x86.py -p looping-race-nolock.s -t 2 -M 2000  -i 4 -r -s 1 -c</span></span></span><br><span class="line"><span class="string"><span class="meta">ARG seed 1</span></span></span><br><span class="line"><span class="string"><span class="meta">ARG numthreads 2</span></span></span><br><span class="line"><span class="string"><span class="meta">ARG program looping-race-nolock.s</span></span></span><br><span class="line"><span class="string"><span class="meta">ARG interrupt frequency 4</span></span></span><br><span class="line"><span class="string"><span class="meta">ARG interrupt randomness True</span></span></span><br><span class="line"><span class="string"><span class="meta">ARG argv</span></span></span><br><span class="line"><span class="string"><span class="meta">ARG load address 1000</span></span></span><br><span class="line"><span class="string"><span class="meta">ARG memsize 128</span></span></span><br><span class="line"><span class="string"><span class="meta">ARG memtrace 2000</span></span></span><br><span class="line"><span class="string"><span class="meta">ARG regtrace</span></span></span><br><span class="line"><span class="string"><span class="meta">ARG cctrace False</span></span></span><br><span class="line"><span class="string"><span class="meta">ARG printstats False</span></span></span><br><span class="line"><span class="string"><span class="meta">ARG verbose False</span></span></span><br><span class="line"><span class="string"><span class="meta"></span></span></span><br><span class="line"><span class="string"><span class="meta"> 2000          Thread 0                Thread 1</span></span></span><br><span class="line"><span class="string"><span class="meta">    0</span></span></span><br><span class="line"><span class="string"><span class="meta">    0   1000 mov 2000, %ax</span></span></span><br><span class="line"><span class="string"><span class="meta">    0   ------ Interrupt ------  ------ Interrupt ------</span></span></span><br><span class="line"><span class="string"><span class="meta">    0                            1000 mov 2000, %ax</span></span></span><br><span class="line"><span class="string"><span class="meta">    0                            1001 add $1, %ax</span></span></span><br><span class="line"><span class="string"><span class="meta">    1                            1002 mov %ax, 2000</span></span></span><br><span class="line"><span class="string"><span class="meta">    1                            1003 sub  $1, %bx</span></span></span><br><span class="line"><span class="string"><span class="meta">    1   ------ Interrupt ------  ------ Interrupt ------</span></span></span><br><span class="line"><span class="string"><span class="meta">    1   1001 add $1, %ax</span></span></span><br><span class="line"><span class="string"><span class="meta">    1   1002 mov %ax, 2000</span></span></span><br><span class="line"><span class="string"><span class="meta">    1   1003 sub  $1, %bx</span></span></span><br><span class="line"><span class="string"><span class="meta">    1   1004 test $0, %bx</span></span></span><br><span class="line"><span class="string"><span class="meta">    1   ------ Interrupt ------  ------ Interrupt ------</span></span></span><br><span class="line"><span class="string"><span class="meta">    1                            1004 test $0, %bx</span></span></span><br><span class="line"><span class="string"><span class="meta">    1                            1005 jgt .top</span></span></span><br><span class="line"><span class="string"><span class="meta">    1   ------ Interrupt ------  ------ Interrupt ------</span></span></span><br><span class="line"><span class="string"><span class="meta">    1   1005 jgt .top</span></span></span><br><span class="line"><span class="string"><span class="meta">    1   1006 halt</span></span></span><br><span class="line"><span class="string"><span class="meta">    1   ----- Halt;Switch -----  ----- Halt;Switch -----</span></span></span><br><span class="line"><span class="string"><span class="meta">    1   ------ Interrupt ------  ------ Interrupt ------</span></span></span><br><span class="line"><span class="string"><span class="meta">    1                            1006 halt</span></span></span><br><span class="line"><span class="string"><span class="meta">grxer@grxer ~/D/s/O/o/threads-intro&gt; python ./x86.py -p looping-race-nolock.s -t 2 -M 2000  -i 4 -r -s 2 -c</span></span></span><br><span class="line"><span class="string"><span class="meta">ARG seed 2</span></span></span><br><span class="line"><span class="string"><span class="meta">ARG numthreads 2</span></span></span><br><span class="line"><span class="string"><span class="meta">ARG program looping-race-nolock.s</span></span></span><br><span class="line"><span class="string"><span class="meta">ARG interrupt frequency 4</span></span></span><br><span class="line"><span class="string"><span class="meta">ARG interrupt randomness True</span></span></span><br><span class="line"><span class="string"><span class="meta">ARG argv</span></span></span><br><span class="line"><span class="string"><span class="meta">ARG load address 1000</span></span></span><br><span class="line"><span class="string"><span class="meta">ARG memsize 128</span></span></span><br><span class="line"><span class="string"><span class="meta">ARG memtrace 2000</span></span></span><br><span class="line"><span class="string"><span class="meta">ARG regtrace</span></span></span><br><span class="line"><span class="string"><span class="meta">ARG cctrace False</span></span></span><br><span class="line"><span class="string"><span class="meta">ARG printstats False</span></span></span><br><span class="line"><span class="string"><span class="meta">ARG verbose False</span></span></span><br><span class="line"><span class="string"><span class="meta"></span></span></span><br><span class="line"><span class="string"><span class="meta"> 2000          Thread 0                Thread 1</span></span></span><br><span class="line"><span class="string"><span class="meta">    0</span></span></span><br><span class="line"><span class="string"><span class="meta">    0   1000 mov 2000, %ax</span></span></span><br><span class="line"><span class="string"><span class="meta">    0   1001 add $1, %ax</span></span></span><br><span class="line"><span class="string"><span class="meta">    1   1002 mov %ax, 2000</span></span></span><br><span class="line"><span class="string"><span class="meta">    1   1003 sub  $1, %bx</span></span></span><br><span class="line"><span class="string"><span class="meta">    1   ------ Interrupt ------  ------ Interrupt ------</span></span></span><br><span class="line"><span class="string"><span class="meta">    1                            1000 mov 2000, %ax</span></span></span><br><span class="line"><span class="string"><span class="meta">    1                            1001 add $1, %ax</span></span></span><br><span class="line"><span class="string"><span class="meta">    2                            1002 mov %ax, 2000</span></span></span><br><span class="line"><span class="string"><span class="meta">    2                            1003 sub  $1, %bx</span></span></span><br><span class="line"><span class="string"><span class="meta">    2   ------ Interrupt ------  ------ Interrupt ------</span></span></span><br><span class="line"><span class="string"><span class="meta">    2   1004 test $0, %bx</span></span></span><br><span class="line"><span class="string"><span class="meta">    2   ------ Interrupt ------  ------ Interrupt ------</span></span></span><br><span class="line"><span class="string"><span class="meta">    2                            1004 test $0, %bx</span></span></span><br><span class="line"><span class="string"><span class="meta">    2   ------ Interrupt ------  ------ Interrupt ------</span></span></span><br><span class="line"><span class="string"><span class="meta">    2   1005 jgt .top</span></span></span><br><span class="line"><span class="string"><span class="meta">    2   1006 halt</span></span></span><br><span class="line"><span class="string"><span class="meta">    2   ----- Halt;Switch -----  ----- Halt;Switch -----</span></span></span><br><span class="line"><span class="string"><span class="meta">    2                            1005 jgt .top</span></span></span><br><span class="line"><span class="string"><span class="meta">    2                            1006 halt</span></span></span><br></pre></td></tr></table></figure>
+
+<p>不在临界区之间发生中断就可以的到正确结果</p>
+<ol start="7">
+<li></li>
+</ol>
+<p>可想而知，只有-i 3及更大可以避开竞态区</p>
+<ol start="8">
+<li></li>
+</ol>
+<p>围绕着不在临界区发生中断来</p>
+<p>-i 大于597(执行100次共600条指令，后面三条和竞态没关系)或者是3的倍数就可以</p>
+<ol start="9">
+<li></li>
+</ol>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">grxer@grxer ~/D/s/O/o/threads-intro&gt; cat wait-<span class="keyword">for</span>-me.s</span><br><span class="line">.main</span><br><span class="line">test $<span class="number">1</span>, %ax     <span class="meta"># ax should be 1 (signaller) or 0 (waiter)</span></span><br><span class="line">je .signaller</span><br><span class="line"></span><br><span class="line">.waiter</span><br><span class="line">mov  <span class="number">2000</span>, %cx</span><br><span class="line">test $<span class="number">1</span>, %cx</span><br><span class="line">jne .waiter</span><br><span class="line">halt</span><br><span class="line"></span><br><span class="line">.signaller</span><br><span class="line">mov  $<span class="number">1</span>, <span class="number">2000</span></span><br><span class="line">halt</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">grxer@grxer ~/D/s/O/o/threads-intro&gt; python ./x86.py -p wait-<span class="keyword">for</span>-me.s -a ax=<span class="number">1</span>,ax=<span class="number">0</span> -R ax,cx -M <span class="number">2000</span> -c</span><br><span class="line">ARG seed <span class="number">0</span></span><br><span class="line">ARG numthreads <span class="number">2</span></span><br><span class="line">ARG program wait-<span class="keyword">for</span>-me.s</span><br><span class="line">ARG interrupt frequency <span class="number">50</span></span><br><span class="line">ARG interrupt randomness False</span><br><span class="line">ARG argv ax=<span class="number">1</span>,ax=<span class="number">0</span></span><br><span class="line">ARG load address <span class="number">1000</span></span><br><span class="line">ARG memsize <span class="number">128</span></span><br><span class="line">ARG memtrace <span class="number">2000</span></span><br><span class="line">ARG regtrace ax,cx</span><br><span class="line">ARG cctrace False</span><br><span class="line">ARG printstats False</span><br><span class="line">ARG verbose False</span><br><span class="line"></span><br><span class="line"> <span class="number">2000</span>      ax    cx          Thread <span class="number">0</span>                Thread <span class="number">1</span></span><br><span class="line">    <span class="number">0</span>       <span class="number">1</span>     <span class="number">0</span></span><br><span class="line">    <span class="number">0</span>       <span class="number">1</span>     <span class="number">0</span>   <span class="number">1000</span> test $<span class="number">1</span>, %ax</span><br><span class="line">    <span class="number">0</span>       <span class="number">1</span>     <span class="number">0</span>   <span class="number">1001</span> je .signaller</span><br><span class="line">    <span class="number">1</span>       <span class="number">1</span>     <span class="number">0</span>   <span class="number">1006</span> mov  $<span class="number">1</span>, <span class="number">2000</span></span><br><span class="line">    <span class="number">1</span>       <span class="number">1</span>     <span class="number">0</span>   <span class="number">1007</span> halt</span><br><span class="line">    <span class="number">1</span>       <span class="number">0</span>     <span class="number">0</span>   ----- Halt;Switch -----  ----- Halt;Switch -----</span><br><span class="line">    <span class="number">1</span>       <span class="number">0</span>     <span class="number">0</span>                            <span class="number">1000</span> test $<span class="number">1</span>, %ax</span><br><span class="line">    <span class="number">1</span>       <span class="number">0</span>     <span class="number">0</span>                            <span class="number">1001</span> je .signaller</span><br><span class="line">    <span class="number">1</span>       <span class="number">0</span>     <span class="number">1</span>                            <span class="number">1002</span> mov  <span class="number">2000</span>, %cx</span><br><span class="line">    <span class="number">1</span>       <span class="number">0</span>     <span class="number">1</span>                            <span class="number">1003</span> test $<span class="number">1</span>, %cx</span><br><span class="line">    <span class="number">1</span>       <span class="number">0</span>     <span class="number">1</span>                            <span class="number">1004</span> jne .waiter</span><br><span class="line">    <span class="number">1</span>       <span class="number">0</span>     <span class="number">1</span>                            <span class="number">1005</span> halt</span><br></pre></td></tr></table></figure>
+
+<ol start="10">
+<li></li>
+</ol>
+<p>相当于交换线程，在线程0等待到中断后线程1把eax设为1，之前都在做无用循环</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">0</span>       <span class="number">0</span>     <span class="number">0</span>   <span class="number">1002</span> mov  <span class="number">2000</span>, %cx</span><br><span class="line"> <span class="number">0</span>       <span class="number">0</span>     <span class="number">0</span>   <span class="number">1003</span> test $<span class="number">1</span>, %cx</span><br><span class="line"> <span class="number">0</span>       <span class="number">1</span>     <span class="number">0</span>   ------ Interrupt ------  ------ Interrupt ------</span><br><span class="line"> <span class="number">0</span>       <span class="number">1</span>     <span class="number">0</span>                            <span class="number">1000</span> test $<span class="number">1</span>, %ax</span><br></pre></td></tr></table></figure>
+
+
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+         
+          <li><a href="/">Home</a></li>
+         
+          <li><a href="/archives/">Writing</a></li>
+         
+          <li><a href="/search/">Search</a></li>
+         
+          <li><a href="/tags/">Tag</a></li>
+        
+      </ul>
+    </div>
+
+    <div id="toc-footer" style="display: none">
+      
+    </div>
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://grxer.gitee.io/2023/04/15/OSTEP-homework-26-Concurrency-An-Introduction/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://grxer.gitee.io/2023/04/15/OSTEP-homework-26-Concurrency-An-Introduction/&text=OSTEP-homework:26-Concurrency:An-Introduction"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://grxer.gitee.io/2023/04/15/OSTEP-homework-26-Concurrency-An-Introduction/&title=OSTEP-homework:26-Concurrency:An-Introduction"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://grxer.gitee.io/2023/04/15/OSTEP-homework-26-Concurrency-An-Introduction/&is_video=false&description=OSTEP-homework:26-Concurrency:An-Introduction"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=OSTEP-homework:26-Concurrency:An-Introduction&body=Check out this article: https://grxer.gitee.io/2023/04/15/OSTEP-homework-26-Concurrency-An-Introduction/"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://grxer.gitee.io/2023/04/15/OSTEP-homework-26-Concurrency-An-Introduction/&title=OSTEP-homework:26-Concurrency:An-Introduction"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://grxer.gitee.io/2023/04/15/OSTEP-homework-26-Concurrency-An-Introduction/&title=OSTEP-homework:26-Concurrency:An-Introduction"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://grxer.gitee.io/2023/04/15/OSTEP-homework-26-Concurrency-An-Introduction/&title=OSTEP-homework:26-Concurrency:An-Introduction"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://grxer.gitee.io/2023/04/15/OSTEP-homework-26-Concurrency-An-Introduction/&title=OSTEP-homework:26-Concurrency:An-Introduction"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://grxer.gitee.io/2023/04/15/OSTEP-homework-26-Concurrency-An-Introduction/&name=OSTEP-homework:26-Concurrency:An-Introduction&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://grxer.gitee.io/2023/04/15/OSTEP-homework-26-Concurrency-An-Introduction/&t=OSTEP-homework:26-Concurrency:An-Introduction"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fas fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
+        <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fas fa-list fa-lg" aria-hidden="true"></i> TOC</a>
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fas fa-share-alt fa-lg" aria-hidden="true"></i> Share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2023
+    Grxer
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a href="/search/">Search</a></li><!--
+     --><!--
+       --><li><a href="/tags/">Tag</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+ 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script> 
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script> 
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"Copy to clipboard!\">";
+    btn += '<i class="far fa-clone"></i>';
+    btn += '</span>'; 
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "Copied!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Google Analytics -->
+
+<!-- Baidu Analytics -->
+
+  <script type="text/javascript">
+        var _hmt = _hmt || [];
+        (function() {
+          var hm = document.createElement("script");
+          hm.src = "https://hm.baidu.com/hm.js?a22ef0bec4e4a9c7337bea6e37ff55c1";
+          var s = document.getElementsByTagName("script")[0];
+          s.parentNode.insertBefore(hm, s);
+        })();
+        </script>
+
+<!-- Cloudflare Analytics -->
+
+<!-- Umami Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+</body>
+</html>
