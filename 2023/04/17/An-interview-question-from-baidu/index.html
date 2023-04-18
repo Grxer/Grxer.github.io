@@ -16,14 +16,16 @@
 <meta property="og:description" content="流传的一道百度面试题123456#include &lt;stdio.h&gt;int main() &amp;#123;    double a &#x3D; 10;    printf(&quot;a &#x3D; %d\n&quot;, a);    return 0;&amp;#125;  12345678910111213141516171819202122grxer@grxer ~&#x2F;D&#x2F;s&#x2F;NEMU [1]&gt; gc">
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="https://grxer.gitee.io/2023/04/17/An-interview-question-from-baidu/image-20230417235838606.png">
-<meta property="og:image" content="https://grxer.gitee.io/2023/04/17/An-interview-question-from-baidu/image-20230418113132979.png">
+<meta property="og:image" content="https://grxer.gitee.io/2023/04/17/An-interview-question-from-baidu/image-20230418232538589.png">
+<meta property="og:image" content="https://grxer.gitee.io/2023/04/17/An-interview-question-from-baidu/image-20230418233020926.png">
+<meta property="og:image" content="https://grxer.gitee.io/2023/04/17/An-interview-question-from-baidu/image-20230418215927263.png">
 <meta property="og:image" content="https://grxer.gitee.io/2023/04/17/An-interview-question-from-baidu/image-20230418113446986.png">
 <meta property="og:image" content="https://grxer.gitee.io/2023/04/17/An-interview-question-from-baidu/image-20230418140620437.png">
 <meta property="og:image" content="https://grxer.gitee.io/2023/04/17/An-interview-question-from-baidu/image-20230418140809555.png">
 <meta property="og:image" content="https://grxer.gitee.io/2023/04/17/An-interview-question-from-baidu/image-20230418141359969.png">
 <meta property="og:image" content="https://grxer.gitee.io/2023/04/17/An-interview-question-from-baidu/image-20230418141756625.png">
 <meta property="article:published_time" content="2023-04-17T15:20:01.000Z">
-<meta property="article:modified_time" content="2023-04-18T06:58:26.604Z">
+<meta property="article:modified_time" content="2023-04-18T15:59:41.041Z">
 <meta property="article:author" content="Grxer">
 <meta property="article:tag" content="IEEE 754">
 <meta name="twitter:card" content="summary">
@@ -167,6 +169,7 @@
 <img src="/2023/04/17/An-interview-question-from-baidu/image-20230417235838606.png" alt="image-20230417235838606" style="zoom:67%;">
 
 <p>单精度 1位符号位(sign) 8位阶码(exponent) 23位有效数(significand)</p>
+<p>双精度 1 11 52</p>
 <ul>
 <li><p>规格化的值</p>
 <ul>
@@ -213,15 +216,26 @@
 <h3 id="IA-32"><a href="#IA-32" class="headerlink" title="IA-32"></a>IA-32</h3><p>对于ia32的结果我们并不感到奇怪，</p>
 <p>double的10.00先手动转一下吧，写为二进制1010.00，然后需要左移三位才能1.0开头，即1.010*2<sup>3</sup>,所以S&#x3D;0，E&#x3D;1023+3&#x3D;100 0000 0010b significand&#x3D;010，组合起来就可以了</p>
 <p><code>0 10000000010 0100000000000000000000000000000000000000000000000000</code>   hex&#x3D;0x4024000000000000</p>
-<p>32位参数都是在栈上(除非你用fastcall的调用约定，C&#x2F;C++默认的函数调用协议的_cdecl)</p>
-<p><img src="/2023/04/17/An-interview-question-from-baidu/image-20230418113132979.png" alt="image-20230418113132979"></p>
+<p>32位参数都是在栈上(除非你用fastcall的调用约定，C&#x2F;C++默认的函数调用协议的_cdecl)，我们的浮点数有专门的处理单元，寄存器，和指令集</p>
+<p>IA-32采用了x87 FPU的指令集来处理浮点数</p>
+<blockquote>
+<p>FPU有8个独立的可寻址的80位数据寄存器R0~R7，这组寄存器叫做寄存器栈，FPU状态字中名为TOP的3位字段给出了当前栈顶的寄存器编号，入栈top-1，出栈+1，7如果再出栈top会回到R0，如果覆盖掉原有数据会产生浮点数异常</p>
+<p><img src="/2023/04/17/An-interview-question-from-baidu/image-20230418232538589.png" alt="image-20230418232538589"></p>
+<p>st0总是表示栈顶，即top所指即st0</p>
+<p><img src="/2023/04/17/An-interview-question-from-baidu/image-20230418233020926.png" alt="image-20230418233020926"></p>
+<p>浮点数在进栈会拓展到80位，出栈时从80位进行转换</p>
+<p>为什么会用栈呢，学过数据结构的可能已经猜到了，这里是用后缀表达式通过栈来来进行的运算</p>
+</blockquote>
+<p>但是他还是把参数压栈了</p>
+<img src="/2023/04/17/An-interview-question-from-baidu/image-20230418215927263.png" alt="image-20230418215927263" style="zoom:80%;">
+
 <p>典型_cdecl特征 参数右向左入栈，外平栈(调用者平栈)，还分了两次把8自己字节的double压栈，其实我们在骗他玩，哈哈</p>
 <p><img src="/2023/04/17/An-interview-question-from-baidu/image-20230418113446986.png" alt="image-20230418113446986"></p>
 <p>此时的栈按四字节int输出0没问题</p>
 <h3 id="x86-64"><a href="#x86-64" class="headerlink" title="x86-64"></a>x86-64</h3><p>顺便说一下为什么不叫IA-64架构，害，因为IA-64的名字被安腾架构占去</p>
-<p>64位采用寄存器传参，而我们的浮点数有专门的处理单元，寄存器，和指令集，这里要细说起来内容挺多的</p>
+<p>64位采用寄存器传参，x64用了SSE指令集，这里要细说起来内容挺多的，推出的主要原因是为了提高3d游戏性能</p>
 <p><img src="/2023/04/17/An-interview-question-from-baidu/image-20230418140620437.png" alt="image-20230418140620437"></p>
-<p>直接把浮点数放到了xmm0寄存器，如果取的话也直接去这里取</p>
+<p>直接把浮点数放到了xmm0寄存器，如果取的话也直接去这里取(rip的相对寻址rip是执行这条指令过后的rip)</p>
 <img src="/2023/04/17/An-interview-question-from-baidu/image-20230418140809555.png" alt="image-20230418140809555" style="zoom:80%;">
 
 <p>我们%d会在常规的rsi低四字节做参数</p>
