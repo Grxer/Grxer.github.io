@@ -27,7 +27,7 @@
 <meta property="og:image" content="https://grxer.gitee.io/2023/04/05/NJUOS-%E5%A4%9A%E5%A4%84%E7%90%86%E5%99%A8%E7%BC%96%E7%A8%8B/image-20230405000145046.png">
 <meta property="og:image" content="https://grxer.gitee.io/2023/04/05/NJUOS-%E5%A4%9A%E5%A4%84%E7%90%86%E5%99%A8%E7%BC%96%E7%A8%8B/image-20230405004225147.png">
 <meta property="article:published_time" content="2023-04-05T05:03:59.000Z">
-<meta property="article:modified_time" content="2023-04-15T02:35:58.551Z">
+<meta property="article:modified_time" content="2023-04-16T03:26:03.350Z">
 <meta property="article:author" content="Grxer">
 <meta property="article:tag" content="NJUOS">
 <meta name="twitter:card" content="summary">
@@ -242,7 +242,7 @@
 <p>在fs-8处开始排列，他的下面也就是我们的之前看的canary和__exit_funcs析构函数组的key，pthread_create去创建一个进程是用mmap一块内存当作堆栈，fs则位于这个堆栈的高地址处，也就是堆栈的底部</p>
 <h2 id="原子性的丧失"><a href="#原子性的丧失" class="headerlink" title="原子性的丧失"></a>原子性的丧失</h2><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;thread.h&quot;</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> N 100000000</span></span><br><span class="line"></span><br><span class="line"><span class="type">long</span> sum = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line"><span class="type">void</span> <span class="title function_">Tsum</span><span class="params">()</span> &#123;</span><br><span class="line">  <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; N; i++) &#123;</span><br><span class="line">    sum++;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">()</span> &#123;</span><br><span class="line">  create(Tsum);</span><br><span class="line">  create(Tsum);</span><br><span class="line">  join();</span><br><span class="line">  <span class="built_in">printf</span>(<span class="string">&quot;sum = %ld\n&quot;</span>, sum);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<p>就连单处理器并发都得不到正确的结果。<code>taskset -c cpu-cpu &lt;command&gt;</code>限制在单个处理器上运行</p>
+<p>就连单处理器并发都得不到正确的结果。<code>taskset -c cpu-cpu &lt;command&gt;</code>限制在cpu-cpuge处理器上运行</p>
 <p><img src="/2023/04/05/NJUOS-%E5%A4%9A%E5%A4%84%E7%90%86%E5%99%A8%E7%BC%96%E7%A8%8B/image-20230404235118554.png" alt="image-20230404235118554"></p>
 <p>多处理器线程在并行，偏差更大</p>
 <p><img src="/2023/04/05/NJUOS-%E5%A4%9A%E5%A4%84%E7%90%86%E5%99%A8%E7%BC%96%E7%A8%8B/image-20230404235238898.png" alt="image-20230404235238898"></p>
