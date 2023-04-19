@@ -8,12 +8,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
     <meta name="baidu-site-verification" content="codeva-ROfYcqLkCh" />
     <meta name="msvalidate.01" content="ECA3E06A0E52A2AC90C4B06F12981FB2" />
-    <meta name="description" content="Makefile advantage 管理代码的编译，决定该编译什么文件，编译顺序，以及是否需要重新编译； 节省编译时间。如果文件有更改，只需重新编译此文件即可，无需重新编译整个工程； 一劳永逸。Makefile通常只需编写一次，后期就不用过多更改。  命名规则Makefile或makefile 其他名字需要 make -f filename 基本规则12&lt;target&gt; : &lt;">
+    <meta name="description" content="Makefile advantage 管理代码的编译，决定该编译什么文件，编译顺序，以及是否需要重新编译； 节省编译时间。如果文件有更改，只需重新编译此文件即可，无需重新编译整个工程； 一劳永逸。Makefile通常只需编写一次，后期就不用过多更改。  命名规则Makefile或makefile 其他名字需要 make -f filename 基本规则&lt;target&gt; : &lt;pr">
 <meta property="og:type" content="article">
 <meta property="og:title" content="How 2 GNU Makefile">
 <meta property="og:url" content="https://grxer.gitee.io/2023/03/25/How2Makefile/index.html">
 <meta property="og:site_name" content="Computer Security">
-<meta property="og:description" content="Makefile advantage 管理代码的编译，决定该编译什么文件，编译顺序，以及是否需要重新编译； 节省编译时间。如果文件有更改，只需重新编译此文件即可，无需重新编译整个工程； 一劳永逸。Makefile通常只需编写一次，后期就不用过多更改。  命名规则Makefile或makefile 其他名字需要 make -f filename 基本规则12&lt;target&gt; : &lt;">
+<meta property="og:description" content="Makefile advantage 管理代码的编译，决定该编译什么文件，编译顺序，以及是否需要重新编译； 节省编译时间。如果文件有更改，只需重新编译此文件即可，无需重新编译整个工程； 一劳永逸。Makefile通常只需编写一次，后期就不用过多更改。  命名规则Makefile或makefile 其他名字需要 make -f filename 基本规则&lt;target&gt; : &lt;pr">
 <meta property="og:locale" content="en_US">
 <meta property="article:published_time" content="2023-03-25T01:15:43.000Z">
 <meta property="article:modified_time" content="2023-04-17T13:08:47.254Z">
@@ -159,7 +159,7 @@
 </ol>
 <h2 id="命名规则"><a href="#命名规则" class="headerlink" title="命名规则"></a>命名规则</h2><p><strong>Makefile</strong>或<strong>makefile</strong></p>
 <p>其他名字需要 make -f filename</p>
-<h2 id="基本规则"><a href="#基本规则" class="headerlink" title="基本规则"></a>基本规则</h2><figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&lt;target&gt; : &lt;prerequisites&gt; </span><br><span class="line">[tab]  &lt;commands&gt;</span><br></pre></td></tr></table></figure>
+<h2 id="基本规则"><a href="#基本规则" class="headerlink" title="基本规则"></a>基本规则</h2><figure class="highlight makefile"><table><tr><td class="code"><pre><span class="line">&lt;target&gt; : &lt;prerequisites&gt; </span><br><span class="line">[tab]  &lt;commands&gt;</span><br></pre></td></tr></table></figure>
 
 <ul>
 <li><p>只有当target不存在，或这prerequisites里的文件比target新是才会执行commands</p>
@@ -172,17 +172,17 @@
 </li>
 <li><p>.PHONY 多个可以用空格分开</p>
 <blockquote>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">.PHONY: clean</span><br><span class="line">clean:</span><br><span class="line">        <span class="built_in">rm</span> *.o temp</span><br><span class="line"><span class="comment"># make clean</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">.PHONY: clean</span><br><span class="line">clean:</span><br><span class="line">        <span class="built_in">rm</span> *.o temp</span><br><span class="line"><span class="comment"># make clean</span></span><br></pre></td></tr></table></figure>
 
 <p>声明clean是”伪目标”之后，make就不会去检查是否存在一个叫做clean的文件，而是每次运行都执行对应的命令，解决当前文件夹下有个clean的冲突</p>
 </blockquote>
 </li>
 <li><p>伪目标，即没有commands</p>
 <blockquote>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">source</span>: file1 file2 file3</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">source</span>: file1 file2 file3</span><br></pre></td></tr></table></figure>
 
 <p>make source相当于</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ make file1</span><br><span class="line">$ make file2</span><br><span class="line">$ make file3</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ make file1</span><br><span class="line">$ make file2</span><br><span class="line">$ make file3</span><br></pre></td></tr></table></figure>
 </blockquote>
 </li>
 <li><p>@可以关闭commands的回显</p>
@@ -201,35 +201,35 @@
 <h2 id="变量"><a href="#变量" class="headerlink" title="变量"></a>变量</h2><p>类似于c语言的macro</p>
 <p>用&#x3D;号赋值</p>
 <p>用$()取值</p>
-<figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">VARIABLE = value</span><br><span class="line"><span class="comment"># 在执行时扩展，允许递归扩展。</span></span><br><span class="line"></span><br><span class="line">VARIABLE := value</span><br><span class="line"><span class="comment"># 在定义时扩展。恒等于</span></span><br><span class="line"></span><br><span class="line">VARIABLE ?= value</span><br><span class="line"><span class="comment"># 只有在该变量为空时才设置值。</span></span><br><span class="line"></span><br><span class="line">VARIABLE += value</span><br><span class="line"><span class="comment"># 将值追加到变量的尾端。</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight makefile"><table><tr><td class="code"><pre><span class="line">VARIABLE = value</span><br><span class="line"><span class="comment"># 在执行时扩展，允许递归扩展。</span></span><br><span class="line"></span><br><span class="line">VARIABLE := value</span><br><span class="line"><span class="comment"># 在定义时扩展。恒等于</span></span><br><span class="line"></span><br><span class="line">VARIABLE ?= value</span><br><span class="line"><span class="comment"># 只有在该变量为空时才设置值。</span></span><br><span class="line"></span><br><span class="line">VARIABLE += value</span><br><span class="line"><span class="comment"># 将值追加到变量的尾端。</span></span><br></pre></td></tr></table></figure>
 
 
 
-<h2 id="自动变量"><a href="#自动变量" class="headerlink" title="自动变量"></a>自动变量</h2><figure class="highlight tex"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">$</span>@	规则中的目标</span><br><span class="line"></span><br><span class="line"><span class="built_in">$</span>&lt; 	规则中的第一个依赖条件</span><br><span class="line"></span><br><span class="line"><span class="built_in">$</span><span class="built_in">^</span>	规则中的所有依赖条件</span><br><span class="line">app: main.c func1.c fun2.c</span><br><span class="line">	gcc <span class="built_in">$</span><span class="built_in">^</span> - o <span class="built_in">$</span>@</span><br><span class="line">其中：<span class="built_in">$</span><span class="built_in">^</span>表示main.c func1.c fun2.c，<span class="built_in">$</span>&lt;表示main.c，<span class="built_in">$</span>@表示app。</span><br><span class="line"></span><br><span class="line"><span class="built_in">$</span>* 　　不包含扩展名的目标文件名称。</span><br><span class="line"></span><br><span class="line"><span class="built_in">$</span>+ 　　所有的依赖文件，以空格分开，并以出现的先后为序，可能包含重复的依赖文件。</span><br><span class="line"></span><br><span class="line"><span class="built_in">$</span>? 　　所有的依赖文件，以空格分开，这些依赖文件的修改日期比目标的创建日期晚。</span><br><span class="line"></span><br><span class="line"><span class="built_in">$</span>@ 　 目标的完整名称。</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<h2 id="自动变量"><a href="#自动变量" class="headerlink" title="自动变量"></a>自动变量</h2><figure class="highlight tex"><table><tr><td class="code"><pre><span class="line"><span class="built_in">$</span>@    规则中的目标</span><br><span class="line"></span><br><span class="line"><span class="built_in">$</span>&lt;     规则中的第一个依赖条件</span><br><span class="line"></span><br><span class="line"><span class="built_in">$</span><span class="built_in">^</span>    规则中的所有依赖条件</span><br><span class="line">app: main.c func1.c fun2.c</span><br><span class="line">    gcc <span class="built_in">$</span><span class="built_in">^</span> - o <span class="built_in">$</span>@</span><br><span class="line">其中：<span class="built_in">$</span><span class="built_in">^</span>表示main.c func1.c fun2.c，<span class="built_in">$</span>&lt;表示main.c，<span class="built_in">$</span>@表示app。</span><br><span class="line"></span><br><span class="line"><span class="built_in">$</span>* 　　不包含扩展名的目标文件名称。</span><br><span class="line"></span><br><span class="line"><span class="built_in">$</span>+ 　　所有的依赖文件，以空格分开，并以出现的先后为序，可能包含重复的依赖文件。</span><br><span class="line"></span><br><span class="line"><span class="built_in">$</span>? 　　所有的依赖文件，以空格分开，这些依赖文件的修改日期比目标的创建日期晚。</span><br><span class="line"></span><br><span class="line"><span class="built_in">$</span>@ 　 目标的完整名称。</span><br><span class="line"></span><br></pre></td></tr></table></figure>
 
 <h2 id="函数"><a href="#函数" class="headerlink" title="函数"></a>函数</h2><p><strong>wildcard:</strong></p>
 <p>用于查找指定目录下指定类型的文件，参数就是目录+文件类型，比如：</p>
-<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">src = $（wildcard ./src/*.c)</span><br></pre></td></tr></table></figure>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">src = $（wildcard ./src/*.c)</span><br></pre></td></tr></table></figure>
 
 <p>这句话表示：找到.&#x2F;src 目录下所有后缀为.c的文件，并赋给变量src。</p>
 <p><strong>patsubst:</strong></p>
 <p>匹配替换，例如以下例子，用于从src目录中找到所有.c 结尾的文件，并将其替换为.o文件，并赋值给obj。</p>
-<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">obj = $(patsubst %.c ,%.o ,$(src))</span><br></pre></td></tr></table></figure>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">obj = $(patsubst %.c ,%.o ,$(src))</span><br></pre></td></tr></table></figure>
 
 <p>把src变量中所有后缀为.c的文件替换成.o。</p>
 <p>特别地，如果要把所有.o文件放在obj目录下，可用以下方法：</p>
-<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ob = $(patsubst ./src/%.c, ./obj/%.o, $(src))</span><br></pre></td></tr></table></figure>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">ob = $(patsubst ./src/%.c, ./obj/%.o, $(src))</span><br></pre></td></tr></table></figure>
 
 <p><strong>subst</strong></p>
 <p>subst 函数用来文本替换，格式如下</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$(subst from,to,text)</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$(subst from,to,text)</span><br></pre></td></tr></table></figure>
 
-<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$(subst ee,EE,feet on the street)</span><br><span class="line">将字符串&quot;feet on the street&quot;替换成&quot;fEEt on the strEEt&quot;。</span><br></pre></td></tr></table></figure>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">$(subst ee,EE,feet on the street)</span><br><span class="line">将字符串&quot;feet on the street&quot;替换成&quot;fEEt on the strEEt&quot;。</span><br></pre></td></tr></table></figure>
 
 <h2 id="例子"><a href="#例子" class="headerlink" title="例子"></a>例子</h2><p>目录</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">hello/</span><br><span class="line">├──main.c</span><br><span class="line">├──factorial.c</span><br><span class="line">├──printhello.c</span><br><span class="line">└──functions.h</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">hello/</span><br><span class="line">├──main.c</span><br><span class="line">├──factorial.c</span><br><span class="line">├──printhello.c</span><br><span class="line">└──functions.h</span><br></pre></td></tr></table></figure>
 
-<figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">CC = gcc</span><br><span class="line">TARGET = hello</span><br><span class="line">SRC=<span class="variable">$(<span class="built_in">wildcard</span> ./*.c)</span></span><br><span class="line">OBJ=<span class="variable">$(<span class="built_in">patsubst</span> ./%.c,./%.o,<span class="variable">$(SRC)</span>)</span></span><br><span class="line"></span><br><span class="line">GCCFLAGS= -c -Wall</span><br><span class="line"></span><br><span class="line"><span class="variable">$(TARGET)</span>:<span class="variable">$(OBJ)</span></span><br><span class="line">	<span class="variable">$(CC)</span> -o <span class="variable">$@</span> <span class="variable">$^</span></span><br><span class="line"></span><br><span class="line"><span class="section">%.o:%.c</span></span><br><span class="line">	<span class="variable">$(CC)</span> <span class="variable">$(GCCFLAGS)</span> <span class="variable">$&lt;</span> -o <span class="variable">$@</span></span><br><span class="line"></span><br><span class="line"><span class="meta"><span class="keyword">.PHONY</span>: clean</span></span><br><span class="line">clean :</span><br><span class="line">	rm -f *.o <span class="variable">$(TARGET)</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight makefile"><table><tr><td class="code"><pre><span class="line">CC = gcc</span><br><span class="line">TARGET = hello</span><br><span class="line">SRC=<span class="variable">$(<span class="built_in">wildcard</span> ./*.c)</span></span><br><span class="line">OBJ=<span class="variable">$(<span class="built_in">patsubst</span> ./%.c,./%.o,<span class="variable">$(SRC)</span>)</span></span><br><span class="line"></span><br><span class="line">GCCFLAGS= -c -Wall</span><br><span class="line"></span><br><span class="line"><span class="variable">$(TARGET)</span>:<span class="variable">$(OBJ)</span></span><br><span class="line">    <span class="variable">$(CC)</span> -o <span class="variable">$@</span> <span class="variable">$^</span></span><br><span class="line"></span><br><span class="line"><span class="section">%.o:%.c</span></span><br><span class="line">    <span class="variable">$(CC)</span> <span class="variable">$(GCCFLAGS)</span> <span class="variable">$&lt;</span> -o <span class="variable">$@</span></span><br><span class="line"></span><br><span class="line"><span class="meta"><span class="keyword">.PHONY</span>: clean</span></span><br><span class="line">clean :</span><br><span class="line">    rm -f *.o <span class="variable">$(TARGET)</span></span><br></pre></td></tr></table></figure>
 
 
   </div>
