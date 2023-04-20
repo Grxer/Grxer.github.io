@@ -8,31 +8,31 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
     <meta name="baidu-site-verification" content="codeva-ROfYcqLkCh" />
     <meta name="msvalidate.01" content="ECA3E06A0E52A2AC90C4B06F12981FB2" />
-    <meta name="description" content="32-bit x86 Protected modeReal-address Mode实模式简称Real mode，这就要从我们x86的ancestor 8086处理器说起，这个时候我们使用的地址都是物理地址 &gt;&gt;&gt;为什么会有段寄存器cs ds es ss?  8086处理器面临的第一个问题就是20位地址总线和16bit寄存器的问题:解决这个问题是把段寄存器左移4个bit位，形成2">
+    <meta name="description" content="IA-32 x86 Protected modeReal-address Mode实模式简称Real mode，这就要从我们x86的ancestor 8086处理器说起，这个时候我们使用的地址都是物理地址 &gt;&gt;&gt;为什么会有段寄存器cs ds es ss?  8086处理器面临的第一个问题就是20位地址总线和16bit寄存器的问题:解决这个问题是把段寄存器左移4个bit位，形成20">
 <meta property="og:type" content="article">
-<meta property="og:title" content="32-bit x86 Protected mode">
+<meta property="og:title" content="IA-32 x86 Protected mode">
 <meta property="og:url" content="https://grxer.gitee.io/2023/04/08/32bit-x86-protected-mode/index.html">
 <meta property="og:site_name" content="Computer Security">
-<meta property="og:description" content="32-bit x86 Protected modeReal-address Mode实模式简称Real mode，这就要从我们x86的ancestor 8086处理器说起，这个时候我们使用的地址都是物理地址 &gt;&gt;&gt;为什么会有段寄存器cs ds es ss?  8086处理器面临的第一个问题就是20位地址总线和16bit寄存器的问题:解决这个问题是把段寄存器左移4个bit位，形成2">
+<meta property="og:description" content="IA-32 x86 Protected modeReal-address Mode实模式简称Real mode，这就要从我们x86的ancestor 8086处理器说起，这个时候我们使用的地址都是物理地址 &gt;&gt;&gt;为什么会有段寄存器cs ds es ss?  8086处理器面临的第一个问题就是20位地址总线和16bit寄存器的问题:解决这个问题是把段寄存器左移4个bit位，形成20">
 <meta property="og:locale" content="en_US">
-<meta property="og:image" content="https://grxer.gitee.io/2023/04/08/32bit-x86-protected-mode/image-20230408152007378.png">
-<meta property="og:image" content="https://grxer.gitee.io/2023/04/08/32bit-x86-protected-mode/image-20230408172220933.png">
-<meta property="og:image" content="https://grxer.gitee.io/2023/04/08/32bit-x86-protected-mode/image-20230408153140553.png">
+<meta property="og:image" content="https://grxer.gitee.io/2023/04/08/32bit-x86-protected-mode/image-20230420200038198.png">
+<meta property="og:image" content="https://grxer.gitee.io/2023/04/08/32bit-x86-protected-mode/image-20230420195852680.png">
+<meta property="og:image" content="https://grxer.gitee.io/2023/04/08/32bit-x86-protected-mode/image-20230420200152426.png">
 <meta property="og:image" content="https://grxer.gitee.io/2023/04/08/32bit-x86-protected-mode/image-20230408155337790.png">
 <meta property="og:image" content="https://grxer.gitee.io/2023/04/08/32bit-x86-protected-mode/image-20230408172110614.png">
-<meta property="og:image" content="https://grxer.gitee.io/2023/04/08/32bit-x86-protected-mode/image-20230408163944683.png">
+<meta property="og:image" content="https://grxer.gitee.io/2023/04/08/32bit-x86-protected-mode/image-20230420200014884.png">
 <meta property="og:image" content="https://grxer.gitee.io/2023/04/08/32bit-x86-protected-mode/image-20230408194444921.png">
-<meta property="og:image" content="https://grxer.gitee.io/2023/04/08/32bit-x86-protected-mode/image-20230409011718008.png">
-<meta property="og:image" content="https://grxer.gitee.io/2023/04/08/32bit-x86-protected-mode/image-20230408223447768.png">
-<meta property="og:image" content="https://grxer.gitee.io/2023/04/08/32bit-x86-protected-mode/image-20230408224016360.png">
-<meta property="og:image" content="https://grxer.gitee.io/2023/04/08/32bit-x86-protected-mode/image-20230408220726748.png">
+<meta property="og:image" content="https://grxer.gitee.io/2023/04/08/32bit-x86-protected-mode/image-20230420195713371.png">
+<meta property="og:image" content="https://grxer.gitee.io/2023/04/08/32bit-x86-protected-mode/image-20230420195930886.png">
+<meta property="og:image" content="https://grxer.gitee.io/2023/04/08/32bit-x86-protected-mode/image-20230420195952065.png">
+<meta property="og:image" content="https://grxer.gitee.io/2023/04/08/32bit-x86-protected-mode/image-20230420191045242.png">
 <meta property="article:published_time" content="2023-04-08T10:44:24.000Z">
-<meta property="article:modified_time" content="2023-04-13T08:12:34.391Z">
+<meta property="article:modified_time" content="2023-04-20T16:10:09.331Z">
 <meta property="article:author" content="Grxer">
 <meta property="article:tag" content="Protected Mode">
 <meta property="article:tag" content="OS">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://grxer.gitee.io/2023/04/08/32bit-x86-protected-mode/image-20230408152007378.png">
+<meta name="twitter:image" content="https://grxer.gitee.io/2023/04/08/32bit-x86-protected-mode/image-20230420200038198.png">
     
     
       
@@ -52,7 +52,7 @@
       
     
     <!-- title -->
-    <title>32-bit x86 Protected mode</title>
+    <title>IA-32 x86 Protected mode</title>
     <!-- styles -->
     
 <link rel="stylesheet" href="/css/style.css">
@@ -107,21 +107,21 @@
     <div id="share" style="display: none">
       <ul>
   <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://grxer.gitee.io/2023/04/08/32bit-x86-protected-mode/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://grxer.gitee.io/2023/04/08/32bit-x86-protected-mode/&text=32-bit x86 Protected mode"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://grxer.gitee.io/2023/04/08/32bit-x86-protected-mode/&title=32-bit x86 Protected mode"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://grxer.gitee.io/2023/04/08/32bit-x86-protected-mode/&is_video=false&description=32-bit x86 Protected mode"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
-  <li><a class="icon" href="mailto:?subject=32-bit x86 Protected mode&body=Check out this article: https://grxer.gitee.io/2023/04/08/32bit-x86-protected-mode/"><i class="fas fa-envelope " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://grxer.gitee.io/2023/04/08/32bit-x86-protected-mode/&title=32-bit x86 Protected mode"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://grxer.gitee.io/2023/04/08/32bit-x86-protected-mode/&title=32-bit x86 Protected mode"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://grxer.gitee.io/2023/04/08/32bit-x86-protected-mode/&title=32-bit x86 Protected mode"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://grxer.gitee.io/2023/04/08/32bit-x86-protected-mode/&title=32-bit x86 Protected mode"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://grxer.gitee.io/2023/04/08/32bit-x86-protected-mode/&name=32-bit x86 Protected mode&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://grxer.gitee.io/2023/04/08/32bit-x86-protected-mode/&t=32-bit x86 Protected mode"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://grxer.gitee.io/2023/04/08/32bit-x86-protected-mode/&text=IA-32 x86 Protected mode"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://grxer.gitee.io/2023/04/08/32bit-x86-protected-mode/&title=IA-32 x86 Protected mode"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://grxer.gitee.io/2023/04/08/32bit-x86-protected-mode/&is_video=false&description=IA-32 x86 Protected mode"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=IA-32 x86 Protected mode&body=Check out this article: https://grxer.gitee.io/2023/04/08/32bit-x86-protected-mode/"><i class="fas fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://grxer.gitee.io/2023/04/08/32bit-x86-protected-mode/&title=IA-32 x86 Protected mode"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://grxer.gitee.io/2023/04/08/32bit-x86-protected-mode/&title=IA-32 x86 Protected mode"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://grxer.gitee.io/2023/04/08/32bit-x86-protected-mode/&title=IA-32 x86 Protected mode"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://grxer.gitee.io/2023/04/08/32bit-x86-protected-mode/&title=IA-32 x86 Protected mode"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://grxer.gitee.io/2023/04/08/32bit-x86-protected-mode/&name=IA-32 x86 Protected mode&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://grxer.gitee.io/2023/04/08/32bit-x86-protected-mode/&t=IA-32 x86 Protected mode"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
 </ul>
 
     </div>
     <div id="toc">
-      <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#32-bit-x86-Protected-mode"><span class="toc-number">1.</span> <span class="toc-text">32-bit x86 Protected mode</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#Real-address-Mode"><span class="toc-number">1.1.</span> <span class="toc-text">Real-address Mode</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Protected-mode"><span class="toc-number">1.2.</span> <span class="toc-text">Protected mode</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%86%E6%AE%B5%E6%9C%BA%E5%88%B6"><span class="toc-number">1.2.1.</span> <span class="toc-text">分段机制</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%AE%B5%E6%8F%8F%E8%BF%B0%E7%AC%A6"><span class="toc-number">1.2.1.1.</span> <span class="toc-text">段描述符</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%AE%B5%E6%8F%8F%E8%BF%B0%E7%AC%A6%E8%A1%A8"><span class="toc-number">1.2.1.2.</span> <span class="toc-text">段描述符表</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#GDTR%E5%AF%84%E5%AD%98%E5%99%A8"><span class="toc-number">1.2.1.3.</span> <span class="toc-text">GDTR寄存器</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#LDTR%E5%AF%84%E5%AD%98%E5%99%A8"><span class="toc-number">1.2.1.4.</span> <span class="toc-text">LDTR寄存器</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%AE%B5%E9%80%89%E6%8B%A9%E5%AD%90"><span class="toc-number">1.2.1.5.</span> <span class="toc-text">段选择子</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%86%E9%A1%B5%E6%9C%BA%E5%88%B6"><span class="toc-number">1.2.2.</span> <span class="toc-text">分页机制</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%B8%80%E7%BA%A7%E9%A1%B5%E8%A1%A8"><span class="toc-number">1.2.2.1.</span> <span class="toc-text">一级页表</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#32%E4%BD%8D%E7%BB%8F%E5%85%B8%E5%88%86%E9%A1%B5"><span class="toc-number">1.2.2.2.</span> <span class="toc-text">32位经典分页</span></a></li></ol></li></ol></li></ol></li></ol>
+      <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#IA-32-x86-Protected-mode"><span class="toc-number">1.</span> <span class="toc-text">IA-32 x86 Protected mode</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#Real-address-Mode"><span class="toc-number">1.1.</span> <span class="toc-text">Real-address Mode</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Protected-mode"><span class="toc-number">1.2.</span> <span class="toc-text">Protected mode</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%86%E6%AE%B5%E6%9C%BA%E5%88%B6"><span class="toc-number">1.2.1.</span> <span class="toc-text">分段机制</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%AE%B5%E6%8F%8F%E8%BF%B0%E7%AC%A6"><span class="toc-number">1.2.1.1.</span> <span class="toc-text">段描述符</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%AE%B5%E6%8F%8F%E8%BF%B0%E7%AC%A6%E8%A1%A8"><span class="toc-number">1.2.1.2.</span> <span class="toc-text">段描述符表</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#GDTR%E5%AF%84%E5%AD%98%E5%99%A8"><span class="toc-number">1.2.1.3.</span> <span class="toc-text">GDTR寄存器</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#LDTR%E5%AF%84%E5%AD%98%E5%99%A8"><span class="toc-number">1.2.1.4.</span> <span class="toc-text">LDTR寄存器</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%AE%B5%E9%80%89%E6%8B%A9%E5%AD%90"><span class="toc-number">1.2.1.5.</span> <span class="toc-text">段选择子</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#linux%E4%B8%AD%E7%9A%84%E5%88%86%E6%AE%B5%E6%9C%BA%E5%88%B6"><span class="toc-number">1.2.1.6.</span> <span class="toc-text">linux中的分段机制</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%86%E9%A1%B5%E6%9C%BA%E5%88%B6"><span class="toc-number">1.2.2.</span> <span class="toc-text">分页机制</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%B8%80%E7%BA%A7%E9%A1%B5%E8%A1%A8"><span class="toc-number">1.2.2.1.</span> <span class="toc-text">一级页表</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#32%E4%BD%8D%E7%BB%8F%E5%85%B8%E5%88%86%E9%A1%B5"><span class="toc-number">1.2.2.2.</span> <span class="toc-text">32位经典分页</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%BF%99%E7%A7%8D%E5%9C%B0%E5%9D%80%E8%BD%AC%E6%8D%A2%E9%83%BD%E6%98%AF%E7%A1%AC%E4%BB%B6%E6%9D%A5%E8%87%AA%E5%8A%A8%E5%AE%8C%E6%88%90%E7%9A%84%EF%BC%8C%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E6%9D%A5%E5%A4%84%E7%90%86%E7%BC%BA%E9%A1%B5"><span class="toc-number">1.2.2.3.</span> <span class="toc-text">这种地址转换都是硬件来自动完成的，操作系统来处理缺页</span></a></li></ol></li></ol></li></ol></li></ol>
     </div>
   </span>
 </div>
@@ -133,7 +133,7 @@
   <header>
     
     <h1 class="posttitle" itemprop="name headline">
-        32-bit x86 Protected mode
+        IA-32 x86 Protected mode
     </h1>
 
 
@@ -165,7 +165,7 @@
   
 
   <div class="content" itemprop="articleBody">
-    <h1 id="32-bit-x86-Protected-mode"><a href="#32-bit-x86-Protected-mode" class="headerlink" title="32-bit x86 Protected mode"></a>32-bit x86 Protected mode</h1><h2 id="Real-address-Mode"><a href="#Real-address-Mode" class="headerlink" title="Real-address Mode"></a>Real-address Mode</h2><p>实模式简称Real mode，这就要从我们x86的ancestor 8086处理器说起，这个时候我们使用的地址都是物理地址</p>
+    <h1 id="IA-32-x86-Protected-mode"><a href="#IA-32-x86-Protected-mode" class="headerlink" title="IA-32 x86 Protected mode"></a>IA-32 x86 Protected mode</h1><h2 id="Real-address-Mode"><a href="#Real-address-Mode" class="headerlink" title="Real-address Mode"></a>Real-address Mode</h2><p>实模式简称Real mode，这就要从我们x86的ancestor 8086处理器说起，这个时候我们使用的地址都是物理地址</p>
 <p>&gt;&gt;&gt;为什么会有段寄存器cs ds es ss?</p>
 <ul>
 <li><p>8086处理器面临的第一个问题就是20位地址总线和16bit寄存器的问题:解决这个问题是把段寄存器左移4个bit位，形成20bit段地址，再加上16位的偏移地址进行20位寻址,这也决定了段地址必须是按16字节对齐的，因为16位寄存器，所以每个段最大限长为64KB，同时同一个物理地址对应着多个逻辑地址</p>
@@ -174,7 +174,7 @@
 </li>
 </ul>
 <p><code>物理地址（physicaladdress）=段值（segment） * 16 + 偏移（offset）</code></p>
-<p>32位处理器处理之后我们给这个取了个名字叫实模式</p>
+<p>32位处理器之后我们给这个取了个名字叫实模式</p>
 <p><strong>实模式的问题</strong></p>
 <ol>
 <li>缺乏保护机制：实模式下没有保护机制，也没有内存管理单元（MMU）来保护内存免受非授权访问和操作系统进程之间的干扰。这使得操作系统和应用程序容易受到恶意代码的攻击。</li>
@@ -187,24 +187,21 @@
 <p>&gt;&gt;&gt;怎么保护</p>
 <p>对内存进行权限控制，那就应该会有权限信息的描述，段寄存器只有16位而且只有几个，每一个程序都需要多个单独的描述信息，那就需要存放在内存里</p>
 <h3 id="分段机制"><a href="#分段机制" class="headerlink" title="分段机制"></a>分段机制</h3><h4 id="段描述符"><a href="#段描述符" class="headerlink" title="段描述符"></a>段描述符</h4><p>就出现了段描述符(segment descriptor)，8字节长的数据结构，用来描述一个段的位置、大小、访问控制和状态等信息，</p>
-<img src="/2023/04/08/32bit-x86-protected-mode/image-20230408152007378.png" alt="image-20230408152007378" style="zoom:80%;">
-
+<p><img src="/2023/04/08/32bit-x86-protected-mode/image-20230420200038198.png" alt="image-20230420200038198"></p>
 <ul>
 <li>32位段基地址，段起始位置</li>
 <li>20位的段边界，段边界的扩展最值,即最大扩展到多少或最小扩展到多少。扩展方向只有上下两种,栈和数据段代码段区别(DNA里的恐惧:segmentation fault)</li>
 <li>G(Granularity)是粒度来描述段边界，G为0，段边界以字节为单位，为1(1B~1M)，则以4k为单位(4K~4G)</li>
 <li>S(System)，S&#x3D;0代表该描述符描述的是一个系统段，S&#x3D;1代表该描述符描述的是代码段、数据段或堆栈段</li>
-<li>DPL(Descriptor Privilege Level）描述符特权级0-3，0最高，高的可以访问低的，反之不行，比如操作系统的代码和数据会被放在比用户程序具有更高特权的段里</li>
-<li>TYPE和S段配合使用</li>
+<li>DPL(Descriptor Privilege Level）描述符特权级0-3，0最高，高的可以访问低的，反之不行，比如操作系统的代码和数据会被放在比用户程序具有更高特权的段里,DPL表示访问这个段对当前特权级(CPL)的最低等级要求</li>
+<li>TYPE和S段配合使用，段的访问权限或系统控制描述类型</li>
 </ul>
 <p> CPU 硬件负责检测，操作系统提供异常处理程序</p>
-<img src="/2023/04/08/32bit-x86-protected-mode/image-20230408172220933.png" alt="image-20230408172220933" style="zoom:80%;">
-
+<p><img src="/2023/04/08/32bit-x86-protected-mode/image-20230420195852680.png" alt="image-20230420195852680"></p>
 <p>描述信息这么乱是为了兼容80286</p>
-<img src="/2023/04/08/32bit-x86-protected-mode/image-20230408153140553.png" alt="image-20230408153140553" style="zoom:80%;">
-
-<h4 id="段描述符表"><a href="#段描述符表" class="headerlink" title="段描述符表"></a>段描述符表</h4><p>系统中会有很多段描述符，代码段要占用一个段描述符、数据段和战段等，多个内存段也要各自占用一个段描述符，cpu定的全局描述符表（Global Descriptor Table，GDT）局部描述符表LDT(Local descriptor table)是一个段描述符数组，里面存的就是这些描述符</p>
-<p>全局描述符表的地址存放在GDTR寄存器里，局部描述符表在LDTR寄存器，表由操作系统维护，cpu硬件来使用</p>
+<p><img src="/2023/04/08/32bit-x86-protected-mode/image-20230420200152426.png" alt="image-20230420200152426"></p>
+<h4 id="段描述符表"><a href="#段描述符表" class="headerlink" title="段描述符表"></a>段描述符表</h4><p>系统中会有很多段描述符，代码段要占用一个段描述符、数据段和栈段等，多个内存段也要各自占用一个段描述符，cpu定的全局描述符表（Global Descriptor Table，GDT）局部描述符表LDT(Local descriptor table)是一个段描述符数组，里面存的就是这些描述符</p>
+<p>全局描述符表(系统只有一个)的地址存放在GDTR寄存器里，局部描述符表在LDTR寄存器，表由操作系统维护，cpu硬件来使用</p>
 <h4 id="GDTR寄存器"><a href="#GDTR寄存器" class="headerlink" title="GDTR寄存器"></a>GDTR寄存器</h4><p>48位</p>
 <p><img src="/2023/04/08/32bit-x86-protected-mode/image-20230408155337790.png" alt="image-20230408155337790"></p>
 <p>32位线性地址描述全局描述符表在内存里的位置。16位表长度描述表的大小(为0时大小是1)，byte为单位，所以最大2^16&#x2F;8&#x3D;8192个描述符</p>
@@ -214,12 +211,12 @@
 <ul>
 <li>TI位代表要索引的段描述符表（table indicator），TI&#x3D;0表示全局描述符表，TI&#x3D;1表示局部描述符表。</li>
 <li>高13位是描述符索引，要选择的段描述符在TI所表示的段描述符表中的索引号</li>
-<li>RPL（Requestor Privilege Level）请求特权级，和段描述符里的DPL配合cpu做检查</li>
+<li>RPL（Requestor Privilege Level）请求特权级(cs寄存器中的RPL字段表示当前特权级(Current Privilege Level，CPL))，和段描述符里的DPL配合cpu做检查</li>
 </ul>
 <p>这样通过段选择子和GDTR，就可以定位到段描述符，找到段基地址，加上偏移找到线性地址，如果没有分页机制这样取出来的线性地址就是我们的物理地址</p>
 <p>取出一次后会放入程序员不可见部分—段描述符缓冲寄存器（ Descriptor Cache Registers ),下次会直接从这里面取，，只要往段寄存器中赋值， CPU 就会更新段描述符缓冲寄存器</p>
-<img src="/2023/04/08/32bit-x86-protected-mode/image-20230408163944683.png" alt="image-20230408163944683" style="zoom:80%;">
-
+<p><img src="/2023/04/08/32bit-x86-protected-mode/image-20230420200014884.png" alt="image-20230420200014884"></p>
+<h4 id="linux中的分段机制"><a href="#linux中的分段机制" class="headerlink" title="linux中的分段机制"></a>linux中的分段机制</h4><p>RISC对分段支持有限，linux为了更好的移植性，简化了分段机制，在初始化时就把段描述符里的基地址设为0，段边界设置为0xfffff，每个段都能访问4G</p>
 <h3 id="分页机制"><a href="#分页机制" class="headerlink" title="分页机制"></a>分页机制</h3><p>分段会造成一些问题</p>
 <p><img src="/2023/04/08/32bit-x86-protected-mode/image-20230408194444921.png" alt="image-20230408194444921"></p>
 <ul>
@@ -237,43 +234,37 @@
 <p>操作系统的虚拟内存也是利用分页来实现的</p>
 <p>CRO寄存器的PG为为1时开启分页</p>
 <p><strong>创建进程时，就会为这个进程创建页表，进程空间隔离主要因为每个进程都有一套相对独立的页表,映射过的物理内存会在页表里登记这个映射关系，进程的切换会伴随着页表的切换</strong></p>
-<img src="/2023/04/08/32bit-x86-protected-mode/image-20230409011718008.png" alt="image-20230409011718008" style="zoom:80%;">
-
+<p><img src="/2023/04/08/32bit-x86-protected-mode/image-20230420195713371.png" alt="image-20230420195713371"></p>
 <p>CR3寄存器便是用来记录当前任务的页表物理地址。</p>
 <h4 id="一级页表"><a href="#一级页表" class="headerlink" title="一级页表"></a>一级页表</h4><p>只有一级页表的话需要有2^20次方个表项，表项里用4个字节存放页面的开始物理基地址，由于页时4k大小对齐，所以低12位始终为0，不用记录，低十二位用来存放一些权限信息</p>
 <p>我们用线性地址的高20位去索引页表数组，再加上线性地址的低12位偏移就可以得到物理地址</p>
-<p>一级页表的缺点是，2^20次方个4字节的表项需要4M的连续内存去存储，每个进程都有一个单独的页表，4*nM的内存消耗太大</p>
+<p>一级页表的缺点是，2^20次方个4字节的表项需要4M的连续物理内存去存储，每个进程都有一个单独的页表，4*nM的内存消耗太大</p>
 <h4 id="32位经典分页"><a href="#32位经典分页" class="headerlink" title="32位经典分页"></a>32位经典分页</h4><p><strong>二级页表</strong></p>
-<p>CR0的PG标志为1、CR4的PAE为0时，使用这个模式，在这个模式下，页表结构为两级，第一级称为页目录表（Page Directory Table），第二级称为页表（Page Table）<br>页目录存放在一个4K大小的页面上，存放1024个指向一个二级页表地址，页表大小也是一个页面，最多含有1K个4字节页表项</p>
-<p>一级页表是将这 1M 个标准页放置到 一 张页表中，二级页表是将这 1M 个标准页平均放置 1K 个<br>页表中.每个页表中包含有 1K 个页表项。页表项是 4 字节大小，页表包含 1K 个页表项，故页表大小为4k，一个标准页的大小</p>
+<p>CR0的PG标志为1、CR4的PAE为0时，使用这个模式，在这个模式下，页表结构为两级，第一级称为页目录表（Page Directory Table），第二级称为页表（Page Table）<br>页目录存放在一个4K大小的页面上，存放1024个指向一个二级页表地址，二级页表大小也是一个页面，最多含有1K个4字节页表项(Page-Table Entry，PTE)</p>
+<p>每个二级页表存放1024个物理页的地址，1024*4KB&#x3D;4MB，1024个二级页表1024*4MB&#x3D;4GB,满足4G寻址</p>
 <p>目录项</p>
-<img src="/2023/04/08/32bit-x86-protected-mode/image-20230408223447768.png" alt="image-20230408223447768" style="zoom:80%;">
-
+<p><img src="/2023/04/08/32bit-x86-protected-mode/image-20230420195930886.png" alt="image-20230420195930886"></p>
 <p>页表项</p>
-<img src="/2023/04/08/32bit-x86-protected-mode/image-20230408224016360.png" alt="image-20230408224016360" style="zoom:80%;">
-
+<p><img src="/2023/04/08/32bit-x86-protected-mode/image-20230420195952065.png" alt="image-20230420195952065"></p>
 <p>查找过程</p>
+<p><img src="/2023/04/08/32bit-x86-protected-mode/image-20230420191045242.png" alt="image-20230420191045242"></p>
 <ol>
-<li>通过CR3寄存器定位到页目录的起始地址,取线性地址的高10位作为索引选取页目录的目录项</li>
-<li>那么根据PDE中的页表基地址定位到页表，低12位为0</li>
-<li>取线性地址的12位到21位（共10位）作为索引选取页表的一个页表项</li>
+<li>通过CR3寄存器定位到页目录的起始地址,取线性地址的高10位x4作为索引选取页目录的目录项(由于一个目录项是4字节，所以x4)</li>
+<li>那么根据页目录项中的页表基地址(高20位)和低12位为0，定位到二级页表</li>
+<li>取线性地址的12位到21位（共10位）x4，作为索引选取二级页表的一个页表项</li>
 <li>取出页表项的页表基地址</li>
 <li>取线性地址的低12位作为页中偏移和上一步基地址相加得到物理地址</li>
 </ol>
 <blockquote>
-<p>这个时候一想，4k大小的页表有1024个，还外加一个4k目录表这不比之前的4M还大4k？</p>
+<p>这个时候一想，4k大小的二级页表有1024个，还外加一个4k目录表这不比之前的4M还大4k？</p>
 <p>这个时候我们分析下目录项的作用</p>
 <ol>
-<li>首先有了目录项我们可以把页表分散到内存不同位置，而不是在一块连续的4M空间</li>
-<li>页目录项的P位表示是否在物理内存，这就说明页表本身也可能被交换到虚拟内存中，只有一部分需要的二级页表被加载到物理内存，其余可以放到磁盘，目录项的如果P位为0会触发缺页中断，缺页异常调用内核中的缺页异常处理程序把需要的页面映射到物理内存</li>
-<li>页目录时一直在物理内存上的</li>
+<li>页目录项的P位表示是否在物理内存，这就说明二级页表本身也可能被交换到虚拟内存中，只有一部分需要的二级页表被加载到物理内存，其余可以放到磁盘，目录项的如果P位为0会触发缺页中断，缺页异常调用内核中的缺页异常处理程序把需要的页面映射到物理内存</li>
+<li>有了这个机制我们可以把页表分散到物理内存不同位置，而不是在一块连续的4M物理内存空间</li>
+<li>4k的页目录是一直在物理内存上的</li>
 </ol>
 </blockquote>
-<img src="/2023/04/08/32bit-x86-protected-mode/image-20230408220726748.png" alt="image-20230408220726748" style="zoom:80%;">
-
-
-
-
+<h4 id="这种地址转换都是硬件来自动完成的，操作系统来处理缺页"><a href="#这种地址转换都是硬件来自动完成的，操作系统来处理缺页" class="headerlink" title="这种地址转换都是硬件来自动完成的，操作系统来处理缺页"></a>这种地址转换都是硬件来自动完成的，操作系统来处理缺页</h4>
   </div>
 </article>
 
@@ -298,22 +289,22 @@
     </div>
 
     <div id="toc-footer" style="display: none">
-      <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#32-bit-x86-Protected-mode"><span class="toc-number">1.</span> <span class="toc-text">32-bit x86 Protected mode</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#Real-address-Mode"><span class="toc-number">1.1.</span> <span class="toc-text">Real-address Mode</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Protected-mode"><span class="toc-number">1.2.</span> <span class="toc-text">Protected mode</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%86%E6%AE%B5%E6%9C%BA%E5%88%B6"><span class="toc-number">1.2.1.</span> <span class="toc-text">分段机制</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%AE%B5%E6%8F%8F%E8%BF%B0%E7%AC%A6"><span class="toc-number">1.2.1.1.</span> <span class="toc-text">段描述符</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%AE%B5%E6%8F%8F%E8%BF%B0%E7%AC%A6%E8%A1%A8"><span class="toc-number">1.2.1.2.</span> <span class="toc-text">段描述符表</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#GDTR%E5%AF%84%E5%AD%98%E5%99%A8"><span class="toc-number">1.2.1.3.</span> <span class="toc-text">GDTR寄存器</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#LDTR%E5%AF%84%E5%AD%98%E5%99%A8"><span class="toc-number">1.2.1.4.</span> <span class="toc-text">LDTR寄存器</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%AE%B5%E9%80%89%E6%8B%A9%E5%AD%90"><span class="toc-number">1.2.1.5.</span> <span class="toc-text">段选择子</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%86%E9%A1%B5%E6%9C%BA%E5%88%B6"><span class="toc-number">1.2.2.</span> <span class="toc-text">分页机制</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%B8%80%E7%BA%A7%E9%A1%B5%E8%A1%A8"><span class="toc-number">1.2.2.1.</span> <span class="toc-text">一级页表</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#32%E4%BD%8D%E7%BB%8F%E5%85%B8%E5%88%86%E9%A1%B5"><span class="toc-number">1.2.2.2.</span> <span class="toc-text">32位经典分页</span></a></li></ol></li></ol></li></ol></li></ol>
+      <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#IA-32-x86-Protected-mode"><span class="toc-number">1.</span> <span class="toc-text">IA-32 x86 Protected mode</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#Real-address-Mode"><span class="toc-number">1.1.</span> <span class="toc-text">Real-address Mode</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Protected-mode"><span class="toc-number">1.2.</span> <span class="toc-text">Protected mode</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%86%E6%AE%B5%E6%9C%BA%E5%88%B6"><span class="toc-number">1.2.1.</span> <span class="toc-text">分段机制</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%AE%B5%E6%8F%8F%E8%BF%B0%E7%AC%A6"><span class="toc-number">1.2.1.1.</span> <span class="toc-text">段描述符</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%AE%B5%E6%8F%8F%E8%BF%B0%E7%AC%A6%E8%A1%A8"><span class="toc-number">1.2.1.2.</span> <span class="toc-text">段描述符表</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#GDTR%E5%AF%84%E5%AD%98%E5%99%A8"><span class="toc-number">1.2.1.3.</span> <span class="toc-text">GDTR寄存器</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#LDTR%E5%AF%84%E5%AD%98%E5%99%A8"><span class="toc-number">1.2.1.4.</span> <span class="toc-text">LDTR寄存器</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%AE%B5%E9%80%89%E6%8B%A9%E5%AD%90"><span class="toc-number">1.2.1.5.</span> <span class="toc-text">段选择子</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#linux%E4%B8%AD%E7%9A%84%E5%88%86%E6%AE%B5%E6%9C%BA%E5%88%B6"><span class="toc-number">1.2.1.6.</span> <span class="toc-text">linux中的分段机制</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%86%E9%A1%B5%E6%9C%BA%E5%88%B6"><span class="toc-number">1.2.2.</span> <span class="toc-text">分页机制</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%B8%80%E7%BA%A7%E9%A1%B5%E8%A1%A8"><span class="toc-number">1.2.2.1.</span> <span class="toc-text">一级页表</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#32%E4%BD%8D%E7%BB%8F%E5%85%B8%E5%88%86%E9%A1%B5"><span class="toc-number">1.2.2.2.</span> <span class="toc-text">32位经典分页</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%BF%99%E7%A7%8D%E5%9C%B0%E5%9D%80%E8%BD%AC%E6%8D%A2%E9%83%BD%E6%98%AF%E7%A1%AC%E4%BB%B6%E6%9D%A5%E8%87%AA%E5%8A%A8%E5%AE%8C%E6%88%90%E7%9A%84%EF%BC%8C%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E6%9D%A5%E5%A4%84%E7%90%86%E7%BC%BA%E9%A1%B5"><span class="toc-number">1.2.2.3.</span> <span class="toc-text">这种地址转换都是硬件来自动完成的，操作系统来处理缺页</span></a></li></ol></li></ol></li></ol></li></ol>
     </div>
 
     <div id="share-footer" style="display: none">
       <ul>
   <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://grxer.gitee.io/2023/04/08/32bit-x86-protected-mode/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://grxer.gitee.io/2023/04/08/32bit-x86-protected-mode/&text=32-bit x86 Protected mode"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://grxer.gitee.io/2023/04/08/32bit-x86-protected-mode/&title=32-bit x86 Protected mode"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://grxer.gitee.io/2023/04/08/32bit-x86-protected-mode/&is_video=false&description=32-bit x86 Protected mode"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" href="mailto:?subject=32-bit x86 Protected mode&body=Check out this article: https://grxer.gitee.io/2023/04/08/32bit-x86-protected-mode/"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://grxer.gitee.io/2023/04/08/32bit-x86-protected-mode/&title=32-bit x86 Protected mode"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://grxer.gitee.io/2023/04/08/32bit-x86-protected-mode/&title=32-bit x86 Protected mode"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://grxer.gitee.io/2023/04/08/32bit-x86-protected-mode/&title=32-bit x86 Protected mode"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://grxer.gitee.io/2023/04/08/32bit-x86-protected-mode/&title=32-bit x86 Protected mode"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://grxer.gitee.io/2023/04/08/32bit-x86-protected-mode/&name=32-bit x86 Protected mode&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://grxer.gitee.io/2023/04/08/32bit-x86-protected-mode/&t=32-bit x86 Protected mode"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://grxer.gitee.io/2023/04/08/32bit-x86-protected-mode/&text=IA-32 x86 Protected mode"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://grxer.gitee.io/2023/04/08/32bit-x86-protected-mode/&title=IA-32 x86 Protected mode"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://grxer.gitee.io/2023/04/08/32bit-x86-protected-mode/&is_video=false&description=IA-32 x86 Protected mode"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=IA-32 x86 Protected mode&body=Check out this article: https://grxer.gitee.io/2023/04/08/32bit-x86-protected-mode/"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://grxer.gitee.io/2023/04/08/32bit-x86-protected-mode/&title=IA-32 x86 Protected mode"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://grxer.gitee.io/2023/04/08/32bit-x86-protected-mode/&title=IA-32 x86 Protected mode"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://grxer.gitee.io/2023/04/08/32bit-x86-protected-mode/&title=IA-32 x86 Protected mode"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://grxer.gitee.io/2023/04/08/32bit-x86-protected-mode/&title=IA-32 x86 Protected mode"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://grxer.gitee.io/2023/04/08/32bit-x86-protected-mode/&name=IA-32 x86 Protected mode&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://grxer.gitee.io/2023/04/08/32bit-x86-protected-mode/&t=IA-32 x86 Protected mode"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
 </ul>
 
     </div>
