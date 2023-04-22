@@ -27,10 +27,9 @@
 <meta property="og:image" content="https://grxer.gitee.io/2023/04/08/32bit-x86-protected-mode/image-20230420195952065.png">
 <meta property="og:image" content="https://grxer.gitee.io/2023/04/08/32bit-x86-protected-mode/image-20230420191045242.png">
 <meta property="article:published_time" content="2023-04-08T10:44:24.000Z">
-<meta property="article:modified_time" content="2023-04-20T16:10:09.331Z">
+<meta property="article:modified_time" content="2023-04-22T03:52:58.859Z">
 <meta property="article:author" content="Grxer">
 <meta property="article:tag" content="Protected Mode">
-<meta property="article:tag" content="OS">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://grxer.gitee.io/2023/04/08/32bit-x86-protected-mode/image-20230420200038198.png">
     
@@ -156,7 +155,7 @@
       
     <div class="article-tag">
         <i class="fas fa-tag"></i>
-        <a class="tag-link-link" href="/tags/OS/" rel="tag">OS</a>, <a class="tag-link-link" href="/tags/Protected-Mode/" rel="tag">Protected Mode</a>
+        <a class="tag-link-link" href="/tags/Protected-Mode/" rel="tag">Protected Mode</a>
     </div>
 
 
@@ -259,7 +258,7 @@
 <p>这个时候一想，4k大小的二级页表有1024个，还外加一个4k目录表这不比之前的4M还大4k？</p>
 <p>这个时候我们分析下目录项的作用</p>
 <ol>
-<li>页目录项的P位表示是否在物理内存，这就说明二级页表本身也可能被交换到虚拟内存中，只有一部分需要的二级页表被加载到物理内存，其余可以放到磁盘，目录项的如果P位为0会触发缺页中断，缺页异常调用内核中的缺页异常处理程序把需要的页面映射到物理内存</li>
+<li>页目录项的P位表示是否在物理内存，这就说明二级页表本身也可能被交换到虚拟内存中，只有一部分需要的二级页表被加载到物理内存，其余可以放到磁盘，目录项的如果P位为0会触发缺页异常，缺页异常调用内核中的缺页异常处理程序把需要的页面映射到物理内存</li>
 <li>有了这个机制我们可以把页表分散到物理内存不同位置，而不是在一块连续的4M物理内存空间</li>
 <li>4k的页目录是一直在物理内存上的</li>
 </ol>
