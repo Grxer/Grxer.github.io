@@ -16,7 +16,7 @@
 <meta property="og:description" content="Floating-point CalculationKahan前复习一些浮点数的运算 A&#x3D;Ma*2Ea B&#x3D;Mb*2Eb 假设(Ea&gt;&#x3D;Eb) A±B&#x3D;(Ma±Mb*2Eb-Ea)*2Ea A*B&#x3D;(Ma*Mb)*2Ea+Eb A&#x2F;B&#x3D;(Ma&#x2F;Mb)*2Ea-Eb 加减法先求阶差，小的阶码往大的转换，所以小的阶码">
 <meta property="og:locale" content="en_US">
 <meta property="article:published_time" content="2023-04-23T14:24:36.000Z">
-<meta property="article:modified_time" content="2023-04-23T17:37:35.927Z">
+<meta property="article:modified_time" content="2023-04-24T03:43:38.377Z">
 <meta property="article:author" content="Grxer">
 <meta name="twitter:card" content="summary">
     
@@ -75,6 +75,8 @@
     <br/>
     <span id="actions">
       <ul>
+        
+        <li><a class="icon" aria-label="Previous post" href="/2023/04/24/linux-signal/"><i class="fas fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
         
         
         <li><a class="icon" aria-label="Next post" href="/2023/04/22/IA32-Interrupt-Exception/"><i class="fas fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
@@ -161,7 +163,7 @@
 <li>非规格化有效数，如0.11 需要左归</li>
 <li>有效数全零，需要把阶码也置全零</li>
 </ul>
-<p>因为有了附加位精度会得到提升，但是也依靠附加位做需要做舍入</p>
+<p>因为有了附加位精度会得到提升，但是也需要依靠附加位做舍入</p>
 <p>IEEE 754给出了四种rounding方式</p>
 <ul>
 <li>就近舍入(默认)<ul>
@@ -188,7 +190,8 @@
 
 <figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">grxer@Ubuntu22-wsl ~/s/test&gt; gcc -O2 -o test test.c</span><br><span class="line">grxer@Ubuntu22-wsl ~/s/test&gt; ./test</span><br><span class="line">2097152.000000</span><br><span class="line">40000000.000000⏎  </span><br></pre></td></tr></table></figure>
 
-<p>同时也可以看到这次我在TIMES比第一次后面多加了一个0，第一种累计法结果还是2097152.000000,也印证了相差过大时大数字会把小数字完全吃掉</p>
+<p>同时也可以看到这次我在TIMES比第一次后面多加了一个0，第一种累计法结果还是2097152.000000,也印证了相差过大时大数字会把小数字完全吃掉，本例中0.1阶码01111011&#x3D;123-127&#x3D;-4，2097152阶码10010100&#x3D;148-127&#x3D;21</p>
+<p>0.1有效数需要右移25位，但是他的有效数算上隐藏1最多24位，推测一下应该有一位的附加位作保护位</p>
 
   </div>
 </article>
