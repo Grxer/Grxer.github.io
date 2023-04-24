@@ -16,7 +16,7 @@
 <meta property="og:description" content="Linux对异常的处理陷入内核调用异常处理程序，对于故障(Fault)  如果处理程序可以修复的故障，比如正常的缺页，修复后回到断点处继续执行  如果不能修复的，比如越级，越权，越界，除0等，linux只会给进程发送一个信号，回到用户态，进程去调度相应的信号处理程序，这样做是快速在内核态完成异常处理，减小嵌套执行异常的可能性   linux里可以用kill -l查看信号列表，编号为1 ~ 31的信">
 <meta property="og:locale" content="en_US">
 <meta property="article:published_time" content="2023-04-24T03:16:22.000Z">
-<meta property="article:modified_time" content="2023-04-24T15:52:52.668Z">
+<meta property="article:modified_time" content="2023-04-24T16:32:06.333Z">
 <meta property="article:author" content="Grxer">
 <meta name="twitter:card" content="summary">
     
@@ -441,6 +441,11 @@
 <figure class="highlight c"><table><tr><td class="code"><pre><span class="line">grxer@Ubuntu22-wsl ~/s/test&gt; ./test</span><br><span class="line">^\</span><br><span class="line">ctrl+\</span><br><span class="line">not in blockmask</span><br></pre></td></tr></table></figure>
 
 <p>是这个意思了，这么简单的东西刚开始居然理解错了，艹</p>
+<p>完成一下最初想做的事</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;signal.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;assert.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;setjmp.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdlib.h&gt;</span></span></span><br><span class="line">jmp_buf env;</span><br><span class="line"><span class="type">void</span> <span class="title function_">signal_handler</span><span class="params">(<span class="type">int</span> sig)</span> &#123;</span><br><span class="line">    <span class="built_in">puts</span>(<span class="string">&quot;xxx&quot;</span>);</span><br><span class="line">    siglongjmp(env, <span class="number">1</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="type">__sighandler_t</span> rs = signal(SIGFPE, signal_handler);</span><br><span class="line">    assert(rs != SIG_ERR);</span><br><span class="line">    <span class="type">int</span> z = <span class="number">12</span>;</span><br><span class="line">    <span class="type">int</span> t = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">if</span> (sigsetjmp(env, <span class="number">1</span>) ==<span class="number">0</span> ) &#123;</span><br><span class="line">        z = z / t;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;%d\n&quot;</span>, z); </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">grxer@Ubuntu22-wsl ~/s/test&gt; ./test</span><br><span class="line">xxx</span><br><span class="line">12</span><br></pre></td></tr></table></figure>
+
 
   </div>
 </article>
