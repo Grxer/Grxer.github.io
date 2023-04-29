@@ -38,7 +38,7 @@
 <meta property="og:image" content="https://grxer.gitee.io/2023/03/19/23-2-21-elf/image-20230223005339928.png">
 <meta property="og:image" content="https://grxer.gitee.io/2023/03/19/23-2-21-elf/image-20230222232634953.png">
 <meta property="article:published_time" content="2023-03-19T02:03:34.000Z">
-<meta property="article:modified_time" content="2023-03-29T16:39:36.664Z">
+<meta property="article:modified_time" content="2023-04-29T03:35:17.727Z">
 <meta property="article:author" content="Grxer">
 <meta property="article:tag" content="ELF">
 <meta name="twitter:card" content="summary">
@@ -441,7 +441,7 @@
 <p><img src="/2023/03/19/23-2-21-elf/image-20230319004444739.png" alt="image-20230319004444739"></p>
 <p>导入表的size在d_tag&#x3D;2处</p>
 <p><img src="/2023/03/19/23-2-21-elf/image-20230319004959046.png" alt="image-20230319004959046"></p>
-<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">  Elf64_Addr    r_offset;	<span class="number">8</span>	<span class="comment">/* Address */</span>，写入导入地址，也就是got表</span><br><span class="line">  Elf64_Xword    r_info;		<span class="number">8</span>	<span class="comment">/* Relocation type and symbol index */</span>前<span class="number">32</span>位<span class="number">2</span> 位存储着重定位类型信息，后<span class="number">32</span>位存储着符号表索引从<span class="number">1</span>开始</span><br><span class="line">  Elf64_Sxword    r_addend;	<span class="number">8</span>	<span class="comment">/* Addend */</span></span><br><span class="line">&#125; Elf64_Rela;</span><br></pre></td></tr></table></figure>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">  Elf64_Addr    r_offset;	<span class="number">8</span>	<span class="comment">/* Address */</span>，写入导入地址，也就是got表</span><br><span class="line">  Elf64_Xword    r_info;		<span class="number">8</span>	<span class="comment">/* Relocation type and symbol index */</span>前<span class="number">32</span>位存储着重定位类型信息，后<span class="number">32</span>位存储着符号表索引从<span class="number">1</span>开始</span><br><span class="line">  Elf64_Sxword    r_addend;	<span class="number">8</span>	<span class="comment">/* Addend */</span></span><br><span class="line">&#125; Elf64_Rela;</span><br></pre></td></tr></table></figure>
 
 <p>选取一个分析</p>
 <p><img src="/2023/03/19/23-2-21-elf/image-20230319014528225.png" alt="image-20230319014528225"></p>

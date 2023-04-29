@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="baidu-site-verification" content="codeva-ROfYcqLkCh" />
+    <meta name="msvalidate.01" content="ECA3E06A0E52A2AC90C4B06F12981FB2" />
+    <meta name="description" content="ELF Static link 之前在elf文件解析时只是做了一下可执行文件elf从执行的视角看了如何依靠Program Header table加载到内存区执行的过程，这次补个从链接的视角看可重定位elf文件如何依靠Section Header table做静态链接成为可执行文件的 ?????????????????????????????????????????丑小鸭变天鹅??????????">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ELF Static link">
+<meta property="og:url" content="https://grxer.gitee.io/2023/04/28/static-link/index.html">
+<meta property="og:site_name" content="Computer Security">
+<meta property="og:description" content="ELF Static link 之前在elf文件解析时只是做了一下可执行文件elf从执行的视角看了如何依靠Program Header table加载到内存区执行的过程，这次补个从链接的视角看可重定位elf文件如何依靠Section Header table做静态链接成为可执行文件的 ?????????????????????????????????????????丑小鸭变天鹅??????????">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://grxer.gitee.io/2023/04/28/static-link/image-20230428222115232.png">
+<meta property="og:image" content="https://grxer.gitee.io/2023/04/28/static-link/image-20230428232104339.png">
+<meta property="og:image" content="https://grxer.gitee.io/2023/04/28/static-link/image-20230428232706551.png">
+<meta property="og:image" content="https://grxer.gitee.io/2023/04/28/static-link/image-20230429003128446.png">
+<meta property="og:image" content="https://grxer.gitee.io/2023/04/28/static-link/image-20230429234155494.png">
+<meta property="article:published_time" content="2023-04-28T12:46:44.000Z">
+<meta property="article:modified_time" content="2023-04-29T18:35:23.661Z">
+<meta property="article:author" content="Grxer">
+<meta property="article:tag" content="ELF">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://grxer.gitee.io/2023/04/28/static-link/image-20230428222115232.png">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
+    
+    <!-- title -->
+    <title>ELF Static link</title>
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="Menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="Menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="Top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fas fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a href="/search/">Search</a></li><!--
+     --><!--
+       --><li><a href="/tags/">Tag</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        
+        <li><a class="icon" aria-label="Next post" href="/2023/04/24/linux-signal/"><i class="fas fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="Back to top" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="Share post" href="#"><i class="fas fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://grxer.gitee.io/2023/04/28/static-link/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://grxer.gitee.io/2023/04/28/static-link/&text=ELF Static link"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://grxer.gitee.io/2023/04/28/static-link/&title=ELF Static link"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://grxer.gitee.io/2023/04/28/static-link/&is_video=false&description=ELF Static link"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=ELF Static link&body=Check out this article: https://grxer.gitee.io/2023/04/28/static-link/"><i class="fas fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://grxer.gitee.io/2023/04/28/static-link/&title=ELF Static link"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://grxer.gitee.io/2023/04/28/static-link/&title=ELF Static link"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://grxer.gitee.io/2023/04/28/static-link/&title=ELF Static link"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://grxer.gitee.io/2023/04/28/static-link/&title=ELF Static link"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://grxer.gitee.io/2023/04/28/static-link/&name=ELF Static link&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://grxer.gitee.io/2023/04/28/static-link/&t=ELF Static link"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    <div id="toc">
+      <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#ELF-Static-link"><span class="toc-number">1.</span> <span class="toc-text">ELF Static link</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%9E%E9%AA%8C%E7%8E%AF%E5%A2%83"><span class="toc-number">1.1.</span> <span class="toc-text">实验环境</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BC%96%E8%AF%91%E6%BC%AB%E8%B0%88"><span class="toc-number">1.2.</span> <span class="toc-text">编译漫谈</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%87%8D%E7%94%9F%E4%B9%8B%E6%88%91%E6%98%AFlinker"><span class="toc-number">1.3.</span> <span class="toc-text">重生之我是linker</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Relocatable-object-file"><span class="toc-number">1.3.1.</span> <span class="toc-text">Relocatable object file</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#static-link"><span class="toc-number">1.3.2.</span> <span class="toc-text">static link</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%A9%BA%E9%97%B4%E4%B8%8E%E5%9C%B0%E5%9D%80%E5%88%86%E9%85%8D"><span class="toc-number">1.3.2.1.</span> <span class="toc-text">空间与地址分配</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%AC%A6%E5%8F%B7%E8%A7%A3%E6%9E%90%E4%B8%8E%E9%87%8D%E5%AE%9A%E4%BD%8D"><span class="toc-number">1.3.2.2.</span> <span class="toc-text">符号解析与重定位</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#%E4%BB%80%E4%B9%88%E6%98%AFcommon%E5%9D%97-amp-amp-%E5%BC%BA%E7%AC%A6%E5%8F%B7%E5%BC%B1%E7%AC%A6%E5%8F%B7-amp-amp-%E5%BC%B1%E5%BC%95%E7%94%A8%E5%BC%BA%E5%BC%95%E7%94%A8"><span class="toc-number">1.3.2.2.1.</span> <span class="toc-text">什么是common块&amp;&amp;强符号弱符号&amp;&amp;弱引用强引用</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%87%8D%E5%AE%9A%E4%BD%8D"><span class="toc-number">1.3.2.3.</span> <span class="toc-text">重定位</span></a></li></ol></li></ol></li></ol></li></ol>
+    </div>
+  </span>
+</div>
+
+    
+    <div class="content index py4">
+        
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle" itemprop="name headline">
+        ELF Static link
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span itemprop="name">Grxer</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2023-04-28T12:46:44.000Z" itemprop="datePublished">2023-04-28</time>
+        
+      
+    </div>
+
+
+      
+
+      
+    <div class="article-tag">
+        <i class="fas fa-tag"></i>
+        <a class="tag-link-link" href="/tags/ELF/" rel="tag">ELF</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content" itemprop="articleBody">
+    <h1 id="ELF-Static-link"><a href="#ELF-Static-link" class="headerlink" title="ELF Static link"></a>ELF Static link</h1><p><img src="/2023/04/28/static-link/image-20230428222115232.png" alt="image-20230428222115232"></p>
+<p>之前在elf文件解析时只是做了一下可执行文件elf从执行的视角看了如何依靠Program Header table加载到内存区执行的过程，这次补个从链接的视角看可重定位elf文件如何依靠Section Header table做静态链接成为可执行文件的</p>
+<p>?????????????????????????????????????????丑小鸭变天鹅????????????????????????????????????</p>
+<h2 id="实验环境"><a href="#实验环境" class="headerlink" title="实验环境"></a>实验环境</h2><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">grxer@Ubuntu16 /m/h/S/l/chapter3&gt; gcc --version</span><br><span class="line">gcc (Ubuntu 5.4.0-6ubuntu1~16.04.12) 5.4.0 20160609</span><br><span class="line">Copyright (C) 2015 Free Software Foundation, Inc.</span><br><span class="line">This is free software; see the source for copying conditions.  There is NO</span><br><span class="line">warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.</span><br></pre></td></tr></table></figure>
+
+<p>中间会穿插一点11.3.0版本 just a little bit</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">grxer@Ubuntu22-wsl ~/s/nemu [SIGINT]&gt; gcc --version</span><br><span class="line">gcc (Ubuntu 11.3.0-1ubuntu1~22.04) 11.3.0</span><br><span class="line">Copyright (C) 2021 Free Software Foundation, Inc.</span><br><span class="line">This is free software; see the source for copying conditions.  There is NO</span><br><span class="line">warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.</span><br></pre></td></tr></table></figure>
+
+<p>工具主要是GNU Binutils  <a target="_blank" rel="noopener" href="https://www.gnu.org/software/binutils/">https://www.gnu.org/software/binutils/</a> 	</p>
+<p>以32位程序为例</p>
+<h2 id="编译漫谈"><a href="#编译漫谈" class="headerlink" title="编译漫谈"></a>编译漫谈</h2><p>从古老的传说hello world说起。。。。。。</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">()</span>&#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;hello world&quot;</span>);</span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>刚开始大部分人初学时基本上都是直接集成环境的ide一键编译运行，慢慢开始用一些编译工具，gcc,make等，</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">grxer@Ubuntu16 /m/h/S/l/chapter3&gt; gcc test2.c</span><br><span class="line">grxer@Ubuntu16 /m/h/S/l/chapter3&gt; ./a.out</span><br><span class="line">hello world⏎</span><br></pre></td></tr></table></figure>
+
+<p>但是gcc帮我们做的远比我们想象的多的多</p>
+<p>gcc提供给了我们一个选项来看显示编译和链接具体过程</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">verbose</span><br><span class="line">    Enable showing the tree dump <span class="keyword">for</span> each statement.</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">grxer@Ubuntu16 /m/h/S/l/chapter3&gt; gcc --verbose test2.c</span><br><span class="line">Using built-in specs.</span><br><span class="line">COLLECT_GCC=gcc</span><br><span class="line">COLLECT_LTO_WRAPPER=/usr/lib/gcc/x86_64-linux-gnu/<span class="number">5</span>/lto-wrapper</span><br><span class="line">Target: x86_64-linux-gnu</span><br><span class="line">Configured with: ../src/configure -v --with-pkgversion=<span class="string">&#x27;Ubuntu 5.4.0-6ubuntu1~16.04.12&#x27;</span> --with-bugurl=file:<span class="comment">///usr/share/doc/gcc-5/README.Bugs --enable-languages=c,ada,c++,java,go,d,fortran,objc,obj-c++ --prefix=/usr --program-suffix=-5 --enable-shared --enable-linker-build-id --libexecdir=/usr/lib --without-included-gettext --enable-threads=posix --libdir=/usr/lib --enable-nls --with-sysroot=/ --enable-clocale=gnu --enable-libstdcxx-debug --enable-libstdcxx-time=yes --with-default-libstdcxx-abi=new --enable-gnu-unique-object --disable-vtable-verify --enable-libmpx --enable-plugin --with-system-zlib --disable-browser-plugin --enable-java-awt=gtk --enable-gtk-cairo --with-java-home=/usr/lib/jvm/java-1.5.0-gcj-5-amd64/jre --enable-java-home --with-jvm-root-dir=/usr/lib/jvm/java-1.5.0-gcj-5-amd64 --with-jvm-jar-dir=/usr/lib/jvm-exports/java-1.5.0-gcj-5-amd64 --with-arch-directory=amd64 --with-ecj-jar=/usr/share/java/eclipse-ecj.jar --enable-objc-gc --enable-multiarch --disable-werror --with-arch-32=i686 --with-abi=m64 --with-multilib-list=m32,m64,mx32 --enable-multilib --with-tune=generic --enable-checking=release --build=x86_64-linux-gnu --host=x86_64-linux-gnu --target=x86_64-linux-gnu</span></span><br><span class="line">Thread model: posix</span><br><span class="line">gcc version <span class="number">5.4</span><span class="number">.0</span> <span class="number">20160609</span> (Ubuntu <span class="number">5.4</span><span class="number">.0</span><span class="number">-6u</span>buntu1~<span class="number">16.04</span><span class="number">.12</span>)</span><br><span class="line">COLLECT_GCC_OPTIONS=<span class="string">&#x27;-v&#x27;</span> <span class="string">&#x27;-mtune=generic&#x27;</span> <span class="string">&#x27;-march=x86-64&#x27;</span></span><br><span class="line"> /usr/lib/gcc/x86_64-linux-gnu/<span class="number">5</span>/cc1 -quiet -v -imultiarch x86_64-linux-gnu test2.c -quiet -dumpbase test2.c -mtune=generic -march=x86<span class="number">-64</span> -auxbase test2 -version -fstack-protector-strong -Wformat -Wformat-security -o /tmp/ccZSA6XB.s</span><br><span class="line">GNU C11 (Ubuntu <span class="number">5.4</span><span class="number">.0</span><span class="number">-6u</span>buntu1~<span class="number">16.04</span><span class="number">.12</span>) version <span class="number">5.4</span><span class="number">.0</span> <span class="number">20160609</span> (x86_64-linux-gnu)</span><br><span class="line">        compiled by GNU C version <span class="number">5.4</span><span class="number">.0</span> <span class="number">20160609</span>, GMP version <span class="number">6.1</span><span class="number">.0</span>, MPFR version <span class="number">3.1</span><span class="number">.4</span>, MPC version <span class="number">1.0</span><span class="number">.3</span></span><br><span class="line">GGC heuristics: --param ggc-min-expand=<span class="number">100</span> --param ggc-min-heapsize=<span class="number">131072</span></span><br><span class="line">ignoring nonexistent directory <span class="string">&quot;/usr/local/include/x86_64-linux-gnu&quot;</span></span><br><span class="line">ignoring nonexistent directory <span class="string">&quot;/usr/lib/gcc/x86_64-linux-gnu/5/../../../../x86_64-linux-gnu/include&quot;</span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;...&quot;</span> search starts here:</span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;...&gt;</span> search starts here:</span></span><br><span class="line"> /usr/lib/gcc/x86_64-linux-gnu/<span class="number">5</span>/include</span><br><span class="line"> /usr/local/include</span><br><span class="line"> /usr/lib/gcc/x86_64-linux-gnu/<span class="number">5</span>/include-fixed</span><br><span class="line"> /usr/include/x86_64-linux-gnu</span><br><span class="line"> /usr/include</span><br><span class="line">End of search <span class="built_in">list</span>.</span><br><span class="line">GNU C11 (Ubuntu <span class="number">5.4</span><span class="number">.0</span><span class="number">-6u</span>buntu1~<span class="number">16.04</span><span class="number">.12</span>) version <span class="number">5.4</span><span class="number">.0</span> <span class="number">20160609</span> (x86_64-linux-gnu)</span><br><span class="line">        compiled by GNU C version <span class="number">5.4</span><span class="number">.0</span> <span class="number">20160609</span>, GMP version <span class="number">6.1</span><span class="number">.0</span>, MPFR version <span class="number">3.1</span><span class="number">.4</span>, MPC version <span class="number">1.0</span><span class="number">.3</span></span><br><span class="line">GGC heuristics: --param ggc-min-expand=<span class="number">100</span> --param ggc-min-heapsize=<span class="number">131072</span></span><br><span class="line">Compiler executable checksum: <span class="number">8087146</span>d2ee737d238113fb57fabb1f2</span><br><span class="line">COLLECT_GCC_OPTIONS=<span class="string">&#x27;-v&#x27;</span> <span class="string">&#x27;-mtune=generic&#x27;</span> <span class="string">&#x27;-march=x86-64&#x27;</span></span><br><span class="line"> as -v -<span class="number">-64</span> -o /tmp/ccyxTcBb.o /tmp/ccZSA6XB.s</span><br><span class="line">GNU assembler version <span class="number">2.26</span><span class="number">.1</span> (x86_64-linux-gnu) using BFD version (GNU Binutils <span class="keyword">for</span> Ubuntu) <span class="number">2.26</span><span class="number">.1</span></span><br><span class="line">COMPILER_PATH=/usr/lib/gcc/x86_64-linux-gnu/<span class="number">5</span>/:/usr/lib/gcc/x86_64-linux-gnu/<span class="number">5</span>/:/usr/lib/gcc/x86_64-linux-gnu/:/usr/lib/gcc/x86_64-linux-gnu/<span class="number">5</span>/:/usr/lib/gcc/x86_64-linux-gnu/</span><br><span class="line">LIBRARY_PATH=/usr/lib/gcc/x86_64-linux-gnu/<span class="number">5</span>/:/usr/lib/gcc/x86_64-linux-gnu/<span class="number">5</span>/../../../x86_64-linux-gnu/:/usr/lib/gcc/x86_64-linux-gnu/<span class="number">5</span>/../../../../lib/:/lib/x86_64-linux-gnu/:/lib/../lib/:/usr/lib/x86_64-linux-gnu/:/usr/lib/../lib/:/usr/lib/gcc/x86_64-linux-gnu/<span class="number">5</span>/../../../:/lib/:/usr/lib/</span><br><span class="line">COLLECT_GCC_OPTIONS=<span class="string">&#x27;-v&#x27;</span> <span class="string">&#x27;-mtune=generic&#x27;</span> <span class="string">&#x27;-march=x86-64&#x27;</span></span><br><span class="line"> /usr/lib/gcc/x86_64-linux-gnu/<span class="number">5</span>/collect2 -plugin /usr/lib/gcc/x86_64-linux-gnu/<span class="number">5</span>/liblto_plugin.so -plugin-opt=/usr/lib/gcc/x86_64-linux-gnu/<span class="number">5</span>/lto-wrapper -plugin-opt=-fresolution=/tmp/ccvOb2eL.res -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lc -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lgcc_s --sysroot=/ --build-id --eh-frame-hdr -m elf_x86_64 --hash-style=gnu --as-needed -dynamic-linker /lib64/ld-linux-x86<span class="number">-64.</span>so<span class="number">.2</span> -z relro /usr/lib/gcc/x86_64-linux-gnu/<span class="number">5</span>/../../../x86_64-linux-gnu/crt1.o /usr/lib/gcc/x86_64-linux-gnu/<span class="number">5</span>/../../../x86_64-linux-gnu/crti.o /usr/lib/gcc/x86_64-linux-gnu/<span class="number">5</span>/crtbegin.o -L/usr/lib/gcc/x86_64-linux-gnu/<span class="number">5</span> -L/usr/lib/gcc/x86_64-linux-gnu/<span class="number">5</span>/../../../x86_64-linux-gnu -L/usr/lib/gcc/x86_64-linux-gnu/<span class="number">5</span>/../../../../lib -L/lib/x86_64-linux-gnu -L/lib/../lib -L/usr/lib/x86_64-linux-gnu -L/usr/lib/../lib -L/usr/lib/gcc/x86_64-linux-gnu/<span class="number">5</span>/../../.. /tmp/ccyxTcBb.o -lgcc --as-needed -lgcc_s --no-as-needed -lc -lgcc --as-needed -lgcc_s --no-as-needed /usr/lib/gcc/x86_64-linux-gnu/<span class="number">5</span>/crtend.o /usr/lib/gcc/x86_64-linux-gnu/<span class="number">5</span>/../../../x86_64-linux-gnu/crtn.o</span><br></pre></td></tr></table></figure>
+
+<p>tmd，这合理吗? 哈，这很合理!</p>
+<p>尝试着去看一下，会发现一些我们原本熟悉的东西</p>
+<p>刚开始输出了一些我们gcc的版本信息等</p>
+<p>熟悉的cc1去做预处理并对预处理过的文件做编译(不知道为什么没有看见cpp去做预处理的身影)，这一步是本身就极其复杂的，语法树什么的，更别提代码优化等等，具体的东西可能要去补补编译原理 ps:这学期给自己挖的坑够多了，只能下次一定</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">/usr/lib/gcc/x86_64-linux-gnu/<span class="number">5</span>/cc1 -quiet -v -imultiarch x86_64-linux-gnu test2.c -quiet -dumpbase test2.c -mtune=generic -march=x86<span class="number">-64</span> -auxbase test2 -version -fstack-protector-strong -Wformat -Wformat-security -o /tmp/ccZSA6XB.s</span><br></pre></td></tr></table></figure>
+
+<p>打印出他搜索头文件的路径</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">ignoring nonexistent directory &quot;/usr/local/include/x86_64-linux-gnu&quot;</span><br><span class="line">ignoring nonexistent directory &quot;/usr/lib/gcc/x86_64-linux-gnu/5/../../../../x86_64-linux-gnu/include&quot;</span><br><span class="line">#include &quot;...&quot; search starts here:</span><br><span class="line">#include &lt;...&gt; search starts here:</span><br><span class="line"> /usr/lib/gcc/x86_64-linux-gnu/5/include</span><br><span class="line"> /usr/local/include</span><br><span class="line"> /usr/lib/gcc/x86_64-linux-gnu/5/include-fixed</span><br><span class="line"> /usr/include/x86_64-linux-gnu</span><br><span class="line"> /usr/include</span><br><span class="line">End of search list.</span><br></pre></td></tr></table></figure>
+
+<p>as 汇编器去做汇编，就是机械的翻译汇编到机器码</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">as -v --64 -o /tmp/ccyxTcBb.o /tmp/ccZSA6XB.s</span><br></pre></td></tr></table></figure>
+
+<p>后面从<code> /usr/lib/gcc/x86_64-linux-gnu/5/collect2</code>到最后<code>/x86_64-linux-gnu/crtn.o</code>都是在用collect2做链接 collect2是ld链接器的一个封装</p>
+<p>我们要这次要研究的就是ld究竟怎么做的链接，怎么把多个可能互相引用的可重定位文件链接成一个可执行文件的</p>
+<h2 id="重生之我是linker"><a href="#重生之我是linker" class="headerlink" title="重生之我是linker"></a>重生之我是linker</h2><p>把自己想象成linker，我们有的是可重定位目标文件，我们要把他变为可执行文件,首先要对有编译器和汇编器生成的可重定位目标文件做个了解，编译器给了他什么，如果什么都没有我们linker凭什么或者说何德何能把他变为可执行目标文件</p>
+<p>linker: ?什么都没有?不好意思我做不到!</p>
+<h3 id="Relocatable-object-file"><a href="#Relocatable-object-file" class="headerlink" title="Relocatable object file"></a>Relocatable object file</h3><p>ELF里的一些定义符号</p>
+<pre><code>The following types are used for  N-bit  architectures  (N=32,64,  ElfN
+stands for Elf32 or Elf64, uintN_t stands for uint32_t or uint64_t):
+
+ElfN_Addr       Unsigned program address, uintN_t
+ElfN_Off        Unsigned file offset, uintN_t
+ElfN_Section    Unsigned section index, uint16_t
+ElfN_Versym     Unsigned version symbol information, uint16_t
+Elf_Byte        unsigned char
+ElfN_Half       uint16_t
+ElfN_Sword      int32_t
+ElfN_Word       uint32_t
+ElfN_Sxword     int64_t
+ElfN_Xword      uint64_t
+</code></pre>
+<p> simple_section.c</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="type">int</span> <span class="title function_">printf</span><span class="params">(<span class="type">const</span> <span class="type">char</span>* format, ...)</span>;</span><br><span class="line"></span><br><span class="line"><span class="type">int</span> global_init_var = <span class="number">84</span>;</span><br><span class="line"><span class="type">int</span> global_uninit_var;</span><br><span class="line"><span class="type">static</span> <span class="type">int</span> global_static_var;</span><br><span class="line"></span><br><span class="line"><span class="keyword">extern</span> <span class="type">int</span> reference_to_out;</span><br><span class="line"></span><br><span class="line"><span class="type">void</span> <span class="title function_">func1</span><span class="params">(<span class="type">int</span> i)</span> &#123;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;%d\n&quot;</span>, i);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">(<span class="type">void</span>)</span> &#123;</span><br><span class="line">    <span class="type">static</span> <span class="type">int</span> static_var = <span class="number">85</span>;</span><br><span class="line">    <span class="type">static</span> <span class="type">int</span> static_var2;</span><br><span class="line"></span><br><span class="line">    <span class="type">int</span> a = <span class="number">1</span>;</span><br><span class="line">    <span class="type">int</span> b;</span><br><span class="line"></span><br><span class="line">    func1(static_var + static_var2 + a + b);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> a;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">grxer@Ubuntu16 /m/h/S/l/chapter3&gt; gcc -m32 -c simple_section.c</span><br><span class="line">grxer@Ubuntu16 /m/h/S/l/chapter3&gt; file simple_section.o</span><br><span class="line">simple_section.o: ELF <span class="number">32</span>-bit LSB relocatable, Intel <span class="number">80386</span>, version <span class="number">1</span> (SYSV), not stripped</span><br></pre></td></tr></table></figure>
+
+<p>ELF文件，链接我们依靠的是他的section head table ，linker哪里找到他呢?</p>
+<p>ELF header里</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">define</span> EI_NIDENT   16</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> &#123;</span></span><br><span class="line">    <span class="type">unsigned</span> <span class="type">char</span>   e_ident[EI_NIDENT]; <span class="comment">/* ELF文件标识 */</span></span><br><span class="line">    Elf32_Half      e_type;             <span class="comment">/* 文件类型 */</span></span><br><span class="line">    Elf32_Half      e_machine;          <span class="comment">/* 机器类型 */</span></span><br><span class="line">    Elf32_Word      e_version;          <span class="comment">/* 文件版本 */</span></span><br><span class="line">    Elf32_Addr      e_entry;            <span class="comment">/* 程序入口地址 */</span></span><br><span class="line">    Elf32_Off       e_phoff;            <span class="comment">/* 程序头表偏移 */</span></span><br><span class="line">    Elf32_Off       e_shoff;            <span class="comment">/* 节头表偏移 */</span></span><br><span class="line">    Elf32_Word      e_flags;            <span class="comment">/* 文件标志 */</span></span><br><span class="line">    Elf32_Half      e_ehsize;           <span class="comment">/* ELF头大小 */</span></span><br><span class="line">    Elf32_Half      e_phentsize;        <span class="comment">/* 程序头表项大小 */</span></span><br><span class="line">    Elf32_Half      e_phnum;            <span class="comment">/* 程序头表项数量 */</span></span><br><span class="line">    Elf32_Half      e_shentsize;        <span class="comment">/* 节头表项大小 */</span></span><br><span class="line">    Elf32_Half      e_shnum;            <span class="comment">/* 节头表项数量 */</span></span><br><span class="line">    Elf32_Half      e_shstrndx;         <span class="comment">/* 节头表字符串表索引 */</span></span><br><span class="line">&#125; Elf32_Ehdr;</span><br></pre></td></tr></table></figure>
+
+<p><code>e_shoff</code>(section header table offset)给出了在文件里的偏移，e_shnum，e_shentsize节头表项大小和数量</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">grxer@Ubuntu16 /m/h/S/l/chapter3&gt; readelf -h simple_section.o</span><br><span class="line">ELF Header:</span><br><span class="line">  Magic:   7f 45 4c 46 01 01 01 00 00 00 00 00 00 00 00 00</span><br><span class="line">  Class:                             ELF32</span><br><span class="line">  Data:                              2&#x27;s complement, little endian</span><br><span class="line">  Version:                           1 (current)</span><br><span class="line">  OS/ABI:                            UNIX - System V</span><br><span class="line">  ABI Version:                       0</span><br><span class="line">  Type:                              REL (Relocatable file)</span><br><span class="line">  Machine:                           Intel 80386</span><br><span class="line">  Version:                           0x1</span><br><span class="line">  Entry point address:               0x0</span><br><span class="line">  Start of program headers:          0 (bytes into file)</span><br><span class="line">  Start of section headers:          868 (bytes into file)</span><br><span class="line">  Flags:                             0x0</span><br><span class="line">  Size of this header:               52 (bytes)</span><br><span class="line">  Size of program headers:           0 (bytes)</span><br><span class="line">  Number of program headers:         0</span><br><span class="line">  Size of section headers:           40 (bytes)</span><br><span class="line">  Number of section headers:         13</span><br><span class="line">  Section header string table index: 10</span><br></pre></td></tr></table></figure>
+
+<p>看一下各个section</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">There are 13 section headers, starting at offset 0x364:</span><br><span class="line"></span><br><span class="line">Section Headers:</span><br><span class="line">  [Nr] Name              Type            Addr     Off    Size   ES Flg Lk Inf Al</span><br><span class="line">  [ 0]                   NULL            00000000 000000 000000 00      0   0  0</span><br><span class="line">  [ 1] .text             PROGBITS        00000000 000034 000062 00  AX  0   0  1</span><br><span class="line">  [ 2] .rel.text         REL             00000000 0002cc 000028 08   I 11   1  4</span><br><span class="line">  [ 3] .data             PROGBITS        00000000 000098 000008 00  WA  0   0  4</span><br><span class="line">  [ 4] .bss              NOBITS          00000000 0000a0 000008 00  WA  0   0  4</span><br><span class="line">  [ 5] .rodata           PROGBITS        00000000 0000a0 000004 00   A  0   0  1</span><br><span class="line">  [ 6] .comment          PROGBITS        00000000 0000a4 000036 01  MS  0   0  1</span><br><span class="line">  [ 7] .note.GNU-stack   PROGBITS        00000000 0000da 000000 00      0   0  1</span><br><span class="line">  [ 8] .eh_frame         PROGBITS        00000000 0000dc 000064 00   A  0   0  4</span><br><span class="line">  [ 9] .rel.eh_frame     REL             00000000 0002f4 000010 08   I 11   8  4</span><br><span class="line">  [10] .shstrtab         STRTAB          00000000 000304 00005f 00      0   0  1</span><br><span class="line">  [11] .symtab           SYMTAB          00000000 000140 000110 10     12  12  4</span><br><span class="line">  [12] .strtab           STRTAB          00000000 000250 000079 00      0   0  1</span><br><span class="line">Key to Flags:</span><br><span class="line">  W (write), A (alloc), X (execute), M (merge), S (strings)</span><br><span class="line">  I (info), L (link order), G (group), T (TLS), E (exclude), x (unknown)</span><br><span class="line">  O (extra OS processing required) o (OS specific), p (processor specific)</span><br></pre></td></tr></table></figure>
+
+<p>section head table可以理解为一个Elf32_Shdr结构体的数组 Elf32_Shdr结构来描述具体的section属性</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> &#123;</span></span><br><span class="line">    Elf32_Word  sh_name;        <span class="comment">// 节名称在 .shstrtab 节中的索引</span></span><br><span class="line">    Elf32_Word  sh_type;        <span class="comment">// 节类型</span></span><br><span class="line">    Elf32_Word  sh_flags;       <span class="comment">// 节标志</span></span><br><span class="line">    Elf32_Addr  sh_addr;        <span class="comment">// 节的内存地址</span></span><br><span class="line">    Elf32_Off   sh_offset;      <span class="comment">// 节在文件中的偏移量</span></span><br><span class="line">    Elf32_Word  sh_size;        <span class="comment">// 节的大小（字节数）</span></span><br><span class="line">    Elf32_Word  sh_link;        <span class="comment">// 链接到的其他节的索引</span></span><br><span class="line">    Elf32_Word  sh_info;        <span class="comment">// 额外信息</span></span><br><span class="line">    Elf32_Word  sh_addralign;   <span class="comment">// 对齐方式</span></span><br><span class="line">    Elf32_Word  sh_entsize;     <span class="comment">// 节包含实体的大小</span></span><br><span class="line">&#125; Elf32_Shdr;</span><br></pre></td></tr></table></figure>
+
+<p><strong>sh_name</strong></p>
+<p>节名称在 .shstrtab 节中的索引， .shstrtab是节头表字符串表索引</p>
+<p>具体来看下我们例子的 .shstrtab是的name是怎么解析的，linker首先从elf header里得到.shstrtab在section head table的第十个section e_shoff+e_shstrndx*e_shentsize&#x3D;904+10*40&#x3D;1304&#x3D;0x508,找到这个section的描述结构体</p>
+<p><img src="/2023/04/28/static-link/image-20230428232104339.png" alt="image-20230428232104339"></p>
+<p>前四个字节就是sh_name在.shstrtab 节中的索引，找到sh_offset为0x0328，即为shstrtab 节在文件中的位置，加上sh_name这个索引0x0328+0x11&#x3D;0x339</p>
+<p><img src="/2023/04/28/static-link/image-20230428232706551.png" alt="image-20230428232706551"></p>
+<p>就可以找到这个名字</p>
+<p>之所以要这样这样存储名字，是因为我们的ELF必须要有一个对所有文件固定的格式，但是名字往往是不固定的长度，如果直接存储这个字符串，就不能用一个统一的结构体去描述，存储索引完美解决</p>
+<p><strong>sh_type</strong></p>
+<p>决定了节的类型 SHT_SYMTAB，SHT_RELA，SHT_DYNAMIC，SHT_REL等</p>
+<p><strong>sh_flags</strong></p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">SHF_WRITE     This section  contains  data  that  should  be writable during process execution.</span><br><span class="line"></span><br><span class="line">SHF_ALLOC      This  section  occupies  memory during process execution. Some  control  sections  <span class="keyword">do</span> notreside  in the memory image of an object file. This attribute is off <span class="keyword">for</span> those sections.表示该节在进程空间里要分配内存，有些节是一些控制信息不会被加载到进程空间，一般代码段数据段，和.bss段都会有这个表示，另外一些节完成任务之后就扔了尼，嘿嘿</span><br><span class="line"></span><br><span class="line">SHF_EXECINSTR  This  section  contains   executable   machineinstructions.</span><br><span class="line"></span><br><span class="line">SHF_MASKPROC   All  bits  included  in this mask are reserved <span class="keyword">for</span> processor-specific semantics.</span><br></pre></td></tr></table></figure>
+
+<p><strong>sh_link</strong>和<strong>sh_info</strong>只有节的类型是与链接相关时才会有用</p>
+<p><img src="/2023/04/28/static-link/image-20230429003128446.png" alt="image-20230429003128446"></p>
+<p><strong>sh_entsize</strong></p>
+<p>有一些节的内容是一张表，其中每一个表项的大小是固定的，比如符号表。 对于这种表来说，本成员指定其每一个表项的大小。</p>
+<h3 id="static-link"><a href="#static-link" class="headerlink" title="static link"></a>static link</h3><p><strong>a.c</strong></p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="keyword">extern</span> <span class="type">int</span> shared;</span><br><span class="line"></span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">()</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="type">int</span> a = <span class="number">6</span>;</span><br><span class="line">    swap(&amp;a, &amp;shared);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>b.c</strong></p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="type">int</span> shared = <span class="number">1</span>;</span><br><span class="line"></span><br><span class="line"><span class="type">void</span> <span class="title function_">swap</span><span class="params">(<span class="type">int</span>* a, <span class="type">int</span>* b)</span> &#123;</span><br><span class="line">    *a ^= *b ^= *a ^= *b;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">grxer@Ubuntu16 /m/h/S/l/chapter4&gt; gcc -m32 -fno-<span class="built_in">stack</span>-protector -c a.c b.c</span><br><span class="line">a.c: In function ‘main’:</span><br><span class="line">a.c:<span class="number">6</span>:<span class="number">5</span>: warning: implicit declaration of function ‘swap’ [-Wimplicit-function-declaration]</span><br><span class="line">     swap(&amp;a, &amp;shared);</span><br><span class="line">     ^</span><br><span class="line">grxer@Ubuntu16 /m/h/S/l/chapter4&gt; ld -m elf_i386 a.o b.o -e main -o  ab</span><br><span class="line">grxer@Ubuntu16 /m/h/S/l/chapter4&gt; file a.o b.o ab</span><br><span class="line">a.o: ELF <span class="number">32</span>-bit LSB relocatable, Intel <span class="number">80386</span>, version <span class="number">1</span> (SYSV), not stripped</span><br><span class="line">b.o: ELF <span class="number">32</span>-bit LSB relocatable, Intel <span class="number">80386</span>, version <span class="number">1</span> (SYSV), not stripped</span><br><span class="line">ab:  ELF <span class="number">32</span>-bit LSB executable, Intel <span class="number">80386</span>, version <span class="number">1</span> (SYSV), statically linked, not stripped</span><br></pre></td></tr></table></figure>
+
+<p>把canary关了，不然链接是找不到__stack_chk_fail，应为我们并没有ld标准链接库，</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">grxer@Ubuntu16 /m/h/S/l/chapter4&gt; gcc -m32  -c a.c b.c</span><br><span class="line">a.c: In function ‘main’:</span><br><span class="line">a.c:6:5: warning: implicit declaration of function ‘swap’ [-Wimplicit-function-declaration]</span><br><span class="line">     swap(&amp;a, &amp;shared);</span><br><span class="line">     ^</span><br><span class="line">grxer@Ubuntu16 /m/h/S/l/chapter4&gt; checksec a.o</span><br><span class="line">[*] &#x27;/mnt/hgfs/Share/link-load-library-code/chapter4/a.o&#x27;</span><br><span class="line">    Arch:     i386-32-little</span><br><span class="line">    RELRO:    No RELRO</span><br><span class="line">    Stack:    Canary found</span><br><span class="line">    NX:       NX enabled</span><br><span class="line">    PIE:      No PIE (0x0)</span><br><span class="line">grxer@Ubuntu16 /m/h/S/l/chapter4&gt; gcc -m32 -fno-stack-protector -c a.c b.c</span><br><span class="line">a.c: In function ‘main’:</span><br><span class="line">a.c:6:5: warning: implicit declaration of function ‘swap’ [-Wimplicit-function-declaration]</span><br><span class="line">     swap(&amp;a, &amp;shared);</span><br><span class="line">     ^</span><br><span class="line">grxer@Ubuntu16 /m/h/S/l/chapter4&gt; checksec a.o</span><br><span class="line">[*] &#x27;/mnt/hgfs/Share/link-load-library-code/chapter4/a.o&#x27;</span><br><span class="line">    Arch:     i386-32-little</span><br><span class="line">    RELRO:    No RELRO</span><br><span class="line">    Stack:    No canary found</span><br><span class="line">    NX:       NX enabled</span><br><span class="line">    PIE:      No PIE (0x0)</span><br></pre></td></tr></table></figure>
+
+<p>ld时-e指定下入口为mian，不然ld时找不到默认的_start</p>
+<p>gcc11.3还需要-fno-pie把pie关了,不然他的重定位类型似乎是按照共享库来的，我们先搞静态，gcc5加不加都行</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">grxer@Ubuntu16 /m/h/S/l/chapter4&gt; readelf -S a.o</span><br><span class="line">There are <span class="number">12</span> section headers, starting at offset <span class="number">0x220</span>:</span><br><span class="line"></span><br><span class="line">Section Headers:</span><br><span class="line">  [Nr] Name              Type            Addr     Off    Size   ES Flg Lk Inf Al</span><br><span class="line">  [ <span class="number">0</span>]                   <span class="literal">NULL</span>            <span class="number">00000000</span> <span class="number">000000</span> <span class="number">000000</span> <span class="number">00</span>      <span class="number">0</span>   <span class="number">0</span>  <span class="number">0</span></span><br><span class="line">  [ <span class="number">1</span>] .text             PROGBITS        <span class="number">00000000</span> <span class="number">000034</span> <span class="number">000039</span> <span class="number">00</span>  AX  <span class="number">0</span>   <span class="number">0</span>  <span class="number">1</span></span><br><span class="line">  [ <span class="number">2</span>] .rel.text         REL             <span class="number">00000000</span> <span class="number">0001b</span>0 <span class="number">000010</span> <span class="number">08</span>   I <span class="number">10</span>   <span class="number">1</span>  <span class="number">4</span></span><br><span class="line">  [ <span class="number">3</span>] .data             PROGBITS        <span class="number">00000000</span> <span class="number">00006</span>d <span class="number">000000</span> <span class="number">00</span>  WA  <span class="number">0</span>   <span class="number">0</span>  <span class="number">1</span></span><br><span class="line">  [ <span class="number">4</span>] .bss              NOBITS          <span class="number">00000000</span> <span class="number">00006</span>d <span class="number">000000</span> <span class="number">00</span>  WA  <span class="number">0</span>   <span class="number">0</span>  <span class="number">1</span></span><br><span class="line">  [ <span class="number">5</span>] .comment          PROGBITS        <span class="number">00000000</span> <span class="number">00006</span>d <span class="number">000036</span> <span class="number">01</span>  MS  <span class="number">0</span>   <span class="number">0</span>  <span class="number">1</span></span><br><span class="line">  [ <span class="number">6</span>] .note.GNU-<span class="built_in">stack</span>   PROGBITS        <span class="number">00000000</span> <span class="number">0000</span>a3 <span class="number">000000</span> <span class="number">00</span>      <span class="number">0</span>   <span class="number">0</span>  <span class="number">1</span></span><br><span class="line">  [ <span class="number">7</span>] .eh_frame         PROGBITS        <span class="number">00000000</span> <span class="number">0000</span>a4 <span class="number">000044</span> <span class="number">00</span>   A  <span class="number">0</span>   <span class="number">0</span>  <span class="number">4</span></span><br><span class="line">  [ <span class="number">8</span>] .rel.eh_frame     REL             <span class="number">00000000</span> <span class="number">0001</span>c0 <span class="number">000008</span> <span class="number">08</span>   I <span class="number">10</span>   <span class="number">7</span>  <span class="number">4</span></span><br><span class="line">  [ <span class="number">9</span>] .shstrtab         STRTAB          <span class="number">00000000</span> <span class="number">0001</span>c8 <span class="number">000057</span> <span class="number">00</span>      <span class="number">0</span>   <span class="number">0</span>  <span class="number">1</span></span><br><span class="line">  [<span class="number">10</span>] .symtab           SYMTAB          <span class="number">00000000</span> <span class="number">0000e8</span> <span class="number">0000b</span>0 <span class="number">10</span>     <span class="number">11</span>   <span class="number">8</span>  <span class="number">4</span></span><br><span class="line">  [<span class="number">11</span>] .strtab           STRTAB          <span class="number">00000000</span> <span class="number">000198</span> <span class="number">000016</span> <span class="number">00</span>      <span class="number">0</span>   <span class="number">0</span>  <span class="number">1</span></span><br><span class="line">Key to Flags:</span><br><span class="line">  W (write), A (alloc), X (execute), M (merge), S (strings)</span><br><span class="line">  I (info), L (link order), G (group), T (TLS), E (exclude), x (unknown)</span><br><span class="line">  O (extra OS processing required) o (OS specific), p (processor specific)</span><br><span class="line">grxer@Ubuntu16 /m/h/S/l/chapter4&gt; readelf -S b.o</span><br><span class="line">There are <span class="number">11</span> section headers, starting at offset <span class="number">0x1f4</span>:</span><br><span class="line"></span><br><span class="line">Section Headers:</span><br><span class="line">  [Nr] Name              Type            Addr     Off    Size   ES Flg Lk Inf Al</span><br><span class="line">  [ <span class="number">0</span>]                   <span class="literal">NULL</span>            <span class="number">00000000</span> <span class="number">000000</span> <span class="number">000000</span> <span class="number">00</span>      <span class="number">0</span>   <span class="number">0</span>  <span class="number">0</span></span><br><span class="line">  [ <span class="number">1</span>] .text             PROGBITS        <span class="number">00000000</span> <span class="number">000034</span> <span class="number">000039</span> <span class="number">00</span>  AX  <span class="number">0</span>   <span class="number">0</span>  <span class="number">1</span></span><br><span class="line">  [ <span class="number">2</span>] .data             PROGBITS        <span class="number">00000000</span> <span class="number">000070</span> <span class="number">000004</span> <span class="number">00</span>  WA  <span class="number">0</span>   <span class="number">0</span>  <span class="number">4</span></span><br><span class="line">  [ <span class="number">3</span>] .bss              NOBITS          <span class="number">00000000</span> <span class="number">000074</span> <span class="number">000000</span> <span class="number">00</span>  WA  <span class="number">0</span>   <span class="number">0</span>  <span class="number">1</span></span><br><span class="line">  [ <span class="number">4</span>] .comment          PROGBITS        <span class="number">00000000</span> <span class="number">000074</span> <span class="number">000036</span> <span class="number">01</span>  MS  <span class="number">0</span>   <span class="number">0</span>  <span class="number">1</span></span><br><span class="line">  [ <span class="number">5</span>] .note.GNU-<span class="built_in">stack</span>   PROGBITS        <span class="number">00000000</span> <span class="number">0000</span>aa <span class="number">000000</span> <span class="number">00</span>      <span class="number">0</span>   <span class="number">0</span>  <span class="number">1</span></span><br><span class="line">  [ <span class="number">6</span>] .eh_frame         PROGBITS        <span class="number">00000000</span> <span class="number">0000</span>ac <span class="number">000038</span> <span class="number">00</span>   A  <span class="number">0</span>   <span class="number">0</span>  <span class="number">4</span></span><br><span class="line">  [ <span class="number">7</span>] .rel.eh_frame     REL             <span class="number">00000000</span> <span class="number">000198</span> <span class="number">000008</span> <span class="number">08</span>   I  <span class="number">9</span>   <span class="number">6</span>  <span class="number">4</span></span><br><span class="line">  [ <span class="number">8</span>] .shstrtab         STRTAB          <span class="number">00000000</span> <span class="number">0001</span>a0 <span class="number">000053</span> <span class="number">00</span>      <span class="number">0</span>   <span class="number">0</span>  <span class="number">1</span></span><br><span class="line">  [ <span class="number">9</span>] .symtab           SYMTAB          <span class="number">00000000</span> <span class="number">0000e4</span> <span class="number">0000</span>a0 <span class="number">10</span>     <span class="number">10</span>   <span class="number">8</span>  <span class="number">4</span></span><br><span class="line">  [<span class="number">10</span>] .strtab           STRTAB          <span class="number">00000000</span> <span class="number">000184</span> <span class="number">000011</span> <span class="number">00</span>      <span class="number">0</span>   <span class="number">0</span>  <span class="number">1</span></span><br><span class="line">Key to Flags:</span><br><span class="line">  W (write), A (alloc), X (execute), M (merge), S (strings)</span><br><span class="line">  I (info), L (link order), G (group), T (TLS), E (exclude), x (unknown)</span><br><span class="line">  O (extra OS processing required) o (OS specific), p (processor specific)</span><br><span class="line">grxer@Ubuntu16 /m/h/S/l/chapter4&gt; readelf -S ab</span><br><span class="line">There are <span class="number">8</span> section headers, starting at offset <span class="number">0x2e4</span>:</span><br><span class="line"></span><br><span class="line">Section Headers:</span><br><span class="line">  [Nr] Name              Type            Addr     Off    Size   ES Flg Lk Inf Al</span><br><span class="line">  [ <span class="number">0</span>]                   <span class="literal">NULL</span>            <span class="number">00000000</span> <span class="number">000000</span> <span class="number">000000</span> <span class="number">00</span>      <span class="number">0</span>   <span class="number">0</span>  <span class="number">0</span></span><br><span class="line">  [ <span class="number">1</span>] .text             PROGBITS        <span class="number">08048094</span> <span class="number">000094</span> <span class="number">000072</span> <span class="number">00</span>  AX  <span class="number">0</span>   <span class="number">0</span>  <span class="number">1</span></span><br><span class="line">  [ <span class="number">2</span>] .eh_frame         PROGBITS        <span class="number">08048108</span> <span class="number">000108</span> <span class="number">000064</span> <span class="number">00</span>   A  <span class="number">0</span>   <span class="number">0</span>  <span class="number">4</span></span><br><span class="line">  [ <span class="number">3</span>] .data             PROGBITS        <span class="number">0804916</span>c <span class="number">00016</span>c <span class="number">000004</span> <span class="number">00</span>  WA  <span class="number">0</span>   <span class="number">0</span>  <span class="number">4</span></span><br><span class="line">  [ <span class="number">4</span>] .comment          PROGBITS        <span class="number">00000000</span> <span class="number">000170</span> <span class="number">000035</span> <span class="number">01</span>  MS  <span class="number">0</span>   <span class="number">0</span>  <span class="number">1</span></span><br><span class="line">  [ <span class="number">5</span>] .shstrtab         STRTAB          <span class="number">00000000</span> <span class="number">0002</span>aa <span class="number">00003</span>a <span class="number">00</span>      <span class="number">0</span>   <span class="number">0</span>  <span class="number">1</span></span><br><span class="line">  [ <span class="number">6</span>] .symtab           SYMTAB          <span class="number">00000000</span> <span class="number">0001</span>a8 <span class="number">0000</span>d0 <span class="number">10</span>      <span class="number">7</span>   <span class="number">7</span>  <span class="number">4</span></span><br><span class="line">  [ <span class="number">7</span>] .strtab           STRTAB          <span class="number">00000000</span> <span class="number">000278</span> <span class="number">000032</span> <span class="number">00</span>      <span class="number">0</span>   <span class="number">0</span>  <span class="number">1</span></span><br><span class="line">Key to Flags:</span><br><span class="line">  W (write), A (alloc), X (execute), M (merge), S (strings)</span><br><span class="line">  I (info), L (link order), G (group), T (TLS), E (exclude), x (unknown)</span><br><span class="line">  O (extra OS processing required) o (OS specific), p (processor specific)</span><br></pre></td></tr></table></figure>
+
+<h4 id="空间与地址分配"><a href="#空间与地址分配" class="headerlink" title="空间与地址分配"></a>空间与地址分配</h4><p>linker把所有的输入目标文件相同的节合并成一个，从大小也可以看出来是合并了，然后重新生成一个elf header来帮助我们加载时找到新段</p>
+<h4 id="符号解析与重定位"><a href="#符号解析与重定位" class="headerlink" title="符号解析与重定位"></a>符号解析与重定位</h4><p>链接的本质就是把不同目标文件粘在一起，符号是粘合剂，符号包括变量名，函数名，还有段名等等，符号标记了各种信息，他被存储在我们的.symtab section标志的符号表里</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    Elf32_Word    st_name;		<span class="comment">/* Symbol name (string tbl index) */</span></span><br><span class="line">    Elf32_Addr    st_value;		<span class="comment">/* Symbol value */</span></span><br><span class="line">    Elf32_Word    st_size;		<span class="comment">/* Symbol size */</span></span><br><span class="line">    <span class="type">unsigned</span> <span class="type">char</span>    st_info;		<span class="comment">/* Symbol type and binding */</span></span><br><span class="line">    <span class="type">unsigned</span> <span class="type">char</span>    st_other;		<span class="comment">/* Symbol visibility */</span></span><br><span class="line">    Elf32_Section    st_shndx;		<span class="comment">/* Section index */</span></span><br><span class="line">&#125; Elf32_Sym;</span><br></pre></td></tr></table></figure>
+
+<p><strong>st_name</strong></p>
+<p>在.strtab 字符串表里的下标</p>
+<p><strong>st_shndx</strong></p>
+<ul>
+<li>符号定义在本文件<ul>
+<li>符号所在段下标</li>
+</ul>
+</li>
+<li>不在本文文件或者某些特殊值<ul>
+<li>SHN_ABS 表示该符号包含一个绝对的值</li>
+<li>SHN_COMMON 表示该符号是一个COMMON块类型的符号</li>
+<li>SHN_UNDEF 表示该符号未定义</li>
+</ul>
+</li>
+</ul>
+<p><strong>st_info</strong></p>
+<p>符号的类型和绑定信息</p>
+<p>绑定信息</p>
+<ul>
+<li>STB_LOCAL局部符号</li>
+<li>STB_GLOBAL全局符号</li>
+<li>STB_WEAK弱符号</li>
+</ul>
+<p>符号类型</p>
+<ul>
+<li>STT_NOTYPE 未知</li>
+<li>STT_OBJECT 数据对象，比如变量</li>
+<li>STT_FUNC 函数或可执行代码 </li>
+<li>STT_SECTION 表示一个段</li>
+<li>STT_FILE表示文件名 st_shndx一定是SHN_ABS</li>
+</ul>
+<p><strong>st_size</strong></p>
+<p>符号大小，对于包含数据的符号，这个值是数据类型的大小，比如我们上面a.o的main就是main函数的大小，0x39&#x3D;57,int 类型的shared大小为4</p>
+<p><strong>st_value</strong></p>
+<ul>
+<li>在可重定位目标文件里函数或变量符号<ul>
+<li>符号类型不在common块里，则表示符号在段里的偏移</li>
+<li>在common块里，则表示符号对齐属性</li>
+</ul>
+</li>
+<li>可执行目标文件里<ul>
+<li>表示符号的虚拟地址</li>
+</ul>
+</li>
+</ul>
+<p><strong>st_other</strong>暂时没用</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">grxer@Ubuntu16 /m/h/S/l/chapter4&gt; readelf -s a.o b.o ab</span><br><span class="line"></span><br><span class="line">File: a.o</span><br><span class="line"></span><br><span class="line">Symbol table &#x27;.symtab&#x27; contains 11 entries:</span><br><span class="line">   Num:    Value  Size Type    Bind   Vis      Ndx Name</span><br><span class="line">     0: 00000000     0 NOTYPE  LOCAL  DEFAULT  UND</span><br><span class="line">     1: 00000000     0 FILE    LOCAL  DEFAULT  ABS a.c</span><br><span class="line">     2: 00000000     0 SECTION LOCAL  DEFAULT    1</span><br><span class="line">     3: 00000000     0 SECTION LOCAL  DEFAULT    3</span><br><span class="line">     4: 00000000     0 SECTION LOCAL  DEFAULT    4</span><br><span class="line">     5: 00000000     0 SECTION LOCAL  DEFAULT    6</span><br><span class="line">     6: 00000000     0 SECTION LOCAL  DEFAULT    7</span><br><span class="line">     7: 00000000     0 SECTION LOCAL  DEFAULT    5</span><br><span class="line">     8: 00000000    57 FUNC    GLOBAL DEFAULT    1 main</span><br><span class="line">     9: 00000000     0 NOTYPE  GLOBAL DEFAULT  UND shared</span><br><span class="line">    10: 00000000     0 NOTYPE  GLOBAL DEFAULT  UND swap</span><br><span class="line"></span><br><span class="line">File: b.o</span><br><span class="line"></span><br><span class="line">Symbol table &#x27;.symtab&#x27; contains 10 entries:</span><br><span class="line">   Num:    Value  Size Type    Bind   Vis      Ndx Name</span><br><span class="line">     0: 00000000     0 NOTYPE  LOCAL  DEFAULT  UND</span><br><span class="line">     1: 00000000     0 FILE    LOCAL  DEFAULT  ABS b.c</span><br><span class="line">     2: 00000000     0 SECTION LOCAL  DEFAULT    1</span><br><span class="line">     3: 00000000     0 SECTION LOCAL  DEFAULT    2</span><br><span class="line">     4: 00000000     0 SECTION LOCAL  DEFAULT    3</span><br><span class="line">     5: 00000000     0 SECTION LOCAL  DEFAULT    5</span><br><span class="line">     6: 00000000     0 SECTION LOCAL  DEFAULT    6</span><br><span class="line">     7: 00000000     0 SECTION LOCAL  DEFAULT    4</span><br><span class="line">     8: 00000000     4 OBJECT  GLOBAL DEFAULT    2 shared</span><br><span class="line">     9: 00000000    57 FUNC    GLOBAL DEFAULT    1 swap</span><br><span class="line"></span><br><span class="line">File: ab</span><br><span class="line"></span><br><span class="line">Symbol table &#x27;.symtab&#x27; contains 13 entries:</span><br><span class="line">   Num:    Value  Size Type    Bind   Vis      Ndx Name</span><br><span class="line">     0: 00000000     0 NOTYPE  LOCAL  DEFAULT  UND</span><br><span class="line">     1: 08048094     0 SECTION LOCAL  DEFAULT    1</span><br><span class="line">     2: 08048108     0 SECTION LOCAL  DEFAULT    2</span><br><span class="line">     3: 0804916c     0 SECTION LOCAL  DEFAULT    3</span><br><span class="line">     4: 00000000     0 SECTION LOCAL  DEFAULT    4</span><br><span class="line">     5: 00000000     0 FILE    LOCAL  DEFAULT  ABS a.c</span><br><span class="line">     6: 00000000     0 FILE    LOCAL  DEFAULT  ABS b.c</span><br><span class="line">     7: 080480cd    57 FUNC    GLOBAL DEFAULT    1 swap</span><br><span class="line">     8: 0804916c     4 OBJECT  GLOBAL DEFAULT    3 shared</span><br><span class="line">     9: 08049170     0 NOTYPE  GLOBAL DEFAULT    3 __bss_start</span><br><span class="line">    10: 08048094    57 FUNC    GLOBAL DEFAULT    1 main</span><br><span class="line">    11: 08049170     0 NOTYPE  GLOBAL DEFAULT    3 _edata</span><br><span class="line">    12: 08049170     0 NOTYPE  GLOBAL DEFAULT    3 _end</span><br></pre></td></tr></table></figure>
+
+<p>为什么有些名字显示?</p>
+<p>可以看的没显示的类型都为STT_SECTION他们的名字其实就是st_shndx代表的段的段名字</p>
+<p>readelf没有显示，objdump给显示出来了</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">grxer@Ubuntu16 /m/h/S/l/chapter4&gt; objdump -t a.o</span><br><span class="line"></span><br><span class="line">a.o:     file format elf32-i386</span><br><span class="line"></span><br><span class="line">SYMBOL TABLE:</span><br><span class="line"><span class="number">00000000</span> l    df *ABS*  <span class="number">00000000</span> a.c</span><br><span class="line"><span class="number">00000000</span> l    d  .text  <span class="number">00000000</span> .text</span><br><span class="line"><span class="number">00000000</span> l    d  .data  <span class="number">00000000</span> .data</span><br><span class="line"><span class="number">00000000</span> l    d  .bss   <span class="number">00000000</span> .bss</span><br><span class="line"><span class="number">00000000</span> l    d  .note.GNU-<span class="built_in">stack</span>        <span class="number">00000000</span> .note.GNU-<span class="built_in">stack</span></span><br><span class="line"><span class="number">00000000</span> l    d  .eh_frame      <span class="number">00000000</span> .eh_frame</span><br><span class="line"><span class="number">00000000</span> l    d  .comment       <span class="number">00000000</span> .comment</span><br><span class="line"><span class="number">00000000</span> g     F .text  <span class="number">00000039</span> main</span><br><span class="line"><span class="number">00000000</span>         *UND*  <span class="number">00000000</span> shared</span><br><span class="line"><span class="number">00000000</span>         *UND*  <span class="number">00000000</span> swap</span><br></pre></td></tr></table></figure>
+
+<h5 id="什么是common块-amp-amp-强符号弱符号-amp-amp-弱引用强引用"><a href="#什么是common块-amp-amp-强符号弱符号-amp-amp-弱引用强引用" class="headerlink" title="什么是common块&amp;&amp;强符号弱符号&amp;&amp;弱引用强引用"></a>什么是common块&amp;&amp;强符号弱符号&amp;&amp;弱引用强引用</h5><p>我们用前面的simple section.c来说</p>
+<p>.bss段存放未初始化的全局变量和局部静态变量(这里编译器其实为了节约磁盘空间把初始化为0的变量也放入了bss)，但是global_uninit_var却在COM块</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">Num:    Value  Size Type    Bind   Vis      Ndx Name  </span><br><span class="line"><span class="number">14</span>: <span class="number">00000004</span>     <span class="number">4</span> OBJECT  GLOBAL DEFAULT  COM global_uninit_var</span><br></pre></td></tr></table></figure>
+
+<p>也就是说gcc把没有初始化的全局变量放到了COMMON块 当然gcc5也可以通过 -fno-common或者用__attribute__((nocommon))取消掉这个机制，这样多重定义的全局符号时，会触发一个错误</p>
+<p>这个我在gcc11试了试发现好像默认没有放到common，而是都放到了bss</p>
+<p>这种未初始化全局变量的符号叫做弱符号，相反的就叫做强符号</p>
+<ul>
+<li>不允许一个强符号被多次定义，否则链接器会报错</li>
+<li>如果一个符号在某个目标文件中是强符号，链接时选强符号</li>
+<li>一个符号在所有可重定位文件里都是弱符号，选字节最大的</li>
+</ul>
+<p>所以我们下面这样会自动选择强符号</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">test.c</span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="type">void</span> <span class="title function_">p1</span><span class="params">(<span class="type">void</span>)</span>;</span><br><span class="line"><span class="type">double</span> d = <span class="number">666666</span>;</span><br><span class="line"><span class="type">int</span> p= <span class="number">200</span>;</span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">()</span> &#123;</span><br><span class="line">    p1();</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;%p\n&quot;</span>,&amp;d);</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;%f,%d&quot;</span>,d,p);</span><br><span class="line">&#125;</span><br><span class="line">p1.c</span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="type">int</span> d;</span><br><span class="line"><span class="type">void</span> <span class="title function_">p1</span><span class="params">(<span class="type">void</span>)</span> &#123;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;%p\n&quot;</span>,&amp;d);</span><br><span class="line">    d =<span class="number">0xffffffff</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>我们这样搞是不会报错的(实际上我在gcc11上报了multiple definition of d的错了，因为他默认不用common，可以通过-fcommon启用这个机制)</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">grxer@Ubuntu16 /m/h/S/NEMU&gt; gcc -m32  test.c p1.c</span><br><span class="line">grxer@Ubuntu16 /m/h/S/NEMU&gt; ./a.out</span><br><span class="line"><span class="number">0x804a020</span></span><br><span class="line"><span class="number">0x804a020</span></span><br><span class="line"><span class="number">666666.500000</span>,<span class="number">200</span>⏎</span><br></pre></td></tr></table></figure>
+
+<p>当然我们的弱符号的字节大小是不能大于强符号的否则在ld链接过程有一个warning</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">test.c</span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="type">void</span> <span class="title function_">p1</span><span class="params">(<span class="type">void</span>)</span>;</span><br><span class="line"><span class="type">int</span> d = <span class="number">100</span>;</span><br><span class="line"><span class="type">int</span> p= <span class="number">200</span>;</span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">()</span> &#123;</span><br><span class="line">    p1();</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;%p\n&quot;</span>,&amp;d);</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;%x,%x&quot;</span>,d,p);</span><br><span class="line">&#125;</span><br><span class="line">p1.c</span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="type">double</span> d;</span><br><span class="line"><span class="type">void</span> <span class="title function_">p1</span><span class="params">(<span class="type">void</span>)</span> &#123;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;%p\n&quot;</span>,&amp;d);</span><br><span class="line">    d =<span class="number">1.0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">grxer@Ubuntu16 /m/h/S/NEMU&gt; gcc -m32  test.c p1.c</span><br><span class="line">/usr/bin/ld: Warning: alignment <span class="number">4</span> of symbol `d<span class="number">&#x27;</span> in /tmp/ccEf1boS.o is smaller than <span class="number">8</span> in /tmp/cc2ZKeXO.o</span><br><span class="line">grxer@Ubuntu16 /m/h/S/NEMU&gt; ./a.out</span><br><span class="line"><span class="number">0x804a01c</span></span><br><span class="line"><span class="number">0x804a01c</span></span><br><span class="line"><span class="number">0</span>,<span class="number">3f</span>f00000</span><br></pre></td></tr></table></figure>
+
+<p>gcc提供给我们__attribute__((weak))来来定义任何一个符号为弱符号。</p>
+<p><em>_attribute</em>_((weak)) double d这样就消除了这条warning</p>
+<p>但是这个输出显然是有问题的，d和p都变得奇怪起来</p>
+<p>这个就是链接造成的，p1.c编译成一个可重定位模块时，他根本不会知道自己以后会干什么，在他眼里double d就是全部，所以他对d的赋值完全是按照double来的</p>
+<p>但是到了链接的时候，对d的赋值是对test.c的int d强符号，用给double赋值的code对int 赋值</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">08048460 &lt;p1&gt;:</span><br><span class="line">8048460:       55                      push   %ebp</span><br><span class="line">8048461:       89 e5                   mov    %esp,%ebp</span><br><span class="line">8048463:       83 ec 08                sub    $0x8,%esp</span><br><span class="line">8048466:       83 ec 08                sub    $0x8,%esp</span><br><span class="line">8048469:       68 1c a0 04 08          push   $0x804a01c</span><br><span class="line">804846e:       68 1a 85 04 08          push   $0x804851a</span><br><span class="line">8048473:       e8 68 fe ff ff          call   80482e0 &lt;printf@plt&gt;</span><br><span class="line">8048478:       83 c4 10                add    $0x10,%esp</span><br><span class="line">804847b:       d9 e8                   fld1</span><br><span class="line">804847d:       dd 1d 1c a0 04 08       fstpl  0x804a01c</span><br><span class="line">8048483:       90                      nop</span><br><span class="line">8048484:       c9                      leave</span><br><span class="line">8048485:       c3                      ret</span><br></pre></td></tr></table></figure>
+
+<p>fld1把1这个浮点常数压倒x87栈的st0，fstpl再把他取出来放到&amp;d</p>
+<p>double的1就是 3FF0000000000000</p>
+<p><img src="/2023/04/28/static-link/image-20230429234155494.png" alt="image-20230429234155494"></p>
+<p>这种bug如果在一个大型项目里找起来，那真的是栓q，所以extern很有必要</p>
+<p>与之对应的还有强引用和弱引用 <em>_attribute</em>_ (weakref)来修饰</p>
+<p>弱引用可以在找不到定义的时候链接成功，但是在执行时他的值为0</p>
+<p>符号问题还有c++的符号修饰，c++的函数重载名称空间等依靠这个机制,c++filt可以帮我们解析这些修饰过的符号</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">grxer@Ubuntu16 /m/h/s/NEMU&gt; c++filt _ZN3foo3barE</span><br><span class="line">foo::bar</span><br></pre></td></tr></table></figure>
+
+<p>为了和c兼容可以用extern “c” int x; extern ”c” { intx ;inty} 来不修饰符号</p>
+<p>一些c里函数为了在c++不被当初c++函数修饰导致无法使用,头文件里采用了#ifdef宏来处理</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">ifdef</span> _cplusplus</span></span><br><span class="line"><span class="keyword">extern</span> “c” &#123;</span><br><span class="line"><span class="meta">#<span class="keyword">endif</span></span></span><br><span class="line"><span class="type">void</span> *<span class="title function_">memset</span><span class="params">(<span class="type">void</span> *,<span class="type">int</span>,<span class="type">size_t</span>)</span>;</span><br><span class="line"><span class="meta">#<span class="keyword">ifdef</span> _cplusplus</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="meta">#<span class="keyword">endif</span></span></span><br></pre></td></tr></table></figure>
+
+<p>说了这么多关于符号的东西，看看符号地址是怎么确定的，符号是怎么解析的</p>
+<p><strong>符号地址</strong></p>
+<p>符号在各个段里的偏移是确定的，我们linker把各个段拼接并分配虚拟地址，段基址我们自然知道，再加上原本的偏移就可以确定了</p>
+<p><strong>符合解析</strong></p>
+<p>链接器维护了三个集合E U D</p>
+<ul>
+<li>E 将被合并组成可执行文件的可重定位文件集合</li>
+<li>U 当前引用但未解析的符合集合</li>
+<li>D 当前所有定义符号的集合</li>
+</ul>
+<p>会从左到右扫描命令行出现的可重定位目标文件和静态库文件</p>
+<p>当扫描到可重定位目标文件时 把它定义的符号加入D集合，引用单未定义的加入U</p>
+<p>扫描到静态链接库时，依次检测库里的目标文件是不是包含U里面的未定义符号，包含则把这个符号从U里拿出来放入D，并把这个目标文件加入E，不包含直接丢弃该目标文件</p>
+<p>扫描完全部时U是非空，链接器会报错终止，否则就开始合并E集合里的文件</p>
+<p>这也就要求了我们静态链接时库的顺序问题，一定库放到最后，库之间如果有引用，还要调整一下顺序</p>
+<h4 id="重定位"><a href="#重定位" class="headerlink" title="重定位"></a>重定位</h4><p>a.c中引用的 share和swap在编译器编译时是不确定的</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">grxer@Ubuntu16 /m/h/s/l/chapter4&gt; objdump -dS a.o</span><br><span class="line"></span><br><span class="line">a.o:     file format elf32-i386</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">Disassembly of section .text:</span><br><span class="line"></span><br><span class="line">00000000 &lt;main&gt;:</span><br><span class="line">extern int shared;</span><br><span class="line">int main()</span><br><span class="line">&#123;</span><br><span class="line">   0:   8d 4c 24 04             lea    0x4(%esp),%ecx</span><br><span class="line">   4:   83 e4 f0                and    $0xfffffff0,%esp</span><br><span class="line">   7:   ff 71 fc                pushl  -0x4(%ecx)</span><br><span class="line">   a:   55                      push   %ebp</span><br><span class="line">   b:   89 e5                   mov    %esp,%ebp</span><br><span class="line">   d:   51                      push   %ecx</span><br><span class="line">   e:   83 ec 14                sub    $0x14,%esp</span><br><span class="line">    int a = 6;</span><br><span class="line">  11:   c7 45 f4 06 00 00 00    movl   $0x6,-0xc(%ebp)</span><br><span class="line">    swap(&amp;a, &amp;shared);</span><br><span class="line">  18:   83 ec 08                sub    $0x8,%esp</span><br><span class="line">  1b:   68 00 00 00 00          push   $0x0</span><br><span class="line">  20:   8d 45 f4                lea    -0xc(%ebp),%eax</span><br><span class="line">  23:   50                      push   %eax</span><br><span class="line">  24:   e8 fc ff ff ff          call   25 &lt;main+0x25&gt;</span><br><span class="line">  29:   83 c4 10                add    $0x10,%esp</span><br><span class="line">  2c:   b8 00 00 00 00          mov    $0x0,%eax</span><br><span class="line">&#125;</span><br><span class="line">  31:   8b 4d fc                mov    -0x4(%ebp),%ecx</span><br><span class="line">  34:   c9                      leave</span><br><span class="line">  35:   8d 61 fc                lea    -0x4(%ecx),%esp</span><br><span class="line">  38:   c3                      ret</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">1b:   68 00 00 00 00          push   $0x0 ;对shared引用</span><br><span class="line">24:   e8 fc ff ff ff          call   25 &lt;main+0x25&gt;;对swap引用</span><br></pre></td></tr></table></figure>
+
+<p>就在刚刚我们才解析了符号的地址，所以现在我们需要利用解析的符号地址把代码里引用的地址值给修正了，</p>
+<p>我们怎么知道要去修正谁，那里修正，怎么修正，这一切都在.rel.xxx重定位表里</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">  Elf32_Addr    r_offset;		<span class="comment">/* Address */</span></span><br><span class="line">  Elf32_Word    r_info;			<span class="comment">/* Relocation type and symbol index */</span></span><br><span class="line">&#125; Elf32_Rel;</span><br></pre></td></tr></table></figure>
+
+<p><strong>r_offset</strong>表示要修正的位置第一个字节相对于这个段的偏移，作为linker我们知道段基址，自然可以找到要修正地址</p>
+<p>r_info 低8位表示要重定位类型，高24位是符号在符号表里的下标</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">grxer@Ubuntu16 /m/h/s/l/chapter4&gt; readelf -r a.o</span><br><span class="line"></span><br><span class="line">Relocation section <span class="string">&#x27;.rel.text&#x27;</span> at offset <span class="number">0x1b0</span> contains <span class="number">2</span> entries:</span><br><span class="line"> Offset     Info    Type            Sym.Value  Sym. Name</span><br><span class="line"><span class="number">0000001</span>c  <span class="number">00000901</span> R_386_32          <span class="number">00000000</span>   shared</span><br><span class="line"><span class="number">00000025</span>  <span class="number">00000</span>a02 R_386_PC32        <span class="number">00000000</span>   swap</span><br></pre></td></tr></table></figure>
+
+<p>Info高24位 9和a正好对应</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">Num:    Value  Size Type    Bind   Vis      Ndx Name</span><br><span class="line"><span class="number">9</span>:  <span class="number">00000000</span>     <span class="number">0</span> NOTYPE  GLOBAL DEFAULT  UND shared</span><br><span class="line"><span class="number">10</span>: <span class="number">00000000</span>     <span class="number">0</span> NOTYPE  GLOBAL DEFAULT  UND swap</span><br></pre></td></tr></table></figure>
+
+<p>offset 1c和25对应要修改的位置</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="number">1b</span>:   <span class="number">68</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span>          push   $<span class="number">0x0</span> ;对shared引用</span><br><span class="line"><span class="number">24</span>:   e8 fc ff ff ff          call   <span class="number">25</span> &lt;main+<span class="number">0x25</span>&gt;;对swap引用</span><br></pre></td></tr></table></figure>
+
+<p>重定位类型类型有好多种，不同平台也可能不一样 <a target="_blank" rel="noopener" href="https://bbs.kanxue.com/thread-246373.htm">https://bbs.kanxue.com/thread-246373.htm</a></p>
+<p>这里就看两种最基本最常用的</p>
+<p>R_386_32 绝对寻址修正</p>
+<p>R_386_PC32 相对寻址修正</p>
+<p>这个时候我们已经知道了符号的实际地址S和保存在被修正位置的值A(偏移)</p>
+<p>绝对寻址，之间把实际地址S+被修正位置的值A填入offset就可以</p>
+<p>相对寻址 比上面多了减去被修正位置P得到偏移的过程 S+A-P</p>
+<p>重定位后的main</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="number">08048094</span> &lt;main&gt;:</span><br><span class="line"> <span class="number">8048094</span>:       <span class="number">8</span>d <span class="number">4</span>c <span class="number">24</span> <span class="number">04</span>             lea    <span class="number">0x4</span>(%esp),%ecx</span><br><span class="line"> <span class="number">8048098</span>:       <span class="number">83</span> e4 f0                and    $<span class="number">0xfffffff0</span>,%esp</span><br><span class="line"> <span class="number">804809b</span>:       ff <span class="number">71</span> fc                pushl  <span class="number">-0x4</span>(%ecx)</span><br><span class="line"> <span class="number">804809</span>e:       <span class="number">55</span>                      push   %ebp</span><br><span class="line"> <span class="number">804809f</span>:       <span class="number">89</span> e5                   mov    %esp,%ebp</span><br><span class="line"> <span class="number">80480</span>a1:       <span class="number">51</span>                      push   %ecx</span><br><span class="line"> <span class="number">80480</span>a2:       <span class="number">83</span> ec <span class="number">14</span>                sub    $<span class="number">0x14</span>,%esp</span><br><span class="line"> <span class="number">80480</span>a5:       c7 <span class="number">45</span> f4 <span class="number">06</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span>    movl   $<span class="number">0x6</span>,<span class="number">-0xc</span>(%ebp)</span><br><span class="line"> <span class="number">80480</span>ac:       <span class="number">83</span> ec <span class="number">08</span>                sub    $<span class="number">0x8</span>,%esp</span><br><span class="line"> <span class="number">80480</span>af:       <span class="number">68</span> <span class="number">6</span>c <span class="number">91</span> <span class="number">04</span> <span class="number">08</span>          push   $<span class="number">0x804916c</span></span><br><span class="line"> <span class="number">80480b</span>4:       <span class="number">8</span>d <span class="number">45</span> f4                lea    <span class="number">-0xc</span>(%ebp),%eax</span><br><span class="line"> <span class="number">80480b</span>7:       <span class="number">50</span>                      push   %eax</span><br><span class="line"> <span class="number">80480b</span>8:       e8 <span class="number">10</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span>          call   <span class="number">80480</span>cd &lt;swap&gt;</span><br><span class="line"> <span class="number">80480b</span>d:       <span class="number">83</span> c4 <span class="number">10</span>                add    $<span class="number">0x10</span>,%esp</span><br><span class="line"> <span class="number">80480</span>c0:       b8 <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span>          mov    $<span class="number">0x0</span>,%eax</span><br><span class="line"> <span class="number">80480</span>c5:       <span class="number">8b</span> <span class="number">4</span>d fc                mov    <span class="number">-0x4</span>(%ebp),%ecx</span><br><span class="line"> <span class="number">80480</span>c8:       c9                      leave</span><br><span class="line"> <span class="number">80480</span>c9:       <span class="number">8</span>d <span class="number">61</span> fc                lea    <span class="number">-0x4</span>(%ecx),%esp</span><br><span class="line"> <span class="number">80480</span>cc:       c3                      ret</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">     解析后的符号表</span><br><span class="line">     7: 080480cd    57 FUNC    GLOBAL DEFAULT    1 swap</span><br><span class="line">     8: 0804916c     4 OBJECT  GLOBAL DEFAULT    3 shared</span><br><span class="line">     </span><br><span class="line">80480af:       68 6c 91 04 08          push   $0x804916c;对shared引用</span><br><span class="line">80480b8:       e8 10 00 00 00          call   80480cd &lt;swap&gt;;对swap引用</span><br></pre></td></tr></table></figure>
+
+<p>6c 91 04 08 即0x804916c shared的地址</p>
+<p>10 00 00 00 即0x00000010 0x80480b8+0x5+0x10&#x3D;0x804 80CD</p>
+
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+         
+          <li><a href="/">Home</a></li>
+         
+          <li><a href="/archives/">Writing</a></li>
+         
+          <li><a href="/search/">Search</a></li>
+         
+          <li><a href="/tags/">Tag</a></li>
+        
+      </ul>
+    </div>
+
+    <div id="toc-footer" style="display: none">
+      <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#ELF-Static-link"><span class="toc-number">1.</span> <span class="toc-text">ELF Static link</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%9E%E9%AA%8C%E7%8E%AF%E5%A2%83"><span class="toc-number">1.1.</span> <span class="toc-text">实验环境</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BC%96%E8%AF%91%E6%BC%AB%E8%B0%88"><span class="toc-number">1.2.</span> <span class="toc-text">编译漫谈</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%87%8D%E7%94%9F%E4%B9%8B%E6%88%91%E6%98%AFlinker"><span class="toc-number">1.3.</span> <span class="toc-text">重生之我是linker</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Relocatable-object-file"><span class="toc-number">1.3.1.</span> <span class="toc-text">Relocatable object file</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#static-link"><span class="toc-number">1.3.2.</span> <span class="toc-text">static link</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%A9%BA%E9%97%B4%E4%B8%8E%E5%9C%B0%E5%9D%80%E5%88%86%E9%85%8D"><span class="toc-number">1.3.2.1.</span> <span class="toc-text">空间与地址分配</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%AC%A6%E5%8F%B7%E8%A7%A3%E6%9E%90%E4%B8%8E%E9%87%8D%E5%AE%9A%E4%BD%8D"><span class="toc-number">1.3.2.2.</span> <span class="toc-text">符号解析与重定位</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#%E4%BB%80%E4%B9%88%E6%98%AFcommon%E5%9D%97-amp-amp-%E5%BC%BA%E7%AC%A6%E5%8F%B7%E5%BC%B1%E7%AC%A6%E5%8F%B7-amp-amp-%E5%BC%B1%E5%BC%95%E7%94%A8%E5%BC%BA%E5%BC%95%E7%94%A8"><span class="toc-number">1.3.2.2.1.</span> <span class="toc-text">什么是common块&amp;&amp;强符号弱符号&amp;&amp;弱引用强引用</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%87%8D%E5%AE%9A%E4%BD%8D"><span class="toc-number">1.3.2.3.</span> <span class="toc-text">重定位</span></a></li></ol></li></ol></li></ol></li></ol>
+    </div>
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://grxer.gitee.io/2023/04/28/static-link/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://grxer.gitee.io/2023/04/28/static-link/&text=ELF Static link"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://grxer.gitee.io/2023/04/28/static-link/&title=ELF Static link"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://grxer.gitee.io/2023/04/28/static-link/&is_video=false&description=ELF Static link"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=ELF Static link&body=Check out this article: https://grxer.gitee.io/2023/04/28/static-link/"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://grxer.gitee.io/2023/04/28/static-link/&title=ELF Static link"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://grxer.gitee.io/2023/04/28/static-link/&title=ELF Static link"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://grxer.gitee.io/2023/04/28/static-link/&title=ELF Static link"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://grxer.gitee.io/2023/04/28/static-link/&title=ELF Static link"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://grxer.gitee.io/2023/04/28/static-link/&name=ELF Static link&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://grxer.gitee.io/2023/04/28/static-link/&t=ELF Static link"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fas fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
+        <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fas fa-list fa-lg" aria-hidden="true"></i> TOC</a>
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fas fa-share-alt fa-lg" aria-hidden="true"></i> Share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2023
+    Grxer
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a href="/search/">Search</a></li><!--
+     --><!--
+       --><li><a href="/tags/">Tag</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+ 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script> 
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script> 
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"Copy to clipboard!\">";
+    btn += '<i class="far fa-clone"></i>';
+    btn += '</span>'; 
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "Copied!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Google Analytics -->
+
+<!-- Baidu Analytics -->
+
+  <script type="text/javascript">
+        var _hmt = _hmt || [];
+        (function() {
+          var hm = document.createElement("script");
+          hm.src = "https://hm.baidu.com/hm.js?a22ef0bec4e4a9c7337bea6e37ff55c1";
+          var s = document.getElementsByTagName("script")[0];
+          s.parentNode.insertBefore(hm, s);
+        })();
+        </script>
+
+<!-- Cloudflare Analytics -->
+
+<!-- Umami Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+</body>
+</html>
