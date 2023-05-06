@@ -8,17 +8,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
     <meta name="baidu-site-verification" content="codeva-ROfYcqLkCh" />
     <meta name="msvalidate.01" content="ECA3E06A0E52A2AC90C4B06F12981FB2" />
-    <meta name="description" content="调用欺骗拾遗显示的运行时链接，那段代码让我想起了之前在lnnks老师那里，看到一个比较有意思的code 环境vs2022  x86 Release版 #include &lt;windows.h&gt;#include &lt;iostream&gt;#pragma optimize(&quot;&quot;,off)void show(void* pf, HWND hWnd,    LPCTST">
+    <meta name="description" content="调用欺骗拾遗https:&#x2F;&#x2F;grxer.github.io&#x2F;2023&#x2F;05&#x2F;04&#x2F;ELF%20Dynamical-link&#x2F; 中显示的运行时链接那段代码让我想起了之前在lnnks老师那里，看到一个比较有意思的code 环境vs2022  x86 Release版 #include &lt;windows.h&gt;#include &lt;iostream&gt;#pragma optimize(">
 <meta property="og:type" content="article">
 <meta property="og:title" content="调用欺骗拾遗">
 <meta property="og:url" content="https://grxer.gitee.io/2023/05/05/%E8%B0%83%E7%94%A8%E6%AC%BA%E9%AA%97%E6%8B%BE%E9%81%97/index.html">
 <meta property="og:site_name" content="Computer Security">
-<meta property="og:description" content="调用欺骗拾遗显示的运行时链接，那段代码让我想起了之前在lnnks老师那里，看到一个比较有意思的code 环境vs2022  x86 Release版 #include &lt;windows.h&gt;#include &lt;iostream&gt;#pragma optimize(&quot;&quot;,off)void show(void* pf, HWND hWnd,    LPCTST">
+<meta property="og:description" content="调用欺骗拾遗https:&#x2F;&#x2F;grxer.github.io&#x2F;2023&#x2F;05&#x2F;04&#x2F;ELF%20Dynamical-link&#x2F; 中显示的运行时链接那段代码让我想起了之前在lnnks老师那里，看到一个比较有意思的code 环境vs2022  x86 Release版 #include &lt;windows.h&gt;#include &lt;iostream&gt;#pragma optimize(">
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="https://grxer.gitee.io/2023/05/05/%E8%B0%83%E7%94%A8%E6%AC%BA%E9%AA%97%E6%8B%BE%E9%81%97/image-20230506154546803.png">
 <meta property="og:image" content="https://grxer.gitee.io/2023/05/05/%E8%B0%83%E7%94%A8%E6%AC%BA%E9%AA%97%E6%8B%BE%E9%81%97/image-20230506152018853.png">
 <meta property="article:published_time" content="2023-05-05T07:45:01.000Z">
-<meta property="article:modified_time" content="2023-05-06T07:48:33.526Z">
+<meta property="article:modified_time" content="2023-05-06T07:53:39.173Z">
 <meta property="article:author" content="Grxer">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://grxer.gitee.io/2023/05/05/%E8%B0%83%E7%94%A8%E6%AC%BA%E9%AA%97%E6%8B%BE%E9%81%97/image-20230506154546803.png">
@@ -147,7 +147,7 @@
   
 
   <div class="content" itemprop="articleBody">
-    <h1 id="调用欺骗拾遗"><a href="#调用欺骗拾遗" class="headerlink" title="调用欺骗拾遗"></a>调用欺骗拾遗</h1><p>显示的运行时链接，那段代码让我想起了之前在lnnks老师那里，看到一个比较有意思的code</p>
+    <h1 id="调用欺骗拾遗"><a href="#调用欺骗拾遗" class="headerlink" title="调用欺骗拾遗"></a>调用欺骗拾遗</h1><p><a target="_blank" rel="noopener" href="https://grxer.github.io/2023/05/04/ELF%20Dynamical-link/">https://grxer.github.io/2023/05/04/ELF%20Dynamical-link/</a> 中显示的运行时链接那段代码让我想起了之前在lnnks老师那里，看到一个比较有意思的code</p>
 <p>环境vs2022  x86 Release版</p>
 <figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;windows.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">pragma</span> optimize(<span class="string">&quot;&quot;</span>,off)</span></span><br><span class="line"><span class="type">void</span> <span class="title function_">show</span><span class="params">(<span class="type">void</span>* pf, HWND hWnd,</span></span><br><span class="line"><span class="params">    LPCTSTR lpText,</span></span><br><span class="line"><span class="params">    LPCTSTR lpCaption,</span></span><br><span class="line"><span class="params">    UINT uType</span></span><br><span class="line"><span class="params">)</span> &#123;</span><br><span class="line">    <span class="comment">//ar[2]:ebp;ar[3] ret; jar[4] void *pf;</span></span><br><span class="line">    <span class="type">int</span> ar[<span class="number">2</span>];</span><br><span class="line">    ar[<span class="number">4</span>] = ar[<span class="number">3</span>] ^ ar[<span class="number">4</span>];</span><br><span class="line">    ar[<span class="number">3</span>] = ar[<span class="number">3</span>] ^ ar[<span class="number">4</span>];</span><br><span class="line">    ar[<span class="number">4</span>] = ar[<span class="number">3</span>] ^ ar[<span class="number">4</span>];</span><br><span class="line">&#125;</span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">()</span> &#123;</span><br><span class="line">    show(MessageBoxW, <span class="number">0</span>, TEXT(<span class="string">&quot;grxer&quot;</span>), TEXT(<span class="string">&quot;grxer&quot;</span>), MB_OK);</span><br><span class="line">    <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; <span class="string">&quot;hello&quot;</span> &lt;&lt; <span class="built_in">std</span>::<span class="built_in">endl</span>;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
