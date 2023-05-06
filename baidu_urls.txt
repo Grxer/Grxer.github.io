@@ -1,3 +1,5 @@
+https://grxer.gitee.io/2023/05/05/%E8%B0%83%E7%94%A8%E6%AC%BA%E9%AA%97%E6%8B%BE%E9%81%97/
+https://grxer.gitee.io/2023/05/04/ELF%20Dynamical-link/
 https://grxer.gitee.io/2023/04/30/VIM/
 https://grxer.gitee.io/2023/04/28/static-link/
 https://grxer.gitee.io/2023/04/24/linux-signal/
@@ -21,5 +23,3 @@ https://grxer.gitee.io/2023/04/03/vtable-hijack/
 https://grxer.gitee.io/2023/04/02/main-return/
 https://grxer.gitee.io/2023/04/02/exit/
 https://grxer.gitee.io/2023/04/01/IO-FILE-fclose/
-https://grxer.gitee.io/2023/04/01/IO-FILE-fwrite/
-https://grxer.gitee.io/2023/03/31/IO-FILE-fread/
