@@ -550,6 +550,8 @@
       
         <tags>
             
+            <tag> Double Free </tag>
+            
             <tag> Off By One </tag>
             
             <tag> Free Hook </tag>
@@ -557,8 +559,6 @@
             <tag> Null Byte Overflow </tag>
             
             <tag> Overlapping Heap Chunk </tag>
-            
-            <tag> Double Free </tag>
             
         </tags>
       
@@ -800,9 +800,9 @@
             
             <tag> Unsorted Bin Leak </tag>
             
-            <tag> Double Free </tag>
-            
             <tag> Byte misalignmen </tag>
+            
+            <tag> Double Free </tag>
             
         </tags>
       
