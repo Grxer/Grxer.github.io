@@ -1,3 +1,5 @@
+https://grxer.gitee.io/2023/05/20/2023-5-20/
+https://grxer.gitee.io/2023/05/19/PE-FILE/
 https://grxer.gitee.io/2023/05/13/x86-nemu-pa1/
 https://grxer.gitee.io/2023/05/08/ics4-linklab/
 https://grxer.gitee.io/2023/05/05/%E8%B0%83%E7%94%A8%E6%AC%BA%E9%AA%97%E6%8B%BE%E9%81%97/
@@ -21,5 +23,3 @@ https://grxer.gitee.io/2023/04/08/32bit-x86-protected-mode/
 https://grxer.gitee.io/2023/04/06/House-of-orange/
 https://grxer.gitee.io/2023/04/06/FSOP/
 https://grxer.gitee.io/2023/04/05/NJUOS-%E5%A4%9A%E5%A4%84%E7%90%86%E5%99%A8%E7%BC%96%E7%A8%8B/
-https://grxer.gitee.io/2023/04/03/vtable-hijack/
-https://grxer.gitee.io/2023/04/02/main-return/
