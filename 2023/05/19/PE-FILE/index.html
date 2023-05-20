@@ -32,7 +32,7 @@
 <meta property="og:image" content="https://grxer.gitee.io/2023/05/19/PE-FILE/image-20230519181542374.png">
 <meta property="og:image" content="https://grxer.gitee.io/2023/05/19/PE-FILE/image-20230519180449954.png">
 <meta property="article:published_time" content="2023-05-19T10:47:39.000Z">
-<meta property="article:modified_time" content="2023-05-19T16:20:03.324Z">
+<meta property="article:modified_time" content="2023-05-20T11:16:17.319Z">
 <meta property="article:author" content="Grxer">
 <meta property="article:tag" content="PE">
 <meta name="twitter:card" content="summary">
@@ -383,7 +383,7 @@
 <p>一堆不明所以的数据</p>
 <p>丢到x32dbg看看</p>
 <blockquote>
-<p>由于可执行文件PE是是进程第一个加载的模块，所以他几乎百分百都能抢到他原来的imagebase，不需要去做重定位，所以这个IAT地址直接就是RVA+ImageBase</p>
+<p>由于可执行文件PE是是进程第一个加载的模块，所以他几乎百分百都能抢到他原来的imagebase(除了开了aslr的情况)，不需要去做重定位，所以这个IAT地址直接就是RVA+ImageBase</p>
 </blockquote>
 <p>RVA+ImageBase&#x3D;0x10012c4</p>
 <p><img src="/2023/05/19/PE-FILE/image-20230519180741267.png" alt="image-20230519180741267"></p>
