@@ -1,3 +1,5 @@
+https://grxer.gitee.io/2023/05/26/Windows-Kernel-Experiment-Interrupt-Privilege-Escalation/
+https://grxer.gitee.io/2023/05/25/Dynamic-DLL-Injection-and-unloading/
 https://grxer.gitee.io/2023/05/23/embedded-patch/
 https://grxer.gitee.io/2023/05/20/2023-5-20/
 https://grxer.gitee.io/2023/05/19/PE-FILE/
@@ -21,5 +23,3 @@ https://grxer.gitee.io/2023/04/11/OSTEP-5-Process-API/
 https://grxer.gitee.io/2023/04/10/2016-hitcon-house-of-orange/
 https://grxer.gitee.io/2023/04/09/2016%E4%B8%9C%E5%8D%8E%E6%9D%AFpwn450-note/
 https://grxer.gitee.io/2023/04/08/32bit-x86-protected-mode/
-https://grxer.gitee.io/2023/04/06/House-of-orange/
-https://grxer.gitee.io/2023/04/06/FSOP/
