@@ -10,7 +10,7 @@
     <meta name="msvalidate.01" content="ECA3E06A0E52A2AC90C4B06F12981FB2" />
     <meta name="description" content="HEAP MANGER为什么要有堆管理器堆是动态分配的虚拟内存(只有在程序访问到这块虚拟内存时，系统才会建立虚拟内存和物理内存的映射，称为延迟绑定机制，大大节省了内存)，从低地址向高地址生长，程序可能需要频繁的向操作系统申请内存的系统调用，与此同时就伴随这从用户态到内核态的多次转换，转换的同时需要保存context，影响程序性能，堆管理器就出现了，在操作系统和用户当作中间人，他会申请较大的内存，管">
 <meta property="og:type" content="article">
-<meta property="og:title" content="HEAP MANAGER">
+<meta property="og:title" content="堆管理器:Ptmalloc2 (HEAP MANAGER)">
 <meta property="og:url" content="https://grxer.gitee.io/2023/02/25/23-2-25-heap/index.html">
 <meta property="og:site_name" content="Computer Security">
 <meta property="og:description" content="HEAP MANGER为什么要有堆管理器堆是动态分配的虚拟内存(只有在程序访问到这块虚拟内存时，系统才会建立虚拟内存和物理内存的映射，称为延迟绑定机制，大大节省了内存)，从低地址向高地址生长，程序可能需要频繁的向操作系统申请内存的系统调用，与此同时就伴随这从用户态到内核态的多次转换，转换的同时需要保存context，影响程序性能，堆管理器就出现了，在操作系统和用户当作中间人，他会申请较大的内存，管">
@@ -22,7 +22,7 @@
 <meta property="og:image" content="https://grxer.gitee.io/2023/02/25/23-2-25-heap/image-20230225151846846.png">
 <meta property="og:image" content="https://grxer.gitee.io/2023/02/25/23-2-25-heap/image-20230225152540343.png">
 <meta property="article:published_time" content="2023-02-25T02:03:34.000Z">
-<meta property="article:modified_time" content="2023-05-04T07:48:13.713Z">
+<meta property="article:modified_time" content="2023-05-28T03:35:20.677Z">
 <meta property="article:author" content="Grxer">
 <meta property="article:tag" content="HEAP MANGER">
 <meta name="twitter:card" content="summary">
@@ -46,7 +46,7 @@
       
     
     <!-- title -->
-    <title>HEAP MANAGER</title>
+    <title>堆管理器:Ptmalloc2 (HEAP MANAGER)</title>
     <!-- styles -->
     
 <link rel="stylesheet" href="/css/style.css">
@@ -101,17 +101,17 @@
     <div id="share" style="display: none">
       <ul>
   <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://grxer.gitee.io/2023/02/25/23-2-25-heap/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://grxer.gitee.io/2023/02/25/23-2-25-heap/&text=HEAP MANAGER"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://grxer.gitee.io/2023/02/25/23-2-25-heap/&title=HEAP MANAGER"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://grxer.gitee.io/2023/02/25/23-2-25-heap/&is_video=false&description=HEAP MANAGER"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
-  <li><a class="icon" href="mailto:?subject=HEAP MANAGER&body=Check out this article: https://grxer.gitee.io/2023/02/25/23-2-25-heap/"><i class="fas fa-envelope " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://grxer.gitee.io/2023/02/25/23-2-25-heap/&title=HEAP MANAGER"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://grxer.gitee.io/2023/02/25/23-2-25-heap/&title=HEAP MANAGER"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://grxer.gitee.io/2023/02/25/23-2-25-heap/&title=HEAP MANAGER"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://grxer.gitee.io/2023/02/25/23-2-25-heap/&title=HEAP MANAGER"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://grxer.gitee.io/2023/02/25/23-2-25-heap/&name=HEAP MANAGER&description=&lt;h1 id=&#34;HEAP-MANGER&#34;&gt;&lt;a href=&#34;#HEAP-MANGER&#34; class=&#34;headerlink&#34; title=&#34;HEAP MANGER&#34;&gt;&lt;/a&gt;HEAP MANGER&lt;/h1&gt;&lt;h2 id=&#34;为什么要有堆管理器&#34;&gt;&lt;a href=&#34;#为什么要有堆管理器&#34; class=&#34;headerlink&#34; title=&#34;为什么要有堆管理器&#34;&gt;&lt;/a&gt;为什么要有堆管理器&lt;/h2&gt;&lt;p&gt;堆是动态分配的虚拟内存(只有在程序访问到这块虚拟内存时，系统才会建立虚拟内存和物理内存的映射，称为延迟绑定机制，大大节省了内存)，从低地址向高地址生长，程序可能需要频繁的向操作系统申请内存的系统调用，与此同时就伴随这从用户态到内核态的多次转换，转换的同时需要保存context，影响程序性能，堆管理器就出现了，在操作系统和用户当作中间人，他会申请较大的内存，管理分配，1、响应用户申请内存的请求2、管理用户所释放的内存，堆管理器并非由内核实现的，Linux标准发行版中使用的堆分配器是glibc中的堆分配器：ptmalloc2&lt;/p&gt;
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://grxer.gitee.io/2023/02/25/23-2-25-heap/&text=堆管理器:Ptmalloc2 (HEAP MANAGER)"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://grxer.gitee.io/2023/02/25/23-2-25-heap/&title=堆管理器:Ptmalloc2 (HEAP MANAGER)"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://grxer.gitee.io/2023/02/25/23-2-25-heap/&is_video=false&description=堆管理器:Ptmalloc2 (HEAP MANAGER)"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=堆管理器:Ptmalloc2 (HEAP MANAGER)&body=Check out this article: https://grxer.gitee.io/2023/02/25/23-2-25-heap/"><i class="fas fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://grxer.gitee.io/2023/02/25/23-2-25-heap/&title=堆管理器:Ptmalloc2 (HEAP MANAGER)"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://grxer.gitee.io/2023/02/25/23-2-25-heap/&title=堆管理器:Ptmalloc2 (HEAP MANAGER)"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://grxer.gitee.io/2023/02/25/23-2-25-heap/&title=堆管理器:Ptmalloc2 (HEAP MANAGER)"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://grxer.gitee.io/2023/02/25/23-2-25-heap/&title=堆管理器:Ptmalloc2 (HEAP MANAGER)"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://grxer.gitee.io/2023/02/25/23-2-25-heap/&name=堆管理器:Ptmalloc2 (HEAP MANAGER)&description=&lt;h1 id=&#34;HEAP-MANGER&#34;&gt;&lt;a href=&#34;#HEAP-MANGER&#34; class=&#34;headerlink&#34; title=&#34;HEAP MANGER&#34;&gt;&lt;/a&gt;HEAP MANGER&lt;/h1&gt;&lt;h2 id=&#34;为什么要有堆管理器&#34;&gt;&lt;a href=&#34;#为什么要有堆管理器&#34; class=&#34;headerlink&#34; title=&#34;为什么要有堆管理器&#34;&gt;&lt;/a&gt;为什么要有堆管理器&lt;/h2&gt;&lt;p&gt;堆是动态分配的虚拟内存(只有在程序访问到这块虚拟内存时，系统才会建立虚拟内存和物理内存的映射，称为延迟绑定机制，大大节省了内存)，从低地址向高地址生长，程序可能需要频繁的向操作系统申请内存的系统调用，与此同时就伴随这从用户态到内核态的多次转换，转换的同时需要保存context，影响程序性能，堆管理器就出现了，在操作系统和用户当作中间人，他会申请较大的内存，管理分配，1、响应用户申请内存的请求2、管理用户所释放的内存，堆管理器并非由内核实现的，Linux标准发行版中使用的堆分配器是glibc中的堆分配器：ptmalloc2&lt;/p&gt;
 &lt;figure class=&#34;highlight tex&#34;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#34;code&#34;&gt;&lt;pre&gt;&lt;span class=&#34;line&#34;&gt;平台：操作系统 --&amp;gt; 堆管理器 --&amp;gt; 用户&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;资源：物理内存 --&amp;gt; arena  --&amp;gt;可用内存&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;"><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://grxer.gitee.io/2023/02/25/23-2-25-heap/&t=HEAP MANAGER"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://grxer.gitee.io/2023/02/25/23-2-25-heap/&t=堆管理器:Ptmalloc2 (HEAP MANAGER)"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
 </ul>
 
     </div>
@@ -128,7 +128,7 @@
   <header>
     
     <h1 class="posttitle" itemprop="name headline">
-        HEAP MANAGER
+        堆管理器:Ptmalloc2 (HEAP MANAGER)
     </h1>
 
 
@@ -420,17 +420,17 @@
     <div id="share-footer" style="display: none">
       <ul>
   <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://grxer.gitee.io/2023/02/25/23-2-25-heap/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://grxer.gitee.io/2023/02/25/23-2-25-heap/&text=HEAP MANAGER"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://grxer.gitee.io/2023/02/25/23-2-25-heap/&title=HEAP MANAGER"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://grxer.gitee.io/2023/02/25/23-2-25-heap/&is_video=false&description=HEAP MANAGER"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" href="mailto:?subject=HEAP MANAGER&body=Check out this article: https://grxer.gitee.io/2023/02/25/23-2-25-heap/"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://grxer.gitee.io/2023/02/25/23-2-25-heap/&title=HEAP MANAGER"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://grxer.gitee.io/2023/02/25/23-2-25-heap/&title=HEAP MANAGER"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://grxer.gitee.io/2023/02/25/23-2-25-heap/&title=HEAP MANAGER"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://grxer.gitee.io/2023/02/25/23-2-25-heap/&title=HEAP MANAGER"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://grxer.gitee.io/2023/02/25/23-2-25-heap/&name=HEAP MANAGER&description=&lt;h1 id=&#34;HEAP-MANGER&#34;&gt;&lt;a href=&#34;#HEAP-MANGER&#34; class=&#34;headerlink&#34; title=&#34;HEAP MANGER&#34;&gt;&lt;/a&gt;HEAP MANGER&lt;/h1&gt;&lt;h2 id=&#34;为什么要有堆管理器&#34;&gt;&lt;a href=&#34;#为什么要有堆管理器&#34; class=&#34;headerlink&#34; title=&#34;为什么要有堆管理器&#34;&gt;&lt;/a&gt;为什么要有堆管理器&lt;/h2&gt;&lt;p&gt;堆是动态分配的虚拟内存(只有在程序访问到这块虚拟内存时，系统才会建立虚拟内存和物理内存的映射，称为延迟绑定机制，大大节省了内存)，从低地址向高地址生长，程序可能需要频繁的向操作系统申请内存的系统调用，与此同时就伴随这从用户态到内核态的多次转换，转换的同时需要保存context，影响程序性能，堆管理器就出现了，在操作系统和用户当作中间人，他会申请较大的内存，管理分配，1、响应用户申请内存的请求2、管理用户所释放的内存，堆管理器并非由内核实现的，Linux标准发行版中使用的堆分配器是glibc中的堆分配器：ptmalloc2&lt;/p&gt;
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://grxer.gitee.io/2023/02/25/23-2-25-heap/&text=堆管理器:Ptmalloc2 (HEAP MANAGER)"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://grxer.gitee.io/2023/02/25/23-2-25-heap/&title=堆管理器:Ptmalloc2 (HEAP MANAGER)"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://grxer.gitee.io/2023/02/25/23-2-25-heap/&is_video=false&description=堆管理器:Ptmalloc2 (HEAP MANAGER)"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=堆管理器:Ptmalloc2 (HEAP MANAGER)&body=Check out this article: https://grxer.gitee.io/2023/02/25/23-2-25-heap/"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://grxer.gitee.io/2023/02/25/23-2-25-heap/&title=堆管理器:Ptmalloc2 (HEAP MANAGER)"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://grxer.gitee.io/2023/02/25/23-2-25-heap/&title=堆管理器:Ptmalloc2 (HEAP MANAGER)"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://grxer.gitee.io/2023/02/25/23-2-25-heap/&title=堆管理器:Ptmalloc2 (HEAP MANAGER)"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://grxer.gitee.io/2023/02/25/23-2-25-heap/&title=堆管理器:Ptmalloc2 (HEAP MANAGER)"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://grxer.gitee.io/2023/02/25/23-2-25-heap/&name=堆管理器:Ptmalloc2 (HEAP MANAGER)&description=&lt;h1 id=&#34;HEAP-MANGER&#34;&gt;&lt;a href=&#34;#HEAP-MANGER&#34; class=&#34;headerlink&#34; title=&#34;HEAP MANGER&#34;&gt;&lt;/a&gt;HEAP MANGER&lt;/h1&gt;&lt;h2 id=&#34;为什么要有堆管理器&#34;&gt;&lt;a href=&#34;#为什么要有堆管理器&#34; class=&#34;headerlink&#34; title=&#34;为什么要有堆管理器&#34;&gt;&lt;/a&gt;为什么要有堆管理器&lt;/h2&gt;&lt;p&gt;堆是动态分配的虚拟内存(只有在程序访问到这块虚拟内存时，系统才会建立虚拟内存和物理内存的映射，称为延迟绑定机制，大大节省了内存)，从低地址向高地址生长，程序可能需要频繁的向操作系统申请内存的系统调用，与此同时就伴随这从用户态到内核态的多次转换，转换的同时需要保存context，影响程序性能，堆管理器就出现了，在操作系统和用户当作中间人，他会申请较大的内存，管理分配，1、响应用户申请内存的请求2、管理用户所释放的内存，堆管理器并非由内核实现的，Linux标准发行版中使用的堆分配器是glibc中的堆分配器：ptmalloc2&lt;/p&gt;
 &lt;figure class=&#34;highlight tex&#34;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#34;code&#34;&gt;&lt;pre&gt;&lt;span class=&#34;line&#34;&gt;平台：操作系统 --&amp;gt; 堆管理器 --&amp;gt; 用户&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;资源：物理内存 --&amp;gt; arena  --&amp;gt;可用内存&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;"><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://grxer.gitee.io/2023/02/25/23-2-25-heap/&t=HEAP MANAGER"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://grxer.gitee.io/2023/02/25/23-2-25-heap/&t=堆管理器:Ptmalloc2 (HEAP MANAGER)"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
 </ul>
 
     </div>

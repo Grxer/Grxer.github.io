@@ -8,12 +8,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
     <meta name="baidu-site-verification" content="codeva-ROfYcqLkCh" />
     <meta name="msvalidate.01" content="ECA3E06A0E52A2AC90C4B06F12981FB2" />
-    <meta name="description" content="Windows Kernel Experiment: Interrupt Privilege Escalation双机调试环境搭建从32位的xp开始，慢慢上64位 Windows XP Home Edition with Service Pack 2 (Simplified Chinese)  ed2k:&#x2F;&#x2F;|file|sc_winxp_home_with_sp2.iso|611358720|B8">
+    <meta name="description" content="Windows Kernel Experiment: Interrupt Privilege Escalation双机调试环境搭建从32位的xp开始，慢慢上64位 Windows XP Home Edition with Service Pack 2 (Simplified Chinese)  ed2k:&#x2F;&#x2F;|file|sc_winxp_home_with_sp2.iso|61135872">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Windows内核实验:中断提权(Interrupt Privilege Escalation)">
 <meta property="og:url" content="https://grxer.gitee.io/2023/05/26/Windows-Kernel-Experiment-Interrupt-Privilege-Escalation/index.html">
 <meta property="og:site_name" content="Computer Security">
-<meta property="og:description" content="Windows Kernel Experiment: Interrupt Privilege Escalation双机调试环境搭建从32位的xp开始，慢慢上64位 Windows XP Home Edition with Service Pack 2 (Simplified Chinese)  ed2k:&#x2F;&#x2F;|file|sc_winxp_home_with_sp2.iso|611358720|B8">
+<meta property="og:description" content="Windows Kernel Experiment: Interrupt Privilege Escalation双机调试环境搭建从32位的xp开始，慢慢上64位 Windows XP Home Edition with Service Pack 2 (Simplified Chinese)  ed2k:&#x2F;&#x2F;|file|sc_winxp_home_with_sp2.iso|61135872">
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="https://grxer.gitee.io/2023/05/26/Windows-Kernel-Experiment-Interrupt-Privilege-Escalation/image-20230526010718133.png">
 <meta property="og:image" content="https://grxer.gitee.io/2023/05/26/Windows-Kernel-Experiment-Interrupt-Privilege-Escalation/image-20230526140611903.png">
@@ -23,7 +23,7 @@
 <meta property="og:image" content="https://grxer.gitee.io/2023/05/26/Windows-Kernel-Experiment-Interrupt-Privilege-Escalation/image-20230526221657750.png">
 <meta property="og:image" content="https://grxer.gitee.io/2023/05/26/Windows-Kernel-Experiment-Interrupt-Privilege-Escalation/image-20230527002007814.png">
 <meta property="article:published_time" content="2023-05-26T14:23:34.000Z">
-<meta property="article:modified_time" content="2023-05-26T16:23:00.923Z">
+<meta property="article:modified_time" content="2023-05-28T10:04:38.662Z">
 <meta property="article:author" content="Grxer">
 <meta property="article:tag" content="Windows Kernel Experiment">
 <meta name="twitter:card" content="summary">
@@ -84,6 +84,8 @@
     <br/>
     <span id="actions">
       <ul>
+        
+        <li><a class="icon" aria-label="Previous post" href="/2023/05/28/Windows-Kernel-Experiment-interrupt-handling/"><i class="fas fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
         
         
         <li><a class="icon" aria-label="Next post" href="/2023/05/25/Dynamic-DLL-Injection-and-unloading/"><i class="fas fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
@@ -160,7 +162,7 @@
   <div class="content" itemprop="articleBody">
     <h1 id="Windows-Kernel-Experiment-Interrupt-Privilege-Escalation"><a href="#Windows-Kernel-Experiment-Interrupt-Privilege-Escalation" class="headerlink" title="Windows Kernel Experiment: Interrupt Privilege Escalation"></a>Windows Kernel Experiment: Interrupt Privilege Escalation</h1><h2 id="双机调试环境搭建"><a href="#双机调试环境搭建" class="headerlink" title="双机调试环境搭建"></a>双机调试环境搭建</h2><p>从32位的xp开始，慢慢上64位</p>
 <p>Windows XP Home Edition with Service Pack 2 (Simplified Chinese) </p>
-<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">ed2k:<span class="comment">//|file|sc_winxp_home_with_sp2.iso|611358720|B80F4CCF312420015FFD5740057085B0|/</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">ed2k:<span class="comment">//|file|sc_winxp_home_with_sp2.iso|61135872    0|B80F4CCF312420015FFD5740057085B0|/</span></span><br></pre></td></tr></table></figure>
 
 <p>xp激活码 	</p>
 <figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="number">8</span>QKF3-VDWXY-CT6TM<span class="number">-7</span>TGG6-GKR9G</span><br></pre></td></tr></table></figure>
@@ -207,7 +209,8 @@
 <figure class="highlight c"><table><tr><td class="code"><pre><span class="line">kd&gt; r idtr</span><br><span class="line">idtr=<span class="number">8003f</span>400</span><br><span class="line">kd&gt; dq <span class="number">8003f</span>400</span><br><span class="line"><span class="number">8003f</span>400  <span class="number">80548e00</span>`<span class="number">00082190</span> <span class="number">80548e00</span>`<span class="number">0008230</span>c</span><br><span class="line"><span class="number">8003f</span>410  <span class="number">00008500</span>`<span class="number">0058112</span>e <span class="number">8054</span>ee00`<span class="number">00082720</span></span><br><span class="line"><span class="number">8003f</span>420  <span class="number">8054</span>ee00`<span class="number">000828</span>a0 <span class="number">80548e00</span>`<span class="number">00082</span>a00</span><br><span class="line"><span class="number">8003f</span>430  <span class="number">80548e00</span>`<span class="number">00082b</span>74 <span class="number">80548e00</span>`<span class="number">000831</span>ec</span><br><span class="line"><span class="number">8003f</span>440  <span class="number">00008500</span>`<span class="number">00501188</span> <span class="number">80548e00</span>`<span class="number">000835f</span>0</span><br><span class="line"><span class="number">8003f</span>450  <span class="number">80548e00</span>`<span class="number">00083710</span> <span class="number">80548e00</span>`<span class="number">00083850</span></span><br></pre></td></tr></table></figure>
 
 <blockquote>
-<p>这里idtr不知道为什么似乎只显示了高32位，低18位没有显示</p>
+<p>dbg里 r idtr只显示了高32位的基址</p>
+<p>r idtl可以显示界限</p>
 </blockquote>
 <p>回顾下中断门描述符</p>
 <p><img src="/2023/05/26/Windows-Kernel-Experiment-Interrupt-Privilege-Escalation/image-20230526221657750.png" alt="image-20230526221657750"></p>
@@ -222,7 +225,7 @@
 <figure class="highlight c"><table><tr><td class="code"><pre><span class="line">eq <span class="number">8003f</span>500  <span class="number">0040</span>ee00`<span class="number">00081040</span></span><br></pre></td></tr></table></figure>
 
 <blockquote>
-<p>这里要注意的是DPL位，DPL位必须是个三环标志(111)，确保三环程序可以触发这个中断</p>
+<p>这里要注意的是DPL位，DPL位必须是个三环标志(11)，确保三环程序可以触发这个中断</p>
 <p>0环的话我们3环程序去int 20中断的话，会产生越权访问的异常，这也是防止恶意程序随意调用系统调用的方式之一</p>
 </blockquote>
 <ol start="2">
@@ -231,7 +234,7 @@
 <p><img src="/2023/05/26/Windows-Kernel-Experiment-Interrupt-Privilege-Escalation/image-20230527002007814.png" alt="image-20230527002007814"></p>
 </li>
 </ol>
-<p>访问成功，IdtEntry内指令成功获得0环权限</p>
+<p>访问成功，IdtEntry内指令获得0环权限</p>
 
   </div>
 </article>
