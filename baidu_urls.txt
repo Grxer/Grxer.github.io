@@ -1,3 +1,5 @@
+https://grxer.gitee.io/2023/05/29/Windows-Kernel-Experiment-InlineHook/
+https://grxer.gitee.io/2023/05/29/Windows-Kernel-Experiment-Open-interrupt-API-call/
 https://grxer.gitee.io/2023/05/28/Windows-Kernel-Experiment-interrupt-handling/
 https://grxer.gitee.io/2023/05/26/Windows-Kernel-Experiment-Interrupt-Privilege-Escalation/
 https://grxer.gitee.io/2023/05/25/Dynamic-DLL-Injection-and-unloading/
@@ -21,5 +23,3 @@ https://grxer.gitee.io/2023/04/15/OSTEP-homework-6-Mechanism-Limited-Direct-Exec
 https://grxer.gitee.io/2023/04/13/OSTEP-6-Mechanism-Limited-Direct-Execution/
 https://grxer.gitee.io/2023/04/12/OSTEP-homework-5-Process-API/
 https://grxer.gitee.io/2023/04/11/OSTEP-5-Process-API/
-https://grxer.gitee.io/2023/04/10/2016-hitcon-house-of-orange/
-https://grxer.gitee.io/2023/04/09/2016%E4%B8%9C%E5%8D%8E%E6%9D%AFpwn450-note/

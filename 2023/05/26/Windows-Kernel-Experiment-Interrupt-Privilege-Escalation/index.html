@@ -23,7 +23,7 @@
 <meta property="og:image" content="https://grxer.gitee.io/2023/05/26/Windows-Kernel-Experiment-Interrupt-Privilege-Escalation/image-20230526221657750.png">
 <meta property="og:image" content="https://grxer.gitee.io/2023/05/26/Windows-Kernel-Experiment-Interrupt-Privilege-Escalation/image-20230527002007814.png">
 <meta property="article:published_time" content="2023-05-26T14:23:34.000Z">
-<meta property="article:modified_time" content="2023-05-28T10:04:38.662Z">
+<meta property="article:modified_time" content="2023-05-29T12:25:31.031Z">
 <meta property="article:author" content="Grxer">
 <meta property="article:tag" content="Windows Kernel Experiment">
 <meta name="twitter:card" content="summary">
@@ -164,11 +164,14 @@
 <p>Windows XP Home Edition with Service Pack 2 (Simplified Chinese) </p>
 <figure class="highlight c"><table><tr><td class="code"><pre><span class="line">ed2k:<span class="comment">//|file|sc_winxp_home_with_sp2.iso|61135872    0|B80F4CCF312420015FFD5740057085B0|/</span></span><br></pre></td></tr></table></figure>
 
-<p>xp激活码 	</p>
+<p>Home Edition with Service Pack 2  xp激活码 	</p>
 <figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="number">8</span>QKF3-VDWXY-CT6TM<span class="number">-7</span>TGG6-GKR9G</span><br></pre></td></tr></table></figure>
 
+<p>Windows XP Professional with Service Pack 2 (Simplified Chinese激活码</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">BB96V<span class="number">-433</span>XK-GM9WR-KXCDJ<span class="number">-4</span>HTQW</span><br></pre></td></tr></table></figure>
+
 <p>激活</p>
-<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">（<span class="number">1</span>）点击“开始”——运行——输入regedit ——回车 。此时进入注册表编辑器。</span><br><span class="line">（<span class="number">2</span>）找到主键 Hkey_Local_Machine\Software\Microsoft\WindowsNT\CurrentVersion\WPAEvents\</span><br><span class="line">（<span class="number">3</span>）删除子键 lastWPAEventLoged （右击，删除）</span><br><span class="line"></span><br><span class="line">（<span class="number">4</span>）（右击，“修改”）修改子键 OOBETimer 键值为：ff d5 <span class="number">71</span> d6 <span class="number">8b</span> <span class="number">6</span>a <span class="number">8</span>d <span class="number">6f</span> d5 <span class="number">33</span> <span class="number">93</span> fd </span><br><span class="line">（<span class="number">5</span>）右击注册表中的“WPAEvents”→“权限”→“高级”→“所有者”→你的用户名→→“确定”</span><br><span class="line">（<span class="number">6</span>）回到“安全”→“高级”→选择列表中的“system”→“编辑” ，把“拒绝”列下的方框全部打勾即可 （勾“完全控制”即可），确定，退出。</span><br></pre></td></tr></table></figure>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">（<span class="number">1</span>）点击“开始”——运行——输入regedit ——回车 。此时进入注册表编辑器。</span><br><span class="line">（<span class="number">2</span>）找到主键 Hkey_Local_Machine\Software\Microsoft\WindowsNT\CurrentVersion\WPAEvents\</span><br><span class="line">（<span class="number">3</span>）删除子键 lastWPAEventLoged （右击，删除）</span><br><span class="line">（<span class="number">4</span>）（右击，“修改”）修改子键 OOBETimer 键值为：ff d5 <span class="number">71</span> d6 <span class="number">8b</span> <span class="number">6</span>a <span class="number">8</span>d <span class="number">6f</span> d5 <span class="number">33</span> <span class="number">93</span> fd </span><br><span class="line">（<span class="number">5</span>）右击注册表中的“WPAEvents”→“权限”→“高级”→“所有者”→你的用户名→→“确定”</span><br><span class="line">（<span class="number">6</span>）回到“安全”→“高级”→选择列表中的“system”→“编辑” ，把“拒绝”列下的方框全部打勾即可 （勾“完全控制”即可），确定，退出。</span><br></pre></td></tr></table></figure>
 
 <p>给虚拟机开个串行端口，用管道来通信，名字com_2</p>
 <blockquote>
