@@ -19,7 +19,7 @@
 <meta property="og:image" content="https://grxer.gitee.io/2023/06/02/Windows-Kernel-Experiment-PAE-paging/image-20230602135849354.png">
 <meta property="og:image" content="https://grxer.gitee.io/2023/06/02/Windows-Kernel-Experiment-PAE-paging/image-20230602130747486.png">
 <meta property="article:published_time" content="2023-06-02T15:30:25.000Z">
-<meta property="article:modified_time" content="2023-06-02T06:52:24.774Z">
+<meta property="article:modified_time" content="2023-06-02T06:57:26.323Z">
 <meta property="article:author" content="Grxer">
 <meta property="article:tag" content="Windows Kernel Experiment">
 <meta name="twitter:card" content="summary">
@@ -82,7 +82,7 @@
       <ul>
         
         
-        <li><a class="icon" aria-label="Next post" href="/2023/06/01/Windows-Kernel-Experiment-Non-PAE-paging/"><i class="fas fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="Next post" href="/2023/06/02/Windows-Kernel-Experiment-Parallel-processes/"><i class="fas fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
         
         <li><a class="icon" aria-label="Back to top" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
         <li><a class="icon" aria-label="Share post" href="#"><i class="fas fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
@@ -196,7 +196,9 @@
 
 <h2 id="页目录和页表在虚拟内存里的表现"><a href="#页目录和页表在虚拟内存里的表现" class="headerlink" title="页目录和页表在虚拟内存里的表现"></a>页目录和页表在虚拟内存里的表现</h2><p><img src="/2023/06/02/Windows-Kernel-Experiment-PAE-paging/image-20230602130747486.png" alt="image-20230602130747486"></p>
 <p>总的大小变为2^2 * 2^9 * 2^9 * 8byte &#x3D; 8Mb 所有页目录移到了0xc060 0000处</p>
-<p>一个页目录指针表项描述4k * 2^9 * 2^9 &#x3D; 1G内存，一个页目录项描述4k * 2^9 &#x3D; 2M内存 ，一个页表项描述4k内存</p>
+<p>一个页目录指针表项描述4k * 2^9 * 2^9 &#x3D; 1G内存</p>
+<p>一个页目录项描述4k * 2^9 &#x3D; 2M内存 </p>
+<p>一个页表项描述4k内存</p>
 <p>页目录指针不放入虚拟内存(主要是页目录描述的内存太大了，没必要让这么到一块内存的属性放到进程空间里让进程去修改)，其余表计算公式为</p>
 <p>页表项地址&#x3D;((address &gt;&gt; 12) &lt;&lt; 3) + 0xc0000000</p>
 <p>页目录项地址 &#x3D; ((address &gt;&gt; 21) &lt;&lt;3) + 0xc0600000</p>
