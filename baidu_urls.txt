@@ -1,3 +1,8 @@
+https://grxer.gitee.io/2023/06/04/Windows-Kernel-Experiment-ShadowWalker/
+https://grxer.gitee.io/2023/06/03/Windows-Kernel-Experiment-Page-Fault/
+https://grxer.gitee.io/2023/06/03/Windows-Kernel-Experiment-ITLB-Pipeline/
+https://grxer.gitee.io/2023/06/03/Windows-Kernel-Experiment-DTLB/
+https://grxer.gitee.io/2023/06/03/Windows-Kernel-Experiment-Deferred-memory-allocation/
 https://grxer.gitee.io/2023/06/02/Windows-Kernel-Experiment-Parallel-processes/
 https://grxer.gitee.io/2023/06/02/Windows-Kernel-Experiment-Interprocess-memory-access/
 https://grxer.gitee.io/2023/06/02/Windows-Kernel-Experiment-Zero-address-read-write/
@@ -18,8 +23,3 @@ https://grxer.gitee.io/2023/05/05/%E8%B0%83%E7%94%A8%E6%AC%BA%E9%AA%97%E6%8B%BE%
 https://grxer.gitee.io/2023/05/04/ELF-Dynamical-link/
 https://grxer.gitee.io/2023/04/30/VIM/
 https://grxer.gitee.io/2023/04/28/static-link/
-https://grxer.gitee.io/2023/04/24/linux-signal/
-https://grxer.gitee.io/2023/04/23/floating-point-calculation-and-kahan/
-https://grxer.gitee.io/2023/04/22/IA32-Interrupt-Exception/
-https://grxer.gitee.io/2023/04/19/HITCON-2018-PWN-baby-tcache/
-https://grxer.gitee.io/2023/04/17/An-interview-question-from-baidu/
