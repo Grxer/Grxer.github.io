@@ -17,7 +17,7 @@
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="https://grxer.gitee.io/2023/05/25/Dynamic-DLL-Injection-and-unloading/image-20230526000213620.png">
 <meta property="article:published_time" content="2023-05-25T13:38:17.000Z">
-<meta property="article:modified_time" content="2023-05-26T07:30:22.856Z">
+<meta property="article:modified_time" content="2023-06-09T09:54:37.308Z">
 <meta property="article:author" content="Grxer">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://grxer.gitee.io/2023/05/25/Dynamic-DLL-Injection-and-unloading/image-20230526000213620.png">
@@ -158,7 +158,7 @@
 </li>
 <li><p>GetModuleHandle 获取kernel32.dll句柄</p>
 <blockquote>
-<p>常见的系统模块kernel32.dll user32.dll gdi32.dll advapi32.dll shell32.dll等加载到各个进程虚拟地址的偏移是相同的(这个原因也就导致我们32位注入器只能注入32位进程，64位只能注入64位进程)，这一点让我好像明白了windows dll为什么采用直接修改内存代码的基址重定位，不怕浪费内存吗？，这样看如果地址一样，直接在内存中映射一份就可以多进程共享了</p>
+<p>常见的系统模块kernel32.dll user32.dll gdi32.dll advapi32.dll shell32.dll等加载到各个进程虚拟地址的偏移是相同的(这个原因也就导致我们32位注入器只能注入32位进程，64位只能注入64位进程)，这一点让我好像明白了windows dll为什么采用直接修改内存代码的基址重定位，不怕浪费内存吗？，这样看如果地址一样，直接在内存中映射一份就可以多进程共享了，(不过在实验(xp sp3里)中发现,或者说是多个本来映射到同一块，某个进程改时复制一块,<del>没敢给物理机挂内核调试器去验证</del>)</p>
 <p>aslr是每次启动系统时，系统模块加载基址会变</p>
 <p>感觉这种机制也是为什么linux的服务端为什么会windows安全很多的原因之一</p>
 </blockquote>

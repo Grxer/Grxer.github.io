@@ -23,7 +23,7 @@
 <meta property="og:image" content="https://grxer.gitee.io/2023/05/28/Windows-Kernel-Experiment-interrupt-handling/image-20230528001616020.png">
 <meta property="og:image" content="https://grxer.gitee.io/2023/05/28/Windows-Kernel-Experiment-interrupt-handling/image-20230528001515527.png">
 <meta property="article:published_time" content="2023-05-28T10:36:37.000Z">
-<meta property="article:modified_time" content="2023-06-03T02:38:20.644Z">
+<meta property="article:modified_time" content="2023-06-09T16:07:54.959Z">
 <meta property="article:author" content="Grxer">
 <meta property="article:tag" content="Windows Kernel Experiment">
 <meta name="twitter:card" content="summary">
@@ -172,7 +172,7 @@
 
 <p>可以看到ds是一个平坦段，可以访问整个4gb，分段保护机制其实是在弱化，只是提供了进程隔离，具体访问保护是由分页机制来提供的</p>
 <h3 id="eflags变化"><a href="#eflags变化" class="headerlink" title="eflags变化?"></a><strong>eflags变化?</strong></h3><p>第九位变为0了，也就是IF位置零，中断处理过程关中断</p>
-<h3 id="cs段选择子为什么会是8？"><a href="#cs段选择子为什么会是8？" class="headerlink" title="cs段选择子为什么会是8？"></a><strong>cs段选择子为什么会是8？</strong></h3><p>和我们构造的中断门有关系 他的16-31位为中断处理程序目标代码段选择子 即为下面的0008</p>
+<h3 id="cs段选择子为什么会是8？"><a href="#cs段选择子为什么会是8？" class="headerlink" title="cs段选择子为什么会是8？"></a><strong>cs段选择子为什么会是8？</strong></h3><p>和我们构造的<strong>中断门</strong>有关系 他的16-31位为中断处理程序目标代码段选择子 即为下面的0008</p>
 <p>eq 8003f500  0040ee00&#96;00081040</p>
 <p>dg x命令显示段选择子x所指向的段描述符</p>
 <h3 id="ss和sp是怎么来的呢？"><a href="#ss和sp是怎么来的呢？" class="headerlink" title="ss和sp是怎么来的呢？"></a><strong>ss和sp是怎么来的呢？</strong></h3><p>从tss段里取出来的，TR寄存器中存放着指向当前任务TSS段的段选择子</p>
