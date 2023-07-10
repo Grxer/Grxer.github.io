@@ -43,6 +43,25 @@
     
     
     <entry>
+      <title>RISC-V ISA介绍</title>
+      <link href="/2023/07/08/ISA-risc-v/"/>
+      <url>/2023/07/08/ISA-risc-v/</url>
+      
+        <content type="html"><![CDATA[<h1 id="RISC-V-ISA"><a href="#RISC-V-ISA" class="headerlink" title="RISC-V ISA"></a>RISC-V ISA</h1><p>最主要的是开源(arm等ISA即使你买了授权也不能随意去改)，</p><h2 id="ISA-Instruction-Set-Architecture-指令集架构"><a href="#ISA-Instruction-Set-Architecture-指令集架构" class="headerlink" title="ISA(Instruction Set Architecture)指令集架构"></a>ISA(Instruction Set Architecture)指令集架构</h2><p>底层硬件电路面向上层软件程序提供的一层<strong>接口规范</strong></p><blockquote><p>操作系统提供给应用程序的接口就是系统调用，操作系统和硬件直接就是ISA 硬件部分的话业界里一般叫<a href="https://zh.wikipedia.org/zh-cn/%E5%BE%AE%E6%9E%B6%E6%A7%8B">微架构</a>microarchitecture，有了ISA的抽象层我们做底层开发就不需要关心微架构具体是什么样的</p></blockquote><p>他是一套标准，类似c语言的标准，POSIX标准等等，具体的实现有很多种，不同的cpu厂家实现是不一样的，就比如说x86架构的标准可能由intel和amd等公司来实现</p><blockquote><p>小故事：amd64架构</p><p>当年intel先推出64位架构(IA-64)处理器但是他不兼容32位架构的机器，导致芯片滞销，amd后推出64位指令集架构amd64兼容了之前32位指令集，畅销后，软件生态上就占领了先机，intel只能用amd64架构(好像是买amd64的授权，<del>涉及到授权关系就挺混乱了。。。</del>)，有时候又叫x86-64</p></blockquote><p>ISA定义了</p><ul><li>基本数据类型</li><li>寄存器</li><li>指令</li><li>内存模型</li><li>寻址模式</li><li>异常或中断的处理方式等等</li></ul><blockquote><p>一个比较错误的认为就是<del>ISA就是汇编</del>，汇编是ISA的一小部分</p></blockquote><h2 id="RISC-V-ISA-命名格式"><a href="#RISC-V-ISA-命名格式" class="headerlink" title="RISC-V ISA 命名格式"></a>RISC-V ISA 命名格式</h2><p><strong>RV[###][abc…..xyz]</strong></p><ul><li>RV：用于标识 RISC-V 体系架构的前缀，即 RISC-V的缩写。</li><li>[###]：{32, 64, 128} 用于标识处理器的字宽，也就是处理器的寄存器的宽度（单位为bit）</li><li>[abc…xyz]：标识该处理器支持的指令集模块集合</li></ul><h2 id="模块化ISA"><a href="#模块化ISA" class="headerlink" title="模块化ISA"></a>模块化ISA</h2><p>由1个基本整数指令集 + 多个可选的扩展指令集组成。基础指令集是固定的</p><p><del>WC，可定制化芯片</del></p><table><thead><tr><th>基本指令集</th><th>描述</th></tr></thead><tbody><tr><td>RV32I</td><td>32位整数指令集</td></tr><tr><td>RV32E</td><td>RV32I 的子集，用于小型的嵌入式场景</td></tr><tr><td>RV64I</td><td>64 位整数指令集，兼容 RV32I</td></tr><tr><td>RV128I</td><td>128 位整数指令集，兼容 RV64I和RV32I</td></tr></tbody></table><table><thead><tr><th>扩展指令集</th><th>描述</th></tr></thead><tbody><tr><td>M拓展</td><td>提供乘法和除法指令</td></tr><tr><td>A拓展</td><td>提供原子操作指令</td></tr><tr><td>F拓展</td><td>提供单精度浮点数操作指令</td></tr><tr><td>D拓展</td><td>提供双精度浮点数操作指令</td></tr><tr><td>C拓展</td><td>提供压缩指令集</td></tr><tr><td>Z拓展</td><td>提供对控制和状态寄存器(CSR)的操作指令</td></tr><tr><td>P拓展</td><td>提供向量操作指令</td></tr><tr><td>B拓展</td><td>提供位操作指令</td></tr><tr><td>等等</td><td>等等</td></tr></tbody></table><p><strong>IMAFD</strong>被称为通用(General)组合，用G表示</p><h2 id="RISC-V通用寄存器"><a href="#RISC-V通用寄存器" class="headerlink" title="RISC-V通用寄存器"></a>RISC-V通用寄存器</h2><p><img src="/2023/07/08/ISA-risc-v/image-20230626115944963.png" alt="image-20230626115944963"></p><p>RV32E 将 32 个通用寄存器缩减为 16 个</p><h2 id="Hart"><a href="#Hart" class="headerlink" title="Hart"></a>Hart</h2><p>HART &#x3D; HARdware Thread</p><p>类似于intel的超线程技术，一个核里可以跑两个线程(指令执行流)，这里的HART概念就是这样一条指令执行流</p><h2 id="特权级别"><a href="#特权级别" class="headerlink" title="特权级别"></a>特权级别</h2><p><img src="/2023/07/08/ISA-risc-v/image-20230626122607114.png" alt="image-20230626122607114"></p><p>level3 machine是最高态</p><p>比如说linux操作系统用户态riscv cpu是工作在User(00)级的,内核态cpu是在Supervisor(01)级的</p><p>Machine态类似于x86的实模式，上电之后是处于Machine态的，都是物理地址</p><h2 id="Control-and-Status-Registers-CSR"><a href="#Control-and-Status-Registers-CSR" class="headerlink" title="Control and Status Registers(CSR)"></a>Control and Status Registers(CSR)</h2><p>不同的特权级别下时分别对应各自的一套CSR</p><p>高级别的特权级下可以访问低级别的CSR，反之不行</p><h2 id="内存管理和保护"><a href="#内存管理和保护" class="headerlink" title="内存管理和保护"></a>内存管理和保护</h2><h2 id="异常和中断"><a href="#异常和中断" class="headerlink" title="异常和中断"></a>异常和中断</h2>]]></content>
+      
+      
+      
+        <tags>
+            
+            <tag> RISC-V </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>Windows内核实验:ShadowWalker</title>
       <link href="/2023/06/04/Windows-Kernel-Experiment-ShadowWalker/"/>
       <url>/2023/06/04/Windows-Kernel-Experiment-ShadowWalker/</url>
