@@ -15,11 +15,13 @@
 <meta property="og:site_name" content="Computer Security">
 <meta property="og:description" content="RISC-V ASM主要是RV32I的asm operation instruction(指令):直接对应二进制机器指令的字符串 pseudo-instruction(伪指令):一条伪指令指示汇编器产生多条实际的指令(instruction) direction(指示&#x2F;伪操作):通过类似指令的形式(以“.”开头)，通知汇编器如何控制代码的产生等，不对应具体的指令，比如.text是告诉汇编">
 <meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://grxer.gitee.io/2023/07/09/risc-v-asm/image-20230710232853854.png">
 <meta property="article:published_time" content="2023-07-08T16:08:57.000Z">
-<meta property="article:modified_time" content="2023-07-10T12:39:04.522Z">
+<meta property="article:modified_time" content="2023-07-10T15:52:21.433Z">
 <meta property="article:author" content="Grxer">
 <meta property="article:tag" content="RISC-V">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://grxer.gitee.io/2023/07/09/risc-v-asm/image-20230710232853854.png">
     
     
       
@@ -108,7 +110,7 @@
 
     </div>
     <div id="toc">
-      <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#RISC-V-ASM"><span class="toc-number">1.</span> <span class="toc-text">RISC-V ASM</span></a></li></ol>
+      <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#RISC-V-ASM"><span class="toc-number">1.</span> <span class="toc-text">RISC-V ASM</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%8C%87%E4%BB%A4%E7%BC%96%E7%A0%81%E6%A0%BC%E5%BC%8F"><span class="toc-number">1.1.</span> <span class="toc-text">指令编码格式</span></a></li></ol></li></ol>
     </div>
   </span>
 </div>
@@ -158,6 +160,23 @@
 <p>pseudo-instruction(伪指令):一条伪指令指示汇编器产生多条实际的指令(instruction)</p>
 <p>direction(指示&#x2F;伪操作):通过类似指令的形式(以“.”开头)，通知汇编器如何控制代码的产生等，不对应具体的指令，比如.text是告诉汇编器放到.text节里,</p>
 <p>macro：采用 .macro&#x2F;.endm 自定义的宏</p>
+<h2 id="指令编码格式"><a href="#指令编码格式" class="headerlink" title="指令编码格式"></a>指令编码格式</h2><p><img src="/2023/07/09/risc-v-asm/image-20230710232853854.png" alt="image-20230710232853854"></p>
+<p>funct3和funct7和opcode决定指令类型(加减乘除等等)</p>
+<blockquote>
+<p>funct3:funct代表function 3代表占了3bits</p>
+</blockquote>
+<ul>
+<li>R-type:（Register），每条指令中有三个 fields，用于指定3个寄存器参数</li>
+<li>I-type: (Immediate），每条指令除了带有两个寄存器参数外，还带有一个立即数参数（宽度为 12 bits）。</li>
+<li>S-type: （Store），每条指令除了带有两个寄存器参数外，还带有一个立即数参数（宽度为 12 bits，但 fields 的组织方式不同于 I-type）</li>
+<li>B-type: (Branch)，每条指令除了带有两个寄存器参数外，还带有一个立即数参数（宽度为 12 bits，但取值为 2 的倍数）。</li>
+<li>U-type: （Upper），每条指令含有一个寄存器参数再加上一个立即数参数（宽度为 20bits，用于表示一个立即数的高 20 位）</li>
+<li>J-type: （Jump），每条指令含有一个寄存器参数再加上一个立即数参数（宽度为 20bits）</li>
+</ul>
+<blockquote>
+<p>rd:r代表register d代表destination</p>
+<p>rs:s代表source</p>
+</blockquote>
 
   </div>
 </article>
@@ -183,7 +202,7 @@
     </div>
 
     <div id="toc-footer" style="display: none">
-      <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#RISC-V-ASM"><span class="toc-number">1.</span> <span class="toc-text">RISC-V ASM</span></a></li></ol>
+      <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#RISC-V-ASM"><span class="toc-number">1.</span> <span class="toc-text">RISC-V ASM</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%8C%87%E4%BB%A4%E7%BC%96%E7%A0%81%E6%A0%BC%E5%BC%8F"><span class="toc-number">1.1.</span> <span class="toc-text">指令编码格式</span></a></li></ol></li></ol>
     </div>
 
     <div id="share-footer" style="display: none">
