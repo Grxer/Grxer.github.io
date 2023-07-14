@@ -12,7 +12,7 @@
 <meta property="og:type" content="article">
 <meta property="og:title" content="堆管理器:Ptmalloc2 (HEAP MANAGER)">
 <meta property="og:url" content="https://grxer.gitee.io/2023/02/25/23-2-25-heap/index.html">
-<meta property="og:site_name" content="Computer Security">
+<meta property="og:site_name" content="Grxer&#39;s Blog">
 <meta property="og:description" content="HEAP MANGER为什么要有堆管理器堆是动态分配的虚拟内存(只有在程序访问到这块虚拟内存时，系统才会建立虚拟内存和物理内存的映射，称为延迟绑定机制，大大节省了内存)，从低地址向高地址生长，程序可能需要频繁的向操作系统申请内存的系统调用，与此同时就伴随这从用户态到内核态的多次转换，转换的同时需要保存context，影响程序性能，堆管理器就出现了，在操作系统和用户当作中间人，他会申请较大的内存，管">
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="https://grxer.gitee.io/2023/02/25/23-2-25-heap/image-20230225111848174.png">
@@ -23,7 +23,7 @@
 <meta property="og:image" content="https://grxer.gitee.io/2023/02/25/23-2-25-heap/image-20230225152540343.png">
 <meta property="article:published_time" content="2023-02-25T02:03:34.000Z">
 <meta property="article:modified_time" content="2023-05-28T03:35:20.677Z">
-<meta property="article:author" content="Grxer">
+<meta property="article:author" content="bxz">
 <meta property="article:tag" content="HEAP MANGER">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://grxer.gitee.io/2023/02/25/23-2-25-heap/image-20230225111848174.png">
@@ -77,6 +77,8 @@
        --><li><a href="/search/">Search</a></li><!--
      --><!--
        --><li><a href="/tags/">Tag</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
      -->
       </ul>
     </span>
@@ -135,7 +137,7 @@
 
     <div class="meta">
       <span class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
-        <span itemprop="name">Grxer</span>
+        <span itemprop="name">bxz</span>
       </span>
       
     <div class="postdate">
@@ -409,6 +411,8 @@
           <li><a href="/search/">Search</a></li>
          
           <li><a href="/tags/">Tag</a></li>
+         
+          <li><a href="/about/">About</a></li>
         
       </ul>
     </div>
@@ -452,7 +456,7 @@
     
     
     2023
-    Grxer
+    bxz
   </div>
   <div class="footer-right">
     <nav>
@@ -465,6 +469,8 @@
        --><li><a href="/search/">Search</a></li><!--
      --><!--
        --><li><a href="/tags/">Tag</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
      -->
       </ul>
     </nav>

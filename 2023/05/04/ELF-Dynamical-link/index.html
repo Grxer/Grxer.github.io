@@ -12,7 +12,7 @@
 <meta property="og:type" content="article">
 <meta property="og:title" content="ELF动态链接(ELF Dynamical link)">
 <meta property="og:url" content="https://grxer.gitee.io/2023/05/04/ELF-Dynamical-link/index.html">
-<meta property="og:site_name" content="Computer Security">
+<meta property="og:site_name" content="Grxer&#39;s Blog">
 <meta property="og:description" content="ELF Dynamical link对于静态链接的缺点  对于一些可以共用的库，每个程序在磁盘上都有一份代码副本，加载到内存也是这样，造成了空间的浪费  静态链接的程序更新起来麻烦，需要重新编译并发送给用户   动态链接思路:把程序分为不同的模块，不再是在编译时进行链接，在程序运行时再链接，这个工作由动态链接器来完成  这里说的不在编译时做链接，其实还是有一个整合的过程的，比如说我们在主程序里调用">
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="https://grxer.gitee.io/2023/05/04/ELF-Dynamical-link/image-20230506083401085.png">
@@ -26,7 +26,7 @@
 <meta property="og:image" content="https://grxer.gitee.io/2023/05/04/ELF-Dynamical-link/image-20230506091935404.png">
 <meta property="article:published_time" content="2023-05-04T06:50:44.000Z">
 <meta property="article:modified_time" content="2023-07-07T13:30:52.030Z">
-<meta property="article:author" content="Grxer">
+<meta property="article:author" content="bxz">
 <meta property="article:tag" content="ELF">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://grxer.gitee.io/2023/05/04/ELF-Dynamical-link/image-20230506083401085.png">
@@ -80,6 +80,8 @@
        --><li><a href="/search/">Search</a></li><!--
      --><!--
        --><li><a href="/tags/">Tag</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
      -->
       </ul>
     </span>
@@ -137,7 +139,7 @@
 
     <div class="meta">
       <span class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
-        <span itemprop="name">Grxer</span>
+        <span itemprop="name">bxz</span>
       </span>
       
     <div class="postdate">
@@ -338,6 +340,8 @@
           <li><a href="/search/">Search</a></li>
          
           <li><a href="/tags/">Tag</a></li>
+         
+          <li><a href="/about/">About</a></li>
         
       </ul>
     </div>
@@ -380,7 +384,7 @@
     
     
     2023
-    Grxer
+    bxz
   </div>
   <div class="footer-right">
     <nav>
@@ -393,6 +397,8 @@
        --><li><a href="/search/">Search</a></li><!--
      --><!--
        --><li><a href="/tags/">Tag</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
      -->
       </ul>
     </nav>

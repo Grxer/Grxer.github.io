@@ -12,13 +12,13 @@
 <meta property="og:type" content="article">
 <meta property="og:title" content="Windows内核实验:ShadowWalker">
 <meta property="og:url" content="https://grxer.gitee.io/2023/06/04/Windows-Kernel-Experiment-ShadowWalker/index.html">
-<meta property="og:site_name" content="Computer Security">
+<meta property="og:site_name" content="Grxer&#39;s Blog">
 <meta property="og:description" content="Windows内核实验:ShadowWalker接着上一次inlinehook缺页异常来做进程保护，反调试等 我们hook住缺页异常后可以根据错误码的第五位判断是取指令造成的缺页，还是读写造成的异常，我们就可以对两种不同缺页做不同的异常处理，可以在指令造成缺页时，把正确页挂到tlb里来使程序可以正常执行，读写造成缺页时，挂到一个fake页上来反调试 0环感觉要做到稳定是很难的 inlinehook">
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="https://grxer.gitee.io/2023/06/04/Windows-Kernel-Experiment-ShadowWalker/image-20230604120326540.png">
 <meta property="article:published_time" content="2023-06-03T22:33:23.000Z">
 <meta property="article:modified_time" content="2023-06-04T04:14:39.129Z">
-<meta property="article:author" content="Grxer">
+<meta property="article:author" content="bxz">
 <meta property="article:tag" content="Windows Kernel Experiment">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://grxer.gitee.io/2023/06/04/Windows-Kernel-Experiment-ShadowWalker/image-20230604120326540.png">
@@ -72,6 +72,8 @@
        --><li><a href="/search/">Search</a></li><!--
      --><!--
        --><li><a href="/tags/">Tag</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
      -->
       </ul>
     </span>
@@ -129,7 +131,7 @@
 
     <div class="meta">
       <span class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
-        <span itemprop="name">Grxer</span>
+        <span itemprop="name">bxz</span>
       </span>
       
     <div class="postdate">
@@ -186,6 +188,8 @@
           <li><a href="/search/">Search</a></li>
          
           <li><a href="/tags/">Tag</a></li>
+         
+          <li><a href="/about/">About</a></li>
         
       </ul>
     </div>
@@ -228,7 +232,7 @@
     
     
     2023
-    Grxer
+    bxz
   </div>
   <div class="footer-right">
     <nav>
@@ -241,6 +245,8 @@
        --><li><a href="/search/">Search</a></li><!--
      --><!--
        --><li><a href="/tags/">Tag</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
      -->
       </ul>
     </nav>

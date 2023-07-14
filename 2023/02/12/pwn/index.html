@@ -12,7 +12,7 @@
 <meta property="og:type" content="article">
 <meta property="og:title" content="非栈上的格式化字符串漏洞">
 <meta property="og:url" content="https://grxer.gitee.io/2023/02/12/pwn/index.html">
-<meta property="og:site_name" content="Computer Security">
+<meta property="og:site_name" content="Grxer&#39;s Blog">
 <meta property="og:description" content="格式化字符串漏洞点不在栈上怎么打一般在栈上的格式会字符串漏洞，我们可以先泄露导致格式化字符串漏洞的函数的got表，然后利用%$hhn进行一个一个byte的写入，payload自己可以写函数去生成，或者利用pwntools库的fmtstr_payload(,{:})去自动生成，自己构造payload要注意payload是否有被‘\x00’截断，导致利用不成功，这种方法需要我们可控值是存储在栈上的参数">
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="https://grxer.gitee.io/2023/02/12/pwn/image-20230212164452297.png">
@@ -28,7 +28,7 @@
 <meta property="og:image" content="https://grxer.gitee.io/2023/02/12/pwn/image-20230212185436302.png">
 <meta property="article:published_time" content="2023-02-12T12:15:32.000Z">
 <meta property="article:modified_time" content="2023-05-05T10:26:19.162Z">
-<meta property="article:author" content="Grxer">
+<meta property="article:author" content="bxz">
 <meta property="article:tag" content="Fmtstr">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://grxer.gitee.io/2023/02/12/pwn/image-20230212164452297.png">
@@ -82,6 +82,8 @@
        --><li><a href="/search/">Search</a></li><!--
      --><!--
        --><li><a href="/tags/">Tag</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
      -->
       </ul>
     </span>
@@ -137,7 +139,7 @@
 
     <div class="meta">
       <span class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
-        <span itemprop="name">Grxer</span>
+        <span itemprop="name">bxz</span>
       </span>
       
     <div class="postdate">
@@ -241,6 +243,8 @@
           <li><a href="/search/">Search</a></li>
          
           <li><a href="/tags/">Tag</a></li>
+         
+          <li><a href="/about/">About</a></li>
         
       </ul>
     </div>
@@ -283,7 +287,7 @@
     
     
     2023
-    Grxer
+    bxz
   </div>
   <div class="footer-right">
     <nav>
@@ -296,6 +300,8 @@
        --><li><a href="/search/">Search</a></li><!--
      --><!--
        --><li><a href="/tags/">Tag</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
      -->
       </ul>
     </nav>
