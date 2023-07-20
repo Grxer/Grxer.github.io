@@ -1,3 +1,8 @@
+https://grxer.gitee.io/2023/07/20/first-aarch64-pwn/
+https://grxer.gitee.io/2023/07/19/aarch64-asm/
+https://grxer.gitee.io/2023/07/19/first-arm-pwn/
+https://grxer.gitee.io/2023/07/17/2023hws/
+https://grxer.gitee.io/2023/07/14/arm-asm/
 https://grxer.gitee.io/2023/07/11/tmux/
 https://grxer.gitee.io/2023/07/10/googlectf-pwn/
 https://grxer.gitee.io/2023/07/09/ret2dlresolve/
@@ -18,8 +23,3 @@ https://grxer.gitee.io/2023/05/29/Windows-Kernel-Experiment-InlineHook/
 https://grxer.gitee.io/2023/05/29/Windows-Kernel-Experiment-Open-interrupt-API-call/
 https://grxer.gitee.io/2023/05/28/Windows-Kernel-Experiment-interrupt-handling/
 https://grxer.gitee.io/2023/05/26/Windows-Kernel-Experiment-Interrupt-Privilege-Escalation/
-https://grxer.gitee.io/2023/05/25/Dynamic-DLL-Injection-and-unloading/
-https://grxer.gitee.io/2023/05/23/embedded-patch/
-https://grxer.gitee.io/2023/05/20/2023-5-20/
-https://grxer.gitee.io/2023/05/19/PE-FILE/
-https://grxer.gitee.io/2023/05/13/x86-nemu-pa1/
