@@ -1,3 +1,4 @@
+https://grxer.gitee.io/2023/07/24/2023-DASCTF-0X401/
 https://grxer.gitee.io/2023/07/20/first-aarch64-pwn/
 https://grxer.gitee.io/2023/07/19/aarch64-asm/
 https://grxer.gitee.io/2023/07/19/first-arm-pwn/
@@ -22,4 +23,3 @@ https://grxer.gitee.io/2023/05/31/Windows-Kernel-Experiment-system-call/
 https://grxer.gitee.io/2023/05/29/Windows-Kernel-Experiment-InlineHook/
 https://grxer.gitee.io/2023/05/29/Windows-Kernel-Experiment-Open-interrupt-API-call/
 https://grxer.gitee.io/2023/05/28/Windows-Kernel-Experiment-interrupt-handling/
-https://grxer.gitee.io/2023/05/26/Windows-Kernel-Experiment-Interrupt-Privilege-Escalation/
