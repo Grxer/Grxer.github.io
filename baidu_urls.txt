@@ -1,4 +1,7 @@
 https://grxer.gitee.io/2222/02/22/EnglishLearn/
+https://grxer.gitee.io/2023/08/03/House-of-Lore/
+https://grxer.gitee.io/2023/08/02/house-of-force/
+https://grxer.gitee.io/2023/08/02/startctf/
 https://grxer.gitee.io/2023/07/29/House-Of-Einherjar/
 https://grxer.gitee.io/2023/07/25/2023%E5%B7%85%E5%B3%B0%E6%9E%81%E5%AE%A2pwn/
 https://grxer.gitee.io/2023/07/24/2023-DASCTF-0X401/
@@ -20,6 +23,3 @@ https://grxer.gitee.io/2023/06/03/Windows-Kernel-Experiment-Deferred-memory-allo
 https://grxer.gitee.io/2023/06/02/Windows-Kernel-Experiment-Parallel-processes/
 https://grxer.gitee.io/2023/06/02/Windows-Kernel-Experiment-Interprocess-memory-access/
 https://grxer.gitee.io/2023/06/02/Windows-Kernel-Experiment-Zero-address-read-write/
-https://grxer.gitee.io/2023/06/02/Windows-Kernel-Experiment-PAE-paging/
-https://grxer.gitee.io/2023/06/01/Windows-Kernel-Experiment-Non-PAE-paging/
-https://grxer.gitee.io/2023/05/31/Windows-Kernel-Experiment-system-call/
