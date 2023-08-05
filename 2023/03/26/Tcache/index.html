@@ -18,7 +18,7 @@
 <meta property="og:image" content="https://grxer.gitee.io/2023/03/26/Tcache/image-20230326234600469.png">
 <meta property="og:image" content="https://grxer.gitee.io/2023/03/26/Tcache/image-20230326234343508.png">
 <meta property="article:published_time" content="2023-03-26T12:26:56.000Z">
-<meta property="article:modified_time" content="2023-03-29T16:50:58.329Z">
+<meta property="article:modified_time" content="2023-08-04T17:41:54.294Z">
 <meta property="article:author" content="bxz">
 <meta property="article:tag" content="Tcache Attach">
 <meta name="twitter:card" content="summary">
@@ -174,7 +174,7 @@
 <h2 id="Tcache-how-2-work"><a href="#Tcache-how-2-work" class="headerlink" title="Tcache how 2 work"></a>Tcache how 2 work</h2><ol>
 <li>第一次malloc，分配一块内存给tcache_perthread_struct，管理tcache </li>
 <li>free时，size&lt;0x410(64位带chunke head)时，tcache链表少于7个未满，先放入tcaceh，满后和之前一样fastbin或其他合适bin，inuse位不会置零，不会合并</li>
-<li>malloc时在tcache范围内，tcache有就拿，tcache没有时，如果<code>fastbin/smallbin/unsorted bin</code> 中有 size 符合的 chunk，会先把 <code>fastbin/smallbin/unsorted bin</code> 中的 chunk 放到 tcache 中，直到填满。之后再从 tcache 中取；<strong>因此 chunk 在 bin 中和 tcache 中的顺序会反过来</strong></li>
+<li>malloc时在tcache范围内，tcache有就拿，tcache没有时，如果<code>fastbin/smallbin/unsorted bin</code> 中有 size 符合的 chunk，会先把 <code>fastbin/smallbin/unsorted bin</code> 中的 chunk 放到 tcache 中，直到填满。之后再从 tcache 中取；<strong>因此 chunk 在 其他bin 中的顺序和 拿到tcache 中的顺序会反过来</strong></li>
 </ol>
 <h2 id="RTFSC"><a href="#RTFSC" class="headerlink" title="RTFSC"></a>RTFSC</h2><h3 id="申请"><a href="#申请" class="headerlink" title="申请"></a>申请</h3><figure class="highlight c"><table><tr><td class="code"><pre><span class="line">  <span class="comment">// 从 tcache list 中获取内存</span></span><br><span class="line">  <span class="keyword">if</span> (tc_idx &lt; mp_.tcache_bins <span class="comment">// tc_idx由 size 计算的 idx 在合法范围内</span></span><br><span class="line">      <span class="comment">/*&amp;&amp; tc_idx &lt; TCACHE_MAX_BINS*/</span> <span class="comment">/* to appease gcc */</span></span><br><span class="line">      &amp;&amp; tcache</span><br><span class="line">      &amp;&amp; tcache-&gt;entries[tc_idx] != <span class="literal">NULL</span>) <span class="comment">// 该条 tcache 链不为空</span></span><br><span class="line">    &#123;</span><br><span class="line">      <span class="keyword">return</span> tcache_get (tc_idx);</span><br><span class="line">    &#125;</span><br><span class="line">  DIAG_POP_NEEDS_COMMENT;</span><br><span class="line"><span class="meta">#<span class="keyword">endif</span></span></span><br><span class="line">  <span class="comment">// 进入与无 tcache 时类似的流程</span></span><br><span class="line">  <span class="keyword">if</span> (SINGLE_THREAD_P)</span><br><span class="line">    &#123;</span><br><span class="line">      victim = _int_malloc (&amp;main_arena, bytes);</span><br><span class="line">      assert (!victim || chunk_is_mmapped (mem2chunk (victim)) ||</span><br><span class="line">              &amp;main_arena == arena_for_chunk (mem2chunk (victim)));</span><br><span class="line">      <span class="keyword">return</span> victim;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
 
