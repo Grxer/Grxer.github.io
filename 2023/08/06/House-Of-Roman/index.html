@@ -10,7 +10,7 @@
     <meta name="msvalidate.01" content="ECA3E06A0E52A2AC90C4B06F12981FB2" />
     <meta name="description" content="fastbin attack 和 Unsortbin attack 结合的bypass ALSR，利用 12-bit 的爆破，在有uaf和off by one但没办法泄露地址时，局部写 减少随机化的程度，从而给出爆破的可能 demo分析https:&#x2F;&#x2F;github.com&#x2F;romanking98&#x2F;House-Of-Roman grxer@Ubuntu16 &#x2F;m&#x2F;h&#x2F;s&#x2F;c&#x2F;p&#x2F;h&#x2F;House-Of">
 <meta property="og:type" content="article">
-<meta property="og:title" content="House-Of-Roman">
+<meta property="og:title" content="House Of Roman">
 <meta property="og:url" content="https://grxer.gitee.io/2023/08/06/House-Of-Roman/index.html">
 <meta property="og:site_name" content="Grxer&#39;s Blog">
 <meta property="og:description" content="fastbin attack 和 Unsortbin attack 结合的bypass ALSR，利用 12-bit 的爆破，在有uaf和off by one但没办法泄露地址时，局部写 减少随机化的程度，从而给出爆破的可能 demo分析https:&#x2F;&#x2F;github.com&#x2F;romanking98&#x2F;House-Of-Roman grxer@Ubuntu16 &#x2F;m&#x2F;h&#x2F;s&#x2F;c&#x2F;p&#x2F;h&#x2F;House-Of">
@@ -23,7 +23,7 @@
 <meta property="og:image" content="https://grxer.gitee.io/2023/08/06/House-Of-Roman/image-20230807150811005.png">
 <meta property="og:image" content="https://grxer.gitee.io/2023/08/06/House-Of-Roman/image-20230807161504915.png">
 <meta property="article:published_time" content="2023-08-06T14:56:11.000Z">
-<meta property="article:modified_time" content="2023-08-07T08:16:09.647Z">
+<meta property="article:modified_time" content="2023-08-12T05:35:46.631Z">
 <meta property="article:author" content="bxz">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://grxer.gitee.io/2023/08/06/House-Of-Roman/image-20230807144531230.png">
@@ -46,7 +46,7 @@
       
     
     <!-- title -->
-    <title>House-Of-Roman</title>
+    <title>House Of Roman</title>
     <!-- styles -->
     
 <link rel="stylesheet" href="/css/style.css">
@@ -103,16 +103,16 @@
     <div id="share" style="display: none">
       <ul>
   <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://grxer.gitee.io/2023/08/06/House-Of-Roman/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://grxer.gitee.io/2023/08/06/House-Of-Roman/&text=House-Of-Roman"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://grxer.gitee.io/2023/08/06/House-Of-Roman/&title=House-Of-Roman"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://grxer.gitee.io/2023/08/06/House-Of-Roman/&is_video=false&description=House-Of-Roman"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
-  <li><a class="icon" href="mailto:?subject=House-Of-Roman&body=Check out this article: https://grxer.gitee.io/2023/08/06/House-Of-Roman/"><i class="fas fa-envelope " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://grxer.gitee.io/2023/08/06/House-Of-Roman/&title=House-Of-Roman"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://grxer.gitee.io/2023/08/06/House-Of-Roman/&title=House-Of-Roman"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://grxer.gitee.io/2023/08/06/House-Of-Roman/&title=House-Of-Roman"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://grxer.gitee.io/2023/08/06/House-Of-Roman/&title=House-Of-Roman"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://grxer.gitee.io/2023/08/06/House-Of-Roman/&name=House-Of-Roman&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://grxer.gitee.io/2023/08/06/House-Of-Roman/&t=House-Of-Roman"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://grxer.gitee.io/2023/08/06/House-Of-Roman/&text=House Of Roman"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://grxer.gitee.io/2023/08/06/House-Of-Roman/&title=House Of Roman"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://grxer.gitee.io/2023/08/06/House-Of-Roman/&is_video=false&description=House Of Roman"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=House Of Roman&body=Check out this article: https://grxer.gitee.io/2023/08/06/House-Of-Roman/"><i class="fas fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://grxer.gitee.io/2023/08/06/House-Of-Roman/&title=House Of Roman"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://grxer.gitee.io/2023/08/06/House-Of-Roman/&title=House Of Roman"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://grxer.gitee.io/2023/08/06/House-Of-Roman/&title=House Of Roman"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://grxer.gitee.io/2023/08/06/House-Of-Roman/&title=House Of Roman"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://grxer.gitee.io/2023/08/06/House-Of-Roman/&name=House Of Roman&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://grxer.gitee.io/2023/08/06/House-Of-Roman/&t=House Of Roman"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
 </ul>
 
     </div>
@@ -129,7 +129,7 @@
   <header>
     
     <h1 class="posttitle" itemprop="name headline">
-        House-Of-Roman
+        House Of Roman
     </h1>
 
 
@@ -240,16 +240,16 @@
     <div id="share-footer" style="display: none">
       <ul>
   <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://grxer.gitee.io/2023/08/06/House-Of-Roman/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://grxer.gitee.io/2023/08/06/House-Of-Roman/&text=House-Of-Roman"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://grxer.gitee.io/2023/08/06/House-Of-Roman/&title=House-Of-Roman"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://grxer.gitee.io/2023/08/06/House-Of-Roman/&is_video=false&description=House-Of-Roman"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" href="mailto:?subject=House-Of-Roman&body=Check out this article: https://grxer.gitee.io/2023/08/06/House-Of-Roman/"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://grxer.gitee.io/2023/08/06/House-Of-Roman/&title=House-Of-Roman"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://grxer.gitee.io/2023/08/06/House-Of-Roman/&title=House-Of-Roman"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://grxer.gitee.io/2023/08/06/House-Of-Roman/&title=House-Of-Roman"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://grxer.gitee.io/2023/08/06/House-Of-Roman/&title=House-Of-Roman"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://grxer.gitee.io/2023/08/06/House-Of-Roman/&name=House-Of-Roman&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://grxer.gitee.io/2023/08/06/House-Of-Roman/&t=House-Of-Roman"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://grxer.gitee.io/2023/08/06/House-Of-Roman/&text=House Of Roman"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://grxer.gitee.io/2023/08/06/House-Of-Roman/&title=House Of Roman"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://grxer.gitee.io/2023/08/06/House-Of-Roman/&is_video=false&description=House Of Roman"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=House Of Roman&body=Check out this article: https://grxer.gitee.io/2023/08/06/House-Of-Roman/"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://grxer.gitee.io/2023/08/06/House-Of-Roman/&title=House Of Roman"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://grxer.gitee.io/2023/08/06/House-Of-Roman/&title=House Of Roman"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://grxer.gitee.io/2023/08/06/House-Of-Roman/&title=House Of Roman"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://grxer.gitee.io/2023/08/06/House-Of-Roman/&title=House Of Roman"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://grxer.gitee.io/2023/08/06/House-Of-Roman/&name=House Of Roman&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://grxer.gitee.io/2023/08/06/House-Of-Roman/&t=House Of Roman"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
 </ul>
 
     </div>
