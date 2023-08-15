@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="baidu-site-verification" content="codeva-ROfYcqLkCh" />
+    <meta name="msvalidate.01" content="ECA3E06A0E52A2AC90C4B06F12981FB2" />
+    <meta name="description" content="进程描述符（process descriptor）在内核中使用结构体 task_struct 表示一个进程,结构体定义于内核源码include&#x2F;linux&#x2F;sched.h task_struct结构体中的权限管理部分 &#x2F;* Process credentials: *&#x2F;&#x2F;* Tracer&amp;#x27;s credentials at attach: *&#x2F;const struct">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Kernel Rop">
+<meta property="og:url" content="https://grxer.gitee.io/2023/08/14/kernel-rop/index.html">
+<meta property="og:site_name" content="Grxer&#39;s Blog">
+<meta property="og:description" content="进程描述符（process descriptor）在内核中使用结构体 task_struct 表示一个进程,结构体定义于内核源码include&#x2F;linux&#x2F;sched.h task_struct结构体中的权限管理部分 &#x2F;* Process credentials: *&#x2F;&#x2F;* Tracer&amp;#x27;s credentials at attach: *&#x2F;const struct">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2023-08-13T16:02:17.000Z">
+<meta property="article:modified_time" content="2023-08-14T15:12:59.712Z">
+<meta property="article:author" content="bxz">
+<meta name="twitter:card" content="summary">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
+    
+    <!-- title -->
+    <title>Kernel Rop</title>
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="Menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="Menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="Top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fas fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a href="/search/">Search</a></li><!--
+     --><!--
+       --><li><a href="/tags/">Tag</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" aria-label="Previous post" href="/2222/02/22/EnglishLearn/"><i class="fas fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" aria-label="Next post" href="/2023/08/12/house-of-pig/"><i class="fas fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="Back to top" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="Share post" href="#"><i class="fas fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://grxer.gitee.io/2023/08/14/kernel-rop/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://grxer.gitee.io/2023/08/14/kernel-rop/&text=Kernel Rop"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://grxer.gitee.io/2023/08/14/kernel-rop/&title=Kernel Rop"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://grxer.gitee.io/2023/08/14/kernel-rop/&is_video=false&description=Kernel Rop"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Kernel Rop&body=Check out this article: https://grxer.gitee.io/2023/08/14/kernel-rop/"><i class="fas fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://grxer.gitee.io/2023/08/14/kernel-rop/&title=Kernel Rop"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://grxer.gitee.io/2023/08/14/kernel-rop/&title=Kernel Rop"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://grxer.gitee.io/2023/08/14/kernel-rop/&title=Kernel Rop"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://grxer.gitee.io/2023/08/14/kernel-rop/&title=Kernel Rop"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://grxer.gitee.io/2023/08/14/kernel-rop/&name=Kernel Rop&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://grxer.gitee.io/2023/08/14/kernel-rop/&t=Kernel Rop"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    <div id="toc">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%BF%9B%E7%A8%8B%E6%8F%8F%E8%BF%B0%E7%AC%A6%EF%BC%88process-descriptor%EF%BC%89"><span class="toc-number">1.</span> <span class="toc-text">进程描述符（process descriptor）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%BC%BA%E7%BD%91%E6%9D%AF-2018-core"><span class="toc-number">2.</span> <span class="toc-text">强网杯 2018 - core</span></a></li></ol>
+    </div>
+  </span>
+</div>
+
+    
+    <div class="content index py4">
+        
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle" itemprop="name headline">
+        Kernel Rop
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span itemprop="name">bxz</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2023-08-13T16:02:17.000Z" itemprop="datePublished">2023-08-14</time>
+        
+      
+    </div>
+
+
+      
+
+      
+
+    </div>
+  </header>
+  
+
+  <div class="content" itemprop="articleBody">
+    <h2 id="进程描述符（process-descriptor）"><a href="#进程描述符（process-descriptor）" class="headerlink" title="进程描述符（process descriptor）"></a>进程描述符（process descriptor）</h2><p>在内核中使用结构体 <code>task_struct</code> 表示一个进程,结构体定义于内核源码<a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.5-rc2/source/include/linux/sched.h#L629">include&#x2F;linux&#x2F;sched.h</a></p>
+<p>task_struct结构体中的权限管理部分</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="comment">/* Process credentials: */</span></span><br><span class="line"></span><br><span class="line"><span class="comment">/* Tracer&#x27;s credentials at attach: */</span></span><br><span class="line"><span class="type">const</span> <span class="class"><span class="keyword">struct</span> <span class="title">cred</span> __<span class="title">rcu</span>        *<span class="title">ptracer_cred</span>;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">/* Objective and real subjective task credentials (COW): */</span></span><br><span class="line"><span class="type">const</span> <span class="class"><span class="keyword">struct</span> <span class="title">cred</span> __<span class="title">rcu</span>        *<span class="title">real_cred</span>;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">/* Effective (overridable) subjective task credentials (COW): */</span></span><br><span class="line"><span class="type">const</span> <span class="class"><span class="keyword">struct</span> <span class="title">cred</span> __<span class="title">rcu</span>        *<span class="title">cred</span>;</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>Process credentials</strong> 是 kernel 用以判断一个进程权限的凭证，在 kernel 中使用 <code>cred</code> 结构体进行标识，对于一个进程而言应当有三个 cred：</p>
+<ul>
+<li><strong>ptracer_cred：</strong>使用<code>ptrace</code>系统调用跟踪该进程的上级进程的cred（gdb调试便是使用了这个系统调用，常见的反调试机制的原理便是提前占用了这个位置）</li>
+<li><strong>real_cred：</strong>即<strong>客体凭证</strong>（<strong>objective cred</strong>），通常是一个进程最初启动时所具有的权限</li>
+<li><strong>cred：</strong>即<strong>主体凭证</strong>（<strong>subjective cred</strong>），该进程的有效cred，kernel以此作为进程权限的凭证</li>
+</ul>
+<p>cred结构体在<a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.5-rc2/source/include/linux/cred.h#L111">include&#x2F;linux&#x2F;cred.h</a></p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment"> * The security context of a task</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * The parts of the context break down into two categories:</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> *  (1) The objective context of a task.  These parts are used when some other</span></span><br><span class="line"><span class="comment"> *    task is attempting to affect this one.</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> *  (2) The subjective context.  These details are used when the task is acting</span></span><br><span class="line"><span class="comment"> *    upon another object, be that a file, a task, a key or whatever.</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * Note that some members of this structure belong to both categories - the</span></span><br><span class="line"><span class="comment"> * LSM security pointer for instance.</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * A task has two security pointers.  task-&gt;real_cred points to the objective</span></span><br><span class="line"><span class="comment"> * context that defines that task&#x27;s actual details.  The objective part of this</span></span><br><span class="line"><span class="comment"> * context is used whenever that task is acted upon.</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * task-&gt;cred points to the subjective context that defines the details of how</span></span><br><span class="line"><span class="comment"> * that task is going to act upon another object.  This may be overridden</span></span><br><span class="line"><span class="comment"> * temporarily to point to another security context, but normally points to the</span></span><br><span class="line"><span class="comment"> * same context as task-&gt;real_cred.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">cred</span> &#123;</span></span><br><span class="line">    <span class="type">atomic_t</span>    usage; 原子计数器，用于跟踪对该安全上下文结构的引用数量</span><br><span class="line"><span class="meta">#<span class="keyword">ifdef</span> CONFIG_DEBUG_CREDENTIALS</span></span><br><span class="line">    <span class="type">atomic_t</span>    subscribers;    <span class="comment">/* number of processes subscribed */</span></span><br><span class="line">    <span class="type">void</span>        *put_addr;</span><br><span class="line">    <span class="type">unsigned</span>    magic;</span><br><span class="line"><span class="meta">#<span class="keyword">define</span> CRED_MAGIC  0x43736564</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> CRED_MAGIC_DEAD 0x44656144</span></span><br><span class="line"><span class="meta">#<span class="keyword">endif</span></span></span><br><span class="line">    <span class="type">kuid_t</span>      uid;        <span class="comment">/* real UID of the task */</span> 任务的实际用户标识</span><br><span class="line">    <span class="type">kgid_t</span>      gid;        <span class="comment">/* real GID of the task */</span> 任务的实际组标识（real group ID）</span><br><span class="line">    <span class="type">kuid_t</span>      suid;       <span class="comment">/* saved UID of the task */</span> 任务的保存用户标识（saved user ID），在权限切换时可能用到。</span><br><span class="line">    <span class="type">kgid_t</span>      sgid;       <span class="comment">/* saved GID of the task */</span> 任务的保存组标识（saved group ID），在权限切换时可能用到。</span><br><span class="line">    <span class="type">kuid_t</span>      euid;       <span class="comment">/* effective UID of the task */</span> 任务的有效用户标识（effective user ID），用于权限检查和访问控制。</span><br><span class="line">    <span class="type">kgid_t</span>      egid;       <span class="comment">/* effective GID of the task */</span> 任务的有效组标识（effective group ID），用于权限检查和访问控制。</span><br><span class="line">    <span class="type">kuid_t</span>      fsuid;      <span class="comment">/* UID for VFS ops */</span> 用于虚拟文件系统（VFS）操作的文件系统用户标识（filesystem user ID）</span><br><span class="line">    <span class="type">kgid_t</span>      fsgid;      <span class="comment">/* GID for VFS ops */</span> 用于虚拟文件系统（VFS）操作的文件系统组标识（filesystem group ID</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>可以直接把uid–&gt;fsgid 都修改为 0获得root权限</p>
+<p>或者了利用rop执行<code>commit_creds(prepare_kernel_cred(NULL))</code>获得root权限</p>
+<p>自从内核版本 <strong>6.2</strong> 起，<code>prepare_kernel_cred(NULL)</code> 将<strong>不再拷贝 init_cred，而是将其视为一个运行时错误并返回 NULL</strong>，只能<code>commit_creds(&amp;init_cred)</code></p>
+<blockquote>
+<p><code>init_cred</code>是<code>init</code> 进程的 <code>cred</code> ，因此其权限为root ,泄露出内核基址之后,如果保护开的不牛x，我们也便能够获得 <code>init_cred</code> 的地址</p>
+</blockquote>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="keyword">struct</span> cred* <span class="title function_">prepare_kernel_cred</span><span class="params">(<span class="keyword">struct</span> task_struct* daemon)</span></span><br><span class="line">该函数用以拷贝一个进程daemon的cred结构体，并返回一个新的cred结构体</span><br><span class="line"><span class="type">int</span> <span class="title function_">commit_creds</span><span class="params">(<span class="keyword">struct</span> cred *new)</span></span><br><span class="line">该函数用以将一个新的cred结构体应用到进程</span><br></pre></td></tr></table></figure>
+
+<h2 id="强网杯-2018-core"><a href="#强网杯-2018-core" class="headerlink" title="强网杯 2018 - core"></a>强网杯 2018 - core</h2>
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+         
+          <li><a href="/">Home</a></li>
+         
+          <li><a href="/archives/">Writing</a></li>
+         
+          <li><a href="/search/">Search</a></li>
+         
+          <li><a href="/tags/">Tag</a></li>
+         
+          <li><a href="/about/">About</a></li>
+        
+      </ul>
+    </div>
+
+    <div id="toc-footer" style="display: none">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%BF%9B%E7%A8%8B%E6%8F%8F%E8%BF%B0%E7%AC%A6%EF%BC%88process-descriptor%EF%BC%89"><span class="toc-number">1.</span> <span class="toc-text">进程描述符（process descriptor）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%BC%BA%E7%BD%91%E6%9D%AF-2018-core"><span class="toc-number">2.</span> <span class="toc-text">强网杯 2018 - core</span></a></li></ol>
+    </div>
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://grxer.gitee.io/2023/08/14/kernel-rop/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://grxer.gitee.io/2023/08/14/kernel-rop/&text=Kernel Rop"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://grxer.gitee.io/2023/08/14/kernel-rop/&title=Kernel Rop"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://grxer.gitee.io/2023/08/14/kernel-rop/&is_video=false&description=Kernel Rop"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Kernel Rop&body=Check out this article: https://grxer.gitee.io/2023/08/14/kernel-rop/"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://grxer.gitee.io/2023/08/14/kernel-rop/&title=Kernel Rop"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://grxer.gitee.io/2023/08/14/kernel-rop/&title=Kernel Rop"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://grxer.gitee.io/2023/08/14/kernel-rop/&title=Kernel Rop"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://grxer.gitee.io/2023/08/14/kernel-rop/&title=Kernel Rop"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://grxer.gitee.io/2023/08/14/kernel-rop/&name=Kernel Rop&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://grxer.gitee.io/2023/08/14/kernel-rop/&t=Kernel Rop"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fas fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
+        <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fas fa-list fa-lg" aria-hidden="true"></i> TOC</a>
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fas fa-share-alt fa-lg" aria-hidden="true"></i> Share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2023
+    bxz
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a href="/search/">Search</a></li><!--
+     --><!--
+       --><li><a href="/tags/">Tag</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+ 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script> 
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script> 
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"Copy to clipboard!\">";
+    btn += '<i class="far fa-clone"></i>';
+    btn += '</span>'; 
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "Copied!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Google Analytics -->
+
+<!-- Baidu Analytics -->
+
+  <script type="text/javascript">
+        var _hmt = _hmt || [];
+        (function() {
+          var hm = document.createElement("script");
+          hm.src = "https://hm.baidu.com/hm.js?a22ef0bec4e4a9c7337bea6e37ff55c1";
+          var s = document.getElementsByTagName("script")[0];
+          s.parentNode.insertBefore(hm, s);
+        })();
+        </script>
+
+<!-- Cloudflare Analytics -->
+
+<!-- Umami Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+</body>
+</html>
