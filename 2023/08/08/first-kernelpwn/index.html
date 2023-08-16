@@ -20,7 +20,7 @@
 <meta property="og:image" content="https://grxer.gitee.io/2023/08/08/first-kernelpwn/image-20230811154518221.png">
 <meta property="og:image" content="https://grxer.gitee.io/2023/08/08/first-kernelpwn/image-20230811165305116.png">
 <meta property="article:published_time" content="2023-08-08T15:26:28.000Z">
-<meta property="article:modified_time" content="2023-08-16T09:53:30.024Z">
+<meta property="article:modified_time" content="2023-08-16T15:00:32.899Z">
 <meta property="article:author" content="bxz">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://grxer.gitee.io/2023/08/08/first-kernelpwn/image-20230808234139406.png">
@@ -297,12 +297,14 @@
 <p>内核中的 canary 的值通常取自 gs 段寄存器某个固定偏移处的值</p>
 <h3 id="SMEP-x2F-SMAP"><a href="#SMEP-x2F-SMAP" class="headerlink" title="SMEP&#x2F;SMAP"></a>SMEP&#x2F;SMAP</h3><p><img src="/2023/08/08/first-kernelpwn/image-20230811154518221.png" alt="image-20230811154518221"></p>
 <p>Supervisor Mode <strong>Execution</strong> Protection 管理模式执行保护 内核态不可执行用户态的代码</p>
+<p>ARM里叫做PXN</p>
 <p>CR4寄存器中的第<strong>20</strong>位来标记</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">qemu开启smep -append ”+smep“</span><br><span class="line">    关闭	   -append ”nosmep“</span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">qemu开启smep     -cpu qemu64-v1,smep</span><br></pre></td></tr></table></figure>
 
 <p>Supervisor Mode <strong>Access</strong> Prevention 管理模式访问保护 内核态不可访问用户态的数据</p>
+<p>ARM里叫做PAN</p>
 <p>CR4寄存器中的第<strong>21</strong>位来标记</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">qemu开启smep -append ”+smap“</span><br><span class="line">    关闭	   -append ”nosmap“</span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">qemu开启smep     -cpu qemu64-v1,smap</span><br></pre></td></tr></table></figure>
 
 <h3 id="KPTI"><a href="#KPTI" class="headerlink" title="KPTI"></a>KPTI</h3><p><img src="/2023/08/08/first-kernelpwn/image-20230811165305116.png" alt="image-20230811165305116"></p>
 <p>Kernel Page Table Isolation 用户态不可看到内核态的页表；内核态<strong>不可执行</strong>用户态的代码</p>
