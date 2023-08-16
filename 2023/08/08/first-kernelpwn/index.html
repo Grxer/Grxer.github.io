@@ -10,7 +10,7 @@
     <meta name="msvalidate.01" content="ECA3E06A0E52A2AC90C4B06F12981FB2" />
     <meta name="description" content="环境以CISCN2017-babydriver为例 busybox文件系统简单的文件系统，提供基本用户环境，如一些常用命令和工具 https:&#x2F;&#x2F;www.busybox.net&#x2F; make menuconfig  将busybox编译为静态链接的文件  make -j6make install  编译其他架构busybox make -j4 CROSS_COMPILE &#x3D; 其他架构交叉编译器  在">
 <meta property="og:type" content="article">
-<meta property="og:title" content="kernel pwn 基础">
+<meta property="og:title" content="Kernel Pwn 基础">
 <meta property="og:url" content="https://grxer.gitee.io/2023/08/08/first-kernelpwn/index.html">
 <meta property="og:site_name" content="Grxer&#39;s Blog">
 <meta property="og:description" content="环境以CISCN2017-babydriver为例 busybox文件系统简单的文件系统，提供基本用户环境，如一些常用命令和工具 https:&#x2F;&#x2F;www.busybox.net&#x2F; make menuconfig  将busybox编译为静态链接的文件  make -j6make install  编译其他架构busybox make -j4 CROSS_COMPILE &#x3D; 其他架构交叉编译器  在">
@@ -20,7 +20,7 @@
 <meta property="og:image" content="https://grxer.gitee.io/2023/08/08/first-kernelpwn/image-20230811154518221.png">
 <meta property="og:image" content="https://grxer.gitee.io/2023/08/08/first-kernelpwn/image-20230811165305116.png">
 <meta property="article:published_time" content="2023-08-08T15:26:28.000Z">
-<meta property="article:modified_time" content="2023-08-15T08:28:47.386Z">
+<meta property="article:modified_time" content="2023-08-16T09:53:30.024Z">
 <meta property="article:author" content="bxz">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://grxer.gitee.io/2023/08/08/first-kernelpwn/image-20230808234139406.png">
@@ -43,7 +43,7 @@
       
     
     <!-- title -->
-    <title>kernel pwn 基础</title>
+    <title>Kernel Pwn 基础</title>
     <!-- styles -->
     
 <link rel="stylesheet" href="/css/style.css">
@@ -100,16 +100,16 @@
     <div id="share" style="display: none">
       <ul>
   <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://grxer.gitee.io/2023/08/08/first-kernelpwn/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://grxer.gitee.io/2023/08/08/first-kernelpwn/&text=kernel pwn 基础"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://grxer.gitee.io/2023/08/08/first-kernelpwn/&title=kernel pwn 基础"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://grxer.gitee.io/2023/08/08/first-kernelpwn/&is_video=false&description=kernel pwn 基础"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
-  <li><a class="icon" href="mailto:?subject=kernel pwn 基础&body=Check out this article: https://grxer.gitee.io/2023/08/08/first-kernelpwn/"><i class="fas fa-envelope " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://grxer.gitee.io/2023/08/08/first-kernelpwn/&title=kernel pwn 基础"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://grxer.gitee.io/2023/08/08/first-kernelpwn/&title=kernel pwn 基础"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://grxer.gitee.io/2023/08/08/first-kernelpwn/&title=kernel pwn 基础"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://grxer.gitee.io/2023/08/08/first-kernelpwn/&title=kernel pwn 基础"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://grxer.gitee.io/2023/08/08/first-kernelpwn/&name=kernel pwn 基础&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://grxer.gitee.io/2023/08/08/first-kernelpwn/&t=kernel pwn 基础"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://grxer.gitee.io/2023/08/08/first-kernelpwn/&text=Kernel Pwn 基础"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://grxer.gitee.io/2023/08/08/first-kernelpwn/&title=Kernel Pwn 基础"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://grxer.gitee.io/2023/08/08/first-kernelpwn/&is_video=false&description=Kernel Pwn 基础"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Kernel Pwn 基础&body=Check out this article: https://grxer.gitee.io/2023/08/08/first-kernelpwn/"><i class="fas fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://grxer.gitee.io/2023/08/08/first-kernelpwn/&title=Kernel Pwn 基础"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://grxer.gitee.io/2023/08/08/first-kernelpwn/&title=Kernel Pwn 基础"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://grxer.gitee.io/2023/08/08/first-kernelpwn/&title=Kernel Pwn 基础"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://grxer.gitee.io/2023/08/08/first-kernelpwn/&title=Kernel Pwn 基础"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://grxer.gitee.io/2023/08/08/first-kernelpwn/&name=Kernel Pwn 基础&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://grxer.gitee.io/2023/08/08/first-kernelpwn/&t=Kernel Pwn 基础"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
 </ul>
 
     </div>
@@ -126,7 +126,7 @@
   <header>
     
     <h1 class="posttitle" itemprop="name headline">
-        kernel pwn 基础
+        Kernel Pwn 基础
     </h1>
 
 
@@ -281,7 +281,7 @@
 <p><a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.5-rc2/source/include/linux/fs.h#L1821">file_operations</a>结构体成员基本上都是函数指针，可以通过修改其中的函数指针来达到重写某个函数的目的，如果对这个驱动调用某个其中的函数，就会调用结构体中的函数指针</p>
 <figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;linux/init.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;linux/kernel.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;linux/module.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;linux/miscdevice.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;linux/fs.h&gt;</span></span></span><br><span class="line"><span class="type">static</span> <span class="type">ssize_t</span> <span class="title function_">misc_ioctl</span><span class="params">(<span class="keyword">struct</span> file* file, <span class="type">unsigned</span> <span class="type">int</span> request,  <span class="type">size_t</span> arg)</span> &#123;</span><br><span class="line">  <span class="keyword">switch</span> (request)</span><br><span class="line">  &#123;</span><br><span class="line">  <span class="keyword">case</span> <span class="number">0x666</span>:</span><br><span class="line">    printk(<span class="string">&quot;0x666\n&quot;</span>);</span><br><span class="line">    <span class="keyword">break</span>;</span><br><span class="line">  <span class="keyword">case</span> <span class="number">0x888</span>:</span><br><span class="line">    printk(<span class="string">&quot;0x888\n&quot;</span>); </span><br><span class="line">    <span class="keyword">break</span>;</span><br><span class="line">  <span class="keyword">default</span>:</span><br><span class="line">    <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">    <span class="keyword">break</span>;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="type">static</span> <span class="class"><span class="keyword">struct</span> <span class="title">file_operations</span> <span class="title">dev_fops</span> =</span> &#123;</span><br><span class="line">  .owner = THIS_MODULE,</span><br><span class="line">  .unlocked_ioctl = misc_ioctl,</span><br><span class="line">&#125;;</span><br><span class="line"><span class="type">static</span> <span class="class"><span class="keyword">struct</span> <span class="title">miscdevice</span> <span class="title">test_misc</span> =</span> &#123;</span><br><span class="line">  .minor = MISC_DYNAMIC_MINOR,</span><br><span class="line">  .name = <span class="string">&quot;testmisc&quot;</span>,</span><br><span class="line">  .fops = &amp;dev_fops,</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">MODULE_LICENSE(<span class="string">&quot;Dual BSD/GPL&quot;</span>);</span><br><span class="line"><span class="type">static</span> <span class="type">int</span> __init <span class="title function_">ko_test_init</span><span class="params">(<span class="type">void</span>)</span> &#123;</span><br><span class="line">  printk(<span class="string">&quot;This is a test ko!\n&quot;</span>);</span><br><span class="line">  <span class="type">int</span> err = misc_register(&amp;test_misc);</span><br><span class="line">  <span class="keyword">if</span> (err) &#123;</span><br><span class="line">    printk(<span class="string">&quot;envctrl: Unable to get misc minor %d/n&quot;</span>,test_misc.minor);</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="type">static</span> <span class="type">void</span> __exit <span class="title function_">ko_test_exit</span><span class="params">(<span class="type">void</span>)</span> &#123;</span><br><span class="line">  printk(<span class="string">&quot;Bye Bye~\n&quot;</span>);</span><br><span class="line">  misc_deregister(&amp;test_misc);</span><br><span class="line">&#125;</span><br><span class="line">module_init(ko_test_init);</span><br><span class="line">module_exit(ko_test_exit);</span><br></pre></td></tr></table></figure>
 
-<p>重写了驱动的ioctl函数</p>
+<p><strong>重写了驱动的ioctl函数</strong></p>
 <blockquote>
 <p>32位的APP运行在64位的kernel上，调用的是<strong>compat_ioctl</strong></p>
 <p>64位的用户程序运行在64位的kernel上，调用的是<strong>unlocked_ioctl</strong>，如果是32位的APP运行在32位的kernel上，调用的也是<strong>unlocked_ioctl</strong></p>
@@ -360,16 +360,16 @@
     <div id="share-footer" style="display: none">
       <ul>
   <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://grxer.gitee.io/2023/08/08/first-kernelpwn/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://grxer.gitee.io/2023/08/08/first-kernelpwn/&text=kernel pwn 基础"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://grxer.gitee.io/2023/08/08/first-kernelpwn/&title=kernel pwn 基础"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://grxer.gitee.io/2023/08/08/first-kernelpwn/&is_video=false&description=kernel pwn 基础"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" href="mailto:?subject=kernel pwn 基础&body=Check out this article: https://grxer.gitee.io/2023/08/08/first-kernelpwn/"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://grxer.gitee.io/2023/08/08/first-kernelpwn/&title=kernel pwn 基础"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://grxer.gitee.io/2023/08/08/first-kernelpwn/&title=kernel pwn 基础"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://grxer.gitee.io/2023/08/08/first-kernelpwn/&title=kernel pwn 基础"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://grxer.gitee.io/2023/08/08/first-kernelpwn/&title=kernel pwn 基础"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://grxer.gitee.io/2023/08/08/first-kernelpwn/&name=kernel pwn 基础&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://grxer.gitee.io/2023/08/08/first-kernelpwn/&t=kernel pwn 基础"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://grxer.gitee.io/2023/08/08/first-kernelpwn/&text=Kernel Pwn 基础"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://grxer.gitee.io/2023/08/08/first-kernelpwn/&title=Kernel Pwn 基础"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://grxer.gitee.io/2023/08/08/first-kernelpwn/&is_video=false&description=Kernel Pwn 基础"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Kernel Pwn 基础&body=Check out this article: https://grxer.gitee.io/2023/08/08/first-kernelpwn/"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://grxer.gitee.io/2023/08/08/first-kernelpwn/&title=Kernel Pwn 基础"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://grxer.gitee.io/2023/08/08/first-kernelpwn/&title=Kernel Pwn 基础"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://grxer.gitee.io/2023/08/08/first-kernelpwn/&title=Kernel Pwn 基础"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://grxer.gitee.io/2023/08/08/first-kernelpwn/&title=Kernel Pwn 基础"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://grxer.gitee.io/2023/08/08/first-kernelpwn/&name=Kernel Pwn 基础&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://grxer.gitee.io/2023/08/08/first-kernelpwn/&t=Kernel Pwn 基础"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
 </ul>
 
     </div>
