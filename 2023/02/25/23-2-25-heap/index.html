@@ -15,7 +15,7 @@
 <meta property="og:site_name" content="Grxer&#39;s Blog">
 <meta property="og:description" content="HEAP MANGER为什么要有堆管理器堆是动态分配的虚拟内存(只有在程序访问到这块虚拟内存时，系统才会建立虚拟内存和物理内存的映射，称为延迟绑定机制，大大节省了内存)，从低地址向高地址生长，程序可能需要频繁的向操作系统申请内存的系统调用，与此同时就伴随这从用户态到内核态的多次转换，转换的同时需要保存context，影响程序性能，堆管理器就出现了，在操作系统和用户当作中间人，他会申请较大的内存，管">
 <meta property="og:locale" content="en_US">
-<meta property="og:image" content="https://grxer.gitee.io/2023/02/25/23-2-25-heap/image-20230225111848174.png">
+<meta property="og:image" content="https://grxer.gitee.io/2023/02/25/23-2-25-heap/image-20230817101448007.png">
 <meta property="og:image" content="https://grxer.gitee.io/2023/02/25/23-2-25-heap/image-20230225112707364.png">
 <meta property="og:image" content="https://grxer.gitee.io/2023/02/25/23-2-25-heap/image-20230225144619435.png">
 <meta property="og:image" content="https://grxer.gitee.io/2023/02/25/23-2-25-heap/image-20230225150843293.png">
@@ -23,11 +23,11 @@
 <meta property="og:image" content="https://grxer.gitee.io/2023/02/25/23-2-25-heap/image-20230225152540343.png">
 <meta property="og:image" content="https://grxer.gitee.io/2023/02/25/23-2-25-heap/image-20230805140153900.png">
 <meta property="article:published_time" content="2023-02-25T02:03:34.000Z">
-<meta property="article:modified_time" content="2023-08-05T06:02:01.238Z">
+<meta property="article:modified_time" content="2023-08-17T02:16:26.120Z">
 <meta property="article:author" content="bxz">
 <meta property="article:tag" content="HEAP MANGER">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://grxer.gitee.io/2023/02/25/23-2-25-heap/image-20230225111848174.png">
+<meta name="twitter:image" content="https://grxer.gitee.io/2023/02/25/23-2-25-heap/image-20230817101448007.png">
     
     
       
@@ -168,8 +168,7 @@
 
 <span id="more"></span>
 
-<img src="/2023/02/25/23-2-25-heap/image-20230225111848174.png" alt="image-20230225111848174" style="zoom: 50%;">
-
+<p><img src="/2023/02/25/23-2-25-heap/image-20230817101448007.png" alt="image-20230817101448007"></p>
 <h2 id="堆管理器ptmalloc2"><a href="#堆管理器ptmalloc2" class="headerlink" title="堆管理器ptmalloc2"></a>堆管理器ptmalloc2</h2><p><strong>arena</strong> 指的是管理器在第一次malloc时申请到的大内存快，堆内存区域本身，并不是结构，可以理解为内存池；主线程的 main arena通过&#x3D;&#x3D;(s)brk&#x3D;&#x3D;创建，没开alsr分布在数据区(.data&#x2F;.bss)的结尾，开启后在尾部随机偏移处；其他线程的 arena包括一些主线程的大内存 是通过 &#x3D;&#x3D;mmap&#x3D;&#x3D; 创建，分布在Memory-mapped segment，也就是我们glic动态链接库加载的区域</p>
 <p><strong>malloc_state</strong>（<strong>main arena</strong> <strong>的</strong> <strong>malloc_state</strong> <strong>并不是</strong> <strong>heap segment</strong> <strong>的一部分，而是一个全局变量，存储在</strong> <strong>libc.so</strong> <strong>的数据段</strong>）管理 arena 的核心结构，包含堆的状态信息、bins 链表等；main arena 对应的 malloc state 结构存储在 glibc 全局变量中；其他线程 arena 对应的 malloc_state 存储在 arena 本身中</p>
 <p><strong>bin</strong> 用来管理空闲内存块，通常用链表的结构来进行组织</p>

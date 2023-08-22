@@ -20,7 +20,7 @@
 <meta property="og:image" content="https://grxer.gitee.io/2023/08/08/first-kernelpwn/image-20230811154518221.png">
 <meta property="og:image" content="https://grxer.gitee.io/2023/08/08/first-kernelpwn/image-20230811165305116.png">
 <meta property="article:published_time" content="2023-08-08T15:26:28.000Z">
-<meta property="article:modified_time" content="2023-08-16T15:00:32.899Z">
+<meta property="article:modified_time" content="2023-08-21T14:43:14.908Z">
 <meta property="article:author" content="bxz">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://grxer.gitee.io/2023/08/08/first-kernelpwn/image-20230808234139406.png">
@@ -306,7 +306,7 @@
 <p>CR4寄存器中的第<strong>21</strong>位来标记</p>
 <figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">qemu开启smep     -cpu qemu64-v1,smap</span><br></pre></td></tr></table></figure>
 
-<h3 id="KPTI"><a href="#KPTI" class="headerlink" title="KPTI"></a>KPTI</h3><p><img src="/2023/08/08/first-kernelpwn/image-20230811165305116.png" alt="image-20230811165305116"></p>
+<h3 id="KPTI"><a href="#KPTI" class="headerlink" title="KPTI"></a><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/137277724">KPTI</a></h3><p><img src="/2023/08/08/first-kernelpwn/image-20230811165305116.png" alt="image-20230811165305116"></p>
 <p>Kernel Page Table Isolation 用户态不可看到内核态的页表；内核态<strong>不可执行</strong>用户态的代码</p>
 <p>KPTI的发明也修复了Meltdown漏洞</p>
 <ul>
