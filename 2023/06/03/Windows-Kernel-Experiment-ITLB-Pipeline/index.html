@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="baidu-site-verification" content="codeva-ROfYcqLkCh" />
+    <meta name="msvalidate.01" content="ECA3E06A0E52A2AC90C4B06F12981FB2" />
+    <meta name="description" content="Windows内核实验:指令TLB(ITLB)和流水线&amp;&amp;Meltdown CPU漏洞#include &lt;stdio.h&gt;#include &lt;stdlib.h&gt;#include &lt;windows.h&gt;#define PDE(x) (DWORD64 *) (((x &gt;&gt; 21) &lt;&lt; 3) + 0xc0600000)#def">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Windows内核实验:指令TLB(ITLB)和流水线&amp;&amp;Meltdown CPU漏洞">
+<meta property="og:url" content="https://grxer.gitee.io/2023/06/03/Windows-Kernel-Experiment-ITLB-Pipeline/index.html">
+<meta property="og:site_name" content="Grxer&#39;s Blog">
+<meta property="og:description" content="Windows内核实验:指令TLB(ITLB)和流水线&amp;&amp;Meltdown CPU漏洞#include &lt;stdio.h&gt;#include &lt;stdlib.h&gt;#include &lt;windows.h&gt;#define PDE(x) (DWORD64 *) (((x &gt;&gt; 21) &lt;&lt; 3) + 0xc0600000)#def">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2023-06-03T05:13:15.000Z">
+<meta property="article:modified_time" content="2023-06-04T03:21:45.176Z">
+<meta property="article:author" content="bxz">
+<meta property="article:tag" content="Windows Kernel Experiment">
+<meta name="twitter:card" content="summary">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
+    
+    <!-- title -->
+    <title>Windows内核实验:指令TLB(ITLB)和流水线&amp;&amp;Meltdown CPU漏洞</title>
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="Menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="Menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="Top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fas fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a href="/search/">Search</a></li><!--
+     --><!--
+       --><li><a href="/tags/">Tag</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" aria-label="Previous post" href="/2023/06/03/Windows-Kernel-Experiment-Page-Fault/"><i class="fas fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" aria-label="Next post" href="/2023/06/03/Windows-Kernel-Experiment-DTLB/"><i class="fas fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="Back to top" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="Share post" href="#"><i class="fas fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://grxer.gitee.io/2023/06/03/Windows-Kernel-Experiment-ITLB-Pipeline/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://grxer.gitee.io/2023/06/03/Windows-Kernel-Experiment-ITLB-Pipeline/&text=Windows内核实验:指令TLB(ITLB)和流水线&amp;&amp;Meltdown CPU漏洞"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://grxer.gitee.io/2023/06/03/Windows-Kernel-Experiment-ITLB-Pipeline/&title=Windows内核实验:指令TLB(ITLB)和流水线&amp;&amp;Meltdown CPU漏洞"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://grxer.gitee.io/2023/06/03/Windows-Kernel-Experiment-ITLB-Pipeline/&is_video=false&description=Windows内核实验:指令TLB(ITLB)和流水线&amp;&amp;Meltdown CPU漏洞"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Windows内核实验:指令TLB(ITLB)和流水线&amp;&amp;Meltdown CPU漏洞&body=Check out this article: https://grxer.gitee.io/2023/06/03/Windows-Kernel-Experiment-ITLB-Pipeline/"><i class="fas fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://grxer.gitee.io/2023/06/03/Windows-Kernel-Experiment-ITLB-Pipeline/&title=Windows内核实验:指令TLB(ITLB)和流水线&amp;&amp;Meltdown CPU漏洞"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://grxer.gitee.io/2023/06/03/Windows-Kernel-Experiment-ITLB-Pipeline/&title=Windows内核实验:指令TLB(ITLB)和流水线&amp;&amp;Meltdown CPU漏洞"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://grxer.gitee.io/2023/06/03/Windows-Kernel-Experiment-ITLB-Pipeline/&title=Windows内核实验:指令TLB(ITLB)和流水线&amp;&amp;Meltdown CPU漏洞"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://grxer.gitee.io/2023/06/03/Windows-Kernel-Experiment-ITLB-Pipeline/&title=Windows内核实验:指令TLB(ITLB)和流水线&amp;&amp;Meltdown CPU漏洞"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://grxer.gitee.io/2023/06/03/Windows-Kernel-Experiment-ITLB-Pipeline/&name=Windows内核实验:指令TLB(ITLB)和流水线&amp;&amp;Meltdown CPU漏洞&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://grxer.gitee.io/2023/06/03/Windows-Kernel-Experiment-ITLB-Pipeline/&t=Windows内核实验:指令TLB(ITLB)和流水线&amp;&amp;Meltdown CPU漏洞"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    <div id="toc">
+      <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Windows%E5%86%85%E6%A0%B8%E5%AE%9E%E9%AA%8C-%E6%8C%87%E4%BB%A4TLB-ITLB-%E5%92%8C%E6%B5%81%E6%B0%B4%E7%BA%BF-amp-amp-Meltdown-CPU%E6%BC%8F%E6%B4%9E"><span class="toc-number">1.</span> <span class="toc-text">Windows内核实验:指令TLB(ITLB)和流水线&amp;&amp;Meltdown CPU漏洞</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#Meltdown-CPU%E6%BC%8F%E6%B4%9E"><span class="toc-number">1.1.</span> <span class="toc-text">Meltdown CPU漏洞</span></a></li></ol></li></ol>
+    </div>
+  </span>
+</div>
+
+    
+    <div class="content index py4">
+        
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle" itemprop="name headline">
+        Windows内核实验:指令TLB(ITLB)和流水线&amp;&amp;Meltdown CPU漏洞
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span itemprop="name">bxz</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2023-06-03T05:13:15.000Z" itemprop="datePublished">2023-06-03</time>
+        
+      
+    </div>
+
+
+      
+
+      
+    <div class="article-tag">
+        <i class="fas fa-tag"></i>
+        <a class="tag-link-link" href="/tags/Windows-Kernel-Experiment/" rel="tag">Windows Kernel Experiment</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content" itemprop="articleBody">
+    <h1 id="Windows内核实验-指令TLB-ITLB-和流水线-amp-amp-Meltdown-CPU漏洞"><a href="#Windows内核实验-指令TLB-ITLB-和流水线-amp-amp-Meltdown-CPU漏洞" class="headerlink" title="Windows内核实验:指令TLB(ITLB)和流水线&amp;&amp;Meltdown CPU漏洞"></a>Windows内核实验:指令TLB(ITLB)和流水线&amp;&amp;Meltdown CPU漏洞</h1><figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;windows.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> PDE(x) (DWORD64 *) (((x &gt;&gt; 21) &lt;&lt; 3) + 0xc0600000)</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> PTE(x) (DWORD64 *) (((x &gt;&gt; 12) &lt;&lt; 3) + 0xc0000000)</span></span><br><span class="line">DWORD g_var;<span class="comment">//0041A1D0</span></span><br><span class="line">DWORD64 g_pte;<span class="comment">//0x0041A1C8</span></span><br><span class="line"><span class="meta">#<span class="keyword">pragma</span> section(<span class="string">&quot;new_page&quot;</span>,read,write)</span></span><br><span class="line">__declspec(allocate(<span class="string">&quot;new_page&quot;</span>)) DWORD page1[<span class="number">1024</span>];<span class="comment">//0x0041b000</span></span><br><span class="line">__declspec(allocate(<span class="string">&quot;new_page&quot;</span>)) DWORD page2[<span class="number">1024</span>];<span class="comment">//0x0041c000</span></span><br><span class="line"><span class="type">void</span> __declspec(naked) IdtEntry() &#123;<span class="comment">//裸函数不会帮我们生成栈帧，单纯一个call</span></span><br><span class="line">    <span class="comment">//__asm int 3</span></span><br><span class="line">    g_pte = *PTE(<span class="number">0x0041c000</span>);</span><br><span class="line">    __asm mov eax, ds: [<span class="number">0x0041c000</span>]<span class="comment">//再次确保page2的页面在tlb里，没有被换出</span></span><br><span class="line">    __asm &#123;</span><br><span class="line">        mov eax,cr3</span><br><span class="line">        mov cr3,eax</span><br><span class="line">    &#125;<span class="comment">//清除tlb</span></span><br><span class="line">    *PTE(<span class="number">0x0041c000</span>) = *PTE(<span class="number">0x0041b000</span>);<span class="comment">//tlb misss</span></span><br><span class="line">    <span class="comment">//g_var = page2[0];</span></span><br><span class="line">    _asm &#123;</span><br><span class="line">        mov eax,ds:[<span class="number">0x0041c000</span>]</span><br><span class="line">        mov g_var,eax</span><br><span class="line">    &#125;</span><br><span class="line">    *PTE(<span class="number">0x0041c000</span>) = g_pte;	</span><br><span class="line">    __asm &#123;</span><br><span class="line">        mov eax, cr3</span><br><span class="line">        mov cr3, eax</span><br><span class="line">    &#125;<span class="comment">//清除tlb</span></span><br><span class="line">    __asm &#123;</span><br><span class="line">        iretd</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="type">void</span> <span class="title function_">interrupt</span><span class="params">()</span> &#123;</span><br><span class="line">    page1[<span class="number">0</span>] = <span class="number">0xc3</span>;<span class="comment">//ret</span></span><br><span class="line">    page2[<span class="number">0</span>] = <span class="number">0xc390</span>;<span class="comment">//nop ret 载物理内存的同时把虚拟内存放到tlb里</span></span><br><span class="line">    ((<span class="type">void</span>(*)(<span class="type">void</span>))page1)();</span><br><span class="line">    ((<span class="type">void</span>(*)(<span class="type">void</span>))page2)();</span><br><span class="line">    __asm &#123;</span><br><span class="line">        <span class="type">int</span> <span class="number">0x20</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="keyword">if</span> (<span class="number">0x401040</span> != IdtEntry) &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;Idtentry address wrong&quot;</span>);</span><br><span class="line">        system(<span class="string">&quot;pause&quot;</span>);</span><br><span class="line">        <span class="built_in">exit</span>(<span class="number">-1</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">//eq 8003f500  0040ee00`00081040</span></span><br><span class="line">    <span class="keyword">for</span> (<span class="type">size_t</span> i = <span class="number">0</span>; i &lt; <span class="number">10</span>;i++) &#123;</span><br><span class="line">        interrupt();</span><br><span class="line">        <span class="keyword">if</span> (<span class="number">0xc3</span> != g_var)</span><br><span class="line">            <span class="built_in">printf</span>(<span class="string">&quot;g_var:%x\n&quot;</span>, g_var);</span><br><span class="line">    &#125;</span><br><span class="line">    system(<span class="string">&quot;pause&quot;</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这个程序在我机器上我感觉是由于new_page和IdtEntry之间的距离太大了，导致没有复现成功</p>
+<p>简单说一下主要思路把</p>
+<p>为了使获得的section page有可执行权限，把page1和page2先当作函数执行了一下，就可以获得可执行权限</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">kd&gt; !pte <span class="number">0x0041b000</span></span><br><span class="line">                    VA <span class="number">0041b</span>000</span><br><span class="line">PDE at C0600010            PTE at C00020D8</span><br><span class="line">contains <span class="number">000000000295</span>C067  contains <span class="number">0000000002903067</span></span><br><span class="line">pfn <span class="number">295</span>c      ---DA--UWEV  pfn <span class="number">2903</span>      ---DA--UWEV</span><br><span class="line"></span><br><span class="line">kd&gt; !pte <span class="number">0x0041c000</span></span><br><span class="line">                    VA <span class="number">0041</span>c000</span><br><span class="line">PDE at C0600010            PTE at C00020E0</span><br><span class="line">contains <span class="number">000000000295</span>C067  contains <span class="number">000000000</span>A024067</span><br><span class="line">pfn <span class="number">295</span>c      ---DA--UWEV  pfn a024      ---DA--UWEV</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>为什么没有用#pragma section(“new_page”,read,write，execute)获取可执行权限</p>
+<p>这个是可以编译通过，但似乎xp系统不允许一个页可读可写可执行，崩溃了</p>
+</blockquote>
+<p>page1 2有了可执行权限，由于流水线技术，指令可能会并行，IdtEntry执行时，如果取指令可以一次到达page1 2，会对该指令先执行，就会导致page1 2被提前访问，放入tlb</p>
+<h2 id="Meltdown-CPU漏洞"><a href="#Meltdown-CPU漏洞" class="headerlink" title="Meltdown CPU漏洞"></a>Meltdown CPU漏洞</h2><p>突然想起之前在jyy老师那里听到的cpu熔断漏洞，可以在用户态往内核或其他进程里偷出数据</p>
+<p>漏洞的原因和<strong>乱序执行</strong>有关，属于cpu架构的漏洞</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="comment">// %rcx: 无权限访问的地址；%rbx: 未载入缓存的数组</span></span><br><span class="line">        xorq   %rax, %rax</span><br><span class="line">retry:  movzbq (%rcx), %rax   <span class="comment">// 非法访问；Page Fault</span></span><br><span class="line">        shlq   $<span class="number">0xc</span>, %rax</span><br><span class="line">        jz     retry</span><br><span class="line">        <span class="title function_">movq</span>   <span class="params">(%rbx, %rax)</span>, %rbx <span class="comment">// (%rbx + (%rax) * 4096)</span></span><br></pre></td></tr></table></figure>
+
+<ol>
+<li>cpu在执行movzbq (%rcx), %rax指令的时候，会造成页错误，但是是先把数据取出来了，然后做数据合法性检查，不合法会处理错误，</li>
+<li>由于这段代码是符合乱序并行的，下面的指令会在rax有数据的一瞬间和1.步骤里检查合法性一起执行</li>
+<li>下面的指令大概率是比检查合法性的代码要快的</li>
+<li>movq   (%rbx, %rax), %rbx 就会使在未载入缓存的数组中位置是rcx地址处的1byte数据的页进入cache，</li>
+<li>后续访问rbx各页面，比较访问时间就可以获取这个字节的数据 (cache hit和cache miss访问时间差距可见)</li>
+</ol>
+<p>漏洞的原因就是访问不合法后，没有将污染的cache清除</p>
+
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+         
+          <li><a href="/">Home</a></li>
+         
+          <li><a href="/archives/">Writing</a></li>
+         
+          <li><a href="/search/">Search</a></li>
+         
+          <li><a href="/tags/">Tag</a></li>
+         
+          <li><a href="/about/">About</a></li>
+        
+      </ul>
+    </div>
+
+    <div id="toc-footer" style="display: none">
+      <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Windows%E5%86%85%E6%A0%B8%E5%AE%9E%E9%AA%8C-%E6%8C%87%E4%BB%A4TLB-ITLB-%E5%92%8C%E6%B5%81%E6%B0%B4%E7%BA%BF-amp-amp-Meltdown-CPU%E6%BC%8F%E6%B4%9E"><span class="toc-number">1.</span> <span class="toc-text">Windows内核实验:指令TLB(ITLB)和流水线&amp;&amp;Meltdown CPU漏洞</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#Meltdown-CPU%E6%BC%8F%E6%B4%9E"><span class="toc-number">1.1.</span> <span class="toc-text">Meltdown CPU漏洞</span></a></li></ol></li></ol>
+    </div>
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://grxer.gitee.io/2023/06/03/Windows-Kernel-Experiment-ITLB-Pipeline/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://grxer.gitee.io/2023/06/03/Windows-Kernel-Experiment-ITLB-Pipeline/&text=Windows内核实验:指令TLB(ITLB)和流水线&amp;&amp;Meltdown CPU漏洞"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://grxer.gitee.io/2023/06/03/Windows-Kernel-Experiment-ITLB-Pipeline/&title=Windows内核实验:指令TLB(ITLB)和流水线&amp;&amp;Meltdown CPU漏洞"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://grxer.gitee.io/2023/06/03/Windows-Kernel-Experiment-ITLB-Pipeline/&is_video=false&description=Windows内核实验:指令TLB(ITLB)和流水线&amp;&amp;Meltdown CPU漏洞"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Windows内核实验:指令TLB(ITLB)和流水线&amp;&amp;Meltdown CPU漏洞&body=Check out this article: https://grxer.gitee.io/2023/06/03/Windows-Kernel-Experiment-ITLB-Pipeline/"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://grxer.gitee.io/2023/06/03/Windows-Kernel-Experiment-ITLB-Pipeline/&title=Windows内核实验:指令TLB(ITLB)和流水线&amp;&amp;Meltdown CPU漏洞"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://grxer.gitee.io/2023/06/03/Windows-Kernel-Experiment-ITLB-Pipeline/&title=Windows内核实验:指令TLB(ITLB)和流水线&amp;&amp;Meltdown CPU漏洞"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://grxer.gitee.io/2023/06/03/Windows-Kernel-Experiment-ITLB-Pipeline/&title=Windows内核实验:指令TLB(ITLB)和流水线&amp;&amp;Meltdown CPU漏洞"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://grxer.gitee.io/2023/06/03/Windows-Kernel-Experiment-ITLB-Pipeline/&title=Windows内核实验:指令TLB(ITLB)和流水线&amp;&amp;Meltdown CPU漏洞"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://grxer.gitee.io/2023/06/03/Windows-Kernel-Experiment-ITLB-Pipeline/&name=Windows内核实验:指令TLB(ITLB)和流水线&amp;&amp;Meltdown CPU漏洞&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://grxer.gitee.io/2023/06/03/Windows-Kernel-Experiment-ITLB-Pipeline/&t=Windows内核实验:指令TLB(ITLB)和流水线&amp;&amp;Meltdown CPU漏洞"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fas fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
+        <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fas fa-list fa-lg" aria-hidden="true"></i> TOC</a>
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fas fa-share-alt fa-lg" aria-hidden="true"></i> Share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2023
+    bxz
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a href="/search/">Search</a></li><!--
+     --><!--
+       --><li><a href="/tags/">Tag</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+ 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script> 
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script> 
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"Copy to clipboard!\">";
+    btn += '<i class="far fa-clone"></i>';
+    btn += '</span>'; 
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "Copied!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Google Analytics -->
+
+<!-- Baidu Analytics -->
+
+  <script type="text/javascript">
+        var _hmt = _hmt || [];
+        (function() {
+          var hm = document.createElement("script");
+          hm.src = "https://hm.baidu.com/hm.js?a22ef0bec4e4a9c7337bea6e37ff55c1";
+          var s = document.getElementsByTagName("script")[0];
+          s.parentNode.insertBefore(hm, s);
+        })();
+        </script>
+
+<!-- Cloudflare Analytics -->
+
+<!-- Umami Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+</body>
+</html>

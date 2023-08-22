@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="baidu-site-verification" content="codeva-ROfYcqLkCh" />
+    <meta name="msvalidate.01" content="ECA3E06A0E52A2AC90C4B06F12981FB2" />
+    <meta name="description" content="Windows内核实验:非PAE分页(Non-PAE paging)PAE(Physical Address Extension) multi(0)disk(0)rdisk(0)partition(1)\WINDOWS&#x3D;&quot;Microsoft Windows XP Home Edition DEBUG&quot; &#x2F;noexecute&#x3D;optin &#x2F;fastdetect &#x2F;debugpor">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Windows内核实验:非PAE分页(Non-PAE paging)">
+<meta property="og:url" content="https://grxer.gitee.io/2023/06/01/Windows-Kernel-Experiment-Non-PAE-paging/index.html">
+<meta property="og:site_name" content="Grxer&#39;s Blog">
+<meta property="og:description" content="Windows内核实验:非PAE分页(Non-PAE paging)PAE(Physical Address Extension) multi(0)disk(0)rdisk(0)partition(1)\WINDOWS&#x3D;&quot;Microsoft Windows XP Home Edition DEBUG&quot; &#x2F;noexecute&#x3D;optin &#x2F;fastdetect &#x2F;debugpor">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://grxer.gitee.io/2023/06/01/Windows-Kernel-Experiment-Non-PAE-paging/image-20230601151108340.png">
+<meta property="og:image" content="https://grxer.gitee.io/2023/06/01/Windows-Kernel-Experiment-Non-PAE-paging/image-20230601152207229.png">
+<meta property="og:image" content="https://grxer.gitee.io/2023/06/01/Windows-Kernel-Experiment-Non-PAE-paging/image-20230601202830592.png">
+<meta property="article:published_time" content="2023-06-01T06:56:57.000Z">
+<meta property="article:modified_time" content="2023-06-03T02:11:18.625Z">
+<meta property="article:author" content="bxz">
+<meta property="article:tag" content="Windows Kernel Experiment">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://grxer.gitee.io/2023/06/01/Windows-Kernel-Experiment-Non-PAE-paging/image-20230601151108340.png">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
+    
+    <!-- title -->
+    <title>Windows内核实验:非PAE分页(Non-PAE paging)</title>
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="Menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="Menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="Top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fas fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a href="/search/">Search</a></li><!--
+     --><!--
+       --><li><a href="/tags/">Tag</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" aria-label="Previous post" href="/2023/06/02/Windows-Kernel-Experiment-PAE-paging/"><i class="fas fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" aria-label="Next post" href="/2023/05/31/Windows-Kernel-Experiment-system-call/"><i class="fas fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="Back to top" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="Share post" href="#"><i class="fas fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://grxer.gitee.io/2023/06/01/Windows-Kernel-Experiment-Non-PAE-paging/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://grxer.gitee.io/2023/06/01/Windows-Kernel-Experiment-Non-PAE-paging/&text=Windows内核实验:非PAE分页(Non-PAE paging)"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://grxer.gitee.io/2023/06/01/Windows-Kernel-Experiment-Non-PAE-paging/&title=Windows内核实验:非PAE分页(Non-PAE paging)"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://grxer.gitee.io/2023/06/01/Windows-Kernel-Experiment-Non-PAE-paging/&is_video=false&description=Windows内核实验:非PAE分页(Non-PAE paging)"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Windows内核实验:非PAE分页(Non-PAE paging)&body=Check out this article: https://grxer.gitee.io/2023/06/01/Windows-Kernel-Experiment-Non-PAE-paging/"><i class="fas fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://grxer.gitee.io/2023/06/01/Windows-Kernel-Experiment-Non-PAE-paging/&title=Windows内核实验:非PAE分页(Non-PAE paging)"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://grxer.gitee.io/2023/06/01/Windows-Kernel-Experiment-Non-PAE-paging/&title=Windows内核实验:非PAE分页(Non-PAE paging)"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://grxer.gitee.io/2023/06/01/Windows-Kernel-Experiment-Non-PAE-paging/&title=Windows内核实验:非PAE分页(Non-PAE paging)"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://grxer.gitee.io/2023/06/01/Windows-Kernel-Experiment-Non-PAE-paging/&title=Windows内核实验:非PAE分页(Non-PAE paging)"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://grxer.gitee.io/2023/06/01/Windows-Kernel-Experiment-Non-PAE-paging/&name=Windows内核实验:非PAE分页(Non-PAE paging)&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://grxer.gitee.io/2023/06/01/Windows-Kernel-Experiment-Non-PAE-paging/&t=Windows内核实验:非PAE分页(Non-PAE paging)"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    <div id="toc">
+      <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Windows%E5%86%85%E6%A0%B8%E5%AE%9E%E9%AA%8C-%E9%9D%9EPAE%E5%88%86%E9%A1%B5-Non-PAE-paging"><span class="toc-number">1.</span> <span class="toc-text">Windows内核实验:非PAE分页(Non-PAE paging)</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B5%8B%E8%AF%95%E7%A8%8B%E5%BA%8F"><span class="toc-number">1.0.1.</span> <span class="toc-text">测试程序</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%89%A9%E7%90%86%E5%9C%B0%E5%9D%80%E8%A7%A3%E6%9E%90%E8%BF%87%E7%A8%8B"><span class="toc-number">1.0.2.</span> <span class="toc-text">物理地址解析过程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%9F%A5%E7%9C%8B%E8%BF%9B%E7%A8%8B%E4%BD%8E2G%E5%86%85%E5%AD%98"><span class="toc-number">1.0.3.</span> <span class="toc-text">查看进程低2G内存</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%A1%B5%E7%9B%AE%E5%BD%95%E5%92%8C%E9%A1%B5%E8%A1%A8%E5%9C%A8%E8%99%9A%E6%8B%9F%E5%86%85%E5%AD%98%E9%87%8C%E7%9A%84%E8%A1%A8%E7%8E%B0"><span class="toc-number">1.0.4.</span> <span class="toc-text">页目录和页表在虚拟内存里的表现</span></a></li></ol></li></ol></li></ol>
+    </div>
+  </span>
+</div>
+
+    
+    <div class="content index py4">
+        
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle" itemprop="name headline">
+        Windows内核实验:非PAE分页(Non-PAE paging)
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span itemprop="name">bxz</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2023-06-01T06:56:57.000Z" itemprop="datePublished">2023-06-01</time>
+        
+      
+    </div>
+
+
+      
+
+      
+    <div class="article-tag">
+        <i class="fas fa-tag"></i>
+        <a class="tag-link-link" href="/tags/Windows-Kernel-Experiment/" rel="tag">Windows Kernel Experiment</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content" itemprop="articleBody">
+    <h1 id="Windows内核实验-非PAE分页-Non-PAE-paging"><a href="#Windows内核实验-非PAE分页-Non-PAE-paging" class="headerlink" title="Windows内核实验:非PAE分页(Non-PAE paging)"></a>Windows内核实验:非PAE分页(Non-PAE paging)</h1><p><strong>PAE(Physical Address Extension)</strong></p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">multi(<span class="number">0</span>)disk(<span class="number">0</span>)rdisk(<span class="number">0</span>)partition(<span class="number">1</span>)\WINDOWS=<span class="string">&quot;Microsoft Windows XP Home Edition DEBUG&quot;</span> /noexecute=optin /fastdetect /debugport=COM1 /baudrate=<span class="number">115200</span></span><br></pre></td></tr></table></figure>
+
+<p>把原来的noexecute改为execute,来关闭pae</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">multi(<span class="number">0</span>)disk(<span class="number">0</span>)rdisk(<span class="number">0</span>)partition(<span class="number">1</span>)\WINDOWS=<span class="string">&quot;Microsoft Windows XP Home Edition DEBUG&quot;</span> /execute=optin /fastdetect /debugport=COM1 /baudrate=<span class="number">115200</span></span><br></pre></td></tr></table></figure>
+
+<p>cr4寄存器的第五位(从0开始)是pae标识位，验证下</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">kd&gt; </span><span class="language-bash">.formats cr4</span></span><br><span class="line">Evaluate expression:</span><br><span class="line">  Hex:     000006d9</span><br><span class="line">  Decimal: 1753</span><br><span class="line">  Decimal (unsigned) : 1753</span><br><span class="line">  Octal:   00000003331</span><br><span class="line">  Binary:  00000000 00000000 00000110 11011001</span><br><span class="line">  Chars:   ....</span><br><span class="line">  Time:    Thu Jan  1 08:29:13 1970</span><br><span class="line">  Float:   low 2.45648e-042 high 0</span><br><span class="line">  Double:  8.66097e-321</span><br></pre></td></tr></table></figure>
+
+<p>第五位是0，没有开启pae</p>
+<h3 id="测试程序"><a href="#测试程序" class="headerlink" title="测试程序"></a>测试程序</h3><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">#</span><span class="language-bash">include &lt;stdio.h&gt;</span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">include &lt;stdlib.h&gt;</span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">include &lt;windows.h&gt;</span></span><br><span class="line">DWORD local_num = 0x12345678;</span><br><span class="line">DWORD g_cr3;</span><br><span class="line">void __declspec(naked) IdtEntry() &#123;//裸函数不会帮我们生成栈帧，单纯一个call</span><br><span class="line">    __asm &#123;</span><br><span class="line">        mov eax,cr3</span><br><span class="line">        mov g_cr3, eax</span><br><span class="line">        iretd</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">void interrupt() &#123;</span><br><span class="line">    __asm &#123;</span><br><span class="line">        int 0x20</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">int main() &#123;</span><br><span class="line">    if (0x401040 != IdtEntry) &#123;</span><br><span class="line">        printf(&quot;IdtRntry address wrong&quot;);</span><br><span class="line">        system(&quot;pause&quot;);</span><br><span class="line">        exit(-1);</span><br><span class="line">    &#125;</span><br><span class="line">    //eq 8003f500  0040ee00`00081040</span><br><span class="line">    interrupt();</span><br><span class="line">    printf(&quot;g_cr3:0x%x\n&quot;, g_cr3);</span><br><span class="line">    printf(&quot;local num address:%p\n&quot;,&amp;local_num);</span><br><span class="line">    system(&quot;pause&quot;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">g_cr3:<span class="number">0xdac000</span></span><br><span class="line">local num address:<span class="number">004197B</span>0</span><br><span class="line">请按任意键继续. . .</span><br></pre></td></tr></table></figure>
+
+<h3 id="物理地址解析过程"><a href="#物理地址解析过程" class="headerlink" title="物理地址解析过程"></a>物理地址解析过程</h3><p>windbg</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">kd&gt; !process <span class="number">0</span> <span class="number">0</span> test.exe</span><br><span class="line">Failed to get VadRoot</span><br><span class="line">PROCESS <span class="number">81398480</span>  SessionId: <span class="number">0</span>  Cid: <span class="number">01e4</span>    Peb: <span class="number">7f</span>fd9000  ParentCid: <span class="number">04</span>a8</span><br><span class="line">    DirBase: <span class="number">00</span>dac000  ObjectTable: e2571638  HandleCount:  <span class="number">15.</span></span><br><span class="line">    Image: test.exe</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2023/06/01/Windows-Kernel-Experiment-Non-PAE-paging/image-20230601151108340.png" alt="image-20230601151108340"></p>
+<p>dirbase就是页目录地址基址，就是cr3里的值 ps: PDBR(Page Directory Base Register)</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">kd&gt; </span><span class="language-bash">.formats 004197B0</span></span><br><span class="line">Evaluate expression:</span><br><span class="line">  Hex:     004197b0</span><br><span class="line">  Decimal: 4298672</span><br><span class="line">  Decimal (unsigned) : 4298672</span><br><span class="line">  Octal:   00020313660</span><br><span class="line">  Binary:  00000000 01000001 10010111 10110000</span><br><span class="line">  Chars:   .A..</span><br><span class="line">  Time:    Fri Feb 20 02:04:32 1970</span><br><span class="line">  Float:   low 6.02372e-039 high 0</span><br><span class="line">  Double:  2.12383e-317</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2023/06/01/Windows-Kernel-Experiment-Non-PAE-paging/image-20230601152207229.png" alt="image-20230601152207229"></p>
+<p>004197B0就是我们的线性地址，按照经典二级页表分开</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="number">00000000</span> <span class="number">01</span> <span class="comment">//0x1</span></span><br><span class="line"><span class="number">000001</span> <span class="number">1001</span> <span class="comment">//0x19</span></span><br><span class="line"><span class="number">0111</span> <span class="number">10110000</span> <span class="comment">//0x7B0</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">kd&gt; !dd <span class="number">0xdac000</span></span><br><span class="line">#  dac000 <span class="number">0303</span>a067 <span class="number">00899067</span> <span class="number">00000000</span> <span class="number">00000000</span></span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>windbg 前面加个! 查看物理内存</p>
+</blockquote>
+<p>第一项找到页目录项 00899067，后面三位是属性位，页表地址为00899000</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">kd&gt; !dd <span class="number">00899000</span> + <span class="number">0x19</span>*<span class="number">4</span></span><br><span class="line">#  <span class="number">899064</span> <span class="number">0025f</span>067 <span class="number">00861067</span> <span class="number">00004025</span> <span class="number">00000000</span></span><br></pre></td></tr></table></figure>
+
+<p>找到页表项PTE 0025f067 同样后面三位是属性，物理基地址为0025f000</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">kd&gt; </span><span class="language-bash">!db 0025f000 + 0x7B0</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash"> 25f7b0 78 56 34 12 00 00 00 00-00 00 00 00 00 00 00 00 xV4.............</span></span><br></pre></td></tr></table></figure>
+
+<p>windbg提供了<a target="_blank" rel="noopener" href="https://learn.microsoft.com/en-us/windows-hardware/drivers/debugger/-vtop">!vtop</a>扩展将虚拟地址转换为相应的物理地址</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">!vtop PFN VirtualAddress </span><br><span class="line">PFN</span><br><span class="line">Specifies the page frame <span class="title function_">number</span> <span class="params">(PFN)</span> of the directory base <span class="keyword">for</span> the process.</span><br><span class="line">VirtualAddress</span><br><span class="line">Specifies the virtual address whose page is desired.</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">kd&gt; !vtop <span class="number">0xdac</span> <span class="number">004197B</span>0</span><br><span class="line">X86VtoP: Virt <span class="number">00000000004197b</span>0, pagedir <span class="number">0000000000</span>dac000</span><br><span class="line">X86VtoP: PDE <span class="number">0000000000</span>dac004 - <span class="number">00899067</span></span><br><span class="line">X86VtoP: PTE <span class="number">0000000000899064</span> - <span class="number">0025f</span>067</span><br><span class="line">X86VtoP: Mapped phys <span class="number">000000000025f</span>7b0</span><br><span class="line">Virtual address <span class="number">4197b</span>0 translates to physical address <span class="number">25f</span>7b0.</span><br></pre></td></tr></table></figure>
+
+<h3 id="查看进程低2G内存"><a href="#查看进程低2G内存" class="headerlink" title="查看进程低2G内存"></a>查看进程低2G内存</h3><p>直接d来的低2g，由于系统有很多进程，dbg不知道读哪个</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">kd&gt; db <span class="number">004197B</span>0</span><br><span class="line"><span class="number">004197b</span>0  ?? ?? ?? ?? ?? ?? ?? ??-?? ?? ?? ?? ?? ?? ?? ??  ????????????????</span><br><span class="line"><span class="number">004197</span>c0  ?? ?? ?? ?? ?? ?? ?? ??-?? ?? ?? ?? ?? ?? ?? ??  ????????????????</span><br></pre></td></tr></table></figure>
+
+<p>可以.process 81398480</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">kd&gt; </span><span class="language-bash">.process 81398480</span></span><br><span class="line">ReadVirtual: 81398498 not properly sign extended</span><br><span class="line">Implicit process is now 81398480</span><br><span class="line">WARNING: .cache forcedecodeuser is not enabled</span><br><span class="line"><span class="meta prompt_">kd&gt; </span><span class="language-bash">db 004197B0</span></span><br><span class="line">004197b0  78 56 34 12 00 00 00 00-00 00 00 00 00 00 00 00  xV4.............</span><br><span class="line"><span class="meta prompt_">kd&gt; </span><span class="language-bash">r cr3</span></span><br><span class="line">cr3=00039000</span><br></pre></td></tr></table></figure>
+
+<p>但是他的cr3还是原来的，可能自己有时候不注意导致一些不必要的麻烦</p>
+<p>最好.process &#x2F;i 81398480(&#x2F;i 将调试器的当前进程切换到指定进程映像路径对应的进程) 然后g一下</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">kd&gt; </span><span class="language-bash">.process /i 81398480</span></span><br><span class="line">You need to continue execution (press &#x27;g&#x27; &lt;enter&gt;) for the context</span><br><span class="line">to be switched. When the debugger breaks in again, you will be in</span><br><span class="line">the new process context.</span><br><span class="line"><span class="meta prompt_">kd&gt; </span><span class="language-bash">g</span></span><br><span class="line">Break instruction exception - code 80000003 (first chance)</span><br><span class="line">nt!RtlpBreakWithStatusInstruction:</span><br><span class="line">804e4592 cc              int     3</span><br><span class="line"><span class="meta prompt_">kd&gt; </span><span class="language-bash">r cr3</span></span><br><span class="line">cr3=00dac000</span><br><span class="line"><span class="meta prompt_">kd&gt; </span><span class="language-bash">db 004197B0</span></span><br><span class="line">004197b0  78 56 34 12 00 00 00 00-00 00 00 00 00 00 00 00  xV4.............</span><br></pre></td></tr></table></figure>
+
+<h3 id="页目录和页表在虚拟内存里的表现"><a href="#页目录和页表在虚拟内存里的表现" class="headerlink" title="页目录和页表在虚拟内存里的表现"></a>页目录和页表在虚拟内存里的表现</h3><p><img src="/2023/06/01/Windows-Kernel-Experiment-Non-PAE-paging/image-20230601202830592.png" alt="image-20230601202830592"></p>
+<p>页目录表是放在0xc0300000处，二级页表前3g是从0xc0000000处，后面1G是从0xc030 0000开始</p>
+<blockquote>
+<p>这里我觉的一个比较巧妙的点是，中间的4k的页目录表</p>
+<p>首先0xc000 0000是虚拟内存3G的起点，页目录表是从0xc0300000开始占4k，相当于虚拟地址3G开始处的4M不用描述，这个4M正好是所有页表的总大小</p>
+</blockquote>
+<p>所有从虚拟地址addr得到他的页表项虚拟地址公式为 ((addr &gt;&gt; 12) &lt;&lt; 2) + 0xc0000000</p>
+<blockquote>
+<p>&gt;&gt;12相当于除以page大小4k算出index(因为一个页表项描述4k大小物理内存)，&lt;&lt;2一个页表项4byte</p>
+</blockquote>
+<p>页目录项虚拟地址公式为 ((addr &gt;&gt; 22) &lt;&lt;2) + 0xc0300000</p>
+<blockquote>
+<p>&gt;&gt;22除以4M(因为一个页目录项描述4M内存)</p>
+</blockquote>
+<p><strong>调试</strong></p>
+<p>手残。。，把原来的test.exe关了,现在cr3是下面的</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">g_cr3:<span class="number">0x1fcc000</span></span><br><span class="line">local num address:<span class="number">004197B</span>0</span><br><span class="line">请按任意键继续. . .</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">kd&gt; </span><span class="language-bash">!process 0 0 test.exe</span></span><br><span class="line">Failed to get VadRoot</span><br><span class="line">PROCESS 8162dc30  SessionId: 0  Cid: 00c8    Peb: 7ffd6000  ParentCid: 04a4</span><br><span class="line">    DirBase: 01fcc000  ObjectTable: e2436230  HandleCount:  15.</span><br><span class="line">    Image: test.exe</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">kd&gt; </span><span class="language-bash">.process /i 8162dc30</span></span><br><span class="line">You need to continue execution (press &#x27;g&#x27; &lt;enter&gt;) for the context</span><br><span class="line">to be switched. When the debugger breaks in again, you will be in</span><br><span class="line">the new process context.</span><br><span class="line"><span class="meta prompt_">kd&gt; </span><span class="language-bash">g</span></span><br><span class="line">ntStatus=0Break instruction exception - code 80000003 (first chance)</span><br><span class="line">nt!RtlpBreakWithStatusInstruction:</span><br><span class="line">804e4592 cc              int     3</span><br><span class="line"><span class="meta prompt_">kd&gt; </span><span class="language-bash">r cr3</span></span><br><span class="line">cr3=01fcc000</span><br><span class="line"><span class="meta prompt_">kd&gt; </span><span class="language-bash">!vtop 1fcc 004197B0</span></span><br><span class="line">X86VtoP: Virt 00000000004197b0, pagedir 0000000001fcc000</span><br><span class="line">X86VtoP: PDE 0000000001fcc004 - 007f3067</span><br><span class="line">X86VtoP: PTE 00000000007f3064 - 0c889067</span><br><span class="line">X86VtoP: Mapped phys 000000000c8897b0</span><br><span class="line">Virtual address 4197b0 translates to physical address c8897b0.</span><br><span class="line"><span class="meta prompt_">kd&gt; </span><span class="language-bash">!db c8897b0 l8</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">c8897b0 78 56 34 12 00 00 00 00 xV4......EN.....</span></span><br><span class="line"><span class="meta prompt_">kd&gt; </span><span class="language-bash">!pte 004197B0</span></span><br><span class="line">                 VA 004197b0</span><br><span class="line">PDE at C0300004         PTE at C0001064</span><br><span class="line">contains 007F3067       contains 0C889067</span><br><span class="line">pfn 7f3   ---DA--UWEV   pfn c889  ---DA--UWEV</span><br><span class="line"><span class="meta prompt_">kd&gt; </span><span class="language-bash">?? ((<span class="number">0</span>x04197B0&gt;&gt; <span class="number">12</span>) &lt;&lt; <span class="number">2</span>) + <span class="number">0</span>xc0000000</span></span><br><span class="line">unsigned int 0xc0001064</span><br><span class="line"><span class="meta prompt_">kd&gt; </span><span class="language-bash">dd <span class="number">0</span>xc0001064</span> </span><br><span class="line">c0001064  0c889067 0025b067 039aa025 00000000</span><br><span class="line">c0001074  00000000 00000000 00000000 00000000</span><br><span class="line">c0001084  00000000 00000000 00000000 00000000</span><br><span class="line">c0001094  00000000 00000000 00000000 00000000</span><br><span class="line">c00010a4  00000000 00000000 00000000 00000000</span><br><span class="line">c00010b4  00000000 00000000 00000000 00000000</span><br><span class="line">c00010c4  00000000 00000000 00000000 00000000</span><br><span class="line">c00010d4  00000000 00000000 00000000 00000000</span><br><span class="line"><span class="meta prompt_">kd&gt; </span><span class="language-bash">!dd <span class="number">00000000007</span>f3064</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash"> <span class="number">7</span>f3064 <span class="number">0</span>c889067 <span class="number">0025</span>b067 <span class="number">039</span>aa025 <span class="number">00000000</span></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash"> <span class="number">7</span>f3074 <span class="number">00000000</span> <span class="number">00000000</span> <span class="number">00000000</span> <span class="number">00000000</span></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash"> <span class="number">7</span>f3084 <span class="number">00000000</span> <span class="number">00000000</span> <span class="number">00000000</span> <span class="number">00000000</span></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash"> <span class="number">7</span>f3094 <span class="number">00000000</span> <span class="number">00000000</span> <span class="number">00000000</span> <span class="number">00000000</span></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash"> <span class="number">7</span>f30a4 <span class="number">00000000</span> <span class="number">00000000</span> <span class="number">00000000</span> <span class="number">00000000</span></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash"> <span class="number">7</span>f30b4 <span class="number">00000000</span> <span class="number">00000000</span> <span class="number">00000000</span> <span class="number">00000000</span></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash"> <span class="number">7</span>f30c4 <span class="number">00000000</span> <span class="number">00000000</span> <span class="number">00000000</span> <span class="number">00000000</span></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash"> <span class="number">7</span>f30d4 <span class="number">00000000</span> <span class="number">00000000</span> <span class="number">00000000</span> <span class="number">00000000</span></span></span><br><span class="line"><span class="meta prompt_">kd&gt; </span><span class="language-bash">?? ((<span class="number">0</span>x04197B0 &gt;&gt; <span class="number">22</span>) &lt;&lt;<span class="number">2</span>) + <span class="number">0</span>xc0300000</span></span><br><span class="line">unsigned int 0xc0300004</span><br><span class="line"><span class="meta prompt_">kd&gt; </span><span class="language-bash">dd <span class="number">0</span>xc0300004</span></span><br><span class="line">ReadVirtual: c0300004 not properly sign extended</span><br><span class="line">c0300004  007f3067 00000000 00000000 00000000</span><br><span class="line">c0300014  00000000 00000000 00000000 00000000</span><br><span class="line">c0300024  00000000 00000000 00000000 00000000</span><br><span class="line">c0300034  00000000 00000000 00000000 00000000</span><br><span class="line">c0300044  00000000 00000000 00000000 00000000</span><br><span class="line">c0300054  00000000 00000000 00000000 00000000</span><br><span class="line">c0300064  00000000 00000000 00000000 00000000</span><br><span class="line">c0300074  00000000 00000000 00000000 00000000</span><br><span class="line"><span class="meta prompt_">kd&gt; </span><span class="language-bash">!dd <span class="number">0000000001</span>fcc004</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash"><span class="number">1</span>fcc004 <span class="number">007</span>f3067 <span class="number">00000000</span> <span class="number">00000000</span> <span class="number">00000000</span></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash"><span class="number">1</span>fcc014 <span class="number">00000000</span> <span class="number">00000000</span> <span class="number">00000000</span> <span class="number">00000000</span></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash"><span class="number">1</span>fcc024 <span class="number">00000000</span> <span class="number">00000000</span> <span class="number">00000000</span> <span class="number">00000000</span></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash"><span class="number">1</span>fcc034 <span class="number">00000000</span> <span class="number">00000000</span> <span class="number">00000000</span> <span class="number">00000000</span></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash"><span class="number">1</span>fcc044 <span class="number">00000000</span> <span class="number">00000000</span> <span class="number">00000000</span> <span class="number">00000000</span></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash"><span class="number">1</span>fcc054 <span class="number">00000000</span> <span class="number">00000000</span> <span class="number">00000000</span> <span class="number">00000000</span></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash"><span class="number">1</span>fcc064 <span class="number">00000000</span> <span class="number">00000000</span> <span class="number">00000000</span> <span class="number">00000000</span></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash"><span class="number">1</span>fcc074 <span class="number">00000000</span> <span class="number">00000000</span> <span class="number">00000000</span> <span class="number">00000000</span></span></span><br></pre></td></tr></table></figure>
+
+<p>可以看到实际是一块物理内存</p>
+
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+         
+          <li><a href="/">Home</a></li>
+         
+          <li><a href="/archives/">Writing</a></li>
+         
+          <li><a href="/search/">Search</a></li>
+         
+          <li><a href="/tags/">Tag</a></li>
+         
+          <li><a href="/about/">About</a></li>
+        
+      </ul>
+    </div>
+
+    <div id="toc-footer" style="display: none">
+      <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Windows%E5%86%85%E6%A0%B8%E5%AE%9E%E9%AA%8C-%E9%9D%9EPAE%E5%88%86%E9%A1%B5-Non-PAE-paging"><span class="toc-number">1.</span> <span class="toc-text">Windows内核实验:非PAE分页(Non-PAE paging)</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B5%8B%E8%AF%95%E7%A8%8B%E5%BA%8F"><span class="toc-number">1.0.1.</span> <span class="toc-text">测试程序</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%89%A9%E7%90%86%E5%9C%B0%E5%9D%80%E8%A7%A3%E6%9E%90%E8%BF%87%E7%A8%8B"><span class="toc-number">1.0.2.</span> <span class="toc-text">物理地址解析过程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%9F%A5%E7%9C%8B%E8%BF%9B%E7%A8%8B%E4%BD%8E2G%E5%86%85%E5%AD%98"><span class="toc-number">1.0.3.</span> <span class="toc-text">查看进程低2G内存</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%A1%B5%E7%9B%AE%E5%BD%95%E5%92%8C%E9%A1%B5%E8%A1%A8%E5%9C%A8%E8%99%9A%E6%8B%9F%E5%86%85%E5%AD%98%E9%87%8C%E7%9A%84%E8%A1%A8%E7%8E%B0"><span class="toc-number">1.0.4.</span> <span class="toc-text">页目录和页表在虚拟内存里的表现</span></a></li></ol></li></ol></li></ol>
+    </div>
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://grxer.gitee.io/2023/06/01/Windows-Kernel-Experiment-Non-PAE-paging/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://grxer.gitee.io/2023/06/01/Windows-Kernel-Experiment-Non-PAE-paging/&text=Windows内核实验:非PAE分页(Non-PAE paging)"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://grxer.gitee.io/2023/06/01/Windows-Kernel-Experiment-Non-PAE-paging/&title=Windows内核实验:非PAE分页(Non-PAE paging)"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://grxer.gitee.io/2023/06/01/Windows-Kernel-Experiment-Non-PAE-paging/&is_video=false&description=Windows内核实验:非PAE分页(Non-PAE paging)"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Windows内核实验:非PAE分页(Non-PAE paging)&body=Check out this article: https://grxer.gitee.io/2023/06/01/Windows-Kernel-Experiment-Non-PAE-paging/"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://grxer.gitee.io/2023/06/01/Windows-Kernel-Experiment-Non-PAE-paging/&title=Windows内核实验:非PAE分页(Non-PAE paging)"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://grxer.gitee.io/2023/06/01/Windows-Kernel-Experiment-Non-PAE-paging/&title=Windows内核实验:非PAE分页(Non-PAE paging)"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://grxer.gitee.io/2023/06/01/Windows-Kernel-Experiment-Non-PAE-paging/&title=Windows内核实验:非PAE分页(Non-PAE paging)"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://grxer.gitee.io/2023/06/01/Windows-Kernel-Experiment-Non-PAE-paging/&title=Windows内核实验:非PAE分页(Non-PAE paging)"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://grxer.gitee.io/2023/06/01/Windows-Kernel-Experiment-Non-PAE-paging/&name=Windows内核实验:非PAE分页(Non-PAE paging)&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://grxer.gitee.io/2023/06/01/Windows-Kernel-Experiment-Non-PAE-paging/&t=Windows内核实验:非PAE分页(Non-PAE paging)"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fas fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
+        <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fas fa-list fa-lg" aria-hidden="true"></i> TOC</a>
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fas fa-share-alt fa-lg" aria-hidden="true"></i> Share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2023
+    bxz
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a href="/search/">Search</a></li><!--
+     --><!--
+       --><li><a href="/tags/">Tag</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+ 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script> 
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script> 
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"Copy to clipboard!\">";
+    btn += '<i class="far fa-clone"></i>';
+    btn += '</span>'; 
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "Copied!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Google Analytics -->
+
+<!-- Baidu Analytics -->
+
+  <script type="text/javascript">
+        var _hmt = _hmt || [];
+        (function() {
+          var hm = document.createElement("script");
+          hm.src = "https://hm.baidu.com/hm.js?a22ef0bec4e4a9c7337bea6e37ff55c1";
+          var s = document.getElementsByTagName("script")[0];
+          s.parentNode.insertBefore(hm, s);
+        })();
+        </script>
+
+<!-- Cloudflare Analytics -->
+
+<!-- Umami Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+</body>
+</html>

