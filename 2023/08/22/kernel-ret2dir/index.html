@@ -24,7 +24,7 @@
 <meta property="og:image" content="https://grxer.gitee.io/2023/08/22/kernel-ret2dir/image-20230823181758556.png">
 <meta property="og:image" content="https://grxer.gitee.io/2023/08/22/kernel-ret2dir/image-20230823192816093.png">
 <meta property="article:published_time" content="2023-08-22T14:47:22.000Z">
-<meta property="article:modified_time" content="2023-08-23T11:33:57.501Z">
+<meta property="article:modified_time" content="2023-08-24T10:22:03.186Z">
 <meta property="article:author" content="bxz">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://grxer.gitee.io/2023/08/22/kernel-ret2dir/image-20230820153202390.png">
@@ -202,7 +202,7 @@
 
 <p>所以我们可以在用户态控制这部分寄存器值，从而控制内核栈上的值，然后通过<code>add rsp,val,ret和pop rsp，ret</code>来实现栈迁移</p>
 <p>本题里除r8，r9寄存器其余都被破坏了，不过两个寄存器也够了</p>
-<p>先利用<code>add rsp,val,ret</code>把栈降到r9寄存器的位置，r9寄存器里存放栈迁移目标地址，在通过<code>pop rsp,ret</code>,弹出栈上r9到rsp，完成迁移，r8里就存猜测的physmap地址</p>
+<p>先利用<code>add rsp,val,ret</code>把栈降到r9寄存器的位置，r9寄存器里存放<code>pop rsp,ret</code>的gadget，<code>pop rsp</code>完成栈迁移到r8里的值,ret执行迁移处的内容，所以r8里就存猜测的physmap地址</p>
 <p>用下面的代码测试，断点断到最后执行 call __x86_indirect_thunk_rbx的ret</p>
 <figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">__asm__(</span><br><span class="line">    &quot;mov r15,   0xbeefdead;&quot;</span><br><span class="line">    &quot;mov r14,   0x11111111;&quot;</span><br><span class="line">    &quot;mov r13,   0x22222222;&quot;</span><br><span class="line">    &quot;mov r12,   0x33333333;&quot;</span><br><span class="line">    &quot;mov rbp,   0x44444444;&quot;</span><br><span class="line">    &quot;mov rbx,   0x55555555;&quot;</span><br><span class="line">    &quot;mov r11,   0x66666666;&quot;</span><br><span class="line">    &quot;mov r10,   0x77777777;&quot;</span><br><span class="line">    &quot;mov r9,    0x999999999;&quot;   </span><br><span class="line">    &quot;mov r8,    0x888888888;&quot;</span><br><span class="line">    &quot;mov rax,   0x10;&quot;</span><br><span class="line">    &quot;mov rcx,   0xaaaaaaaa;&quot;</span><br><span class="line">    &quot;mov rdx,   0x33;&quot;</span><br><span class="line">    &quot;mov rsi,   0x1bf52;&quot;</span><br><span class="line">    &quot;mov rdi,   fd;&quot;</span><br><span class="line">    &quot;syscall&quot;</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
 
