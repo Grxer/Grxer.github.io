@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="baidu-site-verification" content="codeva-ROfYcqLkCh" />
+    <meta name="msvalidate.01" content="ECA3E06A0E52A2AC90C4B06F12981FB2" />
+    <meta name="description" content="锁将原本由操作系统调度线程的混乱状态变得可控 评价锁🔒 正确性:能否阻止线程进入临界区 公平性：是否每一个竞争线程有公平的机会抢到锁 性能：加锁之后增加的时间开销 没有竞争，一个线程加锁开锁 一个cpu，多个线程竞争 多个cpu，多个线程竞争    控制中断最早的单处理器解决方法:进入临界区前关中断 缺点  需要允许程序开关中断 多处理器不可行，其他处理器上线程可以进入临界区 关中断期间可能导致">
+<meta property="og:type" content="article">
+<meta property="og:title" content="OSTEP:27 锁🔒">
+<meta property="og:url" content="https://grxer.gitee.io/2023/09/03/OSTEP-28-LOCK/index.html">
+<meta property="og:site_name" content="Grxer&#39;s Blog">
+<meta property="og:description" content="锁将原本由操作系统调度线程的混乱状态变得可控 评价锁🔒 正确性:能否阻止线程进入临界区 公平性：是否每一个竞争线程有公平的机会抢到锁 性能：加锁之后增加的时间开销 没有竞争，一个线程加锁开锁 一个cpu，多个线程竞争 多个cpu，多个线程竞争    控制中断最早的单处理器解决方法:进入临界区前关中断 缺点  需要允许程序开关中断 多处理器不可行，其他处理器上线程可以进入临界区 关中断期间可能导致">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2023-09-03T10:45:09.000Z">
+<meta property="article:modified_time" content="2023-09-04T15:10:49.530Z">
+<meta property="article:author" content="bxz">
+<meta name="twitter:card" content="summary">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
+    
+    <!-- title -->
+    <title>OSTEP:27 锁🔒</title>
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="Menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="Menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="Top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fas fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a href="/search/">Search</a></li><!--
+     --><!--
+       --><li><a href="/tags/">Tag</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" aria-label="Previous post" href="/2023/09/04/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C-%E4%BC%A0%E8%BE%93%E5%B1%82/"><i class="fas fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" aria-label="Next post" href="/2023/09/01/kernel-heap/"><i class="fas fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="Back to top" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="Share post" href="#"><i class="fas fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://grxer.gitee.io/2023/09/03/OSTEP-28-LOCK/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://grxer.gitee.io/2023/09/03/OSTEP-28-LOCK/&text=OSTEP:27 锁🔒"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://grxer.gitee.io/2023/09/03/OSTEP-28-LOCK/&title=OSTEP:27 锁🔒"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://grxer.gitee.io/2023/09/03/OSTEP-28-LOCK/&is_video=false&description=OSTEP:27 锁🔒"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=OSTEP:27 锁🔒&body=Check out this article: https://grxer.gitee.io/2023/09/03/OSTEP-28-LOCK/"><i class="fas fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://grxer.gitee.io/2023/09/03/OSTEP-28-LOCK/&title=OSTEP:27 锁🔒"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://grxer.gitee.io/2023/09/03/OSTEP-28-LOCK/&title=OSTEP:27 锁🔒"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://grxer.gitee.io/2023/09/03/OSTEP-28-LOCK/&title=OSTEP:27 锁🔒"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://grxer.gitee.io/2023/09/03/OSTEP-28-LOCK/&title=OSTEP:27 锁🔒"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://grxer.gitee.io/2023/09/03/OSTEP-28-LOCK/&name=OSTEP:27 锁🔒&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://grxer.gitee.io/2023/09/03/OSTEP-28-LOCK/&t=OSTEP:27 锁🔒"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    <div id="toc">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%AF%84%E4%BB%B7%E9%94%81%F0%9F%94%92"><span class="toc-number">1.</span> <span class="toc-text">评价锁🔒</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%8E%A7%E5%88%B6%E4%B8%AD%E6%96%AD"><span class="toc-number">2.</span> <span class="toc-text">控制中断</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%A1%AC%E4%BB%B6%E6%94%AF%E6%8C%81"><span class="toc-number">3.</span> <span class="toc-text">硬件支持</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#x86"><span class="toc-number">3.1.</span> <span class="toc-text">x86</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#riscv"><span class="toc-number">3.2.</span> <span class="toc-text">riscv</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#ticket%E9%94%81"><span class="toc-number">3.3.</span> <span class="toc-text">ticket锁</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E6%94%AF%E6%8C%81"><span class="toc-number">4.</span> <span class="toc-text">操作系统支持</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#park-%E8%87%AA%E6%97%8B%E9%94%81"><span class="toc-number">4.1.</span> <span class="toc-text">park+自旋锁</span></a></li></ol></li></ol>
+    </div>
+  </span>
+</div>
+
+    
+    <div class="content index py4">
+        
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle" itemprop="name headline">
+        OSTEP:27 锁🔒
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span itemprop="name">bxz</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2023-09-03T10:45:09.000Z" itemprop="datePublished">2023-09-03</time>
+        
+      
+    </div>
+
+
+      
+
+      
+
+    </div>
+  </header>
+  
+
+  <div class="content" itemprop="articleBody">
+    <p>锁将原本由操作系统调度线程的混乱状态变得可控</p>
+<h2 id="评价锁🔒"><a href="#评价锁🔒" class="headerlink" title="评价锁🔒"></a>评价锁🔒</h2><ul>
+<li>正确性:能否阻止线程进入临界区</li>
+<li>公平性：是否每一个竞争线程有公平的机会抢到锁</li>
+<li>性能：加锁之后增加的时间开销<ul>
+<li>没有竞争，一个线程加锁开锁</li>
+<li>一个cpu，多个线程竞争</li>
+<li>多个cpu，多个线程竞争</li>
+</ul>
+</li>
+</ul>
+<h2 id="控制中断"><a href="#控制中断" class="headerlink" title="控制中断"></a>控制中断</h2><p>最早的单处理器解决方法:进入临界区前关中断</p>
+<p>缺点</p>
+<ul>
+<li>需要允许程序开关中断</li>
+<li>多处理器不可行，其他处理器上线程可以进入临界区</li>
+<li>关中断期间可能导致其他正常中断丢失</li>
+<li>效率低</li>
+</ul>
+<h2 id="硬件支持"><a href="#硬件支持" class="headerlink" title="硬件支持"></a>硬件支持</h2><p>与其软件上利用:DEKKER,PETERSON等算法，不如硬件支持👌,增加了一些硬件原语</p>
+<h3 id="x86"><a href="#x86" class="headerlink" title="x86"></a>x86</h3><p><strong>xchg （atomic exchange，原子交换）指令</strong>，通常称为测试并设置指令（test-and-set）</p>
+<p><strong>自旋锁spin lock实现</strong></p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="type">int</span> <span class="title function_">xchg</span><span class="params">(<span class="keyword">volatile</span> <span class="type">int</span> *addr, <span class="type">int</span> newval)</span> &#123;</span><br><span class="line">  <span class="type">int</span> result;</span><br><span class="line">  <span class="keyword">asm</span> <span class="title function_">volatile</span> <span class="params">(<span class="string">&quot;lock xchg %0, %1&quot;</span></span></span><br><span class="line"><span class="params">    : <span class="string">&quot;+m&quot;</span>(*addr), <span class="string">&quot;=a&quot;</span>(result) : <span class="string">&quot;1&quot;</span>(newval))</span>;</span><br><span class="line">  <span class="keyword">return</span> result;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="type">int</span> flag = YES;<span class="comment">//flag为YES代表可以进临界区，</span></span><br><span class="line"><span class="type">void</span> <span class="title function_">lock</span><span class="params">()</span> &#123;</span><br><span class="line">retry:</span><br><span class="line">  <span class="type">int</span> got = xchg(&amp;flag, NOPE);</span><br><span class="line">  <span class="keyword">if</span> (got == NOPE)</span><br><span class="line">    <span class="keyword">goto</span> retry;</span><br><span class="line">  assert(got == YES);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="type">void</span> <span class="title function_">unlock</span><span class="params">()</span> &#123;</span><br><span class="line">  xchg(&amp;flag, YES)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>和上面代码等价的精简</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="type">int</span> flag = <span class="number">0</span><span class="comment">//flag为0代表没有锁上，可以进临界区</span></span><br><span class="line"><span class="type">void</span> lock() &#123; <span class="keyword">while</span>(xchg(&amp;flag,<span class="number">1</span>))&#125;</span><br><span class="line"><span class="type">void</span> unlock() &#123; xchg(&amp;locked, <span class="number">0</span>); &#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>cpmxhg指令 Compare and Exchange</strong> </p>
+<blockquote>
+<p>x86&#x2F;64架构中的cmpxchg指令是如何实现并保证原子性的</p>
+<p><a target="_blank" rel="noopener" href="https://www.zhihu.com/question/492576993">https://www.zhihu.com/question/492576993</a></p>
+</blockquote>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="type">char</span> <span class="title function_">CompareAndSwap</span><span class="params">(<span class="type">int</span> *ptr, <span class="type">int</span> expected, <span class="type">int</span> new)</span> &#123;</span><br><span class="line">     <span class="type">unsigned</span> <span class="type">char</span> ret;</span><br><span class="line">    <span class="comment">// Note that sete sets a &#x27;byte&#x27; not the word</span></span><br><span class="line">    __asm__ __volatile__ (</span><br><span class="line">    <span class="string">&quot; lock\n&quot;</span></span><br><span class="line">    <span class="string">&quot; cmpxchgl %2,%1\n&quot;</span></span><br><span class="line">    <span class="string">&quot; sete %0\n&quot;</span></span><br><span class="line">    : <span class="string">&quot;=q&quot;</span> (ret), <span class="string">&quot;=m&quot;</span> (*ptr)</span><br><span class="line">    : <span class="string">&quot;r&quot;</span> (new), <span class="string">&quot;m&quot;</span> (*ptr), <span class="string">&quot;a&quot;</span> (old)<span class="comment">//对于相同的&quot;m&quot; (*ptr)似乎是按照后面的来算的，所以这里%0代表ret，%1代表 new， %2代表*ptr</span></span><br><span class="line">    : <span class="string">&quot;memory&quot;</span>);</span><br><span class="line">    <span class="keyword">return</span> ret;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>cmpxchg dest,src:将AL、AX、EAX或RAX寄存器中的值与第一个操作数dest（目标操作数）进行比较。如果两个值相等，则将第二个操作数src（源操作数）加载到dest目标操作数中同时ZF标志位置1。 如果不相等，则目标操作数被加载到AL、AX、EAX或RAX寄存器中，x同时ZF标志位置0。</p>
+<p>SETE r&#x2F;m8:Set byte if equal.设置r&#x2F;m8为zf标志位的值</p>
+</blockquote>
+<p>c的伪代码就是</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="type">int</span> <span class="title function_">CompareAndSwap</span><span class="params">(<span class="type">int</span> *ptr, <span class="type">int</span> expected, <span class="type">int</span> new)</span> &#123;</span><br><span class="line">    <span class="type">int</span> ret = *ptr;</span><br><span class="line">    <span class="keyword">if</span> (ret == expected) &#123;</span><br><span class="line">        *ptr = new;</span><br><span class="line">        <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>自旋锁spin lock实现</strong></p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="type">int</span> flag = <span class="number">0</span>;<span class="comment">//flag为0代表没有锁上，可以进临界区</span></span><br><span class="line"><span class="type">void</span> <span class="title function_">lock</span><span class="params">()</span>&#123;<span class="keyword">while</span>(CompareAndSwap(flag,<span class="number">1</span>,<span class="number">1</span>) == <span class="number">1</span>);&#125;</span><br><span class="line"><span class="type">void</span> <span class="title function_">unlock</span><span class="params">()</span>&#123;flag = <span class="number">0</span>&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="riscv"><a href="#riscv" class="headerlink" title="riscv"></a>riscv</h3><p>LR&#x2F;SC 指令</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">lr.&#123;w/d&#125;.&#123;aqrl&#125; rd, (rs1)</span><br><span class="line">从内存地址 rs1 中加载内容到 rd 寄存器。然后在 rs1 对应地址上设置保留标记(reservation set),w/d 分别对应 32 位/64 位版本,中断、其他处理器写入都会导致标记消除</span><br><span class="line">sc.&#123;w/d&#125;.&#123;aqrl&#125; rd, rs2, (rs1)</span><br><span class="line">sc指令在把rs2值写到rs1地址之前，会先判断 rs1 内存地址是否有设置保留标记，如果设置了，则把 rs2 值正常写入到 rs1 内存地址里，并把 rd 寄存器设置成 0，表示保存成功。如果 rs1 内存地址没有设置保留标记，则不保存，并把 rd 寄存器设置成 1 表示保存失败。不管成功还是失败，sc指令都会把当前hart保留的所有保留标记全部清除</span><br></pre></td></tr></table></figure>
+
+<p><strong>xchg升级版：Compare-and-Swap 的 LR&#x2F;SC 实现</strong></p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="type">int</span> <span class="title function_">cas</span><span class="params">(<span class="type">int</span> *addr, <span class="type">int</span> cmp_val, <span class="type">int</span> new_val)</span> &#123;</span><br><span class="line">  <span class="type">int</span> old_val = *addr;</span><br><span class="line">  <span class="keyword">if</span> (old_val == cmp_val) &#123;</span><br><span class="line">    *addr = new_val; <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">  &#125; <span class="keyword">else</span> &#123; <span class="keyword">return</span> <span class="number">1</span>; &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">cas:</span><br><span class="line">  lr.w  t0, (a0)       # Load original value.</span><br><span class="line">  bne   t0, a1, fail   # Doesn’t match, so fail.</span><br><span class="line">  sc.w  t0, a2, (a0)   # Try to update.</span><br><span class="line">  bnez  t0, cas        # Retry if store-conditional failed.</span><br><span class="line">  li a0, 0             # Set return to success.</span><br><span class="line">  jr ra                # Return.</span><br><span class="line">fail:</span><br><span class="line">  li a0, 1             # Set return to failure.</span><br><span class="line">  jr ra                # Return</span><br></pre></td></tr></table></figure>
+
+<p><strong>自旋锁评价</strong></p>
+<ul>
+<li><p>正确性 👍</p>
+</li>
+<li><p>公平性 👎</p>
+</li>
+<li><p>性能</p>
+<ul>
+<li>单核处理器竞争，每个竞争锁的线程都会浪费一个时间片</li>
+<li>多核处理器竞争，临界区一般很短，另一个处理器上的竞争锁的线程会很快得到锁</li>
+</ul>
+</li>
+</ul>
+<h3 id="ticket锁"><a href="#ticket锁" class="headerlink" title="ticket锁"></a>ticket锁</h3><p>利用硬件原语fetch-and-add，原子地返回特定地址的旧值，并且让该值自增一</p>
+<p><strong>x86</strong></p>
+<p>xadd dest,src指令：Exchange and Add</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">dest，src先交换，然后再把两者之和付给dest</span><br><span class="line">TEMP := SRC + DEST;</span><br><span class="line">SRC := DEST;</span><br><span class="line">DEST := TEMP;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="type">static</span> <span class="keyword">inline</span> <span class="type">int</span> <span class="title function_">fetch_and_add</span><span class="params">(<span class="type">int</span>* variable, <span class="type">int</span> value)</span></span><br><span class="line">&#123;</span><br><span class="line">    __asm__ <span class="title function_">volatile</span><span class="params">(<span class="string">&quot;lock; xaddl %0, %1&quot;</span></span></span><br><span class="line"><span class="params">                     : <span class="string">&quot;+r&quot;</span> (value), <span class="string">&quot;+m&quot;</span> (*variable) <span class="comment">// input+output</span></span></span><br><span class="line"><span class="params">                     : <span class="comment">// No input-only</span></span></span><br><span class="line"><span class="params">                     : <span class="string">&quot;memory&quot;</span></span></span><br><span class="line"><span class="params">                    )</span>;</span><br><span class="line">    <span class="keyword">return</span> value;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>ticket锁</strong>实现</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="type">int</span> <span class="title function_">FetchAndAdd</span><span class="params">(<span class="type">int</span> *ptr)</span> &#123;</span><br><span class="line">    <span class="type">int</span> old = *ptr;</span><br><span class="line">    *ptr = old + <span class="number">1</span>;</span><br><span class="line">    <span class="keyword">return</span> old;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">lock_t</span> &#123;</span></span><br><span class="line">    <span class="type">int</span> ticket;</span><br><span class="line">    <span class="type">int</span> turn;</span><br><span class="line">&#125; <span class="type">lock_t</span>;</span><br><span class="line"></span><br><span class="line"><span class="type">void</span> <span class="title function_">lock_init</span><span class="params">(<span class="type">lock_t</span> *lock)</span> &#123;</span><br><span class="line">    lock-&gt;ticket = <span class="number">0</span>;</span><br><span class="line">    lock-&gt;turn = <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="type">void</span> <span class="title function_">lock</span><span class="params">(<span class="type">lock_t</span> *lock)</span> &#123;</span><br><span class="line">    <span class="type">int</span> myturn = FetchAndAdd(&amp;lock-&gt;ticket);</span><br><span class="line">    <span class="keyword">while</span> (lock-&gt;turn != myturn)</span><br><span class="line">        ; <span class="comment">// spin</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="type">void</span> <span class="title function_">unlock</span><span class="params">(<span class="type">lock_t</span> *lock)</span> &#123;</span><br><span class="line">    FetchAndAdd(&amp;lock-&gt;turn);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>ticket能够保证每一个竞争线程都能够抢到锁，且按照自旋等待的先后顺序</p>
+<h2 id="操作系统支持"><a href="#操作系统支持" class="headerlink" title="操作系统支持"></a>操作系统支持</h2><p>对于简单的yield+自旋，yield()系统调用让线程让出cpu，可能操作系统下次还是选择运行该线程，同时其他线程只能看着有锁的线程做事，虽然比浪费完整时间片要好，但是系统调用的上下文切换开销也很大</p>
+<h3 id="park-自旋锁"><a href="#park-自旋锁" class="headerlink" title="park+自旋锁"></a>park+自旋锁</h3><p><strong>Solaris</strong></p>
+<p>Solaris系统提供了系统调用，park()能够让调用线程休眠，unpark(threadID)则会唤醒 threadID 标识的线程。</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">lock_t</span> &#123;</span></span><br><span class="line">  <span class="type">int</span> flag;</span><br><span class="line">  <span class="type">int</span> guard;</span><br><span class="line">  <span class="type">queue_t</span> *q;<span class="comment">//队列防止了饿死某个线程的问题</span></span><br><span class="line">&#125; <span class="type">lock_t</span>;</span><br><span class="line"><span class="type">void</span> <span class="title function_">lock_init</span><span class="params">(<span class="type">lock_t</span> *m)</span> &#123;</span><br><span class="line">  m-&gt;flag = <span class="number">0</span>;</span><br><span class="line">  m-&gt;guard = <span class="number">0</span>;</span><br><span class="line">  queue_init(m-&gt;q);</span><br><span class="line">&#125;</span><br><span class="line"><span class="type">void</span> <span class="title function_">lock</span><span class="params">(<span class="type">lock_t</span> *m)</span> &#123;</span><br><span class="line">  <span class="keyword">while</span> (TestAndSet(&amp;m-&gt;guard, <span class="number">1</span>) == <span class="number">1</span>)<span class="comment">//获取锁或者释放锁其他线程还是需要自旋，来保证内存一致</span></span><br><span class="line">    ; <span class="comment">// acquire guard lock by spinning</span></span><br><span class="line">  <span class="keyword">if</span> (m-&gt;flag == <span class="number">0</span>) &#123;</span><br><span class="line">    m-&gt;flag = <span class="number">1</span>; <span class="comment">// lock is acquired 真正获取锁</span></span><br><span class="line">    m-&gt;guard = <span class="number">0</span>;<span class="comment">//设置后有线程抢锁会结束自旋，加入队列</span></span><br><span class="line">  &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    queue_add(m-&gt;q, gettid());</span><br><span class="line">    m-&gt;guard = <span class="number">0</span>;<span class="comment">//设置后有线程抢锁会结束自旋，加入队列</span></span><br><span class="line">    park();</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="type">void</span> <span class="title function_">unlock</span><span class="params">(<span class="type">lock_t</span> *m)</span> &#123;</span><br><span class="line">  <span class="keyword">while</span> (TestAndSet(&amp;m-&gt;guard, <span class="number">1</span>) == <span class="number">1</span>)<span class="comment">//获取锁或者释放锁其他线程还是需要自旋，来保证内存一致</span></span><br><span class="line">    ; <span class="comment">// acquire guard lock by spinning</span></span><br><span class="line">  <span class="keyword">if</span> (queue_empty(m-&gt;q))</span><br><span class="line">    m-&gt;flag = <span class="number">0</span>; <span class="comment">// let go of lock; no one wants it</span></span><br><span class="line">  <span class="keyword">else</span></span><br><span class="line">    unpark(queue_remove(m-&gt;q)); <span class="comment">// hold lock (for next thread!)直接把flag的锁给下一个线程即可，</span></span><br><span class="line">  m-&gt;guard = <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>问题:假设一个线程已经加入休眠队列将要调用park休眠,此时如果系统切换到了正在持有锁的线程。如果该线程随后释放了锁，前面的线程调用park后可能会永远休眠下去。</p>
+<p>Solaris增加了第三个系统调用 separk()来解决问题</p>
+<p>setpark():一个线程表明自己马上要 park。如果刚好另一个线程被调度，并且调用了 unpark，那么后续的park调用就会直接返回,不会休眠</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="type">void</span> <span class="title function_">lock</span><span class="params">(<span class="type">lock_t</span> *m)</span> &#123;</span><br><span class="line">  <span class="keyword">while</span> (TestAndSet(&amp;m-&gt;guard, <span class="number">1</span>) == <span class="number">1</span>)<span class="comment">//获取锁或者释放锁其他线程还是需要自旋，来保证内存一致</span></span><br><span class="line">    ; <span class="comment">// acquire guard lock by spinning</span></span><br><span class="line">  <span class="keyword">if</span> (m-&gt;flag == <span class="number">0</span>) &#123;</span><br><span class="line">    m-&gt;flag = <span class="number">1</span>; <span class="comment">// lock is acquired 真正获取锁</span></span><br><span class="line">    m-&gt;guard = <span class="number">0</span>;<span class="comment">//设置后有线程抢锁会结束自旋，加入队列</span></span><br><span class="line">  &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    queue_add(m-&gt;q, gettid());</span><br><span class="line">    setpark();<span class="comment">// new code</span></span><br><span class="line">    m-&gt;guard = <span class="number">0</span>;<span class="comment">//设置后有线程抢锁会结束自旋，加入队列</span></span><br><span class="line">    park();</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+         
+          <li><a href="/">Home</a></li>
+         
+          <li><a href="/archives/">Writing</a></li>
+         
+          <li><a href="/search/">Search</a></li>
+         
+          <li><a href="/tags/">Tag</a></li>
+         
+          <li><a href="/about/">About</a></li>
+        
+      </ul>
+    </div>
+
+    <div id="toc-footer" style="display: none">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%AF%84%E4%BB%B7%E9%94%81%F0%9F%94%92"><span class="toc-number">1.</span> <span class="toc-text">评价锁🔒</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%8E%A7%E5%88%B6%E4%B8%AD%E6%96%AD"><span class="toc-number">2.</span> <span class="toc-text">控制中断</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%A1%AC%E4%BB%B6%E6%94%AF%E6%8C%81"><span class="toc-number">3.</span> <span class="toc-text">硬件支持</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#x86"><span class="toc-number">3.1.</span> <span class="toc-text">x86</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#riscv"><span class="toc-number">3.2.</span> <span class="toc-text">riscv</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#ticket%E9%94%81"><span class="toc-number">3.3.</span> <span class="toc-text">ticket锁</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E6%94%AF%E6%8C%81"><span class="toc-number">4.</span> <span class="toc-text">操作系统支持</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#park-%E8%87%AA%E6%97%8B%E9%94%81"><span class="toc-number">4.1.</span> <span class="toc-text">park+自旋锁</span></a></li></ol></li></ol>
+    </div>
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://grxer.gitee.io/2023/09/03/OSTEP-28-LOCK/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://grxer.gitee.io/2023/09/03/OSTEP-28-LOCK/&text=OSTEP:27 锁🔒"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://grxer.gitee.io/2023/09/03/OSTEP-28-LOCK/&title=OSTEP:27 锁🔒"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://grxer.gitee.io/2023/09/03/OSTEP-28-LOCK/&is_video=false&description=OSTEP:27 锁🔒"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=OSTEP:27 锁🔒&body=Check out this article: https://grxer.gitee.io/2023/09/03/OSTEP-28-LOCK/"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://grxer.gitee.io/2023/09/03/OSTEP-28-LOCK/&title=OSTEP:27 锁🔒"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://grxer.gitee.io/2023/09/03/OSTEP-28-LOCK/&title=OSTEP:27 锁🔒"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://grxer.gitee.io/2023/09/03/OSTEP-28-LOCK/&title=OSTEP:27 锁🔒"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://grxer.gitee.io/2023/09/03/OSTEP-28-LOCK/&title=OSTEP:27 锁🔒"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://grxer.gitee.io/2023/09/03/OSTEP-28-LOCK/&name=OSTEP:27 锁🔒&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://grxer.gitee.io/2023/09/03/OSTEP-28-LOCK/&t=OSTEP:27 锁🔒"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fas fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
+        <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fas fa-list fa-lg" aria-hidden="true"></i> TOC</a>
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fas fa-share-alt fa-lg" aria-hidden="true"></i> Share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2023
+    bxz
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a href="/search/">Search</a></li><!--
+     --><!--
+       --><li><a href="/tags/">Tag</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+ 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script> 
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script> 
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"Copy to clipboard!\">";
+    btn += '<i class="far fa-clone"></i>';
+    btn += '</span>'; 
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "Copied!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Google Analytics -->
+
+<!-- Baidu Analytics -->
+
+  <script type="text/javascript">
+        var _hmt = _hmt || [];
+        (function() {
+          var hm = document.createElement("script");
+          hm.src = "https://hm.baidu.com/hm.js?a22ef0bec4e4a9c7337bea6e37ff55c1";
+          var s = document.getElementsByTagName("script")[0];
+          s.parentNode.insertBefore(hm, s);
+        })();
+        </script>
+
+<!-- Cloudflare Analytics -->
+
+<!-- Umami Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+</body>
+</html>
