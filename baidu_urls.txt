@@ -1,5 +1,7 @@
 https://grxer.gitee.io/2223/09/01/Englishlearning-September2023/
 https://grxer.gitee.io/2223/08/01/Englishlearning-August2023/
+https://grxer.gitee.io/2023/09/10/OSTEP-30-31-Condition-Semaphores/
+https://grxer.gitee.io/2023/09/07/2023-ycb/
 https://grxer.gitee.io/2023/09/04/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C-%E4%BC%A0%E8%BE%93%E5%B1%82/
 https://grxer.gitee.io/2023/09/03/OSTEP-28-LOCK/
 https://grxer.gitee.io/2023/09/01/kernel-heap/
@@ -21,5 +23,3 @@ https://grxer.gitee.io/2023/08/02/house-of-force/
 https://grxer.gitee.io/2023/08/02/startctf/
 https://grxer.gitee.io/2023/07/29/House-Of-Einherjar/
 https://grxer.gitee.io/2023/07/25/2023%E5%B7%85%E5%B3%B0%E6%9E%81%E5%AE%A2pwn/
-https://grxer.gitee.io/2023/07/24/2023-DASCTF-0X401/
-https://grxer.gitee.io/2023/07/20/first-aarch64-pwn/

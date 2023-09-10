@@ -16,7 +16,7 @@
 <meta property="og:description" content="Linux对异常的处理陷入内核调用异常处理程序，对于故障(Fault)  如果处理程序可以修复的故障，比如正常的缺页，修复后回到断点处继续执行  如果不能修复的，比如越级，越权，越界，除0等，linux只会给进程发送一个信号，回到用户态，进程去调度相应的信号处理程序，这样做是快速在内核态完成异常处理，减小嵌套执行异常的可能性   linux里可以用kill -l查看信号列表，编号为1 ~ 31的信">
 <meta property="og:locale" content="en_US">
 <meta property="article:published_time" content="2023-04-24T03:16:22.000Z">
-<meta property="article:modified_time" content="2023-05-28T03:30:18.411Z">
+<meta property="article:modified_time" content="2023-09-10T08:25:27.364Z">
 <meta property="article:author" content="bxz">
 <meta name="twitter:card" content="summary">
     

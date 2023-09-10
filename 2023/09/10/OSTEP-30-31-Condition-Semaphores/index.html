@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="baidu-site-verification" content="codeva-ROfYcqLkCh" />
+    <meta name="msvalidate.01" content="ECA3E06A0E52A2AC90C4B06F12981FB2" />
+    <meta name="description" content="条件变量实现生产者&#x2F;消费者int buffer[MAX];int fill &#x3D; 0;int use &#x3D; 0;int count &#x3D; 0;void put(int value) &amp;#123;  buffer[fill] &#x3D; value;  fill &#x3D; (fill + 1) % MAX;  count++;&amp;#125;int get() &amp;#123;  int tmp &#x3D; buffer[u">
+<meta property="og:type" content="article">
+<meta property="og:title" content="OSTEP:30&amp;&amp;31 条件变量&amp;&amp;信号量">
+<meta property="og:url" content="https://grxer.gitee.io/2023/09/10/OSTEP-30-31-Condition-Semaphores/index.html">
+<meta property="og:site_name" content="Grxer&#39;s Blog">
+<meta property="og:description" content="条件变量实现生产者&#x2F;消费者int buffer[MAX];int fill &#x3D; 0;int use &#x3D; 0;int count &#x3D; 0;void put(int value) &amp;#123;  buffer[fill] &#x3D; value;  fill &#x3D; (fill + 1) % MAX;  count++;&amp;#125;int get() &amp;#123;  int tmp &#x3D; buffer[u">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2023-09-10T14:37:20.000Z">
+<meta property="article:modified_time" content="2023-09-10T16:50:10.992Z">
+<meta property="article:author" content="bxz">
+<meta name="twitter:card" content="summary">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
+    
+    <!-- title -->
+    <title>OSTEP:30&amp;&amp;31 条件变量&amp;&amp;信号量</title>
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="Menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="Menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="Top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fas fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a href="/search/">Search</a></li><!--
+     --><!--
+       --><li><a href="/tags/">Tag</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" aria-label="Previous post" href="/2223/08/01/Englishlearning-August2023/"><i class="fas fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" aria-label="Next post" href="/2023/09/07/2023-ycb/"><i class="fas fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="Back to top" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="Share post" href="#"><i class="fas fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://grxer.gitee.io/2023/09/10/OSTEP-30-31-Condition-Semaphores/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://grxer.gitee.io/2023/09/10/OSTEP-30-31-Condition-Semaphores/&text=OSTEP:30&amp;&amp;31 条件变量&amp;&amp;信号量"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://grxer.gitee.io/2023/09/10/OSTEP-30-31-Condition-Semaphores/&title=OSTEP:30&amp;&amp;31 条件变量&amp;&amp;信号量"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://grxer.gitee.io/2023/09/10/OSTEP-30-31-Condition-Semaphores/&is_video=false&description=OSTEP:30&amp;&amp;31 条件变量&amp;&amp;信号量"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=OSTEP:30&amp;&amp;31 条件变量&amp;&amp;信号量&body=Check out this article: https://grxer.gitee.io/2023/09/10/OSTEP-30-31-Condition-Semaphores/"><i class="fas fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://grxer.gitee.io/2023/09/10/OSTEP-30-31-Condition-Semaphores/&title=OSTEP:30&amp;&amp;31 条件变量&amp;&amp;信号量"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://grxer.gitee.io/2023/09/10/OSTEP-30-31-Condition-Semaphores/&title=OSTEP:30&amp;&amp;31 条件变量&amp;&amp;信号量"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://grxer.gitee.io/2023/09/10/OSTEP-30-31-Condition-Semaphores/&title=OSTEP:30&amp;&amp;31 条件变量&amp;&amp;信号量"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://grxer.gitee.io/2023/09/10/OSTEP-30-31-Condition-Semaphores/&title=OSTEP:30&amp;&amp;31 条件变量&amp;&amp;信号量"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://grxer.gitee.io/2023/09/10/OSTEP-30-31-Condition-Semaphores/&name=OSTEP:30&amp;&amp;31 条件变量&amp;&amp;信号量&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://grxer.gitee.io/2023/09/10/OSTEP-30-31-Condition-Semaphores/&t=OSTEP:30&amp;&amp;31 条件变量&amp;&amp;信号量"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    <div id="toc">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9D%A1%E4%BB%B6%E5%8F%98%E9%87%8F%E5%AE%9E%E7%8E%B0%E7%94%9F%E4%BA%A7%E8%80%85-x2F-%E6%B6%88%E8%B4%B9%E8%80%85"><span class="toc-number">1.</span> <span class="toc-text">条件变量实现生产者&#x2F;消费者</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BF%A1%E5%8F%B7%E9%87%8F%E5%AE%9E%E7%8E%B0%E7%94%9F%E4%BA%A7%E8%80%85-x2F-%E6%B6%88%E8%B4%B9%E8%80%85"><span class="toc-number">2.</span> <span class="toc-text">信号量实现生产者&#x2F;消费者</span></a></li></ol>
+    </div>
+  </span>
+</div>
+
+    
+    <div class="content index py4">
+        
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle" itemprop="name headline">
+        OSTEP:30&amp;&amp;31 条件变量&amp;&amp;信号量
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span itemprop="name">bxz</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2023-09-10T14:37:20.000Z" itemprop="datePublished">2023-09-10</time>
+        
+      
+    </div>
+
+
+      
+
+      
+
+    </div>
+  </header>
+  
+
+  <div class="content" itemprop="articleBody">
+    <h2 id="条件变量实现生产者-x2F-消费者"><a href="#条件变量实现生产者-x2F-消费者" class="headerlink" title="条件变量实现生产者&#x2F;消费者"></a>条件变量实现生产者&#x2F;消费者</h2><figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="type">int</span> buffer[MAX];</span><br><span class="line"><span class="type">int</span> fill = <span class="number">0</span>;</span><br><span class="line"><span class="type">int</span> use = <span class="number">0</span>;</span><br><span class="line"><span class="type">int</span> count = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line"><span class="type">void</span> <span class="title function_">put</span><span class="params">(<span class="type">int</span> value)</span> &#123;</span><br><span class="line">  buffer[fill] = value;</span><br><span class="line">  fill = (fill + <span class="number">1</span>) % MAX;</span><br><span class="line">  count++;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="type">int</span> <span class="title function_">get</span><span class="params">()</span> &#123;</span><br><span class="line">  <span class="type">int</span> tmp = buffer[use];</span><br><span class="line">  use = (use + <span class="number">1</span>) % MAX;</span><br><span class="line">  count--;</span><br><span class="line">  <span class="keyword">return</span> tmp;</span><br><span class="line">&#125;</span><br><span class="line"><span class="type">cond_t</span> empty, fill;</span><br><span class="line"><span class="type">mutex_t</span> mutex;</span><br><span class="line"></span><br><span class="line"><span class="type">void</span> *<span class="title function_">producer</span><span class="params">(<span class="type">void</span> *arg)</span> &#123;</span><br><span class="line">  <span class="type">int</span> i;</span><br><span class="line">  <span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; loops; i++) &#123;</span><br><span class="line">    Pthread_mutex_lock(&amp;mutex);          <span class="comment">// p1</span></span><br><span class="line">    <span class="keyword">while</span> (count == MAX)                 <span class="comment">// p2</span></span><br><span class="line">      Pthread_cond_wait(&amp;empty, &amp;mutex); <span class="comment">// p3</span></span><br><span class="line">    put(i);                              <span class="comment">// p4</span></span><br><span class="line">    Pthread_cond_signal(&amp;fill);          <span class="comment">// p5</span></span><br><span class="line">    Pthread_mutex_unlock(&amp;mutex);        <span class="comment">// p6</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="type">void</span> *<span class="title function_">consumer</span><span class="params">(<span class="type">void</span> *arg)</span> &#123;</span><br><span class="line">  <span class="type">int</span> i;</span><br><span class="line">  <span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; loops; i++) &#123;</span><br><span class="line">    Pthread_mutex_lock(&amp;mutex);         <span class="comment">// c1</span></span><br><span class="line">    <span class="keyword">while</span> (count == <span class="number">0</span>)                  <span class="comment">// c2</span></span><br><span class="line">      Pthread_cond_wait(&amp;fill, &amp;mutex); <span class="comment">// c3</span></span><br><span class="line">    <span class="type">int</span> tmp = get();                    <span class="comment">// c4</span></span><br><span class="line">    Pthread_cond_signal(&amp;empty);        <span class="comment">// c5</span></span><br><span class="line">    Pthread_mutex_unlock(&amp;mutex);       <span class="comment">// c6</span></span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;%d\n&quot;</span>, tmp);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>条件变量使用技巧</p>
+<ul>
+<li>Pthread_cond_signal发信号时总是持有锁</li>
+<li>对条件变量使用 while（不是 if）</li>
+</ul>
+<blockquote>
+<p><strong>例子生产者&#x2F;消费者p2和c2为什么用while？</strong></p>
+<p>如果用if，考虑一个生产者Tp，两个消费者Tc1和Tc2，Tc1先执行此时buffer里没有数据，执行到c3休眠，Tp随后执行，放入数据后，执行到p5唤醒Tc1,Tc1进入就绪态还未运行时，Tc2执行拿走了buffer里所有数据，随后Tc1运行，如果时if直接就好执行c4去get空的buffer里的数据，触发错误，如果时while还会检测(count&#x3D;&#x3D;0)一些缓冲区是否有数据，从而避免错误</p>
+<p><strong>为什么用了两个条件变量empty, fill？</strong></p>
+<p>是为了实现消费者不应该唤醒消费者，而应该只唤醒生产者，同样生产者只能唤醒消费者</p>
+<p>如果共用一个条件变量，即消费者可以唤醒消费者，试想缓冲区没有数据Tc1，Tc2休眠，随后Tp放入一个数据后睡眠，Tc1唤醒拿走数据，如果此时唤醒Tc2，Tc2发现没有数据继续睡眠，此时三个都在睡眠，形成死锁</p>
+</blockquote>
+<p>一个比较形象的例子，下面的代码打印左括号代表生产，右括号代表取走</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;thread-sync.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;thread.h&quot;</span></span></span><br><span class="line"></span><br><span class="line"><span class="type">int</span> n, count = <span class="number">0</span>;</span><br><span class="line"><span class="type">mutex_t</span> lk = MUTEX_INIT();</span><br><span class="line"></span><br><span class="line"><span class="type">void</span> <span class="title function_">Tproduce</span><span class="params">()</span> &#123;</span><br><span class="line">  <span class="keyword">while</span> (<span class="number">1</span>) &#123;</span><br><span class="line">  retry:</span><br><span class="line">    mutex_lock(&amp;lk);</span><br><span class="line">    <span class="keyword">if</span> (count == n) &#123;<span class="comment">//缓冲区生产满了</span></span><br><span class="line">      mutex_unlock(&amp;lk);</span><br><span class="line">      <span class="keyword">goto</span> retry;</span><br><span class="line">    &#125;</span><br><span class="line">    count++;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;(&quot;</span>);</span><br><span class="line">    mutex_unlock(&amp;lk);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="type">void</span> <span class="title function_">Tconsume</span><span class="params">()</span> &#123;</span><br><span class="line">  <span class="keyword">while</span> (<span class="number">1</span>) &#123;</span><br><span class="line">  retry:</span><br><span class="line">    mutex_lock(&amp;lk);</span><br><span class="line">    <span class="keyword">if</span> (count == <span class="number">0</span>) &#123;<span class="comment">//缓冲区为空</span></span><br><span class="line">      mutex_unlock(&amp;lk);</span><br><span class="line">      <span class="keyword">goto</span> retry;</span><br><span class="line">    &#125;</span><br><span class="line">    count--;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;)&quot;</span>);</span><br><span class="line">    mutex_unlock(&amp;lk);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">(<span class="type">int</span> argc, <span class="type">char</span> *argv[])</span> &#123;</span><br><span class="line">  assert(argc == <span class="number">2</span>);</span><br><span class="line">  n = atoi(argv[<span class="number">1</span>]);<span class="comment">//缓冲区大小</span></span><br><span class="line">  setbuf(<span class="built_in">stdout</span>, <span class="literal">NULL</span>);</span><br><span class="line">  <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; <span class="number">8</span>; i++) &#123;</span><br><span class="line">    create(Tproduce);</span><br><span class="line">    create(Tconsume);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>压力测试脚本 pc-check.py </p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> sys</span><br><span class="line"></span><br><span class="line">limit = <span class="built_in">int</span>(sys.argv[<span class="number">1</span>])</span><br><span class="line">count, n = <span class="number">0</span>, <span class="number">100000</span></span><br><span class="line"><span class="keyword">while</span> <span class="literal">True</span>:</span><br><span class="line">    <span class="keyword">for</span> ch <span class="keyword">in</span> sys.stdin.read(n):</span><br><span class="line">        <span class="keyword">if</span> ch == <span class="string">&#x27;(&#x27;</span>: count += <span class="number">1</span></span><br><span class="line">        <span class="keyword">if</span> ch == <span class="string">&#x27;)&#x27;</span>: count -= <span class="number">1</span></span><br><span class="line">        <span class="keyword">assert</span> <span class="number">0</span> &lt;= count &lt;= limit<span class="comment">#消费者不会多取</span></span><br><span class="line">    <span class="built_in">print</span>(<span class="string">f&#x27;<span class="subst">&#123;n&#125;</span> Ok.&#x27;</span>)</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">grxer@Ubuntu22 ~/s/N/p6&gt; ./a.out 10 | python pc-check.py 10</span><br><span class="line">100000 Ok.</span><br><span class="line">100000 Ok.</span><br><span class="line">100000 Ok.</span><br><span class="line">100000 Ok.</span><br></pre></td></tr></table></figure>
+
+<h2 id="信号量实现生产者-x2F-消费者"><a href="#信号量实现生产者-x2F-消费者" class="headerlink" title="信号量实现生产者&#x2F;消费者"></a>信号量实现生产者&#x2F;消费者</h2><figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="type">int</span> <span class="title function_">sem_wait</span><span class="params">(<span class="type">sem_t</span> *sem)</span>;</span><br><span class="line">信号量sem减一，如果结果大于<span class="number">0</span>直接返回，否则阻塞到sem能够减一即等待直到有其它线程增加了这个值使它不再是<span class="number">0</span>为止</span><br><span class="line"><span class="type">int</span> <span class="title function_">sem_post</span><span class="params">(<span class="type">sem_t</span> *sem)</span>; </span><br><span class="line">信号量sem加一，唤醒一个该信号量阻塞的线程</span><br></pre></td></tr></table></figure>
+
+<p><strong>信号量实现锁</strong></p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="type">sem_t</span> m;</span><br><span class="line">sem_init(&amp;m, <span class="number">0</span>, <span class="number">1</span>); </span><br><span class="line"></span><br><span class="line">sem_wait(&amp;m);</span><br><span class="line"><span class="comment">// critical section here</span></span><br><span class="line">sem_post(&amp;m);</span><br></pre></td></tr></table></figure>
+
+<p><strong>信号量实现条件变量</strong></p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="type">sem_t</span> m;</span><br><span class="line">sem_init(&amp;m, <span class="number">0</span>, <span class="number">0</span>); </span><br><span class="line">sem_wait(&amp;s);<span class="comment">//阻塞该线程等待某个线程程执行sem_post(&amp;s);唤醒才能继续往下执行</span></span><br><span class="line">.....</span><br></pre></td></tr></table></figure>
+
+<p><strong>生产者&#x2F;消费者</strong></p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="type">sem_t</span> empty;</span><br><span class="line"><span class="type">sem_t</span> full;</span><br><span class="line"><span class="type">sem_t</span> mutex;</span><br><span class="line"></span><br><span class="line"><span class="type">void</span> *<span class="title function_">producer</span><span class="params">(<span class="type">void</span> *arg)</span> &#123;</span><br><span class="line">  <span class="type">int</span> i;</span><br><span class="line">  <span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; loops; i++) &#123;</span><br><span class="line">    sem_wait(&amp;empty); <span class="comment">// line p1</span></span><br><span class="line">    sem_wait(&amp;mutex); <span class="comment">// line p1.5 (MOVED MUTEX HERE...)</span></span><br><span class="line">    put(i);           <span class="comment">// line p2</span></span><br><span class="line">    sem_post(&amp;mutex); <span class="comment">// line p2.5 (... AND HERE)</span></span><br><span class="line">    sem_post(&amp;full);  <span class="comment">// line p3</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="type">void</span> *<span class="title function_">consumer</span><span class="params">(<span class="type">void</span> *arg)</span> &#123;</span><br><span class="line">  <span class="type">int</span> i;</span><br><span class="line">  <span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; loops; i++) &#123;</span><br><span class="line">    sem_wait(&amp;full);  <span class="comment">// line c1</span></span><br><span class="line">    sem_wait(&amp;mutex); <span class="comment">// line c1.5 (MOVED MUTEX HERE...)</span></span><br><span class="line">    <span class="type">int</span> tmp = get();  <span class="comment">// line c2</span></span><br><span class="line">    sem_post(&amp;mutex); <span class="comment">// line c2.5 (... AND HERE)</span></span><br><span class="line">    sem_post(&amp;empty); <span class="comment">// line c3</span></span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;%d\n&quot;</span>, tmp);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">(<span class="type">int</span> argc, <span class="type">char</span> *argv[])</span> &#123;</span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line">  sem_init(&amp;empty, <span class="number">0</span>, MAX); <span class="comment">// MAX buffers are empty to begin with...</span></span><br><span class="line">  sem_init(&amp;full, <span class="number">0</span>, <span class="number">0</span>);    <span class="comment">// ... and 0 are full</span></span><br><span class="line">  sem_init(&amp;mutex, <span class="number">0</span>, <span class="number">1</span>);   <span class="comment">// mutex=1 because it is a lock</span></span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+         
+          <li><a href="/">Home</a></li>
+         
+          <li><a href="/archives/">Writing</a></li>
+         
+          <li><a href="/search/">Search</a></li>
+         
+          <li><a href="/tags/">Tag</a></li>
+         
+          <li><a href="/about/">About</a></li>
+        
+      </ul>
+    </div>
+
+    <div id="toc-footer" style="display: none">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9D%A1%E4%BB%B6%E5%8F%98%E9%87%8F%E5%AE%9E%E7%8E%B0%E7%94%9F%E4%BA%A7%E8%80%85-x2F-%E6%B6%88%E8%B4%B9%E8%80%85"><span class="toc-number">1.</span> <span class="toc-text">条件变量实现生产者&#x2F;消费者</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BF%A1%E5%8F%B7%E9%87%8F%E5%AE%9E%E7%8E%B0%E7%94%9F%E4%BA%A7%E8%80%85-x2F-%E6%B6%88%E8%B4%B9%E8%80%85"><span class="toc-number">2.</span> <span class="toc-text">信号量实现生产者&#x2F;消费者</span></a></li></ol>
+    </div>
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://grxer.gitee.io/2023/09/10/OSTEP-30-31-Condition-Semaphores/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://grxer.gitee.io/2023/09/10/OSTEP-30-31-Condition-Semaphores/&text=OSTEP:30&amp;&amp;31 条件变量&amp;&amp;信号量"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://grxer.gitee.io/2023/09/10/OSTEP-30-31-Condition-Semaphores/&title=OSTEP:30&amp;&amp;31 条件变量&amp;&amp;信号量"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://grxer.gitee.io/2023/09/10/OSTEP-30-31-Condition-Semaphores/&is_video=false&description=OSTEP:30&amp;&amp;31 条件变量&amp;&amp;信号量"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=OSTEP:30&amp;&amp;31 条件变量&amp;&amp;信号量&body=Check out this article: https://grxer.gitee.io/2023/09/10/OSTEP-30-31-Condition-Semaphores/"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://grxer.gitee.io/2023/09/10/OSTEP-30-31-Condition-Semaphores/&title=OSTEP:30&amp;&amp;31 条件变量&amp;&amp;信号量"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://grxer.gitee.io/2023/09/10/OSTEP-30-31-Condition-Semaphores/&title=OSTEP:30&amp;&amp;31 条件变量&amp;&amp;信号量"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://grxer.gitee.io/2023/09/10/OSTEP-30-31-Condition-Semaphores/&title=OSTEP:30&amp;&amp;31 条件变量&amp;&amp;信号量"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://grxer.gitee.io/2023/09/10/OSTEP-30-31-Condition-Semaphores/&title=OSTEP:30&amp;&amp;31 条件变量&amp;&amp;信号量"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://grxer.gitee.io/2023/09/10/OSTEP-30-31-Condition-Semaphores/&name=OSTEP:30&amp;&amp;31 条件变量&amp;&amp;信号量&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://grxer.gitee.io/2023/09/10/OSTEP-30-31-Condition-Semaphores/&t=OSTEP:30&amp;&amp;31 条件变量&amp;&amp;信号量"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fas fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
+        <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fas fa-list fa-lg" aria-hidden="true"></i> TOC</a>
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fas fa-share-alt fa-lg" aria-hidden="true"></i> Share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2023
+    bxz
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a href="/search/">Search</a></li><!--
+     --><!--
+       --><li><a href="/tags/">Tag</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+ 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script> 
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script> 
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"Copy to clipboard!\">";
+    btn += '<i class="far fa-clone"></i>';
+    btn += '</span>'; 
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "Copied!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Google Analytics -->
+
+<!-- Baidu Analytics -->
+
+  <script type="text/javascript">
+        var _hmt = _hmt || [];
+        (function() {
+          var hm = document.createElement("script");
+          hm.src = "https://hm.baidu.com/hm.js?a22ef0bec4e4a9c7337bea6e37ff55c1";
+          var s = document.getElementsByTagName("script")[0];
+          s.parentNode.insertBefore(hm, s);
+        })();
+        </script>
+
+<!-- Cloudflare Analytics -->
+
+<!-- Umami Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+</body>
+</html>
