@@ -16,7 +16,7 @@
 <meta property="og:description" content="Floating-point CalculationKahan前复习一些浮点数的运算 A&#x3D;Ma*2Ea B&#x3D;Mb*2Eb 假设(Ea&gt;&#x3D;Eb) A±B&#x3D;(Ma±Mb*2Eb-Ea)*2Ea A*B&#x3D;(Ma*Mb)*2Ea+Eb A&#x2F;B&#x3D;(Ma&#x2F;Mb)*2Ea-Eb 加减法先求阶差，小的阶码往大的转换，所以小的阶码">
 <meta property="og:locale" content="en_US">
 <meta property="article:published_time" content="2023-04-23T14:24:36.000Z">
-<meta property="article:modified_time" content="2023-04-24T03:43:38.377Z">
+<meta property="article:modified_time" content="2023-09-14T04:49:58.126Z">
 <meta property="article:author" content="bxz">
 <meta name="twitter:card" content="summary">
     
@@ -50,9 +50,19 @@
     
 	<!-- mathjax -->
 	
+		<script type="text/x-mathjax-config">
+		  MathJax.Hub.Config({
+			tex2jax: {
+			  skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+			  inlineMath: [['$','$']]
+			}
+		  });
+		</script>
+		<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-MML-AM_CHTML' async></script>
+	
 <meta name="generator" content="Hexo 6.3.0"></head>
 
-<body class="max-width mx-auto px3 ltr">
+<body class="max-width mx-auto px3 lrt">
     
       <div id="header-post">
   <a id="menu-icon" href="#" aria-label="Menu"><i class="fas fa-bars fa-lg"></i></a>
@@ -160,7 +170,7 @@
 <ul>
 <li>除以0</li>
 <li>阶码上溢，单精度&gt; 127 ±inf</li>
-<li>阶码下溢出，单精度&lt; -126 ±0</li>
+<li>阶码下溢出，单精度&lt; -126 ± 0</li>
 <li>有效数溢出 例如11.01 需要右归，需要把可能移出的位保存到临时附加位，这里最多右移一位，因为两有效数之和不可能达到4，所以有效数整数部分最多2位(11.)，保留一个1(1.)，最多右移一位</li>
 <li>非规格化有效数，如0.11 需要左归</li>
 <li>有效数全零，需要把阶码也置全零</li>
@@ -179,7 +189,7 @@
 <h2 id="Kahan"><a href="#Kahan" class="headerlink" title="Kahan"></a>Kahan</h2><p>先看段代码</p>
 <figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">define</span> TIMES 40000000</span></span><br><span class="line"><span class="type">float</span> sum = <span class="number">0</span>;</span><br><span class="line"><span class="type">float</span> test;</span><br><span class="line">test= <span class="number">1234567890</span>;</span><br><span class="line"><span class="built_in">printf</span>(<span class="string">&quot;%f\n&quot;</span>,test);</span><br><span class="line"><span class="keyword">for</span> (<span class="type">size_t</span> i = <span class="number">0</span>; i &lt; TIMES; i++)&#123;</span><br><span class="line">    sum += <span class="number">0.1</span>;</span><br><span class="line">&#125;</span><br><span class="line">grxer@Ubuntu22-wsl ~/s/test&gt; gcc -O2 -o test test.c</span><br><span class="line">grxer@Ubuntu22-wsl ~/s/test&gt; ./test</span><br><span class="line"><span class="number">1234567936.000000</span></span><br><span class="line"><span class="number">2097152.000000</span></span><br></pre></td></tr></table></figure>
 
-<p>结果并没有我们想的那样误差非常大</p>
+<p>结果并没有我们想的那样，误差非常大</p>
 <p>造成这种现象的原因主要有</p>
 <p>0.1在内的好多数在我们浮点数里的无法精确表示 0 01111011 10011001100110011001101 有效数1001无效循环，类似与十进制的三分之一，相加的时候由于需要小的阶码往大的转换，小的有效数需要右移(我们的附加位有限)，两数相差小时，精度损失，当两数相差过大时，甚至存在大数吃小数的情况(右移成0.0的情况)，同时由于我们单精度浮点数有效数是23位，外加一个隐藏的1 可以表示十进制有效位数log(2<sup>24</sup>)约等于7位</p>
 <p><strong>误差补偿算法Kahan</strong></p>
@@ -187,7 +197,7 @@
 
 <p>主要思想就是计算出每次累计的舍入误差，添加到下一次计算上</p>
 <p>c是对丢失的低位进行运算补偿的变量</p>
-<p>当我们的sum2和y相差过大时，t会得到一个已经产生误差的值，我们用这个值去剪原来的sum2(他们的两数相差不是很大，结果比较准确)然后减去这次的加数(同样两数相差不大，结果准确)就可以计算出这次计算的误差值，在下一次加法时去用这个误差修正结果</p>
+<p>当我们的sum2和y相差过大时，t会得到一个已经产生误差的值，我们用这个值去减原来的sum2(他们的两数相差不是很大，结果比较准确)然后减去这次的加数(同样两数相差不大，结果准确)就可以计算出这次计算的误差值，在下一次加法时去用这个误差修正结果</p>
 <figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> TIMES 400000000</span></span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="type">float</span> sum = <span class="number">0</span>;</span><br><span class="line">    <span class="type">float</span> sum2 = <span class="number">0</span>, y = <span class="number">0</span>, t = <span class="number">0</span>, c = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">size_t</span> i = <span class="number">0</span>; i &lt; TIMES; i++) &#123;</span><br><span class="line">        sum += <span class="number">0.1</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">size_t</span> i = <span class="number">0</span>; i &lt; TIMES; i++) &#123;</span><br><span class="line">        y = <span class="number">0.1</span> - c;</span><br><span class="line">        t = sum2 + y;</span><br><span class="line">        c = (t - sum2) - y;</span><br><span class="line">        sum2 = t;</span><br><span class="line">    &#125;</span><br><span class="line">    sum2 -= c;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;%f\n&quot;</span>, sum);</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;%f&quot;</span>, sum2);</span><br><span class="line">&#125;   </span><br></pre></td></tr></table></figure>
 
 <figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">grxer@Ubuntu22-wsl ~/s/test&gt; gcc -O2 -o test test.c</span><br><span class="line">grxer@Ubuntu22-wsl ~/s/test&gt; ./test</span><br><span class="line">2097152.000000</span><br><span class="line">40000000.000000⏎  </span><br></pre></td></tr></table></figure>

@@ -25,7 +25,7 @@
 <meta property="og:image" content="https://grxer.gitee.io/2023/04/17/An-interview-question-from-baidu/image-20230418141359969.png">
 <meta property="og:image" content="https://grxer.gitee.io/2023/04/17/An-interview-question-from-baidu/image-20230418141756625.png">
 <meta property="article:published_time" content="2023-04-17T15:20:01.000Z">
-<meta property="article:modified_time" content="2023-08-02T11:05:21.270Z">
+<meta property="article:modified_time" content="2023-09-16T05:43:18.424Z">
 <meta property="article:author" content="bxz">
 <meta property="article:tag" content="IEEE 754">
 <meta name="twitter:card" content="summary">
@@ -61,9 +61,19 @@
     
 	<!-- mathjax -->
 	
+		<script type="text/x-mathjax-config">
+		  MathJax.Hub.Config({
+			tex2jax: {
+			  skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+			  inlineMath: [['$','$']]
+			}
+		  });
+		</script>
+		<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-MML-AM_CHTML' async></script>
+	
 <meta name="generator" content="Hexo 6.3.0"></head>
 
-<body class="max-width mx-auto px3 ltr">
+<body class="max-width mx-auto px3 lrt">
     
       <div id="header-post">
   <a id="menu-icon" href="#" aria-label="Menu"><i class="fas fa-bars fa-lg"></i></a>
@@ -178,16 +188,16 @@
 <ul>
 <li><p>exp阶码位域既不是全0也不是全1</p>
 </li>
-<li><p>阶码字段是有偏置的有符号整数 E&#x3D;e-Bias  ps:这种偏置给浮点数的比较带来了巨大方便</p>
+<li><p>阶码字段是有偏置的有符号整数 E&#x3D;e-Bias  ps:专业术语叫做移码，这种偏置给浮点数的比较带来了巨大方便</p>
 <ul>
 <li>e是exp表示的无符号数</li>
 <li>Bias是偏置值&#x3D;2<sup>k-1</sup>-1 单精度为2<sup>8-1</sup>-1&#x3D;127 双精度为2<sup>11-1</sup>-1&#x3D;1023</li>
-<li>所以单精度指数范围为 1-127~254-127即-126<del>+127 双精度为-1022</del>+1023 (exp阶码位域既不是全0也不是全1)</li>
+<li>所以单精度指数范围为 1-127~254-127即-126~+127 双精度为-1022~+1023 (exp阶码位域既不是全0也不是全1)</li>
 </ul>
 </li>
 <li><p>significand位总是1.开头，也就是有效数大于等于1且小于2，所以不记录1,只记录小数点后面的值</p>
 </li>
-<li><p>值Value&#x3D;(—1)<sup>s</sup>2<sup>exp-Bias</sup>*(frac+1)</p>
+<li><p>值Value&#x3D;$(-1)^{s}2^{exp-Bias}*(1+.frac)$</p>
 </li>
 </ul>
 </li>
@@ -258,7 +268,7 @@
 <p>典型_cdecl特征 参数右向左入栈，外平栈(调用者平栈)，还分了两次把8自己字节的double压栈，其实我们在骗他玩，哈哈</p>
 <p><img src="/2023/04/17/An-interview-question-from-baidu/image-20230418113446986.png" alt="image-20230418113446986"></p>
 <p>此时的栈按四字节int输出0没问题</p>
-<h3 id="x86-64"><a href="#x86-64" class="headerlink" title="x86-64"></a>x86-64</h3><p>顺便说一下为什么不叫IA-64架构，害，因为IA-64的名字被安腾架构占去</p>
+<h3 id="x86-64"><a href="#x86-64" class="headerlink" title="x86-64"></a>x86-64</h3><p>顺便说一下为什么不叫IA-64架构，害，因为IA-64的名字被安腾架构占去，但是由于不兼容32位没流行起来，amd64位兼容32位流行起来，随后一般intel被迫追随叫x86-64</p>
 <p>64位采用寄存器传参，x64用了SSE指令集，这里要细说起来内容挺多的，推出的主要原因是为了提高3d游戏性能</p>
 <p><img src="/2023/04/17/An-interview-question-from-baidu/image-20230418140620437.png" alt="image-20230418140620437"></p>
 <p>直接把浮点数放到了xmm0寄存器，如果取的话也直接去这里取(rip的相对寻址rip是执行这条指令过后的rip)</p>

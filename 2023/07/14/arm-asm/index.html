@@ -20,7 +20,7 @@
 <meta property="og:image" content="https://grxer.gitee.io/2023/07/14/arm-asm/image-20230714211613500.png">
 <meta property="og:image" content="https://grxer.gitee.io/2023/07/14/arm-asm/image-20230719203353466.png">
 <meta property="article:published_time" content="2023-07-14T06:33:19.000Z">
-<meta property="article:modified_time" content="2023-07-20T08:49:18.540Z">
+<meta property="article:modified_time" content="2023-09-16T08:20:19.556Z">
 <meta property="article:author" content="bxz">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://grxer.gitee.io/2023/07/14/arm-asm/image-20230718115628492.png">
@@ -55,9 +55,19 @@
     
 	<!-- mathjax -->
 	
+		<script type="text/x-mathjax-config">
+		  MathJax.Hub.Config({
+			tex2jax: {
+			  skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+			  inlineMath: [['$','$']]
+			}
+		  });
+		</script>
+		<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-MML-AM_CHTML' async></script>
+	
 <meta name="generator" content="Hexo 6.3.0"></head>
 
-<body class="max-width mx-auto px3 ltr">
+<body class="max-width mx-auto px3 lrt">
     
       <div id="header-post">
   <a id="menu-icon" href="#" aria-label="Menu"><i class="fas fa-bars fa-lg"></i></a>
@@ -308,6 +318,7 @@
 <p><strong>oor</strong> 或</p>
 <p><strong>eor</strong> </p>
 <p>异或，只影响标志位的异或指令<strong>teq</strong></p>
+<p>实现not取反指令是通过与一个全1的数进行异或</p>
 <p><strong>lsl</strong>(logic shift left)</p>
 <p>逻辑左移</p>
 <p><strong>lsr</strong>(logic shift right)</p>

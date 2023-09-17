@@ -16,7 +16,7 @@
 <meta property="og:description" content="运用在 fastbin attack   可以修改fastbin的fd指针或size 可以触发malloc consolidate，malloc consolidate会把fastbin的堆块根据周围堆块状态进行合并，放入合适的bin里   house of rabbit 利用了在 malloc consolidate 的时候 fastbin 中的堆块进行合并时 size 没有进行检查 例子测试环">
 <meta property="og:locale" content="en_US">
 <meta property="article:published_time" content="2023-08-05T05:21:51.000Z">
-<meta property="article:modified_time" content="2023-08-05T08:51:19.748Z">
+<meta property="article:modified_time" content="2023-09-16T09:43:30.642Z">
 <meta property="article:author" content="bxz">
 <meta name="twitter:card" content="summary">
     
@@ -50,9 +50,19 @@
     
 	<!-- mathjax -->
 	
+		<script type="text/x-mathjax-config">
+		  MathJax.Hub.Config({
+			tex2jax: {
+			  skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+			  inlineMath: [['$','$']]
+			}
+		  });
+		</script>
+		<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-MML-AM_CHTML' async></script>
+	
 <meta name="generator" content="Hexo 6.3.0"></head>
 
-<body class="max-width mx-auto px3 ltr">
+<body class="max-width mx-auto px3 lrt">
     
       <div id="header-post">
   <a id="menu-icon" href="#" aria-label="Menu"><i class="fas fa-bars fa-lg"></i></a>
