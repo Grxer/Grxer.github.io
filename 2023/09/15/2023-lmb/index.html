@@ -19,7 +19,7 @@
 <meta property="og:image" content="https://grxer.gitee.io/2023/09/15/2023-lmb/image-20230916230005552.png">
 <meta property="og:image" content="https://grxer.gitee.io/2023/09/15/2023-lmb/image-20230916221851491.png">
 <meta property="article:published_time" content="2023-09-14T18:10:34.000Z">
-<meta property="article:modified_time" content="2023-09-16T15:26:44.002Z">
+<meta property="article:modified_time" content="2023-09-18T04:55:39.083Z">
 <meta property="article:author" content="bxz">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://grxer.gitee.io/2023/09/15/2023-lmb/image-20230916223113773.png">
@@ -92,7 +92,7 @@
     <span id="actions">
       <ul>
         
-        <li><a class="icon" aria-label="Previous post" href="/2223/08/01/Englishlearning-August2023/"><i class="fas fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="Previous post" href="/2023/09/21/2023-ycbfinal/"><i class="fas fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
         
         
         <li><a class="icon" aria-label="Next post" href="/2023/09/12/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C-%E7%BD%91%E7%BB%9C%E5%B1%82/"><i class="fas fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
@@ -174,7 +174,7 @@
 
 <p>泄露libc，虽然有堆溢出，但是却在输入后有\x00截断常规unsortedbin泄露就失效了，但是Create堆时flag是往堆+堆size位置写入四个字节可以覆盖掉这个&#x2F;x00</p>
 <p>比如我们申请creat大小为1，这个值只会覆盖unsorted堆的fd及bk的第一个bit，如果bk此时指向是unsortedbin就可以泄露出libc，所以可以利用创建大小为1的堆块切割unsortedbin来泄露libc</p>
-<p>有了libc就是需要布置满足后门的堆块，可以申请0x20000大小的堆来mmap内存，但是这道题mmap的位置似乎是随机的，但是随机的不多，程序一次申请16个来堆喷，基本上位置都在libc下面偏移0x24f000处得到</p>
+<p>有了libc就是需要布置满足后门的堆块，可以申请0x20000大小的堆来mmap内存，但是这道题开了pie，mmap的位置是随机的，但是随机的不多，程序一次申请16个来堆喷，基本上位置都在libc下面偏移0x24f000处得到</p>
 <p>利用mmap堆喷在libc下面布置大量的p32(0)+p32(systme)，我们把这个位置叫slide</p>
 <p>再利用creat堆溢出往堆上写大量的p32(slide)，由于creat是乱序的，当出现下面的情况时</p>
 <figure class="highlight c"><table><tr><td class="code"><pre><span class="line">heapA+<span class="number">10</span>,heapA</span><br></pre></td></tr></table></figure>

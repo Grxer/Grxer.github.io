@@ -8,17 +8,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
     <meta name="baidu-site-verification" content="codeva-ROfYcqLkCh" />
     <meta name="msvalidate.01" content="ECA3E06A0E52A2AC90C4B06F12981FB2" />
-    <meta name="description" content="RISC-V ISA最主要的是开源(arm等ISA即使你买了授权也不能随意去改)， ISA(Instruction Set Architecture)指令集架构底层硬件电路面向上层软件程序提供的一层接口规范  操作系统提供给应用程序的接口就是系统调用，操作系统和硬件直接就是ISA 硬件部分的话业界里一般叫微架构microarchitecture，有了ISA的抽象层我们做底层开发就不需要关心微架构具">
+    <meta name="description" content="RISC-V ISA开源 ISA(Instruction Set Architecture)指令集架构底层硬件电路面向上层软件程序提供的一层接口规范  操作系统提供给应用程序的接口就是系统调用，操作系统和硬件直接就是ISA 硬件部分的话业界里一般叫微架构microarchitecture，有了ISA的抽象层我们做底层开发就不需要关心微架构具体是什么样的  他是一套标准，类似c语言的标准，POSIX">
 <meta property="og:type" content="article">
 <meta property="og:title" content="RISC-V ISA介绍">
 <meta property="og:url" content="https://grxer.gitee.io/2023/07/08/ISA-risc-v/index.html">
 <meta property="og:site_name" content="Grxer&#39;s Blog">
-<meta property="og:description" content="RISC-V ISA最主要的是开源(arm等ISA即使你买了授权也不能随意去改)， ISA(Instruction Set Architecture)指令集架构底层硬件电路面向上层软件程序提供的一层接口规范  操作系统提供给应用程序的接口就是系统调用，操作系统和硬件直接就是ISA 硬件部分的话业界里一般叫微架构microarchitecture，有了ISA的抽象层我们做底层开发就不需要关心微架构具">
+<meta property="og:description" content="RISC-V ISA开源 ISA(Instruction Set Architecture)指令集架构底层硬件电路面向上层软件程序提供的一层接口规范  操作系统提供给应用程序的接口就是系统调用，操作系统和硬件直接就是ISA 硬件部分的话业界里一般叫微架构microarchitecture，有了ISA的抽象层我们做底层开发就不需要关心微架构具体是什么样的  他是一套标准，类似c语言的标准，POSIX">
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="https://grxer.gitee.io/2023/07/08/ISA-risc-v/image-20230626115944963.png">
 <meta property="og:image" content="https://grxer.gitee.io/2023/07/08/ISA-risc-v/image-20230626122607114.png">
 <meta property="article:published_time" content="2023-07-08T14:24:22.000Z">
-<meta property="article:modified_time" content="2023-07-21T09:14:11.126Z">
+<meta property="article:modified_time" content="2023-09-21T10:45:47.729Z">
 <meta property="article:author" content="bxz">
 <meta property="article:tag" content="RISC-V">
 <meta name="twitter:card" content="summary">
@@ -167,7 +167,7 @@
   
 
   <div class="content" itemprop="articleBody">
-    <h1 id="RISC-V-ISA"><a href="#RISC-V-ISA" class="headerlink" title="RISC-V ISA"></a>RISC-V ISA</h1><p>最主要的是开源(arm等ISA即使你买了授权也不能随意去改)，</p>
+    <h1 id="RISC-V-ISA"><a href="#RISC-V-ISA" class="headerlink" title="RISC-V ISA"></a>RISC-V ISA</h1><p>开源</p>
 <h2 id="ISA-Instruction-Set-Architecture-指令集架构"><a href="#ISA-Instruction-Set-Architecture-指令集架构" class="headerlink" title="ISA(Instruction Set Architecture)指令集架构"></a>ISA(Instruction Set Architecture)指令集架构</h2><p>底层硬件电路面向上层软件程序提供的一层<strong>接口规范</strong></p>
 <blockquote>
 <p>操作系统提供给应用程序的接口就是系统调用，操作系统和硬件直接就是ISA 硬件部分的话业界里一般叫<a target="_blank" rel="noopener" href="https://zh.wikipedia.org/zh-cn/%E5%BE%AE%E6%9E%B6%E6%A7%8B">微架构</a>microarchitecture，有了ISA的抽象层我们做底层开发就不需要关心微架构具体是什么样的</p>
