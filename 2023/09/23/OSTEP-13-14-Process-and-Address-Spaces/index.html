@@ -15,17 +15,17 @@
 <meta property="og:site_name" content="Grxer&#39;s Blog">
 <meta property="og:description" content="操作系统如何启动大体过程1.CPU上电进行CPU Reset 使cpu有一个具体初始的状态(这是一个软硬间约定)，对于x86来说 规范定义在64-ia-32-architectures-software-developer-system-第3卷的Chapter 9  CR0 &#x3D; 0x60000010 16-bit 模式   EIP &#x3D; 0x0000fff0 CS &#x3D; 0xf000 EFLAGS &#x3D;">
 <meta property="og:locale" content="en_US">
-<meta property="og:image" content="https://grxer.gitee.io/2023/09/23/OSTEP-13-14-Process-and-Address-Spaces/image-20230923225313986.png">
+<meta property="og:image" content="https://grxer.gitee.io/2023/09/23/OSTEP-13-14-Process-and-Address-Spaces/image-20230924183932737.png">
 <meta property="og:image" content="https://grxer.gitee.io/2023/09/23/OSTEP-13-14-Process-and-Address-Spaces/image-20230924004155691.png">
 <meta property="og:image" content="https://grxer.gitee.io/2023/09/23/OSTEP-13-14-Process-and-Address-Spaces/image-20230924013930964.png">
 <meta property="og:image" content="https://grxer.gitee.io/2023/09/23/OSTEP-13-14-Process-and-Address-Spaces/image-20230924014144178.png">
 <meta property="og:image" content="https://grxer.gitee.io/2023/09/23/OSTEP-13-14-Process-and-Address-Spaces/image-20230924133834423.png">
 <meta property="og:image" content="https://grxer.gitee.io/2023/09/23/OSTEP-13-14-Process-and-Address-Spaces/image-20230924141641580.png">
 <meta property="article:published_time" content="2023-09-23T08:45:45.000Z">
-<meta property="article:modified_time" content="2023-09-24T06:21:05.392Z">
+<meta property="article:modified_time" content="2023-09-24T12:53:04.732Z">
 <meta property="article:author" content="bxz">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://grxer.gitee.io/2023/09/23/OSTEP-13-14-Process-and-Address-Spaces/image-20230923225313986.png">
+<meta name="twitter:image" content="https://grxer.gitee.io/2023/09/23/OSTEP-13-14-Process-and-Address-Spaces/image-20230924183932737.png">
     
     
       
@@ -95,7 +95,7 @@
     <span id="actions">
       <ul>
         
-        <li><a class="icon" aria-label="Previous post" href="/2223/08/01/Englishlearning-August2023/"><i class="fas fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="Previous post" href="/2023/09/25/PlatformIO/"><i class="fas fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
         
         
         <li><a class="icon" aria-label="Next post" href="/2023/09/21/2023-ycbfinal/"><i class="fas fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
@@ -180,7 +180,7 @@
 <li>………</li>
 </ul>
 <p>qemu利用-S停到第一条指令和手册完全一样(对于模拟也就是“抄”手册)</p>
-<p><img src="/2023/09/23/OSTEP-13-14-Process-and-Address-Spaces/image-20230923225313986.png" alt="image-20230923225313986"></p>
+<p><img src="/2023/09/23/OSTEP-13-14-Process-and-Address-Spaces/image-20230924183932737.png" alt="image-20230924183932737"></p>
 <p><strong>2.reset后执行事先在cs:ip处的ROM存储的厂商提供的firmware(固件)，<code>ffff0</code> 处通常是一条向 firmware 跳转的 jmp 指令</strong></p>
 <p>fireware里是传统的bios或者目前流行的uefi</p>
 <ul>
@@ -259,7 +259,7 @@
 <p>对于我们linux来说会从下面几个路径尝试创建init进程 <a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/latest/source/init/main.c#L1493">https://elixir.bootlin.com/linux/latest/source/init/main.c#L1493</a></p>
 <p><img src="/2023/09/23/OSTEP-13-14-Process-and-Address-Spaces/image-20230924013930964.png" alt="image-20230924013930964"></p>
 <p><img src="/2023/09/23/OSTEP-13-14-Process-and-Address-Spaces/image-20230924014144178.png" alt="image-20230924014144178"></p>
-<p>随后由init进程利用fork execve exit三个系统调用进行长久的的状态机复制，重置，终止，配合其他系统调用创造整个操作系统世界</p>
+<p>随后由init进程利用fork execve exit三个系统调用进行长久的状态机复制，重置，终止，配合其他系统调用创造整个操作系统世界</p>
 <h2 id="进程地址空间"><a href="#进程地址空间" class="headerlink" title="进程地址空间"></a>进程地址空间</h2><p>测试程序动态链接</p>
 <figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">()</span>&#123;&#125;</span><br></pre></td></tr></table></figure>
 
@@ -268,7 +268,7 @@
 
 <h3 id="vsyscall–-gt-vdso"><a href="#vsyscall–-gt-vdso" class="headerlink" title="vsyscall–&gt;vdso"></a>vsyscall–&gt;vdso</h3><p>具体看：<a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/436454953">https://zhuanlan.zhihu.com/p/436454953</a></p>
 <p>virtual dynamic shared object</p>
-<p>共享页每隔一定时间刷新一次，对于一些只需要读内核的系统调用不需要陷入内核，vsyscall地址固定但是已经弃用了</p>
+<p>可以直接访问部分内核的共享页，共享页每隔一定时间刷新一次，对于一些只需要读内核的系统调用不需要陷入内核，vsyscall地址固定但是已经弃用了</p>
 <p>man vdso手册后面给出了各个架构vdso支持的函数</p>
 <h3 id="execve后"><a href="#execve后" class="headerlink" title="execve后"></a>execve后</h3><p>进程只有少量内存映射</p>
 <ul>
@@ -280,7 +280,7 @@
 <figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="type">void</span> *<span class="title function_">mmap</span><span class="params">(<span class="type">void</span> *addr, <span class="type">size_t</span> length, <span class="type">int</span> prot, <span class="type">int</span> flags, <span class="type">int</span> fd, <span class="type">off_t</span> offset)</span>;</span><br><span class="line"><span class="type">int</span> <span class="title function_">munmap</span><span class="params">(<span class="type">void</span> *addr, <span class="type">size_t</span> length)</span>;</span><br><span class="line"><span class="type">int</span> <span class="title function_">mprotect</span><span class="params">(<span class="type">void</span> *addr, <span class="type">size_t</span> length, <span class="type">int</span> prot)</span>;</span><br></pre></td></tr></table></figure>
 
 <p><img src="/2023/09/23/OSTEP-13-14-Process-and-Address-Spaces/image-20230924141641580.png" alt="image-20230924141641580"></p>
-<p>elf告诉操作系统进程如何加载，操作系统利用mmap去映射磁盘，懒加载(触发缺页中断)</p>
+<p>elf告诉操作系统进程如何加载，操作系统利用mmap去映射磁盘，懒加载(使用时触发缺页中断)</p>
 
   </div>
 </article>
