@@ -8,13 +8,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
     <meta name="baidu-site-verification" content="codeva-ROfYcqLkCh" />
     <meta name="msvalidate.01" content="ECA3E06A0E52A2AC90C4B06F12981FB2" />
-    <meta name="description" content="分层模型  每一层利用下层提供的服务为基础来为上层提供服务，最终服务于应用层的应用程序 应用层网络应用的体系结构 客户-服务器模式 (C&#x2F;S:client&#x2F;server) 服务器先且一直运行，守护在某些端口上 可拓展性，可靠性比较差 客户数量达到一定阈值后会断崖式下降   对等模式 (P2P:Peer To Peer) 任意端系统之间可以通信，每个节点即使客户端又是服务器 自拓">
+    <meta name="description" content="分层模型  每一层利用下层提供的服务为基础来为上层提供服务，最终服务于应用层的应用程序 应用层网络应用的体系结构 客户-服务器模式 (C&#x2F;S:client&#x2F;server) 服务器先且一直运行，守护在某些端口上 可拓展性，可靠性比较差 客户数量达到一定阈值后会断崖式下降   对等模式 (P2P:Peer To Peer) 任意端系统之间可以通信，每个节点即使客户端又是服务器 自">
 <meta property="og:type" content="article">
 <meta property="og:title" content="计算机网络:分层模型&amp;&amp;应用层">
 <meta property="og:url" content="https://grxer.gitee.io/2023/08/28/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C-%E5%BA%94%E7%94%A8%E5%B1%82/index.html">
 <meta property="og:site_name" content="Grxer&#39;s Blog">
-<meta property="og:description" content="分层模型  每一层利用下层提供的服务为基础来为上层提供服务，最终服务于应用层的应用程序 应用层网络应用的体系结构 客户-服务器模式 (C&#x2F;S:client&#x2F;server) 服务器先且一直运行，守护在某些端口上 可拓展性，可靠性比较差 客户数量达到一定阈值后会断崖式下降   对等模式 (P2P:Peer To Peer) 任意端系统之间可以通信，每个节点即使客户端又是服务器 自拓">
+<meta property="og:description" content="分层模型  每一层利用下层提供的服务为基础来为上层提供服务，最终服务于应用层的应用程序 应用层网络应用的体系结构 客户-服务器模式 (C&#x2F;S:client&#x2F;server) 服务器先且一直运行，守护在某些端口上 可拓展性，可靠性比较差 客户数量达到一定阈值后会断崖式下降   对等模式 (P2P:Peer To Peer) 任意端系统之间可以通信，每个节点即使客户端又是服务器 自">
 <meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://grxer.gitee.io/2023/08/28/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C-%E5%BA%94%E7%94%A8%E5%B1%82/OSI.jpg">
 <meta property="og:image" content="https://grxer.gitee.io/2023/08/28/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C-%E5%BA%94%E7%94%A8%E5%B1%82/image-20230827150702534.png">
 <meta property="og:image" content="https://grxer.gitee.io/2023/08/28/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C-%E5%BA%94%E7%94%A8%E5%B1%82/image-20230907123035154.png">
 <meta property="og:image" content="https://grxer.gitee.io/2023/08/28/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C-%E5%BA%94%E7%94%A8%E5%B1%82/image-20230827121842745.png">
@@ -26,10 +27,10 @@
 <meta property="og:image" content="https://grxer.gitee.io/2023/08/28/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C-%E5%BA%94%E7%94%A8%E5%B1%82/image-20230830181152543.png">
 <meta property="og:image" content="https://grxer.gitee.io/2023/08/28/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C-%E5%BA%94%E7%94%A8%E5%B1%82/image-20230902212408489.png">
 <meta property="article:published_time" content="2023-08-28T15:02:18.000Z">
-<meta property="article:modified_time" content="2023-09-07T04:30:36.350Z">
+<meta property="article:modified_time" content="2023-09-30T14:56:39.823Z">
 <meta property="article:author" content="bxz">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://grxer.gitee.io/2023/08/28/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C-%E5%BA%94%E7%94%A8%E5%B1%82/image-20230827150702534.png">
+<meta name="twitter:image" content="https://grxer.gitee.io/2023/08/28/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C-%E5%BA%94%E7%94%A8%E5%B1%82/OSI.jpg">
     
     
       
@@ -169,7 +170,8 @@
   
 
   <div class="content" itemprop="articleBody">
-    <h1 id="分层模型"><a href="#分层模型" class="headerlink" title="分层模型"></a>分层模型</h1><p><img src="/2023/08/28/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C-%E5%BA%94%E7%94%A8%E5%B1%82/image-20230827150702534.png" alt="image-20230827150702534"></p>
+    <p><img src="/2023/08/28/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C-%E5%BA%94%E7%94%A8%E5%B1%82/OSI.jpg" alt="OSI"></p>
+<h1 id="分层模型"><a href="#分层模型" class="headerlink" title="分层模型"></a>分层模型</h1><p><img src="/2023/08/28/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C-%E5%BA%94%E7%94%A8%E5%B1%82/image-20230827150702534.png" alt="image-20230827150702534"></p>
 <p><img src="/2023/08/28/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C-%E5%BA%94%E7%94%A8%E5%B1%82/image-20230907123035154.png" alt="image-20230907123035154"></p>
 <p>每一层利用下层提供的服务为基础来为上层提供服务，最终服务于应用层的应用程序</p>
 <h1 id="应用层"><a href="#应用层" class="headerlink" title="应用层"></a>应用层</h1><h2 id="网络应用的体系结构"><a href="#网络应用的体系结构" class="headerlink" title="网络应用的体系结构"></a>网络应用的体系结构</h2><ul>
