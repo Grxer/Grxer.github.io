@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="baidu-site-verification" content="codeva-ROfYcqLkCh" />
+    <meta name="msvalidate.01" content="ECA3E06A0E52A2AC90C4B06F12981FB2" />
+    <meta name="description" content="存储设备评价方法：价格、容量、速度、可靠性 存储介质：磁磁带–&gt;磁盘 存储介质：坑光盘Compact Disk 利用坑来阻碍光的反射，有了母片很容易通过 “压盘” 复制产品，但是只读(挖坑容易填坑难，暗示我经常挖坑不填?😢) 存储介质：电之前的持久存储介质有致命的缺陷  磁：机械部件导致 ms 级延迟 坑 (光): 一旦挖坑，填坑很困难 (CD是只读的)  Flash Memory “闪存">
+<meta property="og:type" content="article">
+<meta property="og:title" content="OSTEP:35&amp;&amp;36&amp;&amp;37&amp;&amp;44 IO设备">
+<meta property="og:url" content="https://grxer.gitee.io/2023/10/09/OSTEP-35-36-37-44-IO-Devices/index.html">
+<meta property="og:site_name" content="Grxer&#39;s Blog">
+<meta property="og:description" content="存储设备评价方法：价格、容量、速度、可靠性 存储介质：磁磁带–&gt;磁盘 存储介质：坑光盘Compact Disk 利用坑来阻碍光的反射，有了母片很容易通过 “压盘” 复制产品，但是只读(挖坑容易填坑难，暗示我经常挖坑不填?😢) 存储介质：电之前的持久存储介质有致命的缺陷  磁：机械部件导致 ms 级延迟 坑 (光): 一旦挖坑，填坑很困难 (CD是只读的)  Flash Memory “闪存">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://grxer.gitee.io/2023/10/09/OSTEP-35-36-37-44-IO-Devices/image-20231009114124863.png">
+<meta property="og:image" content="https://grxer.gitee.io/2023/10/09/OSTEP-35-36-37-44-IO-Devices/image-20231009121357473.png">
+<meta property="og:image" content="https://grxer.gitee.io/2023/10/09/OSTEP-35-36-37-44-IO-Devices/image-20231009132407402.png">
+<meta property="article:published_time" content="2023-10-09T02:47:12.000Z">
+<meta property="article:modified_time" content="2023-10-16T02:09:23.672Z">
+<meta property="article:author" content="bxz">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://grxer.gitee.io/2023/10/09/OSTEP-35-36-37-44-IO-Devices/image-20231009114124863.png">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
+    
+    <!-- title -->
+    <title>OSTEP:35&amp;&amp;36&amp;&amp;37&amp;&amp;44 IO设备</title>
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+		<script type="text/x-mathjax-config">
+		  MathJax.Hub.Config({
+			tex2jax: {
+			  skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+			  inlineMath: [['$','$']]
+			}
+		  });
+		</script>
+		<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-MML-AM_CHTML' async></script>
+	
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+<body class="max-width mx-auto px3 lrt">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="Menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="Menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="Top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fas fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a href="/search/">Search</a></li><!--
+     --><!--
+       --><li><a href="/tags/">Tag</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" aria-label="Previous post" href="/2023/10/14/2022-ciscn-syscall-ptrace/"><i class="fas fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" aria-label="Next post" href="/2023/09/30/glibc235-attack/"><i class="fas fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="Back to top" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="Share post" href="#"><i class="fas fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://grxer.gitee.io/2023/10/09/OSTEP-35-36-37-44-IO-Devices/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://grxer.gitee.io/2023/10/09/OSTEP-35-36-37-44-IO-Devices/&text=OSTEP:35&amp;&amp;36&amp;&amp;37&amp;&amp;44 IO设备"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://grxer.gitee.io/2023/10/09/OSTEP-35-36-37-44-IO-Devices/&title=OSTEP:35&amp;&amp;36&amp;&amp;37&amp;&amp;44 IO设备"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://grxer.gitee.io/2023/10/09/OSTEP-35-36-37-44-IO-Devices/&is_video=false&description=OSTEP:35&amp;&amp;36&amp;&amp;37&amp;&amp;44 IO设备"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=OSTEP:35&amp;&amp;36&amp;&amp;37&amp;&amp;44 IO设备&body=Check out this article: https://grxer.gitee.io/2023/10/09/OSTEP-35-36-37-44-IO-Devices/"><i class="fas fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://grxer.gitee.io/2023/10/09/OSTEP-35-36-37-44-IO-Devices/&title=OSTEP:35&amp;&amp;36&amp;&amp;37&amp;&amp;44 IO设备"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://grxer.gitee.io/2023/10/09/OSTEP-35-36-37-44-IO-Devices/&title=OSTEP:35&amp;&amp;36&amp;&amp;37&amp;&amp;44 IO设备"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://grxer.gitee.io/2023/10/09/OSTEP-35-36-37-44-IO-Devices/&title=OSTEP:35&amp;&amp;36&amp;&amp;37&amp;&amp;44 IO设备"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://grxer.gitee.io/2023/10/09/OSTEP-35-36-37-44-IO-Devices/&title=OSTEP:35&amp;&amp;36&amp;&amp;37&amp;&amp;44 IO设备"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://grxer.gitee.io/2023/10/09/OSTEP-35-36-37-44-IO-Devices/&name=OSTEP:35&amp;&amp;36&amp;&amp;37&amp;&amp;44 IO设备&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://grxer.gitee.io/2023/10/09/OSTEP-35-36-37-44-IO-Devices/&t=OSTEP:35&amp;&amp;36&amp;&amp;37&amp;&amp;44 IO设备"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    <div id="toc">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AD%98%E5%82%A8%E8%AE%BE%E5%A4%87"><span class="toc-number">1.</span> <span class="toc-text">存储设备</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AD%98%E5%82%A8%E4%BB%8B%E8%B4%A8%EF%BC%9A%E7%A3%81"><span class="toc-number">1.1.</span> <span class="toc-text">存储介质：磁</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AD%98%E5%82%A8%E4%BB%8B%E8%B4%A8%EF%BC%9A%E5%9D%91"><span class="toc-number">1.2.</span> <span class="toc-text">存储介质：坑</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AD%98%E5%82%A8%E4%BB%8B%E8%B4%A8%EF%BC%9A%E7%94%B5"><span class="toc-number">1.3.</span> <span class="toc-text">存储介质：电</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%9B%BA%E6%80%81%E7%A1%AC%E7%9B%98%E9%9C%80%E8%A6%81%E5%85%8B%E6%9C%8D%E7%9A%84%E9%97%AE%E9%A2%98"><span class="toc-number">1.3.1.</span> <span class="toc-text">固态硬盘需要克服的问题</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#I-x2F-O%E8%AE%BE%E5%A4%87"><span class="toc-number">2.</span> <span class="toc-text">I&#x2F;O设备</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%80%BB%E7%BA%BF"><span class="toc-number">2.1.</span> <span class="toc-text">总线</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#DMA"><span class="toc-number">2.2.</span> <span class="toc-text">DMA</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%AE%BE%E5%A4%87%E9%A9%B1%E5%8A%A8%E7%A8%8B%E5%BA%8F"><span class="toc-number">2.3.</span> <span class="toc-text">设备驱动程序</span></a></li></ol></li></ol>
+    </div>
+  </span>
+</div>
+
+    
+    <div class="content index py4">
+        
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle" itemprop="name headline">
+        OSTEP:35&amp;&amp;36&amp;&amp;37&amp;&amp;44 IO设备
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span itemprop="name">bxz</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2023-10-09T02:47:12.000Z" itemprop="datePublished">2023-10-09</time>
+        
+      
+    </div>
+
+
+      
+
+      
+
+    </div>
+  </header>
+  
+
+  <div class="content" itemprop="articleBody">
+    <h2 id="存储设备"><a href="#存储设备" class="headerlink" title="存储设备"></a>存储设备</h2><p>评价方法：价格、容量、速度、可靠性</p>
+<h3 id="存储介质：磁"><a href="#存储介质：磁" class="headerlink" title="存储介质：磁"></a>存储介质：磁</h3><p>磁带–&gt;磁盘</p>
+<h3 id="存储介质：坑"><a href="#存储介质：坑" class="headerlink" title="存储介质：坑"></a>存储介质：坑</h3><p>光盘Compact Disk</p>
+<p>利用坑来阻碍光的反射，有了母片很容易通过 “压盘” 复制产品，但是只读(挖坑容易填坑难，暗示我经常挖坑不填?😢)</p>
+<h3 id="存储介质：电"><a href="#存储介质：电" class="headerlink" title="存储介质：电"></a>存储介质：电</h3><p>之前的持久存储介质有致命的缺陷</p>
+<ul>
+<li>磁：机械部件导致 ms 级延迟</li>
+<li>坑 (光): 一旦挖坑，填坑很困难 (CD是只读的)</li>
+</ul>
+<p>Flash Memory “闪存”</p>
+<ul>
+<li>Floating gate 的充电&#x2F;放电实现 1-bit 信息的存储</li>
+</ul>
+<p><img src="/2023/10/09/OSTEP-35-36-37-44-IO-Devices/image-20231009114124863.png" alt="image-20231009114124863"></p>
+<p>速度快，容量越大，速度越快 (电路级并行)</p>
+<p>衍生出一系列产品:Compact Flash(CF卡，对就是mp3上的那种)–&gt;USB Flash Disk(U盘)–&gt;Flash-based SSDs(solid-state storage device,固态存储设备)</p>
+<ul>
+<li>听说固态最近好像价格回升，我大概五月份买的时候三星，西部数据这样的大厂都便宜的离谱，多是归功于国产ssd技术突破，长江NB</li>
+</ul>
+<h4 id="固态硬盘需要克服的问题"><a href="#固态硬盘需要克服的问题" class="headerlink" title="固态硬盘需要克服的问题"></a>固态硬盘需要克服的问题</h4><p>一个闪存面被分为闪存块，一个闪存块被分为闪存页，对于读来说正常读一个页，写来说需要将页所在的整个块擦除，这也是我们固态读比写慢的原因</p>
+<p><strong>最大问题还是放电 (erase) 做不到 100% 放干净</strong></p>
+<ul>
+<li>放电数千&#x2F;数万次以后，就好像是 “充电” 状态了</li>
+</ul>
+<p>解决方案:每一个 SSD 里都藏了一个完整的计算机系统</p>
+<p><img src="/2023/10/09/OSTEP-35-36-37-44-IO-Devices/image-20231009121357473.png" alt="image-20231009121357473"></p>
+<p>FTL: Flash Translation Layer</p>
+<p>维护这逻辑块到物理块的一张映射表: 对于逻辑块的读写转化为物理块的写，当发现这个物理块被读写的次数对于大多数物理块时，将逻辑块重新映射到一个读写次数相对少的物理块，从而维持一种平衡叫做Wear Leveling</p>
+<p><strong>安全问题</strong></p>
+<p>FTL也就可以提供一种逻辑上的快速清除，实际上物理块没有被清除(冠希哥被动躺枪)，清除后用垃圾数据覆盖或许可以避免悲剧😂</p>
+<h2 id="I-x2F-O设备"><a href="#I-x2F-O设备" class="headerlink" title="I&#x2F;O设备"></a>I&#x2F;O设备</h2><p>I&#x2F;O 设备 (CPU 视角)：“一个能与 CPU 交换数据的接口&#x2F;控制器”</p>
+<p><img src="/2023/10/09/OSTEP-35-36-37-44-IO-Devices/image-20231009132407402.png" alt="image-20231009132407402"></p>
+<p>通过接口来为上层提供服务，操作系统不需要关心设备internals以及内部怎么实现，只要按照设备手册通过接口来交流即可(给寄存器一个值，设备做出相应反应)</p>
+<ul>
+<li>CPU 可以直接使用指令 (in&#x2F;out&#x2F;MMIO) 和设备交换数据(MMIO(memory-mapped I&#x2F;O)用内存映射的方式通过内存地址和设备交互)</li>
+</ul>
+<h3 id="总线"><a href="#总线" class="headerlink" title="总线"></a>总线</h3><p>为了支持越来越多的io设备(可拓展性)CPU上出现了总线：一个特殊的 I&#x2F;O 设备</p>
+<ul>
+<li>把收到的地址 (总线地址) 和数据转发到相应的设备上</li>
+<li>总线上可以接dram，甚至可以给总线上接的设备进行内存编制，统一按照内存地址来操作设备，其他设备pci也可以连接到总线，如usb总线</li>
+</ul>
+<p>为了提高cpu效率，当设备完成了自身操作，会主动抛出一个硬件中断，在此期间cpu可以执行其他进程（如果设备非常快，中断可能不如轮询）</p>
+<h3 id="DMA"><a href="#DMA" class="headerlink" title="DMA"></a>DMA</h3><p>向磁盘写一些数据，cpu需要将数据从内存拷贝到磁盘，磁盘上的 I&#x2F;O再开始执行，cpu才能切走到其他工作，提高效率把简单的拷贝工作交给DMA</p>
+<p>操作系统会通过编程告诉 DMA 引擎数据在内存的位置，要拷贝的大小以及要拷贝到哪个设备。</p>
+<p>Direct Memory Access (DMA)：一个专门执行 “<code>memcpy</code>” 程序的 CPU</p>
+<p>很容易可以联系到GPU，nvidia yes！</p>
+<h3 id="设备驱动程序"><a href="#设备驱动程序" class="headerlink" title="设备驱动程序"></a>设备驱动程序</h3><p>操作系统不应该把io设备的寄存器接口暴露给用户取操作，这是不合理且危险的，比如大多数普通用户操作不好打印机寄存器接口造成经济损失</p>
+<p>linux把设备抽象成文件，linux驱动程序会把重新定义一些文件操作相关函数，驱动程序把系统调用 (read&#x2F;write&#x2F;ioctl&#x2F;…) “翻译” 成与设备寄存器的交互，完成复杂的功能</p>
+
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+         
+          <li><a href="/">Home</a></li>
+         
+          <li><a href="/archives/">Writing</a></li>
+         
+          <li><a href="/search/">Search</a></li>
+         
+          <li><a href="/tags/">Tag</a></li>
+         
+          <li><a href="/about/">About</a></li>
+        
+      </ul>
+    </div>
+
+    <div id="toc-footer" style="display: none">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AD%98%E5%82%A8%E8%AE%BE%E5%A4%87"><span class="toc-number">1.</span> <span class="toc-text">存储设备</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AD%98%E5%82%A8%E4%BB%8B%E8%B4%A8%EF%BC%9A%E7%A3%81"><span class="toc-number">1.1.</span> <span class="toc-text">存储介质：磁</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AD%98%E5%82%A8%E4%BB%8B%E8%B4%A8%EF%BC%9A%E5%9D%91"><span class="toc-number">1.2.</span> <span class="toc-text">存储介质：坑</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AD%98%E5%82%A8%E4%BB%8B%E8%B4%A8%EF%BC%9A%E7%94%B5"><span class="toc-number">1.3.</span> <span class="toc-text">存储介质：电</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%9B%BA%E6%80%81%E7%A1%AC%E7%9B%98%E9%9C%80%E8%A6%81%E5%85%8B%E6%9C%8D%E7%9A%84%E9%97%AE%E9%A2%98"><span class="toc-number">1.3.1.</span> <span class="toc-text">固态硬盘需要克服的问题</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#I-x2F-O%E8%AE%BE%E5%A4%87"><span class="toc-number">2.</span> <span class="toc-text">I&#x2F;O设备</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%80%BB%E7%BA%BF"><span class="toc-number">2.1.</span> <span class="toc-text">总线</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#DMA"><span class="toc-number">2.2.</span> <span class="toc-text">DMA</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%AE%BE%E5%A4%87%E9%A9%B1%E5%8A%A8%E7%A8%8B%E5%BA%8F"><span class="toc-number">2.3.</span> <span class="toc-text">设备驱动程序</span></a></li></ol></li></ol>
+    </div>
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://grxer.gitee.io/2023/10/09/OSTEP-35-36-37-44-IO-Devices/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://grxer.gitee.io/2023/10/09/OSTEP-35-36-37-44-IO-Devices/&text=OSTEP:35&amp;&amp;36&amp;&amp;37&amp;&amp;44 IO设备"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://grxer.gitee.io/2023/10/09/OSTEP-35-36-37-44-IO-Devices/&title=OSTEP:35&amp;&amp;36&amp;&amp;37&amp;&amp;44 IO设备"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://grxer.gitee.io/2023/10/09/OSTEP-35-36-37-44-IO-Devices/&is_video=false&description=OSTEP:35&amp;&amp;36&amp;&amp;37&amp;&amp;44 IO设备"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=OSTEP:35&amp;&amp;36&amp;&amp;37&amp;&amp;44 IO设备&body=Check out this article: https://grxer.gitee.io/2023/10/09/OSTEP-35-36-37-44-IO-Devices/"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://grxer.gitee.io/2023/10/09/OSTEP-35-36-37-44-IO-Devices/&title=OSTEP:35&amp;&amp;36&amp;&amp;37&amp;&amp;44 IO设备"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://grxer.gitee.io/2023/10/09/OSTEP-35-36-37-44-IO-Devices/&title=OSTEP:35&amp;&amp;36&amp;&amp;37&amp;&amp;44 IO设备"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://grxer.gitee.io/2023/10/09/OSTEP-35-36-37-44-IO-Devices/&title=OSTEP:35&amp;&amp;36&amp;&amp;37&amp;&amp;44 IO设备"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://grxer.gitee.io/2023/10/09/OSTEP-35-36-37-44-IO-Devices/&title=OSTEP:35&amp;&amp;36&amp;&amp;37&amp;&amp;44 IO设备"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://grxer.gitee.io/2023/10/09/OSTEP-35-36-37-44-IO-Devices/&name=OSTEP:35&amp;&amp;36&amp;&amp;37&amp;&amp;44 IO设备&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://grxer.gitee.io/2023/10/09/OSTEP-35-36-37-44-IO-Devices/&t=OSTEP:35&amp;&amp;36&amp;&amp;37&amp;&amp;44 IO设备"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fas fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
+        <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fas fa-list fa-lg" aria-hidden="true"></i> TOC</a>
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fas fa-share-alt fa-lg" aria-hidden="true"></i> Share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2023
+    bxz
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a href="/search/">Search</a></li><!--
+     --><!--
+       --><li><a href="/tags/">Tag</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+ 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script> 
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script> 
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"Copy to clipboard!\">";
+    btn += '<i class="far fa-clone"></i>';
+    btn += '</span>'; 
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "Copied!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Google Analytics -->
+
+<!-- Baidu Analytics -->
+
+  <script type="text/javascript">
+        var _hmt = _hmt || [];
+        (function() {
+          var hm = document.createElement("script");
+          hm.src = "https://hm.baidu.com/hm.js?a22ef0bec4e4a9c7337bea6e37ff55c1";
+          var s = document.getElementsByTagName("script")[0];
+          s.parentNode.insertBefore(hm, s);
+        })();
+        </script>
+
+<!-- Cloudflare Analytics -->
+
+<!-- Umami Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+</body>
+</html>

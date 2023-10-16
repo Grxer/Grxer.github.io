@@ -28,7 +28,7 @@
 <meta property="og:image" content="https://grxer.gitee.io/2023/04/08/32bit-x86-protected-mode/image-20230420191045242.png">
 <meta property="og:image" content="https://grxer.gitee.io/2023/04/08/32bit-x86-protected-mode/image-20230826213151091.png">
 <meta property="article:published_time" content="2023-04-08T10:44:24.000Z">
-<meta property="article:modified_time" content="2023-09-26T03:23:11.942Z">
+<meta property="article:modified_time" content="2023-10-03T07:27:05.059Z">
 <meta property="article:author" content="bxz">
 <meta property="article:tag" content="Protected Mode">
 <meta name="twitter:card" content="summary">
@@ -276,6 +276,7 @@
 <li>有了这个机制我们可以把页表分散到物理内存不同位置，而不是在一块连续的4M物理内存空间</li>
 <li>4k的页目录是一直在物理内存上的</li>
 </ol>
+<p>多级页表的坏处在于tlb不命中处罚加剧，二级页表就需要两次访存，一次用于页目录，另一次用于 PTE 本身</p>
 </blockquote>
 <h4 id="这种地址转换都是硬件来自动完成的，操作系统来处理缺页"><a href="#这种地址转换都是硬件来自动完成的，操作系统来处理缺页" class="headerlink" title="这种地址转换都是硬件来自动完成的，操作系统来处理缺页"></a>这种地址转换都是硬件来自动完成的，操作系统来处理缺页</h4><h2 id="64位linux内存分页"><a href="#64位linux内存分页" class="headerlink" title="64位linux内存分页"></a>64位linux内存分页</h2><p>目前64位linux基本上都采用四级分页模型</p>
 <ul>

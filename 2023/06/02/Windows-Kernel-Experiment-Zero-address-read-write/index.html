@@ -8,15 +8,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
     <meta name="baidu-site-verification" content="codeva-ROfYcqLkCh" />
     <meta name="msvalidate.01" content="ECA3E06A0E52A2AC90C4B06F12981FB2" />
-    <meta name="description" content="Windows内核实验:零地址读写以后都是pae模式下的实验 零地址就是我们的空指针指向的位置嘛，肯定是不能读或写的 kd&gt; !pte 0                    VA 00000000PDE at C0600000            PTE at C0000000contains 0000000008381067  contains 0000000000000000pfn">
+    <meta name="description" content="Windows内核实验:零地址读写以后都是pae模式下的实验 零地址就是我们的空指针指向的位置嘛，0这块地址(准确的说应该是这一个页)本身就会被标记为不可访问，以便为空指针检测提供些支持，肯定是不能读或写的 kd&gt; !pte 0                    VA 00000000PDE at C0600000            PTE at C0000000contains 0">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Windows内核实验:零地址读写">
 <meta property="og:url" content="https://grxer.gitee.io/2023/06/02/Windows-Kernel-Experiment-Zero-address-read-write/index.html">
 <meta property="og:site_name" content="Grxer&#39;s Blog">
-<meta property="og:description" content="Windows内核实验:零地址读写以后都是pae模式下的实验 零地址就是我们的空指针指向的位置嘛，肯定是不能读或写的 kd&gt; !pte 0                    VA 00000000PDE at C0600000            PTE at C0000000contains 0000000008381067  contains 0000000000000000pfn">
+<meta property="og:description" content="Windows内核实验:零地址读写以后都是pae模式下的实验 零地址就是我们的空指针指向的位置嘛，0这块地址(准确的说应该是这一个页)本身就会被标记为不可访问，以便为空指针检测提供些支持，肯定是不能读或写的 kd&gt; !pte 0                    VA 00000000PDE at C0600000            PTE at C0000000contains 0">
 <meta property="og:locale" content="en_US">
 <meta property="article:published_time" content="2023-06-02T06:59:24.000Z">
-<meta property="article:modified_time" content="2023-06-02T08:13:57.085Z">
+<meta property="article:modified_time" content="2023-10-04T09:17:51.596Z">
 <meta property="article:author" content="bxz">
 <meta property="article:tag" content="Windows Kernel Experiment">
 <meta name="twitter:card" content="summary">
@@ -165,7 +165,7 @@
 
   <div class="content" itemprop="articleBody">
     <h1 id="Windows内核实验-零地址读写"><a href="#Windows内核实验-零地址读写" class="headerlink" title="Windows内核实验:零地址读写"></a>Windows内核实验:零地址读写</h1><p>以后都是pae模式下的实验</p>
-<p>零地址就是我们的空指针指向的位置嘛，肯定是不能读或写的</p>
+<p>零地址就是我们的空指针指向的位置嘛，0这块地址(准确的说应该是这一个页)本身就会被标记为不可访问，以便为空指针检测提供些支持，肯定是不能读或写的</p>
 <figure class="highlight c"><table><tr><td class="code"><pre><span class="line">kd&gt; !pte <span class="number">0</span></span><br><span class="line">                    VA <span class="number">00000000</span></span><br><span class="line">PDE at C0600000            PTE at C0000000</span><br><span class="line">contains <span class="number">0000000008381067</span>  contains <span class="number">0000000000000000</span></span><br><span class="line">pfn <span class="number">8381</span>      ---DA--UWEV  not valid</span><br></pre></td></tr></table></figure>
 
 <p>但是他毕竟也是进程虚拟内存的一块嘛，虚拟内存都是靠页目录表项和页表项描述的，去把他映射到物理内存，所有理论上把他的页表项的改掉就可以搞事情</p>
