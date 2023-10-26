@@ -20,7 +20,7 @@
 <meta property="og:image" content="https://grxer.gitee.io/2023/10/14/2022-ciscn-syscall-ptrace/image-20231015011436298.png">
 <meta property="og:image" content="https://grxer.gitee.io/2023/10/14/2022-ciscn-syscall-ptrace/image-20231015012226004.png">
 <meta property="article:published_time" content="2023-10-14T13:53:31.000Z">
-<meta property="article:modified_time" content="2023-10-16T03:51:47.328Z">
+<meta property="article:modified_time" content="2023-10-18T12:35:24.539Z">
 <meta property="article:author" content="bxz">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://grxer.gitee.io/2023/10/14/2022-ciscn-syscall-ptrace/image-20231014232059820.png">
@@ -202,10 +202,9 @@
 <p>定义结构体后代码就清晰明了多了</p>
 <p>首先第一个waitpid被子线程里的<code>raise(18)</code>唤醒</p>
 <p><img src="/2023/10/14/2022-ciscn-syscall-ptrace/image-20231015011436298.png" alt="image-20231015011436298"></p>
-<p>这里判断低字节为0x7f应该是为了判断子线程是否收因信号传递而停止</p>
+<p>这里判断低字节为0x7f是为了判断子线程是否收因信号传递而停止</p>
 <p><img src="/2023/10/14/2022-ciscn-syscall-ptrace/image-20231015012226004.png" alt="image-20231015012226004"></p>
 <figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="meta"># <span class="keyword">define</span> WIFSTOPPED(status)    __WIFSTOPPED (status)</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span>    __WIFSTOPPED(status)	(((status) &amp; 0xff) == 0x7f)</span></span><br></pre></td></tr></table></figure>
-
 
   </div>
 </article>

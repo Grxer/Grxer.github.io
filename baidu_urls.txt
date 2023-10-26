@@ -1,6 +1,10 @@
 https://grxer.gitee.io/6666/06/06/Treasure-House/
 https://grxer.gitee.io/2223/09/01/Englishlearning-September2023/
 https://grxer.gitee.io/2223/08/01/Englishlearning-August2023/
+https://grxer.gitee.io/2023/10/26/Cpp-disassemble-1/
+https://grxer.gitee.io/2023/10/24/Cpp-disassemble/
+https://grxer.gitee.io/2023/10/22/windows-x64-calling-conventions/
+https://grxer.gitee.io/2023/10/22/first-router/
 https://grxer.gitee.io/2023/10/15/2023xsb/
 https://grxer.gitee.io/2023/10/14/2022-ciscn-syscall-ptrace/
 https://grxer.gitee.io/2023/10/09/OSTEP-35-36-37-44-IO-Devices/
@@ -19,7 +23,3 @@ https://grxer.gitee.io/2023/09/03/OSTEP-28-LOCK/
 https://grxer.gitee.io/2023/09/01/kernel-heap/
 https://grxer.gitee.io/2023/08/28/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C-%E5%BA%94%E7%94%A8%E5%B1%82/
 https://grxer.gitee.io/2023/08/28/2023wmctf/
-https://grxer.gitee.io/2023/08/22/kernel-ret2dir/
-https://grxer.gitee.io/2023/08/17/2023NepCTF/
-https://grxer.gitee.io/2023/08/17/docker/
-https://grxer.gitee.io/2023/08/16/kernel-bypass-smep/
