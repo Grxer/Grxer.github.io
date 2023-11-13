@@ -19,7 +19,7 @@
 <meta property="og:image" content="https://grxer.gitee.io/2023/10/09/OSTEP-35-36-37-44-IO-Devices/image-20231009121357473.png">
 <meta property="og:image" content="https://grxer.gitee.io/2023/10/09/OSTEP-35-36-37-44-IO-Devices/image-20231009132407402.png">
 <meta property="article:published_time" content="2023-10-09T02:47:12.000Z">
-<meta property="article:modified_time" content="2023-10-16T02:09:23.672Z">
+<meta property="article:modified_time" content="2023-11-05T03:06:58.888Z">
 <meta property="article:author" content="bxz">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://grxer.gitee.io/2023/10/09/OSTEP-35-36-37-44-IO-Devices/image-20231009114124863.png">
@@ -204,9 +204,9 @@
 <li>总线上可以接dram，甚至可以给总线上接的设备进行内存编制，统一按照内存地址来操作设备，其他设备pci也可以连接到总线，如usb总线</li>
 </ul>
 <p>为了提高cpu效率，当设备完成了自身操作，会主动抛出一个硬件中断，在此期间cpu可以执行其他进程（如果设备非常快，中断可能不如轮询）</p>
-<h3 id="DMA"><a href="#DMA" class="headerlink" title="DMA"></a>DMA</h3><p>向磁盘写一些数据，cpu需要将数据从内存拷贝到磁盘，磁盘上的 I&#x2F;O再开始执行，cpu才能切走到其他工作，提高效率把简单的拷贝工作交给DMA</p>
+<h3 id="DMA"><a href="#DMA" class="headerlink" title="DMA"></a>DMA</h3><p>向磁盘写一些数据，cpu需要将数据从内存拷贝到磁盘，磁盘 I&#x2F;O执行完，cpu才能切走到其他工作，为了提高效率把简单的拷贝工作交给DMA</p>
 <p>操作系统会通过编程告诉 DMA 引擎数据在内存的位置，要拷贝的大小以及要拷贝到哪个设备。</p>
-<p>Direct Memory Access (DMA)：一个专门执行 “<code>memcpy</code>” 程序的 CPU</p>
+<p>Direct Memory Access (DMA)：一个专门执行 “<code>memcpy</code>” 程序的 CPU(用于I&#x2F;O设备和系统内存直接的批量数据传送)</p>
 <p>很容易可以联系到GPU，nvidia yes！</p>
 <h3 id="设备驱动程序"><a href="#设备驱动程序" class="headerlink" title="设备驱动程序"></a>设备驱动程序</h3><p>操作系统不应该把io设备的寄存器接口暴露给用户取操作，这是不合理且危险的，比如大多数普通用户操作不好打印机寄存器接口造成经济损失</p>
 <p>linux把设备抽象成文件，linux驱动程序会把重新定义一些文件操作相关函数，驱动程序把系统调用 (read&#x2F;write&#x2F;ioctl&#x2F;…) “翻译” 成与设备寄存器的交互，完成复杂的功能</p>
