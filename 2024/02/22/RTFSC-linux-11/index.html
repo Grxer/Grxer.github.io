@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="baidu-site-verification" content="codeva-ROfYcqLkCh" />
+    <meta name="msvalidate.01" content="ECA3E06A0E52A2AC90C4B06F12981FB2" />
+    <meta name="description" content="基本上每天一个文件吧 RTFSC有makefile https:&#x2F;&#x2F;github.com&#x2F;cyysu&#x2F;linux0.11&#x2F;tree&#x2F;master无makefile https:&#x2F;&#x2F;github.com&#x2F;beride&#x2F;linux0.11-1 可编译调试的 https:&#x2F;&#x2F;github.com&#x2F;yuan-xy&#x2F;Linux-0.11 从服务器启动qemu无图形界面: -curses(在教室开虚拟机太耗">
+<meta property="og:type" content="article">
+<meta property="og:title" content="RTFSC linux0.11 ing">
+<meta property="og:url" content="https://grxer.gitee.io/2024/02/22/RTFSC-linux-11/index.html">
+<meta property="og:site_name" content="Grxer&#39;s Blog">
+<meta property="og:description" content="基本上每天一个文件吧 RTFSC有makefile https:&#x2F;&#x2F;github.com&#x2F;cyysu&#x2F;linux0.11&#x2F;tree&#x2F;master无makefile https:&#x2F;&#x2F;github.com&#x2F;beride&#x2F;linux0.11-1 可编译调试的 https:&#x2F;&#x2F;github.com&#x2F;yuan-xy&#x2F;Linux-0.11 从服务器启动qemu无图形界面: -curses(在教室开虚拟机太耗">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://grxer.gitee.io/2024/02/22/RTFSC-linux-11/image-20231123112231893.png">
+<meta property="og:image" content="https://grxer.gitee.io/2024/02/22/RTFSC-linux-11/image-20231123215714223.png">
+<meta property="og:image" content="https://grxer.gitee.io/2024/02/22/RTFSC-linux-11/image-20231123215220376.png">
+<meta property="og:image" content="https://grxer.gitee.io/2024/02/22/RTFSC-linux-11/image-20231124110911039.png">
+<meta property="og:image" content="https://grxer.gitee.io/2024/02/22/RTFSC-linux-11/image-20231124170448393.png">
+<meta property="article:published_time" content="2024-02-22T08:10:28.000Z">
+<meta property="article:modified_time" content="2023-11-27T08:20:38.285Z">
+<meta property="article:author" content="bxz">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://grxer.gitee.io/2024/02/22/RTFSC-linux-11/image-20231123112231893.png">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
+    
+    <!-- title -->
+    <title>RTFSC linux0.11 ing</title>
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+		<script type="text/x-mathjax-config">
+		  MathJax.Hub.Config({
+			tex2jax: {
+			  skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+			  inlineMath: [['$','$']]
+			}
+		  });
+		</script>
+		<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-MML-AM_CHTML' async></script>
+	
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+<body class="max-width mx-auto px3 lrt">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="Menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="Menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="Top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fas fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a href="/search/">Search</a></li><!--
+     --><!--
+       --><li><a href="/tags/">Tag</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" aria-label="Previous post" href="/6666/06/06/Treasure-House/"><i class="fas fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" aria-label="Next post" href="/2023/11/27/open-vt/"><i class="fas fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="Back to top" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="Share post" href="#"><i class="fas fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://grxer.gitee.io/2024/02/22/RTFSC-linux-11/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://grxer.gitee.io/2024/02/22/RTFSC-linux-11/&text=RTFSC linux0.11 ing"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://grxer.gitee.io/2024/02/22/RTFSC-linux-11/&title=RTFSC linux0.11 ing"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://grxer.gitee.io/2024/02/22/RTFSC-linux-11/&is_video=false&description=RTFSC linux0.11 ing"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=RTFSC linux0.11 ing&body=Check out this article: https://grxer.gitee.io/2024/02/22/RTFSC-linux-11/"><i class="fas fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://grxer.gitee.io/2024/02/22/RTFSC-linux-11/&title=RTFSC linux0.11 ing"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://grxer.gitee.io/2024/02/22/RTFSC-linux-11/&title=RTFSC linux0.11 ing"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://grxer.gitee.io/2024/02/22/RTFSC-linux-11/&title=RTFSC linux0.11 ing"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://grxer.gitee.io/2024/02/22/RTFSC-linux-11/&title=RTFSC linux0.11 ing"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://grxer.gitee.io/2024/02/22/RTFSC-linux-11/&name=RTFSC linux0.11 ing&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://grxer.gitee.io/2024/02/22/RTFSC-linux-11/&t=RTFSC linux0.11 ing"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    <div id="toc">
+      <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#RTFSC"><span class="toc-number">1.</span> <span class="toc-text">RTFSC</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#boot"><span class="toc-number">2.</span> <span class="toc-text">boot</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#bootsect-s"><span class="toc-number">2.1.</span> <span class="toc-text">bootsect.s</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#setup-s"><span class="toc-number">2.2.</span> <span class="toc-text">setup.s</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#head-s"><span class="toc-number">2.3.</span> <span class="toc-text">head.s</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#init"><span class="toc-number">3.</span> <span class="toc-text">init</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#main-c"><span class="toc-number">3.1.</span> <span class="toc-text">main.c</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#kernel"><span class="toc-number">4.</span> <span class="toc-text">kernel</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#asm-s"><span class="toc-number">4.1.</span> <span class="toc-text">asm.s</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#trap-s"><span class="toc-number">4.2.</span> <span class="toc-text">trap.s</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#system-call-s"><span class="toc-number">4.3.</span> <span class="toc-text">system_call.s</span></a></li></ol></li></ol>
+    </div>
+  </span>
+</div>
+
+    
+    <div class="content index py4">
+        
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle" itemprop="name headline">
+        RTFSC linux0.11 ing
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span itemprop="name">bxz</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2024-02-22T08:10:28.000Z" itemprop="datePublished">2024-02-22</time>
+        
+      
+    </div>
+
+
+      
+
+      
+
+    </div>
+  </header>
+  
+
+  <div class="content" itemprop="articleBody">
+    <p> 基本上每天一个文件吧</p>
+<h1 id="RTFSC"><a href="#RTFSC" class="headerlink" title="RTFSC"></a>RTFSC</h1><p>有makefile <a target="_blank" rel="noopener" href="https://github.com/cyysu/linux0.11/tree/master">https://github.com/cyysu/linux0.11/tree/master</a><br>无makefile <a target="_blank" rel="noopener" href="https://github.com/beride/linux0.11-1">https://github.com/beride/linux0.11-1</a></p>
+<p>可编译调试的 <a target="_blank" rel="noopener" href="https://github.com/yuan-xy/Linux-0.11">https://github.com/yuan-xy/Linux-0.11</a></p>
+<p>从服务器启动qemu无图形界面: -curses(在教室开虚拟机太耗电了，只能开云服务器呜呜)</p>
+<ul>
+<li>alt 2切换到监视 alt 1切换会模拟界面</li>
+<li>esc 2和esc 1 同样效果</li>
+</ul>
+<p>vscode配置</p>
+<p>launch.json</p>
+<figure class="highlight json"><table><tr><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">    <span class="attr">&quot;version&quot;</span><span class="punctuation">:</span> <span class="string">&quot;0.2.0&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;configurations&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span></span><br><span class="line">      <span class="punctuation">&#123;</span></span><br><span class="line">        <span class="attr">&quot;name&quot;</span><span class="punctuation">:</span> <span class="string">&quot;debug&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;type&quot;</span><span class="punctuation">:</span> <span class="string">&quot;cppdbg&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;request&quot;</span><span class="punctuation">:</span> <span class="string">&quot;launch&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;program&quot;</span><span class="punctuation">:</span> <span class="string">&quot;$&#123;workspaceFolder&#125;/tools/system&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;miDebuggerServerAddress&quot;</span><span class="punctuation">:</span> <span class="string">&quot;127.0.0.1:1234&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;args&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span><span class="punctuation">]</span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;stopAtEntry&quot;</span><span class="punctuation">:</span> <span class="literal"><span class="keyword">false</span></span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;cwd&quot;</span><span class="punctuation">:</span> <span class="string">&quot;$&#123;workspaceFolder&#125;&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;environment&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span><span class="punctuation">]</span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;externalConsole&quot;</span><span class="punctuation">:</span> <span class="literal"><span class="keyword">false</span></span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;MIMode&quot;</span><span class="punctuation">:</span> <span class="string">&quot;gdb&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;preLaunchTask&quot;</span><span class="punctuation">:</span> <span class="string">&quot;run&quot;</span></span><br><span class="line">      <span class="punctuation">&#125;</span></span><br><span class="line">    <span class="punctuation">]</span></span><br><span class="line">  <span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+
+<p>tasks.json</p>
+<figure class="highlight json"><table><tr><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">    <span class="attr">&quot;tasks&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span></span><br><span class="line">      <span class="punctuation">&#123;</span></span><br><span class="line">        <span class="attr">&quot;label&quot;</span><span class="punctuation">:</span> <span class="string">&quot;run&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;type&quot;</span><span class="punctuation">:</span> <span class="string">&quot;shell&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;command&quot;</span><span class="punctuation">:</span> <span class="string">&quot;make ; and make debug &quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;isBackground&quot;</span><span class="punctuation">:</span> <span class="literal"><span class="keyword">true</span></span></span><br><span class="line">      <span class="punctuation">&#125;</span></span><br><span class="line">    <span class="punctuation">]</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;version&quot;</span><span class="punctuation">:</span> <span class="string">&quot;2.0.0&quot;</span></span><br><span class="line">  <span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+
+
+
+<h1 id="boot"><a href="#boot" class="headerlink" title="boot"></a>boot</h1><h2 id="bootsect-s"><a href="#bootsect-s" class="headerlink" title="bootsect.s"></a>bootsect.s</h2><p>8086汇编 <code>ljmp   0x7c0:5</code>将cs&#x3D;0x7c0 ip&#x3D;5 跳转到新的代码段和偏移地址</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">ok1_read:</span><br><span class="line">;// 计算和验证当前磁道需要读取的扇区数，放在ax寄存器中。</span><br><span class="line">;// 根据当前磁道还未读取的扇区数以及段内数据字节开始偏移位置，计算如果全部读取这些</span><br><span class="line">;// 未读扇区，所读总字节数是否会超过64KB段长度的限制。若会超过，则根据此次最多能读</span><br><span class="line">;// 入的字节数（64KB - 段内偏移位置），反算出此次需要读取的扇区数。</span><br><span class="line">;//    seg cs</span><br><span class="line">    mov ax,cs:sectors		;// 取每磁道扇区数。</span><br><span class="line">    sub ax,sread		;// 减去当前磁道已读扇区数。</span><br><span class="line">    mov dx,ax			;// ax = 当前磁道未读扇区数。</span><br><span class="line">    mov cl,9</span><br><span class="line">    shl dx,cl			;// dx = ax * 512 字节。</span><br><span class="line">    add dx,bx			;// dx = dx + 段内当前偏移值（bx）</span><br><span class="line">                        ;//    = 此次读操作后，段内共读入的字节数。</span><br><span class="line">    jnc ok2_read		;// 若没有超过64KB字节，则跳转至ok2_read处执行。</span><br><span class="line">    je ok2_read</span><br><span class="line">    xor ax,ax			;// 若加上此次将读磁道上所有未读扇区时会超过64KB，则计算</span><br><span class="line">    sub ax,bx			;// 此时最多能读入的字节数（64KB － 段内读偏移位置），再转换</span><br><span class="line">    shr ax,cl			;// 成需要读取的扇区数。</span><br></pre></td></tr></table></figure>
+
+<p>因为实模式下寄存器最多寻址64kb，所以需要判断是否需要修改段寄存器,这里我觉得比较有意思的是直接用0减去段内偏移，再把结果当作无符号数做运算得到需要读取扇区数</p>
+<p><code>sub ax,bx</code>ax为0时相当于得到bx的补码也就相当于做了无符号运算0x1 0000-bx，由于寄存器位数限制无法直接操作0x1 0000，感觉这种方法确实好</p>
+<h2 id="setup-s"><a href="#setup-s" class="headerlink" title="setup.s"></a>setup.s</h2><p>准备进入保护模式前先关了中断，这是因为此时idtr寄存器指向0，即bios的中断向量表，后面setup把system移动到0x0处，会覆盖掉这个表，中断也就g了</p>
+<p>然后加载中断描述符表和全局描述符表</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">lidt fword ptr idt_48            ;// 加载中断描述符表(idt)寄存器，idt_48 是6 字节操作数的位置</span><br><span class="line">;// 前2 字节表示idt 表的限长，后4 字节表示idt 表所处的基地址。</span><br><span class="line">lgdt fword ptr gdt_48            ;// 加载全局描述符表(gdt)寄存器，gdt_48 是6 字节操作数的位置</span><br></pre></td></tr></table></figure>
+
+<p>lidt lgdt 前两个字节是描述符表的长度限制，后四个字节是描述符表的线性基地址</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">idt_48:</span><br><span class="line">    dw	0			;// idt limit=0</span><br><span class="line">    dw	0,0			;// idt base=0L </span><br><span class="line">gdt_48:</span><br><span class="line">    dw	800h		;// 全局表长度为2k 字节，因为每8 字节组成一个段描述符项 所以表中共可有256 项。</span><br><span class="line">    dw	512+gdt,9h	;// 小端序，4个字节构成的内存线性地址：0009&lt;&lt;16 + 0200+gdt 也即90200 + gdt标号。</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">gdt:</span><br><span class="line">    dw	0,0,0,0		;// 第0 个描述符，不用。</span><br><span class="line">;// 这里在gdt 表中的偏移量为08，当加载代码段寄存器(段选择符)时，使用的是这个偏移值。</span><br><span class="line">    dw	07FFh		;// 8Mb - limit=2047 (2048*4096=8Mb)</span><br><span class="line">    dw	0000h		;// base address=0</span><br><span class="line">    dw	9A00h		;// code read/exec</span><br><span class="line">    dw	00C0h		;// granularity=4096, 386</span><br><span class="line">;// 这里在gdt 表中的偏移量是10，当加载数据段寄存器(如ds 等)时，使用的是这个偏移值。</span><br><span class="line">    dw	07FFh		;// 8Mb - limit=2047 (2048*4096=8Mb)</span><br><span class="line">    dw	0000h		;// base address=0</span><br><span class="line">    dw	9200h		;// data read/write</span><br><span class="line">    dw	00C0h		;// granularity=4096, 386</span><br></pre></td></tr></table></figure>
+
+<p>第1个描述符00C0 9A00 0000 07FF 代码段描述符 基地址:0x0000 0000 DPL&#x3D;0 非一致性代码段 </p>
+<p>第2个描述符00C0 9200 0000 07FF 数据段描述符 基地址:0x0000 0000 DPL&#x3D;0 向上扩展的数据段 </p>
+<p>lmsw来给cr0的PE赋值启用保护模式标志，lmsw是为了兼容80286，386及以上推荐用mov cr0</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">mov    ax,0001h	;// 保护模式比特位(PE)。</span><br><span class="line">lmsw ax            ;// 就这样加载机器状态字</span><br><span class="line">jmp 8:0          ;// 跳转至cs 段8，偏移0 处。执行system 中的代码</span><br></pre></td></tr></table></figure>
+
+<p>cs段选择子为8即000000001 0 00 </p>
+<ul>
+<li>TI位为0 表示是全局描述符里的1个描述符</li>
+<li>RPL&#x3D;0</li>
+</ul>
+<p>跳转到0地址处system模块执行</p>
+<h2 id="head-s"><a href="#head-s" class="headerlink" title="head.s"></a>head.s</h2><p>程序所在物理地址为0，而且此时还没开启分页</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">lss esp,_stack_start    ;<span class="comment">// 表示_stack_start -&gt; ss:esp，设置系统堆栈。</span></span><br></pre></td></tr></table></figure>
+
+<p>_stack_start定义在kernel&#x2F;sched.c</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="type">long</span> user_stack[PAGE_SIZE &gt;&gt; <span class="number">2</span>];    <span class="comment">// 定义系统堆栈指针，4K。指针指在最后一项。</span></span><br><span class="line">stack_start = &#123;&amp;user_stack[PAGE_SIZE &gt;&gt; <span class="number">2</span>], <span class="number">0x10</span>&#125;;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>lss指令把stack_start 前四字节装入ESP寄存器，后两字节装入SS</p>
+</blockquote>
+<p>重新设置了idt表和gdt表后(只是把表长变为了16M),因为前面0地址处的代码已经执行完了就没用了，所以用来做了页目录表</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">_pg_dir:        ;<span class="comment">// 页目录将会存放在这里。</span></span><br></pre></td></tr></table></figure>
+
+<p>并且在后面设置了4个页表来描述16M的物理内存</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">org 1000h        ;// 从偏移0x1000 处开始是第1 个页表（偏移0 开始处将存放页表目录）。</span><br><span class="line">pg0:</span><br><span class="line"></span><br><span class="line">org 2000h</span><br><span class="line">pg1:</span><br><span class="line"></span><br><span class="line">org 3000h</span><br><span class="line">pg2:</span><br><span class="line"></span><br><span class="line">org 4000h</span><br><span class="line">pg3:</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>stosb, stosw, stosd。这三个指令把al ax eax的内容存储到edi指向的内存单元中，同时edi的值根据方向标志的值增加或者减少</p>
+</blockquote>
+<p>设置页目录项和页表具体操作是先把这5个表清零，然后把页目录表项前四项填上值</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">mov eax,_pg_dir</span><br><span class="line">mov [eax],pg0+7    ;页目录项，前20位表示页表基址，后面的12位为7表示了属性:在物理内存 普通用户可读可写	</span><br><span class="line">mov [eax+4],pg1+7        </span><br><span class="line">mov [eax+8],pg2+7        </span><br><span class="line">mov [eax+12],pg3+7        </span><br></pre></td></tr></table></figure>
+
+<p>设置页表项时倒叙从pag3最后一项开始</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">mov edi,pg3+4092        ;// edi -&gt; 最后一页的最后一项。</span><br><span class="line">mov eax,00fff007h        ;/*  16Mb - 4096 + 7 (r/w user,p) */</span><br><span class="line">;4092-4096是最后一个页表项，此处填写00fff007h来描述16M物理地址最后一个4k属性为在物理内存 普通用户可读可写</span><br></pre></td></tr></table></figure>
+
+<p>把页目录的前四项这样去映射说明了这个任务的前16M线性地址等于物理地址</p>
+<p>最后设置cr3指向物理地址0即页目录，然后设置cr0 pg位开启分页保护 ret到main函数</p>
+<p><img src="/2024/02/22/RTFSC-linux-11/image-20231123112231893.png" alt="image-20231123112231893"></p>
+<h1 id="init"><a href="#init" class="headerlink" title="init"></a>init</h1><h2 id="main-c"><a href="#main-c" class="headerlink" title="main.c"></a>main.c</h2><p>linux0.11管理的最大物理内存是16M，对于不同大小的内存的区域划分是不一样的，以16M物理内存来说</p>
+<p><img src="/2024/02/22/RTFSC-linux-11/image-20231123215714223.png" alt="image-20231123215714223"></p>
+<p>mem_map用来管理除了内核外的15M内存</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="comment">//内存映射字节图(1 字节代表1 页内存)，每个页面对应的字节用于标志页面当前被引用（占用）次数。</span></span><br><span class="line"><span class="type">static</span> <span class="type">unsigned</span> <span class="type">char</span> mem_map [ PAGING_PAGES ] = &#123;<span class="number">0</span>,&#125;;</span><br></pre></td></tr></table></figure>
+
+<p><strong>mem_init</strong>函数过后把3M缓冲区和虚拟盘所在的mem_map字节置为<strong>USED</strong>宏表示<em>页面被占用标志</em>，主内存区mem_map置为0</p>
+<p><strong>trap_init</strong>函数初始化了中断描述符表，中断描述符TYPE位均为1111即为陷阱门，目标代码段描述符选择子均为8(RPL&#x3D;0，TI&#x3D;0,索引&#x3D;1)，，其中<em>3-5</em>号中断描述符的dpl设置为3，其余为0</p>
+<p><img src="/2024/02/22/RTFSC-linux-11/image-20231123215220376.png" alt="image-20231123215220376"></p>
+<blockquote>
+<p>调用INT3 int n INTO等指令产生的中断或异常检测要求</p>
+<ul>
+<li>先检测当前特权级CPL&lt;&#x3D;中断描述符里的DPL</li>
+<li>再检测中断描述符里代码段描述符选择子的RPL &lt; 当前特权级CPL</li>
+</ul>
+<p>由硬件产生的中断或处理器检测到的异常检测要求</p>
+<ul>
+<li>中断描述符里代码段描述符选择子的RPL &lt; 当前特权级CPL</li>
+</ul>
+<p>陷阱门和中断门唯一区别就是中断门处理时会把IF位清零(关中断)，陷阱门不会</p>
+</blockquote>
+<p><strong>sched_init</strong>初始化了任务0在全局描述符表gdt的tss和ldt分别为0x00008901f4480068	0x00008201f4300068</p>
+<p>0x00008901f4480068: S&#x3D;0 TYPE:1001 为tss段描述符</p>
+<p><img src="/2024/02/22/RTFSC-linux-11/image-20231124110911039.png" alt="image-20231124110911039"></p>
+<p>0x00008201f4300068 : S&#x3D;0 TYPE:0010 为 ldt描述符</p>
+<p>tss和ldt描述符的基地址都是该任务task_struct结构体里的成员的地址</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">task_struct</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    ..............</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">desc_struct</span> <span class="title">ldt</span>[3];</span></span><br><span class="line"><span class="comment">/* tss for this task */</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">tss_struct</span> <span class="title">tss</span>;</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>然后把task数组除了第一个任务都清空，再把其余gdt表项都清空，把eflags寄存器的NT位置零，防止后面在iret到用户态时时进行任务切换，把tr寄存器设置为任务0的tss</p>
+<p>对于寻找tss的宏一般人都会这样写<code>#define _TSS2(n) (FIRST_TSS_ENTRY+2*n)&lt;&lt;3</code></p>
+<p>linus的写法<code>#define _TSS(n) ((((unsigned long) n)&lt;&lt;4)+(FIRST_TSS_ENTRY&lt;&lt;3))</code>感觉对于当时性能可能会高些，但是现在编译器优化的bt程度可能性能上没有差别</p>
+<blockquote>
+<p>ltr val指令会把gdt里索引val tss描述符基地址和段限长加载，并把TYPE的B置1，表示任务正忙</p>
+</blockquote>
+<p>设置ldtr寄存器指向任务0的ldt</p>
+<p>设置并允许时钟中断处理，设置系统调用中断0x80(陷阱门，DPL&#x3D;3)</p>
+<p>TODO</p>
+<p>利用iret中断返回切换到用户态</p>
+<p><img src="/2024/02/22/RTFSC-linux-11/image-20231124170448393.png" alt="image-20231124170448393"></p>
+<p>init_task的ldt为<strong>INIT_TASK</strong>宏里ldt[1]&#x3D;0x00c0fa000000009f ldt[2]&#x3D;0x00c0f2000000009f</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="comment">/* ldt[3]*/</span>    &#123;&#123;<span class="number">0</span>, <span class="number">0</span>&#125;, \</span><br><span class="line">    &#123;<span class="number">0x9f</span>, <span class="number">0xc0fa00</span>&#125;, <span class="comment">/* 代码长640K，基址0x0，G=1，D=1，DPL=3，P=1 TYPE=0x0a*/</span>  \</span><br><span class="line">    &#123; <span class="number">0x9f</span>, <span class="number">0xc0f200</span>&#125;,&#125;, <span class="comment">/* 数据长640K，基址0x0，G=1，D=1，DPL=3，P=1 TYPE=0x02*/</span>   \</span><br></pre></td></tr></table></figure>
+
+<p>堆栈段选择符SS:0x17:00010 1 11 代码段选择符为0xf:1 1 11分别对应ldt里的第二项和第一项</p>
+<h1 id="kernel"><a href="#kernel" class="headerlink" title="kernel"></a>kernel</h1><h2 id="asm-s"><a href="#asm-s" class="headerlink" title="asm.s"></a>asm.s</h2><p>at&amp;t语法差别</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">xchgl %eax,(%esp) eax和esp栈顶里的值交互</span><br><span class="line">lea 44(%esp),%edx edx=esp+44</span><br><span class="line">call *%eax 调用eax寄存器里的地址 eip=eax，相当于intel的call eax</span><br><span class="line">*  https://stackoverflow.com/questions/62813954/warning-indirect-call-without</span><br></pre></td></tr></table></figure>
+
+<p>对于无错误码的中断压入0作为默认错误码，这样统一起来处理比较简单(保存现场，传递两个参数old_esp就是cpu帮我们压入几个寄存器的eip的位置,和error_code)</p>
+<h2 id="trap-s"><a href="#trap-s" class="headerlink" title="trap.s"></a>trap.s</h2><p>疑惑的点大多是gcc的“语法糖”和一些不常见的asm inst</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">define</span> get_seg_long(seg,addr) (&#123; \</span></span><br><span class="line"><span class="meta">register unsigned long __res; \</span></span><br><span class="line"><span class="meta">__asm__(<span class="string">&quot;push %%fs;mov %%ax,%%fs;movl %%fs:%2,%%eax;pop %%fs&quot;</span> \</span></span><br><span class="line"><span class="meta">    :<span class="string">&quot;=a&quot;</span> (__res) \ <span class="comment">//表示asm块执行完后把eax值给到__res变量</span></span></span><br><span class="line">    :<span class="string">&quot;0&quot;</span> (seg),<span class="string">&quot;m&quot;</span> (*(addr))); \</span><br><span class="line">    <span class="comment">//0表示使用与上一个位置相同的寄存器但是seg的编号仍然是%1，所以&quot;0&quot; (seg)表示asm块里语句执行前把seg加载进eax</span></span><br><span class="line">    <span class="comment">//&quot;m&quot; (*(addr)) 表示一个内存偏移地址值</span></span><br><span class="line">__res;&#125;)<span class="comment">//返回值为__res</span></span><br></pre></td></tr></table></figure>
+
+<p>首先就是({…})的语句块，语义上这个语句块等于一条语句，语句块的局部变量随语句块结束失效，语句块最后一个表达式就是这个语句块的返回值</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="type">int</span> v = x+(&#123;<span class="built_in">puts</span>(<span class="string">&quot;gr&quot;</span>);z+<span class="number">3</span>;&#125;)+y 等价于 v= x+z+<span class="number">3</span>+y</span><br></pre></td></tr></table></figure>
+
+<p>lsl指令 load segment limit</p>
+<p>str指令 store task regist</p>
+<p>TODO 暂时没读懂的点: die里str(i)如何获取任务号</p>
+<h2 id="system-call-s"><a href="#system-call-s" class="headerlink" title="system_call.s"></a>system_call.s</h2><p>syscall的时候fs寄存器保持了三环状态，可以用来访问用户数据</p>
+<p>用push和jmp模拟可指定返回地址的call</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">pushl $ret_from_sys_call</span><br><span class="line">jmp schedule</span><br></pre></td></tr></table></figure>
+
+<p>sys_execve和sys_fork是个系统调用不是中断，用了ret而不是iret，(可能是不想单独再开个asm文件写)</p>
+
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+         
+          <li><a href="/">Home</a></li>
+         
+          <li><a href="/archives/">Writing</a></li>
+         
+          <li><a href="/search/">Search</a></li>
+         
+          <li><a href="/tags/">Tag</a></li>
+         
+          <li><a href="/about/">About</a></li>
+        
+      </ul>
+    </div>
+
+    <div id="toc-footer" style="display: none">
+      <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#RTFSC"><span class="toc-number">1.</span> <span class="toc-text">RTFSC</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#boot"><span class="toc-number">2.</span> <span class="toc-text">boot</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#bootsect-s"><span class="toc-number">2.1.</span> <span class="toc-text">bootsect.s</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#setup-s"><span class="toc-number">2.2.</span> <span class="toc-text">setup.s</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#head-s"><span class="toc-number">2.3.</span> <span class="toc-text">head.s</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#init"><span class="toc-number">3.</span> <span class="toc-text">init</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#main-c"><span class="toc-number">3.1.</span> <span class="toc-text">main.c</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#kernel"><span class="toc-number">4.</span> <span class="toc-text">kernel</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#asm-s"><span class="toc-number">4.1.</span> <span class="toc-text">asm.s</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#trap-s"><span class="toc-number">4.2.</span> <span class="toc-text">trap.s</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#system-call-s"><span class="toc-number">4.3.</span> <span class="toc-text">system_call.s</span></a></li></ol></li></ol>
+    </div>
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://grxer.gitee.io/2024/02/22/RTFSC-linux-11/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://grxer.gitee.io/2024/02/22/RTFSC-linux-11/&text=RTFSC linux0.11 ing"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://grxer.gitee.io/2024/02/22/RTFSC-linux-11/&title=RTFSC linux0.11 ing"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://grxer.gitee.io/2024/02/22/RTFSC-linux-11/&is_video=false&description=RTFSC linux0.11 ing"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=RTFSC linux0.11 ing&body=Check out this article: https://grxer.gitee.io/2024/02/22/RTFSC-linux-11/"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://grxer.gitee.io/2024/02/22/RTFSC-linux-11/&title=RTFSC linux0.11 ing"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://grxer.gitee.io/2024/02/22/RTFSC-linux-11/&title=RTFSC linux0.11 ing"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://grxer.gitee.io/2024/02/22/RTFSC-linux-11/&title=RTFSC linux0.11 ing"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://grxer.gitee.io/2024/02/22/RTFSC-linux-11/&title=RTFSC linux0.11 ing"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://grxer.gitee.io/2024/02/22/RTFSC-linux-11/&name=RTFSC linux0.11 ing&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://grxer.gitee.io/2024/02/22/RTFSC-linux-11/&t=RTFSC linux0.11 ing"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fas fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
+        <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fas fa-list fa-lg" aria-hidden="true"></i> TOC</a>
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fas fa-share-alt fa-lg" aria-hidden="true"></i> Share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2023
+    bxz
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a href="/search/">Search</a></li><!--
+     --><!--
+       --><li><a href="/tags/">Tag</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+ 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script> 
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script> 
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"Copy to clipboard!\">";
+    btn += '<i class="far fa-clone"></i>';
+    btn += '</span>'; 
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "Copied!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Google Analytics -->
+
+<!-- Baidu Analytics -->
+
+  <script type="text/javascript">
+        var _hmt = _hmt || [];
+        (function() {
+          var hm = document.createElement("script");
+          hm.src = "https://hm.baidu.com/hm.js?a22ef0bec4e4a9c7337bea6e37ff55c1";
+          var s = document.getElementsByTagName("script")[0];
+          s.parentNode.insertBefore(hm, s);
+        })();
+        </script>
+
+<!-- Cloudflare Analytics -->
+
+<!-- Umami Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+</body>
+</html>
