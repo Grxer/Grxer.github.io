@@ -10,7 +10,7 @@
     <meta name="msvalidate.01" content="ECA3E06A0E52A2AC90C4B06F12981FB2" />
     <meta name="description" content="基本上每天一个文件吧 RTFSC有makefile https:&#x2F;&#x2F;github.com&#x2F;cyysu&#x2F;linux0.11&#x2F;tree&#x2F;master无makefile https:&#x2F;&#x2F;github.com&#x2F;beride&#x2F;linux0.11-1 可编译调试的 https:&#x2F;&#x2F;github.com&#x2F;yuan-xy&#x2F;Linux-0.11 从服务器启动qemu无图形界面: -curses(在教室开虚拟机太耗">
 <meta property="og:type" content="article">
-<meta property="og:title" content="RTFSC linux0.11 ing">
+<meta property="og:title" content="linux0.11内核源码阅读ing">
 <meta property="og:url" content="https://grxer.gitee.io/2024/02/22/RTFSC-linux-11/index.html">
 <meta property="og:site_name" content="Grxer&#39;s Blog">
 <meta property="og:description" content="基本上每天一个文件吧 RTFSC有makefile https:&#x2F;&#x2F;github.com&#x2F;cyysu&#x2F;linux0.11&#x2F;tree&#x2F;master无makefile https:&#x2F;&#x2F;github.com&#x2F;beride&#x2F;linux0.11-1 可编译调试的 https:&#x2F;&#x2F;github.com&#x2F;yuan-xy&#x2F;Linux-0.11 从服务器启动qemu无图形界面: -curses(在教室开虚拟机太耗">
@@ -20,9 +20,14 @@
 <meta property="og:image" content="https://grxer.gitee.io/2024/02/22/RTFSC-linux-11/image-20231123215220376.png">
 <meta property="og:image" content="https://grxer.gitee.io/2024/02/22/RTFSC-linux-11/image-20231124110911039.png">
 <meta property="og:image" content="https://grxer.gitee.io/2024/02/22/RTFSC-linux-11/image-20231124170448393.png">
+<meta property="og:image" content="https://grxer.gitee.io/2024/02/22/RTFSC-linux-11/image-20231130125348019.png">
+<meta property="og:image" content="https://grxer.gitee.io/2024/02/22/RTFSC-linux-11/image-20231202124200694.png">
+<meta property="og:image" content="https://grxer.gitee.io/2024/02/22/RTFSC-linux-11/image-20231202124403747.png">
+<meta property="og:image" content="https://grxer.gitee.io/2024/02/22/RTFSC-linux-11/image-20231202125100060.png">
 <meta property="article:published_time" content="2024-02-22T08:10:28.000Z">
-<meta property="article:modified_time" content="2023-11-27T08:20:38.285Z">
+<meta property="article:modified_time" content="2023-12-02T04:54:05.266Z">
 <meta property="article:author" content="bxz">
+<meta property="article:tag" content="RTFSC">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://grxer.gitee.io/2024/02/22/RTFSC-linux-11/image-20231123112231893.png">
     
@@ -44,7 +49,7 @@
       
     
     <!-- title -->
-    <title>RTFSC linux0.11 ing</title>
+    <title>linux0.11内核源码阅读ing</title>
     <!-- styles -->
     
 <link rel="stylesheet" href="/css/style.css">
@@ -111,21 +116,21 @@
     <div id="share" style="display: none">
       <ul>
   <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://grxer.gitee.io/2024/02/22/RTFSC-linux-11/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://grxer.gitee.io/2024/02/22/RTFSC-linux-11/&text=RTFSC linux0.11 ing"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://grxer.gitee.io/2024/02/22/RTFSC-linux-11/&title=RTFSC linux0.11 ing"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://grxer.gitee.io/2024/02/22/RTFSC-linux-11/&is_video=false&description=RTFSC linux0.11 ing"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
-  <li><a class="icon" href="mailto:?subject=RTFSC linux0.11 ing&body=Check out this article: https://grxer.gitee.io/2024/02/22/RTFSC-linux-11/"><i class="fas fa-envelope " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://grxer.gitee.io/2024/02/22/RTFSC-linux-11/&title=RTFSC linux0.11 ing"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://grxer.gitee.io/2024/02/22/RTFSC-linux-11/&title=RTFSC linux0.11 ing"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://grxer.gitee.io/2024/02/22/RTFSC-linux-11/&title=RTFSC linux0.11 ing"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://grxer.gitee.io/2024/02/22/RTFSC-linux-11/&title=RTFSC linux0.11 ing"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://grxer.gitee.io/2024/02/22/RTFSC-linux-11/&name=RTFSC linux0.11 ing&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://grxer.gitee.io/2024/02/22/RTFSC-linux-11/&t=RTFSC linux0.11 ing"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://grxer.gitee.io/2024/02/22/RTFSC-linux-11/&text=linux0.11内核源码阅读ing"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://grxer.gitee.io/2024/02/22/RTFSC-linux-11/&title=linux0.11内核源码阅读ing"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://grxer.gitee.io/2024/02/22/RTFSC-linux-11/&is_video=false&description=linux0.11内核源码阅读ing"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=linux0.11内核源码阅读ing&body=Check out this article: https://grxer.gitee.io/2024/02/22/RTFSC-linux-11/"><i class="fas fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://grxer.gitee.io/2024/02/22/RTFSC-linux-11/&title=linux0.11内核源码阅读ing"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://grxer.gitee.io/2024/02/22/RTFSC-linux-11/&title=linux0.11内核源码阅读ing"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://grxer.gitee.io/2024/02/22/RTFSC-linux-11/&title=linux0.11内核源码阅读ing"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://grxer.gitee.io/2024/02/22/RTFSC-linux-11/&title=linux0.11内核源码阅读ing"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://grxer.gitee.io/2024/02/22/RTFSC-linux-11/&name=linux0.11内核源码阅读ing&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://grxer.gitee.io/2024/02/22/RTFSC-linux-11/&t=linux0.11内核源码阅读ing"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
 </ul>
 
     </div>
     <div id="toc">
-      <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#RTFSC"><span class="toc-number">1.</span> <span class="toc-text">RTFSC</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#boot"><span class="toc-number">2.</span> <span class="toc-text">boot</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#bootsect-s"><span class="toc-number">2.1.</span> <span class="toc-text">bootsect.s</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#setup-s"><span class="toc-number">2.2.</span> <span class="toc-text">setup.s</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#head-s"><span class="toc-number">2.3.</span> <span class="toc-text">head.s</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#init"><span class="toc-number">3.</span> <span class="toc-text">init</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#main-c"><span class="toc-number">3.1.</span> <span class="toc-text">main.c</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#kernel"><span class="toc-number">4.</span> <span class="toc-text">kernel</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#asm-s"><span class="toc-number">4.1.</span> <span class="toc-text">asm.s</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#trap-s"><span class="toc-number">4.2.</span> <span class="toc-text">trap.s</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#system-call-s"><span class="toc-number">4.3.</span> <span class="toc-text">system_call.s</span></a></li></ol></li></ol>
+      <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#RTFSC"><span class="toc-number">1.</span> <span class="toc-text">RTFSC</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#boot"><span class="toc-number">2.</span> <span class="toc-text">boot</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#bootsect-s"><span class="toc-number">2.1.</span> <span class="toc-text">bootsect.s</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#setup-s"><span class="toc-number">2.2.</span> <span class="toc-text">setup.s</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#head-s"><span class="toc-number">2.3.</span> <span class="toc-text">head.s</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#init"><span class="toc-number">3.</span> <span class="toc-text">init</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#main-c"><span class="toc-number">3.1.</span> <span class="toc-text">main.c</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#kernel"><span class="toc-number">4.</span> <span class="toc-text">kernel</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#asm-s"><span class="toc-number">4.1.</span> <span class="toc-text">asm.s</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#trap-s"><span class="toc-number">4.2.</span> <span class="toc-text">trap.s</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#system-call-s"><span class="toc-number">4.3.</span> <span class="toc-text">system_call.s</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#sched-c"><span class="toc-number">4.4.</span> <span class="toc-text">sched.c</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#signal-c"><span class="toc-number">4.5.</span> <span class="toc-text">signal.c</span></a></li></ol></li></ol>
     </div>
   </span>
 </div>
@@ -137,7 +142,7 @@
   <header>
     
     <h1 class="posttitle" itemprop="name headline">
-        RTFSC linux0.11 ing
+        linux0.11内核源码阅读ing
     </h1>
 
 
@@ -158,6 +163,11 @@
       
 
       
+    <div class="article-tag">
+        <i class="fas fa-tag"></i>
+        <a class="tag-link-link" href="/tags/RTFSC/" rel="tag">RTFSC</a>
+    </div>
+
 
     </div>
   </header>
@@ -279,7 +289,7 @@
 <figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">xchgl %eax,(%esp) eax和esp栈顶里的值交互</span><br><span class="line">lea 44(%esp),%edx edx=esp+44</span><br><span class="line">call *%eax 调用eax寄存器里的地址 eip=eax，相当于intel的call eax</span><br><span class="line">*  https://stackoverflow.com/questions/62813954/warning-indirect-call-without</span><br></pre></td></tr></table></figure>
 
 <p>对于无错误码的中断压入0作为默认错误码，这样统一起来处理比较简单(保存现场，传递两个参数old_esp就是cpu帮我们压入几个寄存器的eip的位置,和error_code)</p>
-<h2 id="trap-s"><a href="#trap-s" class="headerlink" title="trap.s"></a>trap.s</h2><p>疑惑的点大多是gcc的“语法糖”和一些不常见的asm inst</p>
+<h2 id="trap-s"><a href="#trap-s" class="headerlink" title="trap.s"></a>trap.s</h2><p>疑惑的点大多是gcc的“语法”和一些不常见的asm inst</p>
 <figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">define</span> get_seg_long(seg,addr) (&#123; \</span></span><br><span class="line"><span class="meta">register unsigned long __res; \</span></span><br><span class="line"><span class="meta">__asm__(<span class="string">&quot;push %%fs;mov %%ax,%%fs;movl %%fs:%2,%%eax;pop %%fs&quot;</span> \</span></span><br><span class="line"><span class="meta">    :<span class="string">&quot;=a&quot;</span> (__res) \ <span class="comment">//表示asm块执行完后把eax值给到__res变量</span></span></span><br><span class="line">    :<span class="string">&quot;0&quot;</span> (seg),<span class="string">&quot;m&quot;</span> (*(addr))); \</span><br><span class="line">    <span class="comment">//0表示使用与上一个位置相同的寄存器但是seg的编号仍然是%1，所以&quot;0&quot; (seg)表示asm块里语句执行前把seg加载进eax</span></span><br><span class="line">    <span class="comment">//&quot;m&quot; (*(addr)) 表示一个内存偏移地址值</span></span><br><span class="line">__res;&#125;)<span class="comment">//返回值为__res</span></span><br></pre></td></tr></table></figure>
 
 <p>首先就是({…})的语句块，语义上这个语句块等于一条语句，语句块的局部变量随语句块结束失效，语句块最后一个表达式就是这个语句块的返回值</p>
@@ -293,6 +303,55 @@
 <figure class="highlight c"><table><tr><td class="code"><pre><span class="line">pushl $ret_from_sys_call</span><br><span class="line">jmp schedule</span><br></pre></td></tr></table></figure>
 
 <p>sys_execve和sys_fork是个系统调用不是中断，用了ret而不是iret，(可能是不想单独再开个asm文件写)</p>
+<h2 id="sched-c"><a href="#sched-c" class="headerlink" title="sched.c"></a>sched.c</h2><p>**show_task()**函数</p>
+<p>要理解j &#x3D; 4096-sizeof(struct task_struct);需要看下面的联合体 可以看出j就是栈的大小</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">union</span> <span class="title">task_union</span></span></span><br><span class="line"><span class="class">&#123;</span>                <span class="comment">// 定义任务联合(任务结构成员和stack 字符数组程序成员)。</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">task_struct</span> <span class="title">task</span>;</span>	<span class="comment">// 因为一个任务数据结构与其堆栈放在同一内存页中，所以</span></span><br><span class="line">    <span class="type">char</span> <span class="built_in">stack</span>[PAGE_SIZE];	<span class="comment">// 从堆栈段寄存器ss 可以获得其数据段选择符。</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>后面就是(p + 1)也就是跳过这个结构体，去得到未使用的栈大小，因为栈是从高地址往低地址长的</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">i = <span class="number">0</span>;</span><br><span class="line"><span class="keyword">while</span> (i &lt; j &amp;&amp; !((<span class="type">char</span> *) (p + <span class="number">1</span>))[i])    <span class="comment">// 检测指定任务数据结构以后等于0 的字节数。</span></span><br><span class="line">    i++;</span><br></pre></td></tr></table></figure>
+
+<p>**schedule()**函数</p>
+<p>里首先比较了每个任务的task_struct-&gt;alarm和全局的滴答数字jiffies，小于则设置SIGALRM信号，jiffies是从开机到现在的滴答数，10ms一次的时钟中断用<strong>sys_call.s里的_timer_interrupt中断处理会把jiffies+1</strong></p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="keyword">if</span> (((*p)-&gt;signal &amp; ~(_BLOCKABLE &amp; (*p)-&gt;blocked)) &amp;&amp;</span><br><span class="line">_BLOCKABLE宏展开是<span class="number">0xfffbfeff</span> 再&amp;上block取非 再 &amp;信号 相当于取了信号位图中除被阻塞的信号外的其它信号</span><br></pre></td></tr></table></figure>
+
+<p>然后比较得到任务中最大的时间片task-&gt;count，switch_to函数切换到该任务(使用ljmp tss切换的，会把当前寄存器现场写到当前tss段（也就是说switch_to函数在下次该任务调度前不会返回)，然后恢复ljmp指定tss的现场执行)</p>
+<p>如果时间片都为0则用counter &#x3D; counter &#x2F;2 + priority赋值时间片，再次循环</p>
+<p><strong>sleep_on函数</strong></p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="type">void</span> <span class="title function_">sleep_on</span> <span class="params">(<span class="keyword">struct</span> task_struct **p)</span><span class="comment">//*p是因为正在等待某个资源而睡眠的任务的队列链表的头部</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">task_struct</span> *<span class="title">tmp</span>;</span><span class="comment">//栈上形成的临时节点，就相当于链表的next指针啦</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 若指针无效，则退出。（指针所指的对象可以是NULL，但指针本身不会为0)。</span></span><br><span class="line">    <span class="keyword">if</span> (!p)</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    <span class="keyword">if</span> (current == &amp;(init_task.task))	<span class="comment">// 如果当前任务是任务0，则死机(impossible!)。</span></span><br><span class="line">        panic (<span class="string">&quot;task[0] trying to sleep&quot;</span>);</span><br><span class="line">    tmp = *p;			<span class="comment">// 让tmp 指向已经在等待队列上的任务(如果有的话)。</span></span><br><span class="line">    *p = current;			<span class="comment">// 当前任务调用了，所有将睡眠队列头的等待指针指向当前任务。</span></span><br><span class="line">    current-&gt;state = TASK_UNINTERRUPTIBLE;	<span class="comment">// 将当前任务置为不可中断的等待状态。</span></span><br><span class="line">    schedule ();			<span class="comment">// 重新调度。</span></span><br><span class="line"><span class="comment">// 只有当这个等待任务被唤醒时，调度程序才又返回到这里，则表示进程已被明确地唤醒。</span></span><br><span class="line"><span class="comment">// 既然大家都在等待同样的资源，那么在资源可用时，就有必要唤醒所有等待该资源的进程。该函数</span></span><br><span class="line"><span class="comment">// 嵌套调用，也会嵌套唤醒所有等待该资源的进程。然后系统会根据这些进程的优先条件，重新调度</span></span><br><span class="line"><span class="comment">// 应该由哪个进程首先使用资源。也即让这些进程竞争上岗。</span></span><br><span class="line">    <span class="keyword">if</span> (tmp)			<span class="comment">// 若还存在等待的任务，则也将其置为就绪状态（唤醒）。</span></span><br><span class="line">        tmp-&gt;state = TASK_RUNNING;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>p可以类似于是<code>static struct task_struct *wait_motor[4] = &#123; NULL, NULL, NULL, NULL &#125;;</code>，这个数组就相当于四个链表头</p>
+<p>*p和当前任务的栈上的tmp指针就会形成下面等待某一个资源的任务链表<img src="/2024/02/22/RTFSC-linux-11/image-20231130125348019.png" alt="image-20231130125348019"></p>
+<p>当资源可以被抢占后，上图中的*p指向的”当前任务“返回执行调度前的代码,就可以从当前栈上访问到tmp了</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="keyword">if</span> (tmp)            <span class="comment">// 若还存在等待的任务，则也将其置为就绪状态（唤醒）。</span></span><br><span class="line">        tmp-&gt;state = TASK_RUNNING;</span><br></pre></td></tr></table></figure>
+
+<p>也就是把task2的state置为可调度状态，task2被调度执行时，task2重复“当前任务”上面的过程，把task1的state置为可调度，task1的tmp&#x3D;0，说明他是第一个等待该资源的任务，没用上一个了</p>
+<p><strong>interruptible_sleep_on()函数</strong></p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">repeat:    current-&gt;state = TASK_INTERRUPTIBLE;</span><br><span class="line">    schedule();</span><br><span class="line">    <span class="keyword">if</span> (*p &amp;&amp; *p != current) &#123;<span class="comment">//先唤醒当前任务进入等待队列链表之后进入的任务</span></span><br><span class="line">        (**p).state = TASK_RUNNING;</span><br><span class="line">        <span class="keyword">goto</span> repeat;</span><br><span class="line">    &#125;</span><br><span class="line">    *p=tmp;<span class="comment">//执行到这里说明*p=current，下面几句代码就可以把等待链表里的任务FIFO的方式被调度</span></span><br><span class="line">    <span class="keyword">if</span> (tmp)</span><br><span class="line">        tmp-&gt;state=TASK_RUNNING;</span><br></pre></td></tr></table></figure>
+
+<h2 id="signal-c"><a href="#signal-c" class="headerlink" title="signal.c"></a>signal.c</h2><p>首先是signal.h里的一个难理解的函数声明</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="type">void</span> (*signal(<span class="type">int</span> _signr, <span class="type">void</span> (*_handle)(<span class="type">int</span>)))(<span class="type">int</span>);</span><br><span class="line"><span class="comment">//这里void (*和后面的(int)是声明signal的返回值是一个void(*func)(int)类型的函数指针</span></span><br></pre></td></tr></table></figure>
+
+<p>写成下面的方式更容易理解</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="type">void</span> <span class="title function_">sigfun</span><span class="params">(<span class="type">int</span>)</span></span><br><span class="line">sigfun *<span class="title function_">signal</span><span class="params">(<span class="type">int</span> signr,sigfun *handle)</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>do_signal()函数</strong></p>
+<p>do_signal函数是在system_call.s中ret_from_sys_call检测到current-&gt;signal有信号时被调用，do_signal的参数也是在那里压入栈的</p>
+<p>do_signal里巧妙处理</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">*(&amp;eip) = sa_handler;<span class="comment">//改掉进入中断时处理器帮助我们压入的eip，这样返回到ret_from_sys_call里iret时就会执行用户态的信号处理函数</span></span><br><span class="line">longs = (sa-&gt;sa_flags &amp; SA_NOMASK)?<span class="number">7</span>:<span class="number">8</span>;<span class="comment">//和下面if判断有关</span></span><br><span class="line">*(&amp;esp) -= longs;<span class="comment">//构造堆栈控制执行流</span></span><br><span class="line">verify_area(esp,longs*<span class="number">4</span>);</span><br><span class="line">tmp_esp=esp;</span><br><span class="line">put_fs_long((<span class="type">long</span>) sa-&gt;sa_restorer,tmp_esp++);<span class="comment">//相当于sa_handler的返回地址</span></span><br><span class="line">put_fs_long(signr,tmp_esp++);<span class="comment">//sa_handler的第一个参数</span></span><br><span class="line"><span class="keyword">if</span> (!(sa-&gt;sa_flags &amp; SA_NOMASK))<span class="comment">//没有设置SA_NOMASK即不允许信号自己的处理句柄收到信号自己</span></span><br><span class="line">    put_fs_long(current-&gt;blocked,tmp_esp++);</span><br><span class="line">put_fs_long(eax,tmp_esp++);<span class="comment">//保护系统调用返回值</span></span><br><span class="line">put_fs_long(ecx,tmp_esp++);<span class="comment">//保护寄存器</span></span><br><span class="line">put_fs_long(edx,tmp_esp++);<span class="comment">//保护寄存器</span></span><br><span class="line">put_fs_long(eflags,tmp_esp++);<span class="comment">//保护寄存器</span></span><br><span class="line">put_fs_long(old_eip,tmp_esp++);<span class="comment">//处理完信号用来返回到用户程序处继续执行</span></span><br><span class="line">current-&gt;blocked |= sa-&gt;sa_mask;</span><br></pre></td></tr></table></figure>
+
+<p>此时栈的情况</p>
+<p><img src="/2024/02/22/RTFSC-linux-11/image-20231202124200694.png" alt="image-20231202124200694"></p>
+<p>要理解<code>if (!(sa-&gt;sa_flags &amp; SA_NOMASK))//没有设置SA_NOMASK即允许信号自己的处理句柄收到信号自己</code>需要看下面的<strong>sys_sigaction</strong>函数里的内容</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="keyword">if</span> (current-&gt;sigaction[signum - <span class="number">1</span>].sa_flags &amp; SA_NOMASK)</span><br><span class="line">    current-&gt;sigaction[signum - <span class="number">1</span>].sa_mask = <span class="number">0</span>;</span><br><span class="line"><span class="keyword">else</span></span><br><span class="line">    current-&gt;sigaction[signum - <span class="number">1</span>].sa_mask |= (<span class="number">1</span> &lt;&lt; (signum - <span class="number">1</span>));<span class="comment">//没有设置SA_NOMASK会设置屏蔽码</span></span><br><span class="line"><span class="keyword">return</span> <span class="number">0</span>;</span><br></pre></td></tr></table></figure>
+
+<p>do_signal最后一句<code>current-&gt;blocked |= sa-&gt;sa_mask;设置阻塞当前信号</code>，这里<code>put_fs_long(current-&gt;blocked,tmp_esp++);</code>保存主要是为了信号处理完后恢复阻塞，从而避免了传统sys_signal的问题</p>
+<p>sa_restorer也根据是否设置SA_NOMASK分为下面两种情况</p>
+<p><img src="/2024/02/22/RTFSC-linux-11/image-20231202124403747.png" alt="image-20231202124403747"></p>
+<p><img src="/2024/02/22/RTFSC-linux-11/image-20231202125100060.png" alt="image-20231202125100060"></p>
+<p>此时设置了SA_NOMASK会调用signal.c的<strong>sys_ssetmask</strong> (int newmask)恢复</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="type">int</span> <span class="title function_">sys_ssetmask</span> <span class="params">(<span class="type">int</span> newmask)</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="type">int</span> old = current-&gt;blocked;</span><br><span class="line"></span><br><span class="line">    current-&gt;blocked = newmask &amp; ~(<span class="number">1</span> &lt;&lt; (SIGKILL - <span class="number">1</span>));</span><br><span class="line">    <span class="keyword">return</span> old;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>再进行add esp的外平栈，再pop，再ret到old_eip</p>
 
   </div>
 </article>
@@ -320,22 +379,22 @@
     </div>
 
     <div id="toc-footer" style="display: none">
-      <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#RTFSC"><span class="toc-number">1.</span> <span class="toc-text">RTFSC</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#boot"><span class="toc-number">2.</span> <span class="toc-text">boot</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#bootsect-s"><span class="toc-number">2.1.</span> <span class="toc-text">bootsect.s</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#setup-s"><span class="toc-number">2.2.</span> <span class="toc-text">setup.s</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#head-s"><span class="toc-number">2.3.</span> <span class="toc-text">head.s</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#init"><span class="toc-number">3.</span> <span class="toc-text">init</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#main-c"><span class="toc-number">3.1.</span> <span class="toc-text">main.c</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#kernel"><span class="toc-number">4.</span> <span class="toc-text">kernel</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#asm-s"><span class="toc-number">4.1.</span> <span class="toc-text">asm.s</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#trap-s"><span class="toc-number">4.2.</span> <span class="toc-text">trap.s</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#system-call-s"><span class="toc-number">4.3.</span> <span class="toc-text">system_call.s</span></a></li></ol></li></ol>
+      <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#RTFSC"><span class="toc-number">1.</span> <span class="toc-text">RTFSC</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#boot"><span class="toc-number">2.</span> <span class="toc-text">boot</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#bootsect-s"><span class="toc-number">2.1.</span> <span class="toc-text">bootsect.s</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#setup-s"><span class="toc-number">2.2.</span> <span class="toc-text">setup.s</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#head-s"><span class="toc-number">2.3.</span> <span class="toc-text">head.s</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#init"><span class="toc-number">3.</span> <span class="toc-text">init</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#main-c"><span class="toc-number">3.1.</span> <span class="toc-text">main.c</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#kernel"><span class="toc-number">4.</span> <span class="toc-text">kernel</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#asm-s"><span class="toc-number">4.1.</span> <span class="toc-text">asm.s</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#trap-s"><span class="toc-number">4.2.</span> <span class="toc-text">trap.s</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#system-call-s"><span class="toc-number">4.3.</span> <span class="toc-text">system_call.s</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#sched-c"><span class="toc-number">4.4.</span> <span class="toc-text">sched.c</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#signal-c"><span class="toc-number">4.5.</span> <span class="toc-text">signal.c</span></a></li></ol></li></ol>
     </div>
 
     <div id="share-footer" style="display: none">
       <ul>
   <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://grxer.gitee.io/2024/02/22/RTFSC-linux-11/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://grxer.gitee.io/2024/02/22/RTFSC-linux-11/&text=RTFSC linux0.11 ing"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://grxer.gitee.io/2024/02/22/RTFSC-linux-11/&title=RTFSC linux0.11 ing"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://grxer.gitee.io/2024/02/22/RTFSC-linux-11/&is_video=false&description=RTFSC linux0.11 ing"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" href="mailto:?subject=RTFSC linux0.11 ing&body=Check out this article: https://grxer.gitee.io/2024/02/22/RTFSC-linux-11/"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://grxer.gitee.io/2024/02/22/RTFSC-linux-11/&title=RTFSC linux0.11 ing"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://grxer.gitee.io/2024/02/22/RTFSC-linux-11/&title=RTFSC linux0.11 ing"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://grxer.gitee.io/2024/02/22/RTFSC-linux-11/&title=RTFSC linux0.11 ing"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://grxer.gitee.io/2024/02/22/RTFSC-linux-11/&title=RTFSC linux0.11 ing"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://grxer.gitee.io/2024/02/22/RTFSC-linux-11/&name=RTFSC linux0.11 ing&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://grxer.gitee.io/2024/02/22/RTFSC-linux-11/&t=RTFSC linux0.11 ing"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://grxer.gitee.io/2024/02/22/RTFSC-linux-11/&text=linux0.11内核源码阅读ing"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://grxer.gitee.io/2024/02/22/RTFSC-linux-11/&title=linux0.11内核源码阅读ing"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://grxer.gitee.io/2024/02/22/RTFSC-linux-11/&is_video=false&description=linux0.11内核源码阅读ing"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=linux0.11内核源码阅读ing&body=Check out this article: https://grxer.gitee.io/2024/02/22/RTFSC-linux-11/"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://grxer.gitee.io/2024/02/22/RTFSC-linux-11/&title=linux0.11内核源码阅读ing"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://grxer.gitee.io/2024/02/22/RTFSC-linux-11/&title=linux0.11内核源码阅读ing"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://grxer.gitee.io/2024/02/22/RTFSC-linux-11/&title=linux0.11内核源码阅读ing"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://grxer.gitee.io/2024/02/22/RTFSC-linux-11/&title=linux0.11内核源码阅读ing"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://grxer.gitee.io/2024/02/22/RTFSC-linux-11/&name=linux0.11内核源码阅读ing&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://grxer.gitee.io/2024/02/22/RTFSC-linux-11/&t=linux0.11内核源码阅读ing"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
 </ul>
 
     </div>
