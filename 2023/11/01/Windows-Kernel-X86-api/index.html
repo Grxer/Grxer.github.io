@@ -21,7 +21,7 @@
 <meta property="og:image" content="https://grxer.gitee.io/2023/11/01/Windows-Kernel-X86-api/image-20231103230718438.png">
 <meta property="og:image" content="https://grxer.gitee.io/2023/11/01/Windows-Kernel-X86-api/image-20231103230739865.png">
 <meta property="article:published_time" content="2023-11-01T15:03:23.000Z">
-<meta property="article:modified_time" content="2024-01-17T09:49:21.136Z">
+<meta property="article:modified_time" content="2024-03-12T07:10:49.154Z">
 <meta property="article:author" content="bxz">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://grxer.gitee.io/2023/11/01/Windows-Kernel-X86-api/image-20231103230557854.png">
@@ -190,7 +190,7 @@
 <h3 id="不同点"><a href="#不同点" class="headerlink" title="不同点"></a><strong>不同点</strong></h3><h4 id="int-2e"><a href="#int-2e" class="headerlink" title="int 2e"></a>int 2e</h4><p>通过idtr寄存器，找到中断门描述符得到CS，EIP，再通过TR寄存器找到TSS取出ss和esp</p>
 <p><img src="/2023/11/01/Windows-Kernel-X86-api/image-20231103230557854.png" alt="image-20231103230557854"></p>
 <p>到0环执行内核函数KiSystemService</p>
-<h4 id="sysenter"><a href="#sysenter" class="headerlink" title="sysenter"></a>sysenter</h4><p>通过MSR寄存器找到CS，EIP，SS，ESP(其中SS是用CS+8算出来的)，加载到寄存器是cpu自动完成的，和操作系统没关系，操作系统负责用rdmsr和wrmst来给msr寄存器赋正确值</p>
+<h4 id="sysenter"><a href="#sysenter" class="headerlink" title="sysenter"></a>sysenter</h4><p>通过MSR寄存器找到CS，EIP，SS，ESP(其中SS是用CS+8算出来的，这样只需要把他们的选择子相邻，减少寄存器数量)，加载到寄存器是cpu自动完成的，和操作系统没关系，操作系统负责用rdmsr和wrmst来给msr寄存器赋正确值（手册第三卷5.87）</p>
 <p><img src="/2023/11/01/Windows-Kernel-X86-api/image-20231103230613180.png" alt="image-20231103230613180"></p>
 <figure class="highlight c"><table><tr><td class="code"><pre><span class="line">kd&gt; rdmsr <span class="number">174</span>   <span class="comment">//查看CS</span></span><br></pre></td></tr></table></figure>
 
