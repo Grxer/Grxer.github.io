@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="baidu-site-verification" content="codeva-ROfYcqLkCh" />
+    <meta name="msvalidate.01" content="ECA3E06A0E52A2AC90C4B06F12981FB2" />
+    <meta name="description" content="DLL注入消息钩子SetWindowsHookExA HHOOK SetWindowsHookExA(  [in] int       idHook,&#x2F;&#x2F;消息类型  [in] HOOKPROC  lpfn,&#x2F;&#x2F;钩子函数  [in] HINSTANCE hmod,&#x2F;&#x2F;钩子函数所在dll  [in] DWORD     dwThreadId&#x2F;&#x2F;挂钩线程id);  os会给每一个出发消息钩子的进程强制加">
+<meta property="og:type" content="article">
+<meta property="og:title" content="windows逆向">
+<meta property="og:url" content="https://grxer.gitee.io/2024/04/05/windows-rev/index.html">
+<meta property="og:site_name" content="Grxer&#39;s Blog">
+<meta property="og:description" content="DLL注入消息钩子SetWindowsHookExA HHOOK SetWindowsHookExA(  [in] int       idHook,&#x2F;&#x2F;消息类型  [in] HOOKPROC  lpfn,&#x2F;&#x2F;钩子函数  [in] HINSTANCE hmod,&#x2F;&#x2F;钩子函数所在dll  [in] DWORD     dwThreadId&#x2F;&#x2F;挂钩线程id);  os会给每一个出发消息钩子的进程强制加">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://grxer.gitee.io/2024/04/05/windows-rev/image-20240405190939120.png">
+<meta property="article:published_time" content="2024-04-05T05:16:52.000Z">
+<meta property="article:modified_time" content="2024-04-06T12:33:35.185Z">
+<meta property="article:author" content="bxz">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://grxer.gitee.io/2024/04/05/windows-rev/image-20240405190939120.png">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
+    
+    <!-- title -->
+    <title>windows逆向</title>
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+		<script type="text/x-mathjax-config">
+		  MathJax.Hub.Config({
+			tex2jax: {
+			  skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+			  inlineMath: [['$','$']]
+			}
+		  });
+		</script>
+		<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-MML-AM_CHTML' async></script>
+	
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+<body class="max-width mx-auto px3 lrt">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="Menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="Menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="Top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fas fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a href="/search/">Search</a></li><!--
+     --><!--
+       --><li><a href="/tags/">Tag</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" aria-label="Previous post" href="/2024/04/06/android-kotlin/"><i class="fas fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" aria-label="Next post" href="/2024/03/12/windows-kernel-x64/"><i class="fas fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="Back to top" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="Share post" href="#"><i class="fas fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://grxer.gitee.io/2024/04/05/windows-rev/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://grxer.gitee.io/2024/04/05/windows-rev/&text=windows逆向"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://grxer.gitee.io/2024/04/05/windows-rev/&title=windows逆向"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://grxer.gitee.io/2024/04/05/windows-rev/&is_video=false&description=windows逆向"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=windows逆向&body=Check out this article: https://grxer.gitee.io/2024/04/05/windows-rev/"><i class="fas fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://grxer.gitee.io/2024/04/05/windows-rev/&title=windows逆向"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://grxer.gitee.io/2024/04/05/windows-rev/&title=windows逆向"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://grxer.gitee.io/2024/04/05/windows-rev/&title=windows逆向"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://grxer.gitee.io/2024/04/05/windows-rev/&title=windows逆向"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://grxer.gitee.io/2024/04/05/windows-rev/&name=windows逆向&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://grxer.gitee.io/2024/04/05/windows-rev/&t=windows逆向"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    <div id="toc">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#DLL%E6%B3%A8%E5%85%A5"><span class="toc-number">1.</span> <span class="toc-text">DLL注入</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B6%88%E6%81%AF%E9%92%A9%E5%AD%90"><span class="toc-number">1.1.</span> <span class="toc-text">消息钩子</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%BF%9C%E7%A8%8B%E7%BA%BF%E7%A8%8B%E6%B3%A8%E5%85%A5"><span class="toc-number">1.2.</span> <span class="toc-text">远程线程注入</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B3%A8%E5%86%8C%E8%A1%A8"><span class="toc-number">1.3.</span> <span class="toc-text">注册表</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BF%AE%E6%94%B9pe-iat%E8%A1%A8"><span class="toc-number">1.4.</span> <span class="toc-text">修改pe iat表</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#DLL%E5%8D%B8%E8%BD%BD"><span class="toc-number">2.</span> <span class="toc-text">DLL卸载</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BB%A3%E7%A0%81%E6%B3%A8%E5%85%A5"><span class="toc-number">3.</span> <span class="toc-text">代码注入</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#api-hook"><span class="toc-number">4.</span> <span class="toc-text">api hook</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%B0%83%E8%AF%95-hook"><span class="toc-number">4.1.</span> <span class="toc-text">调试 hook</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#IAT-hook"><span class="toc-number">4.2.</span> <span class="toc-text">IAT hook</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%83%AD%E8%A1%A5%E4%B8%81"><span class="toc-number">4.3.</span> <span class="toc-text">热补丁</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%8D%E8%B0%83%E8%AF%95"><span class="toc-number">5.</span> <span class="toc-text">反调试</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#TLS%E5%9B%9E%E8%B0%83%E5%87%BD%E6%95%B0"><span class="toc-number">5.1.</span> <span class="toc-text">TLS回调函数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#SEH%E5%8F%8D%E8%B0%83%E8%AF%95"><span class="toc-number">5.2.</span> <span class="toc-text">SEH反调试</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#peb"><span class="toc-number">5.3.</span> <span class="toc-text">peb</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#NtQueryInformationProcess"><span class="toc-number">5.4.</span> <span class="toc-text">NtQueryInformationProcess</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#NtQueryObject"><span class="toc-number">5.5.</span> <span class="toc-text">NtQueryObject</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#SetInformationThread-GetCurrentThread-0x11-0-0"><span class="toc-number">5.6.</span> <span class="toc-text">SetInformationThread(GetCurrentThread(), 0x11, 0, 0);</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%B3%BB%E7%BB%9F%E7%97%95%E8%BF%B9"><span class="toc-number">5.7.</span> <span class="toc-text">系统痕迹</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#SetUnhandledExceptionFilter"><span class="toc-number">5.8.</span> <span class="toc-text">SetUnhandledExceptionFilter</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%89%A7%E8%A1%8C%E6%97%B6%E9%97%B4%E6%A0%A1%E9%AA%8C"><span class="toc-number">5.9.</span> <span class="toc-text">执行时间校验</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#int2D"><span class="toc-number">5.10.</span> <span class="toc-text">int2D</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BB%A3%E7%A0%81%E6%A0%A1%E9%AA%8C%E5%92%8C"><span class="toc-number">5.11.</span> <span class="toc-text">代码校验和</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%A1%AC%E4%BB%B6%E6%96%AD%E7%82%B9%EF%BC%8C%E8%BD%AF%E4%BB%B6%E6%96%AD%E7%82%B9"><span class="toc-number">5.12.</span> <span class="toc-text">硬件断点，软件断点</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#API%E9%87%8D%E5%AE%9A%E5%90%91"><span class="toc-number">5.13.</span> <span class="toc-text">API重定向</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%B0%83%E8%AF%95%E7%8A%B6%E6%80%81%E8%BF%90%E8%A1%8C%E7%A8%8B%E5%BA%8F"><span class="toc-number">6.</span> <span class="toc-text">调试状态运行程序</span></a></li></ol>
+    </div>
+  </span>
+</div>
+
+    
+    <div class="content index py4">
+        
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle" itemprop="name headline">
+        windows逆向
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span itemprop="name">bxz</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2024-04-05T05:16:52.000Z" itemprop="datePublished">2024-04-05</time>
+        
+      
+    </div>
+
+
+      
+
+      
+
+    </div>
+  </header>
+  
+
+  <div class="content" itemprop="articleBody">
+    <h2 id="DLL注入"><a href="#DLL注入" class="headerlink" title="DLL注入"></a>DLL注入</h2><h3 id="消息钩子"><a href="#消息钩子" class="headerlink" title="消息钩子"></a>消息钩子</h3><p>SetWindowsHookExA</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">HHOOK <span class="title function_">SetWindowsHookExA</span><span class="params">(</span></span><br><span class="line"><span class="params">  [in] <span class="type">int</span>       idHook,<span class="comment">//消息类型</span></span></span><br><span class="line"><span class="params">  [in] HOOKPROC  lpfn,<span class="comment">//钩子函数</span></span></span><br><span class="line"><span class="params">  [in] HINSTANCE hmod,<span class="comment">//钩子函数所在dll</span></span></span><br><span class="line"><span class="params">  [in] DWORD     dwThreadId<span class="comment">//挂钩线程id</span></span></span><br><span class="line"><span class="params">)</span>;</span><br></pre></td></tr></table></figure>
+
+<p>os会给每一个出发消息钩子的进程强制加载钩子函数所在dll</p>
+<h3 id="远程线程注入"><a href="#远程线程注入" class="headerlink" title="远程线程注入"></a>远程线程注入</h3><p>OpenProcess 打开注入进程</p>
+<p>VirtualAllocEx 申请空间写入要加载的dll名</p>
+<p>在本进程获取kernel32！loadlibrary地址</p>
+<p>CreateRemoteThread+loadlibrary+dll名</p>
+<h3 id="注册表"><a href="#注册表" class="headerlink" title="注册表"></a>注册表</h3><p>AppInit_DLLs</p>
+<h3 id="修改pe-iat表"><a href="#修改pe-iat表" class="headerlink" title="修改pe iat表"></a>修改pe iat表</h3><p>原iat表项是否够大，不够找个空闲位置或者增大最后一个section，或者添加一个新section，移动iat</p>
+<p>导入绑定表清零（DataDirectory第11项）</p>
+<p>添加iat项 （name iat int）</p>
+<p>添加的iat的位置要有可写权限或者位于DataDirectory[12] iat表中</p>
+<h2 id="DLL卸载"><a href="#DLL卸载" class="headerlink" title="DLL卸载"></a>DLL卸载</h2><p>枚举进程模块找到模块基址</p>
+<p>OpenProcess</p>
+<p>获取kernel32！freelibrary</p>
+<p>CreateRemoteThread+freelirary+模块基址</p>
+<h2 id="代码注入"><a href="#代码注入" class="headerlink" title="代码注入"></a>代码注入</h2><p>数据和代码分别注入</p>
+<ul>
+<li>data_addr：数据可以是loadlibrary和getprocaddress的函数地址和函数参数需要的字符串</li>
+<li>proc_addr：参数是data_addr 利用loadlibrary和getprocaddress主动获取函数地址去调用</li>
+</ul>
+<p>OpenProcess</p>
+<p>VirtualAllocEx</p>
+<p>WriteProcessMemory</p>
+<p>CreateRemoteThread（proc_addr,data_addr）</p>
+<h2 id="api-hook"><a href="#api-hook" class="headerlink" title="api hook"></a>api hook</h2><h3 id="调试-hook"><a href="#调试-hook" class="headerlink" title="调试 hook"></a>调试 hook</h3><p>findwindow-&gt;GetWindowThreadProcessId-&gt;DebugActiveProcess——&gt;WaitForDebugEvent</p>
+<ul>
+<li>CREATE_PROCESS_DEBUG_EVENT时从DebugEvent.u.CreateProcessInfo中获取进程句柄 api开头改为0xcc的int3断点，并保存开头字节</li>
+<li>EXCEPTION_DEBUG_EVENT时从DebugEvent.u.Exception.ExceptionRecord获得PEXCEPTION_RECORE 判断是否位EXCEPTION_BREAKPOINT断点，再判断发送异常的地址是否是我们hook api的地址,利用GetThreadContext等做hook操作</li>
+</ul>
+<h3 id="IAT-hook"><a href="#IAT-hook" class="headerlink" title="IAT hook"></a>IAT hook</h3><p>利用dll注入加载我们的dll，dll里通过getmodulehandle(null)获取exe模块基址+偏移找到要hook的api所在的iat表，把iat里的内容改为我们的代理函数地址</p>
+<h3 id="热补丁"><a href="#热补丁" class="headerlink" title="热补丁"></a>热补丁</h3><p>对于绝大多数api 开头都有一条mov edi，edi的指令的无意义指令</p>
+<p><img src="/2024/04/05/windows-rev/image-20240405190939120.png" alt="image-20240405190939120"></p>
+<p>这样调用原api直接调用push ebp处的代码就可以了，就不用频繁进行脱钩处理，从而导致多线程是访问冲突问题</p>
+<h2 id="反调试"><a href="#反调试" class="headerlink" title="反调试"></a>反调试</h2><h3 id="TLS回调函数"><a href="#TLS回调函数" class="headerlink" title="TLS回调函数"></a>TLS回调函数</h3><p>tls再进程创建执行ep前调用&#x2F;终止后调用，有线程创建前&#x2F;终止后调用，可以用来反调试</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="title function_">VOID</span> <span class="params">(NTAPI *PIMAGE_TLS_CALLBACK)</span></span><br><span class="line"><span class="params">(</span></span><br><span class="line"><span class="params">  PVOID DllHandle,<span class="comment">//模块加载地址</span></span></span><br><span class="line"><span class="params">  DWORD Reason,<span class="comment">//TLS回调函数被调用的原因</span></span></span><br><span class="line"><span class="params">  PVOID Reserved</span></span><br><span class="line"><span class="params">)</span>;</span><br><span class="line">其中reason有以下</span><br><span class="line"><span class="meta">#<span class="keyword">define</span> DLL_PROCESS_ATTACH  1</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> DLL_THREAD_ATTACH   2</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> DLL_THREAD_DETACH   3</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> DLL_PROCESS_DETACH  0</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">pragma</span> comment(linker, <span class="string">&quot;/INCLUDE:__tls_used&quot;</span>)</span></span><br><span class="line"><span class="meta">#<span class="keyword">pragma</span> data_seg(<span class="string">&quot;.CRT$XLX&quot;</span>)</span></span><br><span class="line">    PIMAGE_TLS_CALLBACK pTLS_CALLBACKs[] = &#123; TLS_CALLBACK1, TLS_CALLBACK2, <span class="number">0</span> &#125;;</span><br><span class="line"><span class="meta">#<span class="keyword">pragma</span> data_seg()</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="SEH反调试"><a href="#SEH反调试" class="headerlink" title="SEH反调试"></a>SEH反调试</h3><p>seh里检测</p>
+<p>或者配合int3(或者单步调试eflag的tf标志位)，正常状态int3 出发异常进行seh机制恢复异常，调试状态int3抛给调试器处理</p>
+<h3 id="peb"><a href="#peb" class="headerlink" title="peb"></a>peb</h3><p>beingdebugged标志</p>
+<p>被调试堆内存未使用部分是全部为0xfeeefeee peb.ldr就是堆内存</p>
+<p>processheap.flags和processheap.forceflags</p>
+<p>NtGlobalFlag</p>
+<h3 id="NtQueryInformationProcess"><a href="#NtQueryInformationProcess" class="headerlink" title="NtQueryInformationProcess"></a>NtQueryInformationProcess</h3><figure class="highlight c"><table><tr><td class="code"><pre><span class="line">ProcessDebugPort(<span class="number">0x7</span>) <span class="comment">//CheckRemoteDebuggerPresent内部调用找个实现</span></span><br><span class="line">ProcessDebugObjectHandle(<span class="number">0x1E</span>)</span><br><span class="line">ProcessDebugFlags(<span class="number">0x1F</span>)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">NtQueryInformationProcess(GetCurrentProcess(), <span class="number">0x7</span>, &amp;debugPort, <span class="keyword">sizeof</span>(debugPort), <span class="literal">NULL</span>);<span class="comment">//非调试为0 否则-1</span></span><br><span class="line">NtQueryInformationProcess(GetCurrentProcess(), <span class="number">0x1E</span>, &amp;hdebugObject, <span class="keyword">sizeof</span>(hdebugObject), <span class="literal">NULL</span>);<span class="comment">//非调试为0</span></span><br><span class="line">NtQueryInformationProcess(GetCurrentProcess(), <span class="number">0x1f</span>, &amp;bdebugFlag, <span class="keyword">sizeof</span>(bdebugFlag), <span class="literal">NULL</span>);<span class="comment">//非调试为1</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="NtQueryObject"><a href="#NtQueryObject" class="headerlink" title="NtQueryObject"></a>NtQueryObject</h3><p>检测是否有调试对象</p>
+<h3 id="SetInformationThread-GetCurrentThread-0x11-0-0"><a href="#SetInformationThread-GetCurrentThread-0x11-0-0" class="headerlink" title="SetInformationThread(GetCurrentThread(), 0x11, 0, 0);"></a>SetInformationThread(GetCurrentThread(), 0x11, 0, 0);</h3><p>分离调试并终止进程</p>
+<h3 id="系统痕迹"><a href="#系统痕迹" class="headerlink" title="系统痕迹"></a>系统痕迹</h3><p>窗口名</p>
+<p>进程名</p>
+<p>用户名</p>
+<p>虚拟机</p>
+<p>路径名</p>
+<h3 id="SetUnhandledExceptionFilter"><a href="#SetUnhandledExceptionFilter" class="headerlink" title="SetUnhandledExceptionFilter"></a>SetUnhandledExceptionFilter</h3><p>调用 NtQueryInformationProcess查询Proccessdebug值，查询当前进程是否处于调试状态。如果程序正常运行，则运行顶层异常处理器（顶层异常里我们解决异常），如果处于调试状态，则将异常抛给调试器。</p>
+<h3 id="执行时间校验"><a href="#执行时间校验" class="headerlink" title="执行时间校验"></a>执行时间校验</h3><h3 id="int2D"><a href="#int2D" class="headerlink" title="int2D"></a>int2D</h3><p>正常状态走seh处理异常，有调试器调试器接管后会跳过int2d下面的一字节，并继续执行</p>
+<h3 id="代码校验和"><a href="#代码校验和" class="headerlink" title="代码校验和"></a>代码校验和</h3><h3 id="硬件断点，软件断点"><a href="#硬件断点，软件断点" class="headerlink" title="硬件断点，软件断点"></a>硬件断点，软件断点</h3><h3 id="API重定向"><a href="#API重定向" class="headerlink" title="API重定向"></a>API重定向</h3><h2 id="调试状态运行程序"><a href="#调试状态运行程序" class="headerlink" title="调试状态运行程序"></a>调试状态运行程序</h2><p>可以把被调试进程的异常处理代码写到调试器里</p>
+
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+         
+          <li><a href="/">Home</a></li>
+         
+          <li><a href="/archives/">Writing</a></li>
+         
+          <li><a href="/search/">Search</a></li>
+         
+          <li><a href="/tags/">Tag</a></li>
+         
+          <li><a href="/about/">About</a></li>
+        
+      </ul>
+    </div>
+
+    <div id="toc-footer" style="display: none">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#DLL%E6%B3%A8%E5%85%A5"><span class="toc-number">1.</span> <span class="toc-text">DLL注入</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B6%88%E6%81%AF%E9%92%A9%E5%AD%90"><span class="toc-number">1.1.</span> <span class="toc-text">消息钩子</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%BF%9C%E7%A8%8B%E7%BA%BF%E7%A8%8B%E6%B3%A8%E5%85%A5"><span class="toc-number">1.2.</span> <span class="toc-text">远程线程注入</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B3%A8%E5%86%8C%E8%A1%A8"><span class="toc-number">1.3.</span> <span class="toc-text">注册表</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BF%AE%E6%94%B9pe-iat%E8%A1%A8"><span class="toc-number">1.4.</span> <span class="toc-text">修改pe iat表</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#DLL%E5%8D%B8%E8%BD%BD"><span class="toc-number">2.</span> <span class="toc-text">DLL卸载</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BB%A3%E7%A0%81%E6%B3%A8%E5%85%A5"><span class="toc-number">3.</span> <span class="toc-text">代码注入</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#api-hook"><span class="toc-number">4.</span> <span class="toc-text">api hook</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%B0%83%E8%AF%95-hook"><span class="toc-number">4.1.</span> <span class="toc-text">调试 hook</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#IAT-hook"><span class="toc-number">4.2.</span> <span class="toc-text">IAT hook</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%83%AD%E8%A1%A5%E4%B8%81"><span class="toc-number">4.3.</span> <span class="toc-text">热补丁</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%8D%E8%B0%83%E8%AF%95"><span class="toc-number">5.</span> <span class="toc-text">反调试</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#TLS%E5%9B%9E%E8%B0%83%E5%87%BD%E6%95%B0"><span class="toc-number">5.1.</span> <span class="toc-text">TLS回调函数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#SEH%E5%8F%8D%E8%B0%83%E8%AF%95"><span class="toc-number">5.2.</span> <span class="toc-text">SEH反调试</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#peb"><span class="toc-number">5.3.</span> <span class="toc-text">peb</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#NtQueryInformationProcess"><span class="toc-number">5.4.</span> <span class="toc-text">NtQueryInformationProcess</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#NtQueryObject"><span class="toc-number">5.5.</span> <span class="toc-text">NtQueryObject</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#SetInformationThread-GetCurrentThread-0x11-0-0"><span class="toc-number">5.6.</span> <span class="toc-text">SetInformationThread(GetCurrentThread(), 0x11, 0, 0);</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%B3%BB%E7%BB%9F%E7%97%95%E8%BF%B9"><span class="toc-number">5.7.</span> <span class="toc-text">系统痕迹</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#SetUnhandledExceptionFilter"><span class="toc-number">5.8.</span> <span class="toc-text">SetUnhandledExceptionFilter</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%89%A7%E8%A1%8C%E6%97%B6%E9%97%B4%E6%A0%A1%E9%AA%8C"><span class="toc-number">5.9.</span> <span class="toc-text">执行时间校验</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#int2D"><span class="toc-number">5.10.</span> <span class="toc-text">int2D</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BB%A3%E7%A0%81%E6%A0%A1%E9%AA%8C%E5%92%8C"><span class="toc-number">5.11.</span> <span class="toc-text">代码校验和</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%A1%AC%E4%BB%B6%E6%96%AD%E7%82%B9%EF%BC%8C%E8%BD%AF%E4%BB%B6%E6%96%AD%E7%82%B9"><span class="toc-number">5.12.</span> <span class="toc-text">硬件断点，软件断点</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#API%E9%87%8D%E5%AE%9A%E5%90%91"><span class="toc-number">5.13.</span> <span class="toc-text">API重定向</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%B0%83%E8%AF%95%E7%8A%B6%E6%80%81%E8%BF%90%E8%A1%8C%E7%A8%8B%E5%BA%8F"><span class="toc-number">6.</span> <span class="toc-text">调试状态运行程序</span></a></li></ol>
+    </div>
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://grxer.gitee.io/2024/04/05/windows-rev/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://grxer.gitee.io/2024/04/05/windows-rev/&text=windows逆向"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://grxer.gitee.io/2024/04/05/windows-rev/&title=windows逆向"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://grxer.gitee.io/2024/04/05/windows-rev/&is_video=false&description=windows逆向"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=windows逆向&body=Check out this article: https://grxer.gitee.io/2024/04/05/windows-rev/"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://grxer.gitee.io/2024/04/05/windows-rev/&title=windows逆向"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://grxer.gitee.io/2024/04/05/windows-rev/&title=windows逆向"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://grxer.gitee.io/2024/04/05/windows-rev/&title=windows逆向"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://grxer.gitee.io/2024/04/05/windows-rev/&title=windows逆向"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://grxer.gitee.io/2024/04/05/windows-rev/&name=windows逆向&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://grxer.gitee.io/2024/04/05/windows-rev/&t=windows逆向"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fas fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
+        <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fas fa-list fa-lg" aria-hidden="true"></i> TOC</a>
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fas fa-share-alt fa-lg" aria-hidden="true"></i> Share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2023-2024
+    bxz
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a href="/search/">Search</a></li><!--
+     --><!--
+       --><li><a href="/tags/">Tag</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+ 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script> 
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script> 
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"Copy to clipboard!\">";
+    btn += '<i class="far fa-clone"></i>';
+    btn += '</span>'; 
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "Copied!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Google Analytics -->
+
+<!-- Baidu Analytics -->
+
+  <script type="text/javascript">
+        var _hmt = _hmt || [];
+        (function() {
+          var hm = document.createElement("script");
+          hm.src = "https://hm.baidu.com/hm.js?a22ef0bec4e4a9c7337bea6e37ff55c1";
+          var s = document.getElementsByTagName("script")[0];
+          s.parentNode.insertBefore(hm, s);
+        })();
+        </script>
+
+<!-- Cloudflare Analytics -->
+
+<!-- Umami Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+</body>
+</html>
