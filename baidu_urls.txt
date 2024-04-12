@@ -1,4 +1,5 @@
 https://grxer.gitee.io/6666/06/06/Treasure-House/
+https://grxer.gitee.io/2024/04/09/vt-learn/
 https://grxer.gitee.io/2024/04/06/android-kotlin/
 https://grxer.gitee.io/2024/04/05/windows-rev/
 https://grxer.gitee.io/2024/03/12/windows-kernel-x64/
@@ -22,4 +23,3 @@ https://grxer.gitee.io/2023/09/25/PlatformIO/
 https://grxer.gitee.io/2023/09/23/OSTEP-13-14-Process-and-Address-Spaces/
 https://grxer.gitee.io/2023/09/21/2023-ycbfinal/
 https://grxer.gitee.io/2023/09/15/2023-lmb/
-https://grxer.gitee.io/2023/09/12/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C-%E7%BD%91%E7%BB%9C%E5%B1%82/
