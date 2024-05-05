@@ -8,15 +8,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
     <meta name="baidu-site-verification" content="codeva-ROfYcqLkCh" />
     <meta name="msvalidate.01" content="ECA3E06A0E52A2AC90C4B06F12981FB2" />
-    <meta name="description" content="ida联动gdb https:&#x2F;&#x2F;github.com&#x2F;mahaloz&#x2F;decomp2dbg 追踪堆 https:&#x2F;&#x2F;github.com&#x2F;Arinerron&#x2F;heaptrace pwn docker现成环境 https:&#x2F;&#x2F;github.com&#x2F;skysider&#x2F;pwndocker 根据libc.so自动下载ld和dbgsym https:&#x2F;&#x2F;github.com&#x2F;veritas501&#x2F;dl_d">
+    <meta name="description" content="ida联动gdbhttps:&#x2F;&#x2F;github.com&#x2F;mahaloz&#x2F;decomp2dbg 追踪堆https:&#x2F;&#x2F;github.com&#x2F;Arinerron&#x2F;heaptrace pwn docker现成环境https:&#x2F;&#x2F;github.com&#x2F;skysider&#x2F;pwndocker 根据libc.so自动下载ld和dbgsymhttps:&#x2F;&#x2F;github.com&#x2F;veritas501&#x2F;dl_dbgsy">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Treasure House">
 <meta property="og:url" content="https://grxer.gitee.io/6666/06/06/Treasure-House/index.html">
 <meta property="og:site_name" content="Grxer&#39;s Blog">
-<meta property="og:description" content="ida联动gdb https:&#x2F;&#x2F;github.com&#x2F;mahaloz&#x2F;decomp2dbg 追踪堆 https:&#x2F;&#x2F;github.com&#x2F;Arinerron&#x2F;heaptrace pwn docker现成环境 https:&#x2F;&#x2F;github.com&#x2F;skysider&#x2F;pwndocker 根据libc.so自动下载ld和dbgsym https:&#x2F;&#x2F;github.com&#x2F;veritas501&#x2F;dl_d">
+<meta property="og:description" content="ida联动gdbhttps:&#x2F;&#x2F;github.com&#x2F;mahaloz&#x2F;decomp2dbg 追踪堆https:&#x2F;&#x2F;github.com&#x2F;Arinerron&#x2F;heaptrace pwn docker现成环境https:&#x2F;&#x2F;github.com&#x2F;skysider&#x2F;pwndocker 根据libc.so自动下载ld和dbgsymhttps:&#x2F;&#x2F;github.com&#x2F;veritas501&#x2F;dl_dbgsy">
 <meta property="og:locale" content="en_US">
 <meta property="article:published_time" content="6666-06-06T10:32:08.000Z">
-<meta property="article:modified_time" content="2024-03-11T04:11:35.138Z">
+<meta property="article:modified_time" content="2024-04-27T08:59:44.854Z">
 <meta property="article:author" content="bxz">
 <meta name="twitter:card" content="summary">
     
@@ -89,7 +89,7 @@
       <ul>
         
         
-        <li><a class="icon" aria-label="Next post" href="/2024/04/09/vt-learn/"><i class="fas fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="Next post" href="/2024/04/21/pycharm-debug/"><i class="fas fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
         
         <li><a class="icon" aria-label="Back to top" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
         <li><a class="icon" aria-label="Share post" href="#"><i class="fas fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
@@ -117,7 +117,7 @@
 
     </div>
     <div id="toc">
-      
+      <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#ida%E8%81%94%E5%8A%A8gdb"><span class="toc-number">1.</span> <span class="toc-text">ida联动gdb</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%BF%BD%E8%B8%AA%E5%A0%86"><span class="toc-number">2.</span> <span class="toc-text">追踪堆</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#pwn-docker%E7%8E%B0%E6%88%90%E7%8E%AF%E5%A2%83"><span class="toc-number">3.</span> <span class="toc-text">pwn docker现成环境</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%A0%B9%E6%8D%AElibc-so%E8%87%AA%E5%8A%A8%E4%B8%8B%E8%BD%BDld%E5%92%8Cdbgsym"><span class="toc-number">4.</span> <span class="toc-text">根据libc.so自动下载ld和dbgsym</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%87%AA%E5%8A%A8pwn%E6%9E%84%E5%BB%BA"><span class="toc-number">5.</span> <span class="toc-text">自动pwn构建</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#iot-%E8%99%9A%E6%8B%9F%E6%9C%BA"><span class="toc-number">6.</span> <span class="toc-text">iot 虚拟机</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BC%96%E8%AF%91%E5%A5%BD%E7%9A%84gdbsever"><span class="toc-number">7.</span> <span class="toc-text">编译好的gdbsever</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#slide%E5%92%8Cjyy-style-silde"><span class="toc-number">8.</span> <span class="toc-text">slide和jyy style silde</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%80%A7%E8%83%BD%E4%BB%8B%E4%BA%8Etcp-udp%E4%B9%8B%E9%97%B4%E7%9A%84%E5%8F%AF%E9%9D%A0udp%E5%BA%93-enet"><span class="toc-number">9.</span> <span class="toc-text">性能介于tcp udp之间的可靠udp库:enet</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Microsoft%E7%9A%84%E8%B7%A8%E5%B9%B3%E5%8F%B0%E5%BC%80%E6%BA%90%E8%BD%AF%E4%BB%B6%E5%8C%85%E7%AE%A1%E7%90%86%E5%99%A8"><span class="toc-number">10.</span> <span class="toc-text">Microsoft的跨平台开源软件包管理器</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%B0%8F%E9%A1%B9%E7%9B%AE%E7%BB%83%E4%B9%A0-%E5%9F%BA%E7%A1%80%EF%BC%8C%E8%AE%BE%E8%AE%A1%EF%BC%8C%E5%AE%9E%E7%8E%B0"><span class="toc-number">11.</span> <span class="toc-text">小项目练习(基础，设计，实现)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%BC%80%E6%BA%90%E5%B7%A5%E5%85%B7OpenArk-Ark%E6%98%AFAnti-Rootki%EF%BC%88%E5%AF%B9%E6%8A%97%E6%81%B6%E6%84%8F%E7%A8%8B%E5%BA%8F%EF%BC%89"><span class="toc-number">12.</span> <span class="toc-text">开源工具OpenArk Ark是Anti-Rootki（对抗恶意程序）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#WRK-v1-2"><span class="toc-number">13.</span> <span class="toc-text">WRK v1.2</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#windows%E5%90%84%E4%B8%AA%E7%89%88%E6%9C%AC%E5%86%85%E6%A0%B8%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84"><span class="toc-number">14.</span> <span class="toc-text">windows各个版本内核数据结构</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#windows%E6%9C%AA%E5%85%AC%E5%BC%80api%E6%9F%A5%E8%AF%A2"><span class="toc-number">15.</span> <span class="toc-text">windows未公开api查询</span></a></li></ol>
     </div>
   </span>
 </div>
@@ -156,34 +156,24 @@
   
 
   <div class="content" itemprop="articleBody">
-    <p>ida联动gdb</p>
-<p><a target="_blank" rel="noopener" href="https://github.com/mahaloz/decomp2dbg">https://github.com/mahaloz/decomp2dbg</a></p>
-<p>追踪堆</p>
-<p><a target="_blank" rel="noopener" href="https://github.com/Arinerron/heaptrace">https://github.com/Arinerron/heaptrace</a></p>
-<p>pwn docker现成环境</p>
-<p><a target="_blank" rel="noopener" href="https://github.com/skysider/pwndocker">https://github.com/skysider/pwndocker</a></p>
-<p>根据libc.so自动下载ld和dbgsym</p>
-<p><a target="_blank" rel="noopener" href="https://github.com/veritas501/dl_dbgsym">https://github.com/veritas501/dl_dbgsym</a></p>
-<p>自动pwn构建</p>
-<p><a target="_blank" rel="noopener" href="https://github.com/io12/pwninit">https://github.com/io12/pwninit</a></p>
-<p>iot 虚拟机</p>
-<p><a target="_blank" rel="noopener" href="https://github.com/adi0x90/attifyos">https://github.com/adi0x90/attifyos</a></p>
-<p>编译好的gdbsever</p>
-<p><a target="_blank" rel="noopener" href="https://github.com/hugsy/gdb-static">https://github.com/hugsy/gdb-static</a></p>
+    <h3 id="ida联动gdb"><a href="#ida联动gdb" class="headerlink" title="ida联动gdb"></a>ida联动gdb</h3><p><a target="_blank" rel="noopener" href="https://github.com/mahaloz/decomp2dbg">https://github.com/mahaloz/decomp2dbg</a></p>
+<h3 id="追踪堆"><a href="#追踪堆" class="headerlink" title="追踪堆"></a>追踪堆</h3><p><a target="_blank" rel="noopener" href="https://github.com/Arinerron/heaptrace">https://github.com/Arinerron/heaptrace</a></p>
+<h3 id="pwn-docker现成环境"><a href="#pwn-docker现成环境" class="headerlink" title="pwn docker现成环境"></a>pwn docker现成环境</h3><p><a target="_blank" rel="noopener" href="https://github.com/skysider/pwndocker">https://github.com/skysider/pwndocker</a></p>
+<h3 id="根据libc-so自动下载ld和dbgsym"><a href="#根据libc-so自动下载ld和dbgsym" class="headerlink" title="根据libc.so自动下载ld和dbgsym"></a>根据libc.so自动下载ld和dbgsym</h3><p><a target="_blank" rel="noopener" href="https://github.com/veritas501/dl_dbgsym">https://github.com/veritas501/dl_dbgsym</a></p>
+<h3 id="自动pwn构建"><a href="#自动pwn构建" class="headerlink" title="自动pwn构建"></a>自动pwn构建</h3><p><a target="_blank" rel="noopener" href="https://github.com/io12/pwninit">https://github.com/io12/pwninit</a></p>
+<h3 id="iot-虚拟机"><a href="#iot-虚拟机" class="headerlink" title="iot 虚拟机"></a>iot 虚拟机</h3><p><a target="_blank" rel="noopener" href="https://github.com/adi0x90/attifyos">https://github.com/adi0x90/attifyos</a></p>
+<h3 id="编译好的gdbsever"><a href="#编译好的gdbsever" class="headerlink" title="编译好的gdbsever"></a>编译好的gdbsever</h3><p><a target="_blank" rel="noopener" href="https://github.com/hugsy/gdb-static">https://github.com/hugsy/gdb-static</a></p>
 <p><a target="_blank" rel="noopener" href="https://github.com/rapid7/embedded-tools/tree/master/binaries">https://github.com/rapid7/embedded-tools/tree/master/binaries</a></p>
-<p>slide和jyy style silde</p>
-<p><a target="_blank" rel="noopener" href="https://github.com/webpro/reveal-md">https://github.com/webpro/reveal-md</a></p>
+<h3 id="slide和jyy-style-silde"><a href="#slide和jyy-style-silde" class="headerlink" title="slide和jyy style silde"></a>slide和jyy style silde</h3><p><a target="_blank" rel="noopener" href="https://github.com/webpro/reveal-md">https://github.com/webpro/reveal-md</a></p>
 <p><a target="_blank" rel="noopener" href="https://github.com/zweix123/jyyslide-md">https://github.com/zweix123/jyyslide-md</a></p>
-<p>性能介于tcp udp之间的可靠udp库:enet</p>
-<p><a target="_blank" rel="noopener" href="https://github.com/lsalzman/enet">https://github.com/lsalzman/enet</a></p>
-<p>Microsoft的跨平台开源软件包管理器</p>
-<p><a target="_blank" rel="noopener" href="https://github.com/microsoft/vcpkg">https://github.com/microsoft/vcpkg</a></p>
-<p>小项目练习(基础，设计，实现)</p>
-<p><a target="_blank" rel="noopener" href="https://github.com/codecrafters-io/build-your-own-x">https://github.com/codecrafters-io/build-your-own-x</a></p>
-<p>开源工具OpenArk Ark是Anti-Rootki（对抗恶意程序）</p>
-<p><a target="_blank" rel="noopener" href="https://github.com/BlackINT3/OpenArk">https://github.com/BlackINT3/OpenArk</a></p>
-<p>WRK v1.2</p>
-<p><a target="_blank" rel="noopener" href="https://github.com/HighSchoolSoftwareClub/Windows-Research-Kernel-WRK-">https://github.com/HighSchoolSoftwareClub/Windows-Research-Kernel-WRK-</a></p>
+<h3 id="性能介于tcp-udp之间的可靠udp库-enet"><a href="#性能介于tcp-udp之间的可靠udp库-enet" class="headerlink" title="性能介于tcp udp之间的可靠udp库:enet"></a>性能介于tcp udp之间的可靠udp库:enet</h3><p><a target="_blank" rel="noopener" href="https://github.com/lsalzman/enet">https://github.com/lsalzman/enet</a></p>
+<h3 id="Microsoft的跨平台开源软件包管理器"><a href="#Microsoft的跨平台开源软件包管理器" class="headerlink" title="Microsoft的跨平台开源软件包管理器"></a>Microsoft的跨平台开源软件包管理器</h3><p><a target="_blank" rel="noopener" href="https://github.com/microsoft/vcpkg">https://github.com/microsoft/vcpkg</a></p>
+<h3 id="小项目练习-基础，设计，实现"><a href="#小项目练习-基础，设计，实现" class="headerlink" title="小项目练习(基础，设计，实现)"></a>小项目练习(基础，设计，实现)</h3><p><a target="_blank" rel="noopener" href="https://github.com/codecrafters-io/build-your-own-x">https://github.com/codecrafters-io/build-your-own-x</a></p>
+<h3 id="开源工具OpenArk-Ark是Anti-Rootki（对抗恶意程序）"><a href="#开源工具OpenArk-Ark是Anti-Rootki（对抗恶意程序）" class="headerlink" title="开源工具OpenArk Ark是Anti-Rootki（对抗恶意程序）"></a>开源工具OpenArk Ark是Anti-Rootki（对抗恶意程序）</h3><p><a target="_blank" rel="noopener" href="https://github.com/BlackINT3/OpenArk">https://github.com/BlackINT3/OpenArk</a></p>
+<h3 id="WRK-v1-2"><a href="#WRK-v1-2" class="headerlink" title="WRK v1.2"></a>WRK v1.2</h3><p><a target="_blank" rel="noopener" href="https://github.com/HighSchoolSoftwareClub/Windows-Research-Kernel-WRK-">https://github.com/HighSchoolSoftwareClub/Windows-Research-Kernel-WRK-</a></p>
+<h3 id="windows各个版本内核数据结构"><a href="#windows各个版本内核数据结构" class="headerlink" title="windows各个版本内核数据结构"></a>windows各个版本内核数据结构</h3><p><a target="_blank" rel="noopener" href="http://s.ntoskr.com/">http://s.ntoskr.com/</a></p>
+<h3 id="windows未公开api查询"><a href="#windows未公开api查询" class="headerlink" title="windows未公开api查询"></a>windows未公开api查询</h3><p><a target="_blank" rel="noopener" href="https://www.geoffchappell.com/">https://www.geoffchappell.com/</a></p>
+<p><a target="_blank" rel="noopener" href="http://undocumented.ntinternals.net/">http://undocumented.ntinternals.net/</a></p>
 
   </div>
 </article>
@@ -211,7 +201,7 @@
     </div>
 
     <div id="toc-footer" style="display: none">
-      
+      <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#ida%E8%81%94%E5%8A%A8gdb"><span class="toc-number">1.</span> <span class="toc-text">ida联动gdb</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%BF%BD%E8%B8%AA%E5%A0%86"><span class="toc-number">2.</span> <span class="toc-text">追踪堆</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#pwn-docker%E7%8E%B0%E6%88%90%E7%8E%AF%E5%A2%83"><span class="toc-number">3.</span> <span class="toc-text">pwn docker现成环境</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%A0%B9%E6%8D%AElibc-so%E8%87%AA%E5%8A%A8%E4%B8%8B%E8%BD%BDld%E5%92%8Cdbgsym"><span class="toc-number">4.</span> <span class="toc-text">根据libc.so自动下载ld和dbgsym</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%87%AA%E5%8A%A8pwn%E6%9E%84%E5%BB%BA"><span class="toc-number">5.</span> <span class="toc-text">自动pwn构建</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#iot-%E8%99%9A%E6%8B%9F%E6%9C%BA"><span class="toc-number">6.</span> <span class="toc-text">iot 虚拟机</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BC%96%E8%AF%91%E5%A5%BD%E7%9A%84gdbsever"><span class="toc-number">7.</span> <span class="toc-text">编译好的gdbsever</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#slide%E5%92%8Cjyy-style-silde"><span class="toc-number">8.</span> <span class="toc-text">slide和jyy style silde</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%80%A7%E8%83%BD%E4%BB%8B%E4%BA%8Etcp-udp%E4%B9%8B%E9%97%B4%E7%9A%84%E5%8F%AF%E9%9D%A0udp%E5%BA%93-enet"><span class="toc-number">9.</span> <span class="toc-text">性能介于tcp udp之间的可靠udp库:enet</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Microsoft%E7%9A%84%E8%B7%A8%E5%B9%B3%E5%8F%B0%E5%BC%80%E6%BA%90%E8%BD%AF%E4%BB%B6%E5%8C%85%E7%AE%A1%E7%90%86%E5%99%A8"><span class="toc-number">10.</span> <span class="toc-text">Microsoft的跨平台开源软件包管理器</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%B0%8F%E9%A1%B9%E7%9B%AE%E7%BB%83%E4%B9%A0-%E5%9F%BA%E7%A1%80%EF%BC%8C%E8%AE%BE%E8%AE%A1%EF%BC%8C%E5%AE%9E%E7%8E%B0"><span class="toc-number">11.</span> <span class="toc-text">小项目练习(基础，设计，实现)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%BC%80%E6%BA%90%E5%B7%A5%E5%85%B7OpenArk-Ark%E6%98%AFAnti-Rootki%EF%BC%88%E5%AF%B9%E6%8A%97%E6%81%B6%E6%84%8F%E7%A8%8B%E5%BA%8F%EF%BC%89"><span class="toc-number">12.</span> <span class="toc-text">开源工具OpenArk Ark是Anti-Rootki（对抗恶意程序）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#WRK-v1-2"><span class="toc-number">13.</span> <span class="toc-text">WRK v1.2</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#windows%E5%90%84%E4%B8%AA%E7%89%88%E6%9C%AC%E5%86%85%E6%A0%B8%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84"><span class="toc-number">14.</span> <span class="toc-text">windows各个版本内核数据结构</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#windows%E6%9C%AA%E5%85%AC%E5%BC%80api%E6%9F%A5%E8%AF%A2"><span class="toc-number">15.</span> <span class="toc-text">windows未公开api查询</span></a></li></ol>
     </div>
 
     <div id="share-footer" style="display: none">
