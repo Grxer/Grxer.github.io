@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="baidu-site-verification" content="codeva-ROfYcqLkCh" />
+    <meta name="msvalidate.01" content="ECA3E06A0E52A2AC90C4B06F12981FB2" />
+    <meta name="description" content="Windows内核实验:ShadowWalker接着上一次inlinehook缺页异常来做进程保护，反调试等 我们hook住缺页异常后可以根据错误码的第五位判断是取指令造成的缺页，还是读写造成的异常，我们就可以对两种不同缺页做不同的异常处理，可以在指令造成缺页时，把正确页挂到tlb里来使程序可以正常执行，读写造成缺页时，挂到一个fake页上来反调试 0环感觉要做到稳定是很难的 inlinehook">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Windows内核实验:ShadowWalker">
+<meta property="og:url" content="https://grxer.gitee.io/2023/06/04/Windows-Kernel-Experiment-ShadowWalker/index.html">
+<meta property="og:site_name" content="Grxer&#39;s Blog">
+<meta property="og:description" content="Windows内核实验:ShadowWalker接着上一次inlinehook缺页异常来做进程保护，反调试等 我们hook住缺页异常后可以根据错误码的第五位判断是取指令造成的缺页，还是读写造成的异常，我们就可以对两种不同缺页做不同的异常处理，可以在指令造成缺页时，把正确页挂到tlb里来使程序可以正常执行，读写造成缺页时，挂到一个fake页上来反调试 0环感觉要做到稳定是很难的 inlinehook">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://grxer.gitee.io/2023/06/04/Windows-Kernel-Experiment-ShadowWalker/image-20230604120326540.png">
+<meta property="article:published_time" content="2023-06-03T22:33:23.000Z">
+<meta property="article:modified_time" content="2023-06-04T04:14:39.129Z">
+<meta property="article:author" content="bxz">
+<meta property="article:tag" content="Windows Kernel Experiment">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://grxer.gitee.io/2023/06/04/Windows-Kernel-Experiment-ShadowWalker/image-20230604120326540.png">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
+    
+    <!-- title -->
+    <title>Windows内核实验:ShadowWalker</title>
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+		<script type="text/x-mathjax-config">
+		  MathJax.Hub.Config({
+			tex2jax: {
+			  skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+			  inlineMath: [['$','$']]
+			}
+		  });
+		</script>
+		<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-MML-AM_CHTML' async></script>
+	
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+<body class="max-width mx-auto px3 lrt">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="Menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="Menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="Top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fas fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a href="/search/">Search</a></li><!--
+     --><!--
+       --><li><a href="/tags/">Tag</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" aria-label="Previous post" href="/2023/07/08/ISA-risc-v/"><i class="fas fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" aria-label="Next post" href="/2023/06/03/Windows-Kernel-Experiment-Page-Fault/"><i class="fas fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="Back to top" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="Share post" href="#"><i class="fas fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://grxer.gitee.io/2023/06/04/Windows-Kernel-Experiment-ShadowWalker/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://grxer.gitee.io/2023/06/04/Windows-Kernel-Experiment-ShadowWalker/&text=Windows内核实验:ShadowWalker"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://grxer.gitee.io/2023/06/04/Windows-Kernel-Experiment-ShadowWalker/&title=Windows内核实验:ShadowWalker"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://grxer.gitee.io/2023/06/04/Windows-Kernel-Experiment-ShadowWalker/&is_video=false&description=Windows内核实验:ShadowWalker"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Windows内核实验:ShadowWalker&body=Check out this article: https://grxer.gitee.io/2023/06/04/Windows-Kernel-Experiment-ShadowWalker/"><i class="fas fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://grxer.gitee.io/2023/06/04/Windows-Kernel-Experiment-ShadowWalker/&title=Windows内核实验:ShadowWalker"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://grxer.gitee.io/2023/06/04/Windows-Kernel-Experiment-ShadowWalker/&title=Windows内核实验:ShadowWalker"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://grxer.gitee.io/2023/06/04/Windows-Kernel-Experiment-ShadowWalker/&title=Windows内核实验:ShadowWalker"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://grxer.gitee.io/2023/06/04/Windows-Kernel-Experiment-ShadowWalker/&title=Windows内核实验:ShadowWalker"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://grxer.gitee.io/2023/06/04/Windows-Kernel-Experiment-ShadowWalker/&name=Windows内核实验:ShadowWalker&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://grxer.gitee.io/2023/06/04/Windows-Kernel-Experiment-ShadowWalker/&t=Windows内核实验:ShadowWalker"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    <div id="toc">
+      <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Windows%E5%86%85%E6%A0%B8%E5%AE%9E%E9%AA%8C-ShadowWalker"><span class="toc-number">1.</span> <span class="toc-text">Windows内核实验:ShadowWalker</span></a></li></ol>
+    </div>
+  </span>
+</div>
+
+    
+    <div class="content index py4">
+        
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle" itemprop="name headline">
+        Windows内核实验:ShadowWalker
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span itemprop="name">bxz</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2023-06-03T22:33:23.000Z" itemprop="datePublished">2023-06-04</time>
+        
+      
+    </div>
+
+
+      
+
+      
+    <div class="article-tag">
+        <i class="fas fa-tag"></i>
+        <a class="tag-link-link" href="/tags/Windows-Kernel-Experiment/" rel="tag">Windows Kernel Experiment</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content" itemprop="articleBody">
+    <h1 id="Windows内核实验-ShadowWalker"><a href="#Windows内核实验-ShadowWalker" class="headerlink" title="Windows内核实验:ShadowWalker"></a>Windows内核实验:ShadowWalker</h1><p>接着上一次inlinehook缺页异常来做进程保护，反调试等</p>
+<p>我们hook住缺页异常后可以根据错误码的第五位判断是取指令造成的缺页，还是读写造成的异常，我们就可以对两种不同缺页做不同的异常处理，可以在指令造成缺页时，把正确页挂到tlb里来使程序可以正常执行，读写造成缺页时，挂到一个fake页上来反调试</p>
+<p>0环感觉要做到稳定是很难的</p>
+<p>inlinehook.c</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;windows.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> PTE(x) (DWORD64 *) (((x &gt;&gt; 12) &lt;&lt; 3) + 0xc0000000)</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> REAL_PTE (DWORD64 *)0x8003f250</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> FAKE_PTE (DWORD64 *)0x8003f258</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> T_CR3 0x8003f260</span></span><br><span class="line"><span class="type">void</span> <span class="title function_">JmpTarget</span><span class="params">()</span>;</span><br><span class="line"><span class="type">char</span>* p = (<span class="type">char</span>*)<span class="number">0x8003f130</span>;</span><br><span class="line"><span class="type">size_t</span> i;</span><br><span class="line"><span class="type">void</span> __declspec(naked) IdtEntry() &#123;</span><br><span class="line">    <span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; <span class="number">0x100</span>; i++) &#123;</span><br><span class="line">        <span class="comment">//裸函数里尽量不用局部变量，因为没有栈帧</span></span><br><span class="line">        <span class="comment">//试了一下如果这里用size_t i=0;的话，使用了寄存器edi计数，但是还是在用全局变量保险</span></span><br><span class="line">        *p = ((<span class="type">char</span>*)JmpTarget)[i];</span><br><span class="line">        p++;</span><br><span class="line">    &#125;</span><br><span class="line">    __asm &#123;</span><br><span class="line">        <span class="comment">//关闭写保护</span></span><br><span class="line">        mov eax, cr0</span><br><span class="line">        and eax, not <span class="number">0x10000</span></span><br><span class="line">        mov cr0, eax</span><br><span class="line">        <span class="comment">//构造_KiTrap0E hook头</span></span><br><span class="line">        <span class="comment">//push 0x8003f130  68 30 F1 03 80</span></span><br><span class="line">        <span class="comment">//ret  C3</span></span><br><span class="line">        mov al,<span class="number">0x68</span></span><br><span class="line">        mov ds:[<span class="number">0x80541450</span>],al</span><br><span class="line">        mov dword ptr ds:[<span class="number">0x80541451</span>],<span class="number">0x8003f130</span></span><br><span class="line">        mov al, <span class="number">0xc3</span></span><br><span class="line">        mov ds:[<span class="number">0x80541455</span>],al</span><br><span class="line"></span><br><span class="line">        mov eax,<span class="number">0xffffffff</span></span><br><span class="line">        mov ds:[T_CR3],eax</span><br><span class="line">        <span class="comment">//开启写保护</span></span><br><span class="line">        mov eax, cr0</span><br><span class="line">        or eax, <span class="number">0x10000</span></span><br><span class="line">        mov cr0, eax</span><br><span class="line">        iretd</span><br><span class="line">    &#125;</span><br><span class="line"> &#125;</span><br><span class="line"><span class="type">void</span> __declspec(naked) JmpTarget() &#123;</span><br><span class="line">    __asm &#123;</span><br><span class="line">        pushad</span><br><span class="line">        mov eax, cr3</span><br><span class="line">        cmp eax, ds: [T_CR3]</span><br><span class="line">        jnz PASS</span><br><span class="line"></span><br><span class="line">        mov eax, cr2</span><br><span class="line">        shr eax, <span class="number">0xc</span></span><br><span class="line">        cmp eax, <span class="number">0x412</span></span><br><span class="line">        jnz PASS</span><br><span class="line">        <span class="comment">//取出错误码，+20是因为pushad压了栈</span></span><br><span class="line">        mov eax, ss: [esp + <span class="number">0x20</span>]</span><br><span class="line">        test eax, <span class="number">0x10</span></span><br><span class="line">        jne EXECUTE</span><br><span class="line">        jmp READWRITE</span><br><span class="line">        <span class="comment">//取指令造成异常</span></span><br><span class="line">    EXECUTE:</span><br><span class="line">    &#125;</span><br><span class="line">    *PTE(<span class="number">0x412000</span>)=*REAL_PTE;</span><br><span class="line">    __asm &#123;</span><br><span class="line">        <span class="comment">//放入指令tlb里</span></span><br><span class="line">        mov eax, <span class="number">0x412004</span></span><br><span class="line">        call eax</span><br><span class="line">   &#125;</span><br><span class="line">    <span class="comment">//再次销毁页，使读写时造成缺页</span></span><br><span class="line">    *PTE(<span class="number">0x412000</span>) = <span class="number">0</span>;</span><br><span class="line">    __asm &#123;</span><br><span class="line">        popad</span><br><span class="line">        <span class="comment">//错误码不会被iret弹出，要手动平掉这个栈</span></span><br><span class="line">        add esp, <span class="number">4</span></span><br><span class="line">        iretd</span><br><span class="line">    READWRITE :</span><br><span class="line">    &#125;</span><br><span class="line">    *PTE(<span class="number">0x412000</span>) = *FAKE_PTE;</span><br><span class="line">    __asm &#123;</span><br><span class="line">        <span class="comment">//放入数据tlb</span></span><br><span class="line">        mov eax,ds:[<span class="number">0x41c000</span>]</span><br><span class="line">    &#125;</span><br><span class="line">    *PTE(<span class="number">0x412000</span>) = <span class="number">0</span>;</span><br><span class="line">    __asm &#123;</span><br><span class="line">        popad</span><br><span class="line">        <span class="comment">//错误码不会被iret弹出，要手动平掉这个栈</span></span><br><span class="line">        add esp, <span class="number">4</span></span><br><span class="line">        iretd</span><br><span class="line"> PASS:<span class="comment">//无关进程返回到原来的_KiTrap0E处理</span></span><br><span class="line">        popad</span><br><span class="line">        mov word ptr[esp + <span class="number">2</span>], <span class="number">0</span></span><br><span class="line">        push <span class="number">0x80541457</span></span><br><span class="line">        ret </span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="type">void</span> <span class="title function_">interrupt</span><span class="params">()</span> &#123;</span><br><span class="line">    __asm &#123;</span><br><span class="line">        <span class="type">int</span> <span class="number">0x20</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="keyword">if</span> (<span class="number">0x401040</span> != IdtEntry) &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;IdtRntry address wrong&quot;</span>);</span><br><span class="line">        system(<span class="string">&quot;pause&quot;</span>);</span><br><span class="line">        <span class="built_in">exit</span>(<span class="number">-1</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    interrupt();</span><br><span class="line">    system(<span class="string">&quot;pause&quot;</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>test.c</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;windows.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> PTE(x) (DWORD64 *) (((x &gt;&gt; 12) &lt;&lt; 3) + 0xc0000000)</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> REAL_PTE (DWORD64 *)0x8003f250</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> FAKE_PTE (DWORD64 *)0x8003f258</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> T_CR3 0x8003f260</span></span><br><span class="line"><span class="meta">#<span class="keyword">pragma</span> section(<span class="string">&quot;fake_data&quot;</span>,read,write)</span></span><br><span class="line">__declspec(allocate(<span class="string">&quot;fake_data&quot;</span>)) DWORD fake_page[<span class="number">1024</span>];<span class="comment">//0x41c000</span></span><br><span class="line"><span class="type">void</span> __declspec(naked) IdtEntry() &#123;<span class="comment">//裸函数不会帮我们生成栈帧，单纯一个call</span></span><br><span class="line">    *REAL_PTE = *PTE(<span class="number">0x412000</span>);</span><br><span class="line">    *FAKE_PTE = *PTE(<span class="number">0x41c000</span>);</span><br><span class="line">    <span class="comment">//使页失效,不存在,每次都会触发缺页,从而接受我们hook的检测</span></span><br><span class="line">    *PTE(<span class="number">0x412000</span>)=<span class="number">0</span>;</span><br><span class="line">    __asm &#123;</span><br><span class="line">        mov eax,cr3</span><br><span class="line">        mov ds:[T_CR3],eax<span class="comment">//缺页异常时会跳到被我们inlinhook的KiTrap0E,jnz end比较起来就会一样</span></span><br><span class="line">        iretd</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="type">void</span> <span class="title function_">interrupt</span><span class="params">()</span> &#123;</span><br><span class="line">    fake_page[<span class="number">0</span>] = <span class="number">0x12345678</span>;<span class="comment">//确保加载物理页</span></span><br><span class="line">    __asm &#123;</span><br><span class="line">        <span class="type">int</span> <span class="number">0x20</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="meta">#<span class="keyword">pragma</span> code_seg(<span class="string">&quot;.mycode&quot;</span>) __declspec(allocate(<span class="string">&quot;.mycode&quot;</span>)) int main();</span></span><br><span class="line"><span class="comment">//0x412000</span></span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">()</span> &#123;</span><br><span class="line">    __asm&#123;</span><br><span class="line">        jmp L</span><br><span class="line">        ret <span class="comment">//0412004</span></span><br><span class="line">    L:</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (<span class="number">0x401040</span> != IdtEntry) &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;IdtRntry address wrong&quot;</span>);</span><br><span class="line">        system(<span class="string">&quot;pause&quot;</span>);</span><br><span class="line">        <span class="built_in">exit</span>(<span class="number">-1</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="type">int</span> i = <span class="number">0</span>;</span><br><span class="line">    interrupt();</span><br><span class="line">    <span class="keyword">while</span> (TRUE) &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;%d\n&quot;</span>, i++);</span><br><span class="line">        Sleep(<span class="number">1000</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    system(<span class="string">&quot;pause&quot;</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>读的话是读到了fake页，执行正常</p>
+<p><img src="/2023/06/04/Windows-Kernel-Experiment-ShadowWalker/image-20230604120326540.png" alt="image-20230604120326540"></p>
+<p>由于进程结束时要回收物理内存，所以要在main退出时，恢复页面值</p>
+
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+         
+          <li><a href="/">Home</a></li>
+         
+          <li><a href="/archives/">Writing</a></li>
+         
+          <li><a href="/search/">Search</a></li>
+         
+          <li><a href="/tags/">Tag</a></li>
+         
+          <li><a href="/about/">About</a></li>
+        
+      </ul>
+    </div>
+
+    <div id="toc-footer" style="display: none">
+      <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Windows%E5%86%85%E6%A0%B8%E5%AE%9E%E9%AA%8C-ShadowWalker"><span class="toc-number">1.</span> <span class="toc-text">Windows内核实验:ShadowWalker</span></a></li></ol>
+    </div>
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://grxer.gitee.io/2023/06/04/Windows-Kernel-Experiment-ShadowWalker/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://grxer.gitee.io/2023/06/04/Windows-Kernel-Experiment-ShadowWalker/&text=Windows内核实验:ShadowWalker"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://grxer.gitee.io/2023/06/04/Windows-Kernel-Experiment-ShadowWalker/&title=Windows内核实验:ShadowWalker"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://grxer.gitee.io/2023/06/04/Windows-Kernel-Experiment-ShadowWalker/&is_video=false&description=Windows内核实验:ShadowWalker"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Windows内核实验:ShadowWalker&body=Check out this article: https://grxer.gitee.io/2023/06/04/Windows-Kernel-Experiment-ShadowWalker/"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://grxer.gitee.io/2023/06/04/Windows-Kernel-Experiment-ShadowWalker/&title=Windows内核实验:ShadowWalker"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://grxer.gitee.io/2023/06/04/Windows-Kernel-Experiment-ShadowWalker/&title=Windows内核实验:ShadowWalker"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://grxer.gitee.io/2023/06/04/Windows-Kernel-Experiment-ShadowWalker/&title=Windows内核实验:ShadowWalker"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://grxer.gitee.io/2023/06/04/Windows-Kernel-Experiment-ShadowWalker/&title=Windows内核实验:ShadowWalker"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://grxer.gitee.io/2023/06/04/Windows-Kernel-Experiment-ShadowWalker/&name=Windows内核实验:ShadowWalker&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://grxer.gitee.io/2023/06/04/Windows-Kernel-Experiment-ShadowWalker/&t=Windows内核实验:ShadowWalker"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fas fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
+        <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fas fa-list fa-lg" aria-hidden="true"></i> TOC</a>
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fas fa-share-alt fa-lg" aria-hidden="true"></i> Share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2023-2024
+    bxz
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a href="/search/">Search</a></li><!--
+     --><!--
+       --><li><a href="/tags/">Tag</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+ 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script> 
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script> 
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"Copy to clipboard!\">";
+    btn += '<i class="far fa-clone"></i>';
+    btn += '</span>'; 
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "Copied!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Google Analytics -->
+
+<!-- Baidu Analytics -->
+
+  <script type="text/javascript">
+        var _hmt = _hmt || [];
+        (function() {
+          var hm = document.createElement("script");
+          hm.src = "https://hm.baidu.com/hm.js?a22ef0bec4e4a9c7337bea6e37ff55c1";
+          var s = document.getElementsByTagName("script")[0];
+          s.parentNode.insertBefore(hm, s);
+        })();
+        </script>
+
+<!-- Cloudflare Analytics -->
+
+<!-- Umami Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+</body>
+</html>

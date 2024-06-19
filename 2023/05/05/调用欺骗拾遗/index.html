@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="baidu-site-verification" content="codeva-ROfYcqLkCh" />
+    <meta name="msvalidate.01" content="ECA3E06A0E52A2AC90C4B06F12981FB2" />
+    <meta name="description" content="调用欺骗拾遗https:&#x2F;&#x2F;grxer.github.io&#x2F;2023&#x2F;05&#x2F;04&#x2F;ELF%20Dynamical-link&#x2F; 中显示的运行时链接那段代码让我想起了之前在lnnks老师那里，看到一个比较有意思的code 环境vs2022  x86 Release版 #include &lt;windows.h&gt;#include &lt;iostream&gt;#pragma optimize(">
+<meta property="og:type" content="article">
+<meta property="og:title" content="调用欺骗拾遗">
+<meta property="og:url" content="https://grxer.gitee.io/2023/05/05/%E8%B0%83%E7%94%A8%E6%AC%BA%E9%AA%97%E6%8B%BE%E9%81%97/index.html">
+<meta property="og:site_name" content="Grxer&#39;s Blog">
+<meta property="og:description" content="调用欺骗拾遗https:&#x2F;&#x2F;grxer.github.io&#x2F;2023&#x2F;05&#x2F;04&#x2F;ELF%20Dynamical-link&#x2F; 中显示的运行时链接那段代码让我想起了之前在lnnks老师那里，看到一个比较有意思的code 环境vs2022  x86 Release版 #include &lt;windows.h&gt;#include &lt;iostream&gt;#pragma optimize(">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://grxer.gitee.io/2023/05/05/%E8%B0%83%E7%94%A8%E6%AC%BA%E9%AA%97%E6%8B%BE%E9%81%97/image-20230506154546803.png">
+<meta property="og:image" content="https://grxer.gitee.io/2023/05/05/%E8%B0%83%E7%94%A8%E6%AC%BA%E9%AA%97%E6%8B%BE%E9%81%97/image-20230506152018853.png">
+<meta property="article:published_time" content="2023-05-05T07:45:01.000Z">
+<meta property="article:modified_time" content="2023-05-06T08:10:42.912Z">
+<meta property="article:author" content="bxz">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://grxer.gitee.io/2023/05/05/%E8%B0%83%E7%94%A8%E6%AC%BA%E9%AA%97%E6%8B%BE%E9%81%97/image-20230506154546803.png">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
+    
+    <!-- title -->
+    <title>调用欺骗拾遗</title>
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+		<script type="text/x-mathjax-config">
+		  MathJax.Hub.Config({
+			tex2jax: {
+			  skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+			  inlineMath: [['$','$']]
+			}
+		  });
+		</script>
+		<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-MML-AM_CHTML' async></script>
+	
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+<body class="max-width mx-auto px3 lrt">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="Menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="Menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="Top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fas fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a href="/search/">Search</a></li><!--
+     --><!--
+       --><li><a href="/tags/">Tag</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" aria-label="Previous post" href="/2023/05/08/ics4-linklab/"><i class="fas fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" aria-label="Next post" href="/2023/05/04/ELF-Dynamical-link/"><i class="fas fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="Back to top" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="Share post" href="#"><i class="fas fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://grxer.gitee.io/2023/05/05/%E8%B0%83%E7%94%A8%E6%AC%BA%E9%AA%97%E6%8B%BE%E9%81%97/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://grxer.gitee.io/2023/05/05/%E8%B0%83%E7%94%A8%E6%AC%BA%E9%AA%97%E6%8B%BE%E9%81%97/&text=调用欺骗拾遗"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://grxer.gitee.io/2023/05/05/%E8%B0%83%E7%94%A8%E6%AC%BA%E9%AA%97%E6%8B%BE%E9%81%97/&title=调用欺骗拾遗"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://grxer.gitee.io/2023/05/05/%E8%B0%83%E7%94%A8%E6%AC%BA%E9%AA%97%E6%8B%BE%E9%81%97/&is_video=false&description=调用欺骗拾遗"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=调用欺骗拾遗&body=Check out this article: https://grxer.gitee.io/2023/05/05/%E8%B0%83%E7%94%A8%E6%AC%BA%E9%AA%97%E6%8B%BE%E9%81%97/"><i class="fas fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://grxer.gitee.io/2023/05/05/%E8%B0%83%E7%94%A8%E6%AC%BA%E9%AA%97%E6%8B%BE%E9%81%97/&title=调用欺骗拾遗"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://grxer.gitee.io/2023/05/05/%E8%B0%83%E7%94%A8%E6%AC%BA%E9%AA%97%E6%8B%BE%E9%81%97/&title=调用欺骗拾遗"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://grxer.gitee.io/2023/05/05/%E8%B0%83%E7%94%A8%E6%AC%BA%E9%AA%97%E6%8B%BE%E9%81%97/&title=调用欺骗拾遗"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://grxer.gitee.io/2023/05/05/%E8%B0%83%E7%94%A8%E6%AC%BA%E9%AA%97%E6%8B%BE%E9%81%97/&title=调用欺骗拾遗"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://grxer.gitee.io/2023/05/05/%E8%B0%83%E7%94%A8%E6%AC%BA%E9%AA%97%E6%8B%BE%E9%81%97/&name=调用欺骗拾遗&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://grxer.gitee.io/2023/05/05/%E8%B0%83%E7%94%A8%E6%AC%BA%E9%AA%97%E6%8B%BE%E9%81%97/&t=调用欺骗拾遗"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    <div id="toc">
+      <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E8%B0%83%E7%94%A8%E6%AC%BA%E9%AA%97%E6%8B%BE%E9%81%97"><span class="toc-number">1.</span> <span class="toc-text">调用欺骗拾遗</span></a></li></ol>
+    </div>
+  </span>
+</div>
+
+    
+    <div class="content index py4">
+        
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle" itemprop="name headline">
+        调用欺骗拾遗
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span itemprop="name">bxz</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2023-05-05T07:45:01.000Z" itemprop="datePublished">2023-05-05</time>
+        
+      
+    </div>
+
+
+      
+
+      
+
+    </div>
+  </header>
+  
+
+  <div class="content" itemprop="articleBody">
+    <h1 id="调用欺骗拾遗"><a href="#调用欺骗拾遗" class="headerlink" title="调用欺骗拾遗"></a>调用欺骗拾遗</h1><p><a target="_blank" rel="noopener" href="https://grxer.github.io/2023/05/04/ELF%20Dynamical-link/">https://grxer.github.io/2023/05/04/ELF%20Dynamical-link/</a> 中显示的运行时链接那段代码让我想起了之前在lnnks老师那里，看到一个比较有意思的code</p>
+<p>环境vs2022  x86 Release版</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;windows.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">pragma</span> optimize(<span class="string">&quot;&quot;</span>,off)</span></span><br><span class="line"><span class="type">void</span> <span class="title function_">show</span><span class="params">(<span class="type">void</span>* pf, HWND hWnd,</span></span><br><span class="line"><span class="params">    LPCTSTR lpText,</span></span><br><span class="line"><span class="params">    LPCTSTR lpCaption,</span></span><br><span class="line"><span class="params">    UINT uType</span></span><br><span class="line"><span class="params">)</span> &#123;</span><br><span class="line">    <span class="comment">//ar[2]:ebp;ar[3] ret; jar[4] void *pf;</span></span><br><span class="line">    <span class="type">int</span> ar[<span class="number">2</span>];</span><br><span class="line">    ar[<span class="number">4</span>] = ar[<span class="number">3</span>] ^ ar[<span class="number">4</span>];</span><br><span class="line">    ar[<span class="number">3</span>] = ar[<span class="number">3</span>] ^ ar[<span class="number">4</span>];</span><br><span class="line">    ar[<span class="number">4</span>] = ar[<span class="number">3</span>] ^ ar[<span class="number">4</span>];</span><br><span class="line">&#125;</span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">()</span> &#123;</span><br><span class="line">    show(MessageBoxW, <span class="number">0</span>, TEXT(<span class="string">&quot;grxer&quot;</span>), TEXT(<span class="string">&quot;grxer&quot;</span>), MB_OK);</span><br><span class="line">    <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; <span class="string">&quot;hello&quot;</span> &lt;&lt; <span class="built_in">std</span>::<span class="built_in">endl</span>;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>show函数利用栈溢出把返回地址所处地址ar[3]改为pf指针指的函数(push参数后call嘛)，只改返回地址pf函数不能正常返回main的，所以我们把pf的返回地址ar[3]处改为了原来show的返回地址，弹出messagebox后正常返回main函数，但是main在ret的时候会crash掉</p>
+<p><img src="/2023/05/05/%E8%B0%83%E7%94%A8%E6%AC%BA%E9%AA%97%E6%8B%BE%E9%81%97/image-20230506154546803.png" alt="image-20230506154546803"></p>
+<p>为什么呢?</p>
+<p>由于messagebox函数是winapi，Windows API默认的函数调用协议__stdcall，所以最后以一条ret 10h的指令来内平栈，show函数是C&#x2F;C++默认的函数调用协议_cdecl,在调用返回main后会用 add   esp,14h进行外平栈，所以我们比原来的普通show函数调用多了一个ret 10h，ret10h等效于 pop eip；add esp，10h ，所以我们比原来多平了20字节的栈</p>
+<p>最简单的一种方法，是在调用show之前用内联汇编压5次栈，或者我们去分配5个四字节的局部变量，去填充一块栈空间</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;windows.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">pragma</span> optimize(<span class="string">&quot;&quot;</span>,off)</span></span><br><span class="line"><span class="type">void</span> <span class="title function_">show</span><span class="params">(<span class="type">void</span>* pf, HWND hWnd,</span></span><br><span class="line"><span class="params">    LPCTSTR lpText,</span></span><br><span class="line"><span class="params">    LPCTSTR lpCaption,</span></span><br><span class="line"><span class="params">    UINT uType</span></span><br><span class="line"><span class="params">)</span> &#123;</span><br><span class="line">    <span class="comment">//ar[2]:ebp;ar[3] ret; jar[4] void *pf;</span></span><br><span class="line">    <span class="type">int</span> ar[<span class="number">2</span>];</span><br><span class="line">    ar[<span class="number">4</span>] = ar[<span class="number">3</span>] ^ ar[<span class="number">4</span>];</span><br><span class="line">    ar[<span class="number">3</span>] = ar[<span class="number">3</span>] ^ ar[<span class="number">4</span>];</span><br><span class="line">    ar[<span class="number">4</span>] = ar[<span class="number">3</span>] ^ ar[<span class="number">4</span>];</span><br><span class="line">&#125;</span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="comment">//1.</span></span><br><span class="line">    _asm &#123;</span><br><span class="line">     push <span class="number">666</span> </span><br><span class="line">     push <span class="number">666</span></span><br><span class="line">     push <span class="number">666</span></span><br><span class="line">     push <span class="number">666</span></span><br><span class="line">     push <span class="number">666</span></span><br><span class="line">     &#125;</span><br><span class="line">    <span class="comment">//2.</span></span><br><span class="line">    <span class="comment">//int ar[5]=&#123;0&#125;;</span></span><br><span class="line">    show(MessageBoxW, <span class="number">0</span>, TEXT(<span class="string">&quot;grxer&quot;</span>), TEXT(<span class="string">&quot;grxer&quot;</span>), MB_OK);</span><br><span class="line">    <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; <span class="string">&quot;hello&quot;</span> &lt;&lt; <span class="built_in">std</span>::<span class="built_in">endl</span>;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>解决了栈的问题但不完美,我们这样做调用的目的是隐藏掉调用痕迹去迷惑逆向分析的人也好或者杀软也好</p>
+<p>push完5个参数后，show函数也要push，谁家好人push十个参数啊，一眼顶真了</p>
+<p>我们调用show返回main时由于一些非法操作导致栈其实已经平了，add会导致栈不平，我们可以控制返回地址干嘛不直接跳过这条add指令呢</p>
+<p><img src="/2023/05/05/%E8%B0%83%E7%94%A8%E6%AC%BA%E9%AA%97%E6%8B%BE%E9%81%97/image-20230506152018853.png" alt="image-20230506152018853"></p>
+<p>直接ar[4]+&#x3D;3;</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;windows.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">pragma</span> optimize(<span class="string">&quot;&quot;</span>,off)</span></span><br><span class="line"><span class="type">void</span> <span class="title function_">show</span><span class="params">(<span class="type">void</span>* pf, HWND hWnd,</span></span><br><span class="line"><span class="params">    LPCTSTR lpText,</span></span><br><span class="line"><span class="params">    LPCTSTR lpCaption,</span></span><br><span class="line"><span class="params">    UINT uType</span></span><br><span class="line"><span class="params">)</span> &#123;</span><br><span class="line">    <span class="comment">//ar[2]:ebp;ar[3] ret; jar[4] void *pf;</span></span><br><span class="line">    <span class="type">int</span> ar[<span class="number">2</span>];</span><br><span class="line">    ar[<span class="number">4</span>] = ar[<span class="number">3</span>] ^ ar[<span class="number">4</span>];</span><br><span class="line">    ar[<span class="number">3</span>] = ar[<span class="number">3</span>] ^ ar[<span class="number">4</span>];</span><br><span class="line">    ar[<span class="number">4</span>] = ar[<span class="number">3</span>] ^ ar[<span class="number">4</span>];</span><br><span class="line">    ar[<span class="number">4</span>] += <span class="number">3</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">()</span> &#123;</span><br><span class="line">    (show)(MessageBoxW, <span class="number">0</span>, TEXT(<span class="string">&quot;grxer&quot;</span>), TEXT(<span class="string">&quot;grxer&quot;</span>), MB_OK);</span><br><span class="line">    <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; <span class="string">&quot;hello&quot;</span> &lt;&lt; <span class="built_in">std</span>::<span class="built_in">endl</span>;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>show函数是cdecl的外平栈，我们可以把他强转为stacall在调用时来抹除这个外平栈，相当于我show函数编译成的代码是外平栈的，但是我们在调用时把他当作内平栈的stdcall，欺骗编译器不给我们平栈</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;windows.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">pragma</span> optimize(<span class="string">&quot;&quot;</span>,off)</span></span><br><span class="line"><span class="type">void</span>  <span class="title function_">show</span><span class="params">(<span class="type">void</span>* pf, HWND hWnd,</span></span><br><span class="line"><span class="params">    LPCTSTR lpText,</span></span><br><span class="line"><span class="params">    LPCTSTR lpCaption,</span></span><br><span class="line"><span class="params">    UINT uType</span></span><br><span class="line"><span class="params">)</span> &#123;</span><br><span class="line">    <span class="comment">//ar[2]:ebp;ar[3] ret; jar[4] void *pf;</span></span><br><span class="line">    <span class="type">int</span> ar[<span class="number">2</span>];</span><br><span class="line">    ar[<span class="number">4</span>] = ar[<span class="number">3</span>] ^ ar[<span class="number">4</span>];</span><br><span class="line">    ar[<span class="number">3</span>] = ar[<span class="number">3</span>] ^ ar[<span class="number">4</span>];</span><br><span class="line">    ar[<span class="number">4</span>] = ar[<span class="number">3</span>] ^ ar[<span class="number">4</span>];</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">typedef</span> <span class="title function_">void</span><span class="params">(_stdcall* pf)</span><span class="params">(<span class="type">void</span>* pf, HWND hWnd,</span></span><br><span class="line"><span class="params">    LPCTSTR lpText,</span></span><br><span class="line"><span class="params">    LPCTSTR lpCaption,</span></span><br><span class="line"><span class="params">    UINT uType</span></span><br><span class="line"><span class="params">    )</span>;</span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">()</span> &#123;</span><br><span class="line">    ((pf)show)(MessageBoxW, <span class="number">0</span>, TEXT(<span class="string">&quot;grxer&quot;</span>), TEXT(<span class="string">&quot;grxer&quot;</span>), MB_OK);</span><br><span class="line">    <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; <span class="string">&quot;hello&quot;</span> &lt;&lt; <span class="built_in">std</span>::<span class="built_in">endl</span>;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+         
+          <li><a href="/">Home</a></li>
+         
+          <li><a href="/archives/">Writing</a></li>
+         
+          <li><a href="/search/">Search</a></li>
+         
+          <li><a href="/tags/">Tag</a></li>
+         
+          <li><a href="/about/">About</a></li>
+        
+      </ul>
+    </div>
+
+    <div id="toc-footer" style="display: none">
+      <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E8%B0%83%E7%94%A8%E6%AC%BA%E9%AA%97%E6%8B%BE%E9%81%97"><span class="toc-number">1.</span> <span class="toc-text">调用欺骗拾遗</span></a></li></ol>
+    </div>
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://grxer.gitee.io/2023/05/05/%E8%B0%83%E7%94%A8%E6%AC%BA%E9%AA%97%E6%8B%BE%E9%81%97/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://grxer.gitee.io/2023/05/05/%E8%B0%83%E7%94%A8%E6%AC%BA%E9%AA%97%E6%8B%BE%E9%81%97/&text=调用欺骗拾遗"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://grxer.gitee.io/2023/05/05/%E8%B0%83%E7%94%A8%E6%AC%BA%E9%AA%97%E6%8B%BE%E9%81%97/&title=调用欺骗拾遗"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://grxer.gitee.io/2023/05/05/%E8%B0%83%E7%94%A8%E6%AC%BA%E9%AA%97%E6%8B%BE%E9%81%97/&is_video=false&description=调用欺骗拾遗"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=调用欺骗拾遗&body=Check out this article: https://grxer.gitee.io/2023/05/05/%E8%B0%83%E7%94%A8%E6%AC%BA%E9%AA%97%E6%8B%BE%E9%81%97/"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://grxer.gitee.io/2023/05/05/%E8%B0%83%E7%94%A8%E6%AC%BA%E9%AA%97%E6%8B%BE%E9%81%97/&title=调用欺骗拾遗"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://grxer.gitee.io/2023/05/05/%E8%B0%83%E7%94%A8%E6%AC%BA%E9%AA%97%E6%8B%BE%E9%81%97/&title=调用欺骗拾遗"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://grxer.gitee.io/2023/05/05/%E8%B0%83%E7%94%A8%E6%AC%BA%E9%AA%97%E6%8B%BE%E9%81%97/&title=调用欺骗拾遗"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://grxer.gitee.io/2023/05/05/%E8%B0%83%E7%94%A8%E6%AC%BA%E9%AA%97%E6%8B%BE%E9%81%97/&title=调用欺骗拾遗"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://grxer.gitee.io/2023/05/05/%E8%B0%83%E7%94%A8%E6%AC%BA%E9%AA%97%E6%8B%BE%E9%81%97/&name=调用欺骗拾遗&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://grxer.gitee.io/2023/05/05/%E8%B0%83%E7%94%A8%E6%AC%BA%E9%AA%97%E6%8B%BE%E9%81%97/&t=调用欺骗拾遗"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fas fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
+        <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fas fa-list fa-lg" aria-hidden="true"></i> TOC</a>
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fas fa-share-alt fa-lg" aria-hidden="true"></i> Share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2023-2024
+    bxz
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a href="/search/">Search</a></li><!--
+     --><!--
+       --><li><a href="/tags/">Tag</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+ 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script> 
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script> 
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"Copy to clipboard!\">";
+    btn += '<i class="far fa-clone"></i>';
+    btn += '</span>'; 
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "Copied!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Google Analytics -->
+
+<!-- Baidu Analytics -->
+
+  <script type="text/javascript">
+        var _hmt = _hmt || [];
+        (function() {
+          var hm = document.createElement("script");
+          hm.src = "https://hm.baidu.com/hm.js?a22ef0bec4e4a9c7337bea6e37ff55c1";
+          var s = document.getElementsByTagName("script")[0];
+          s.parentNode.insertBefore(hm, s);
+        })();
+        </script>
+
+<!-- Cloudflare Analytics -->
+
+<!-- Umami Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+</body>
+</html>

@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="baidu-site-verification" content="codeva-ROfYcqLkCh" />
+    <meta name="msvalidate.01" content="ECA3E06A0E52A2AC90C4B06F12981FB2" />
+    <meta name="description" content="内嵌补丁(Embedded patch)链接：https:&#x2F;&#x2F;pan.baidu.com&#x2F;s&#x2F;1sOzl2CaOaEMCoEJZTVrU-g提取码：57g8 从入口点开始跟到0040109B 0040109B &lt;unpackme#1.ac | 50                       | push eax">
+<meta property="og:type" content="article">
+<meta property="og:title" content="内嵌补丁(Embedded patch)">
+<meta property="og:url" content="https://grxer.gitee.io/2023/05/23/embedded-patch/index.html">
+<meta property="og:site_name" content="Grxer&#39;s Blog">
+<meta property="og:description" content="内嵌补丁(Embedded patch)链接：https:&#x2F;&#x2F;pan.baidu.com&#x2F;s&#x2F;1sOzl2CaOaEMCoEJZTVrU-g提取码：57g8 从入口点开始跟到0040109B 0040109B &lt;unpackme#1.ac | 50                       | push eax">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://grxer.gitee.io/2023/05/23/embedded-patch/image-20230523155641278.png">
+<meta property="og:image" content="https://grxer.gitee.io/2023/05/23/embedded-patch/image-20230523161559913.png">
+<meta property="og:image" content="https://grxer.gitee.io/2023/05/23/embedded-patch/image-20230523164357610.png">
+<meta property="og:image" content="https://grxer.gitee.io/2023/05/23/embedded-patch/image-20230523165512284.png">
+<meta property="og:image" content="https://grxer.gitee.io/2023/05/23/embedded-patch/image-20230523172707047.png">
+<meta property="og:image" content="https://grxer.gitee.io/2023/05/23/embedded-patch/image-20230523173024075.png">
+<meta property="og:image" content="https://grxer.gitee.io/2023/05/23/embedded-patch/image-20230523173139510.png">
+<meta property="og:image" content="https://grxer.gitee.io/2023/05/23/embedded-patch/image-20230523173624190.png">
+<meta property="article:published_time" content="2023-05-23T07:26:39.000Z">
+<meta property="article:modified_time" content="2023-05-23T09:37:59.414Z">
+<meta property="article:author" content="bxz">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://grxer.gitee.io/2023/05/23/embedded-patch/image-20230523155641278.png">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
+    
+    <!-- title -->
+    <title>内嵌补丁(Embedded patch)</title>
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+		<script type="text/x-mathjax-config">
+		  MathJax.Hub.Config({
+			tex2jax: {
+			  skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+			  inlineMath: [['$','$']]
+			}
+		  });
+		</script>
+		<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-MML-AM_CHTML' async></script>
+	
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+<body class="max-width mx-auto px3 lrt">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="Menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="Menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="Top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fas fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a href="/search/">Search</a></li><!--
+     --><!--
+       --><li><a href="/tags/">Tag</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" aria-label="Previous post" href="/2023/05/25/Dynamic-DLL-Injection-and-unloading/"><i class="fas fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" aria-label="Next post" href="/2023/05/20/2023-5-20/"><i class="fas fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="Back to top" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="Share post" href="#"><i class="fas fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://grxer.gitee.io/2023/05/23/embedded-patch/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://grxer.gitee.io/2023/05/23/embedded-patch/&text=内嵌补丁(Embedded patch)"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://grxer.gitee.io/2023/05/23/embedded-patch/&title=内嵌补丁(Embedded patch)"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://grxer.gitee.io/2023/05/23/embedded-patch/&is_video=false&description=内嵌补丁(Embedded patch)"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=内嵌补丁(Embedded patch)&body=Check out this article: https://grxer.gitee.io/2023/05/23/embedded-patch/"><i class="fas fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://grxer.gitee.io/2023/05/23/embedded-patch/&title=内嵌补丁(Embedded patch)"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://grxer.gitee.io/2023/05/23/embedded-patch/&title=内嵌补丁(Embedded patch)"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://grxer.gitee.io/2023/05/23/embedded-patch/&title=内嵌补丁(Embedded patch)"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://grxer.gitee.io/2023/05/23/embedded-patch/&title=内嵌补丁(Embedded patch)"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://grxer.gitee.io/2023/05/23/embedded-patch/&name=内嵌补丁(Embedded patch)&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://grxer.gitee.io/2023/05/23/embedded-patch/&t=内嵌补丁(Embedded patch)"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    <div id="toc">
+      <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%86%85%E5%B5%8C%E8%A1%A5%E4%B8%81-Embedded-patch"><span class="toc-number">1.</span> <span class="toc-text">内嵌补丁(Embedded patch)</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%96%B9%E6%B3%951"><span class="toc-number">1.1.</span> <span class="toc-text">方法1</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%96%B9%E6%B3%952"><span class="toc-number">1.2.</span> <span class="toc-text">方法2</span></a></li></ol></li></ol>
+    </div>
+  </span>
+</div>
+
+    
+    <div class="content index py4">
+        
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle" itemprop="name headline">
+        内嵌补丁(Embedded patch)
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span itemprop="name">bxz</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2023-05-23T07:26:39.000Z" itemprop="datePublished">2023-05-23</time>
+        
+      
+    </div>
+
+
+      
+
+      
+
+    </div>
+  </header>
+  
+
+  <div class="content" itemprop="articleBody">
+    <h1 id="内嵌补丁-Embedded-patch"><a href="#内嵌补丁-Embedded-patch" class="headerlink" title="内嵌补丁(Embedded patch)"></a>内嵌补丁(Embedded patch)</h1><p>链接：<a target="_blank" rel="noopener" href="https://pan.baidu.com/s/1sOzl2CaOaEMCoEJZTVrU-g">https://pan.baidu.com/s/1sOzl2CaOaEMCoEJZTVrU-g</a><br>提取码：57g8</p>
+<p>从入口点开始跟到0040109B</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="number">0040109B</span> &lt;unpackme#<span class="number">1.</span>ac | <span class="number">50</span>                       | push eax                                         |</span><br><span class="line"><span class="number">0040109</span>C                | <span class="number">8B</span>D8                     | mov ebx,eax                                      |</span><br><span class="line"><span class="number">0040109</span>E                | B9 <span class="number">54010000</span>              | mov ecx,<span class="number">0x154</span>                                    | ecx:<span class="string">&quot;`桡&quot;</span></span><br><span class="line"><span class="number">004010</span>A3                | <span class="number">8033</span> <span class="number">44</span>                  | xor byte ptr ds:[ebx],<span class="number">0x44</span>                       |</span><br><span class="line"><span class="number">004010</span>A6                | <span class="number">83E9</span> <span class="number">01</span>                  | sub ecx,<span class="number">0x1</span>                                      | ecx:<span class="string">&quot;`桡&quot;</span></span><br><span class="line"><span class="number">004010</span>A9                | <span class="number">43</span>                       | inc ebx                                          |</span><br><span class="line"><span class="number">004010</span>AA                | <span class="number">83F</span>9 <span class="number">00</span>                  | cmp ecx,<span class="number">0x0</span>                                      | ecx:<span class="string">&quot;`桡&quot;</span></span><br><span class="line"><span class="number">004010</span>AD                | <span class="number">75</span> F4                    | jne unpackme#<span class="number">1.</span>ac<span class="number">.4010</span>A3                         |</span><br><span class="line"><span class="number">004010</span>AF                | <span class="number">50</span>                       | push eax                                         |</span><br><span class="line"><span class="number">004010B</span>0                | E8 <span class="number">08000000</span>              | call &lt;unpackme#<span class="number">1.</span>ac.sub_4010BD&gt;                  |</span><br><span class="line"><span class="number">004010B</span>5                | <span class="number">50</span>                       | push eax                                         |</span><br><span class="line"><span class="number">004010B</span>6                | E8 <span class="number">7</span>EFFFFFF              | call &lt;unpackme#<span class="number">1.</span>ac.sub_401039&gt;                  |</span><br><span class="line"><span class="number">004010B</span>B                | <span class="number">58</span>                       | pop eax                                          |</span><br><span class="line"><span class="number">004010B</span>C                | C3                       | ret                                              |</span><br></pre></td></tr></table></figure>
+
+<p>此时eax为004010F5，所以会对004010F5 - 004010F5+0x154区域进行一次异或解密</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="number">004010F</span>5 - <span class="number">004010F</span>5+<span class="number">0x154</span> ^<span class="number">0x44</span></span><br></pre></td></tr></table></figure>
+
+<p>跟进去<code>call &lt;unpackme#1.ac.sub_4010BD&gt;   </code></p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="number">004010B</span>D &lt;unpackme#<span class="number">1.</span>ac | <span class="number">50</span>                       | push eax                                         |</span><br><span class="line"><span class="number">004010B</span>E                | BB <span class="number">07104000</span>              | mov ebx,unpackme#<span class="number">1.</span>ac<span class="number">.401007</span>                     |</span><br><span class="line"><span class="number">004010</span>C3                | B9 <span class="number">7F</span>000000              | mov ecx,<span class="number">0x7F</span>                                     |</span><br><span class="line"><span class="number">004010</span>C8                | <span class="number">8033</span> <span class="number">07</span>                  | xor byte ptr ds:[ebx],<span class="number">0x7</span>                        |</span><br><span class="line"><span class="number">004010</span>CB                | <span class="number">83E9</span> <span class="number">01</span>                  | sub ecx,<span class="number">0x1</span>                                      |</span><br><span class="line"><span class="number">004010</span>CE                | <span class="number">43</span>                       | inc ebx                                          |</span><br><span class="line"><span class="number">004010</span>CF                | <span class="number">83F</span>9 <span class="number">00</span>                  | cmp ecx,<span class="number">0x0</span>                                      |</span><br><span class="line"><span class="number">004010</span>D2                | <span class="number">75</span> F4                    | jne unpackme#<span class="number">1.</span>ac<span class="number">.4010</span>C8                         |</span><br><span class="line"><span class="number">004010</span>D4                | <span class="number">8B</span>D8                     | mov ebx,eax                                      |</span><br><span class="line"><span class="number">004010</span>D6                | B9 <span class="number">54010000</span>              | mov ecx,<span class="number">0x154</span>                                    |</span><br><span class="line"><span class="number">004010</span>DB                | <span class="number">8033</span> <span class="number">11</span>                  | xor byte ptr ds:[ebx],<span class="number">0x11</span>                       |</span><br><span class="line"><span class="number">004010</span>DE                | <span class="number">83E9</span> <span class="number">01</span>                  | sub ecx,<span class="number">0x1</span>                                      |</span><br><span class="line"><span class="number">004010E1</span>                | <span class="number">43</span>                       | inc ebx                                          |</span><br><span class="line"><span class="number">004010E2</span>                | <span class="number">83F</span>9 <span class="number">00</span>                  | cmp ecx,<span class="number">0x0</span>                                      |</span><br><span class="line"><span class="number">004010E5</span>                | <span class="number">75</span> F4                    | jne unpackme#<span class="number">1.</span>ac<span class="number">.4010</span>DB                         |</span><br><span class="line"><span class="number">004010E7</span>                | <span class="number">58</span>                       | pop eax                                          |</span><br><span class="line"><span class="number">004010E8</span>                | C3                       | ret                                              |</span><br></pre></td></tr></table></figure>
+
+<p>继续解密</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="number">00401007</span> - <span class="number">00401007</span>+<span class="number">0x7f</span> ^<span class="number">0x7</span></span><br><span class="line"><span class="number">004010F</span>5 - <span class="number">004010F</span>5+<span class="number">0x154</span> ^<span class="number">0x11</span></span><br></pre></td></tr></table></figure>
+
+<p>跟进去<code>call &lt;unpackme#1.ac.sub_401039&gt;   </code></p>
+<p><img src="/2023/05/23/embedded-patch/image-20230523155641278.png" alt="image-20230523155641278"></p>
+<p>他会对经过两次解密后的004010F5 - 004010F5+0x154区域一次移动一字节，一次四个字节，累加到ebx中与0x31EB8DB0的校验和比对，不一致就调用exitprocess退出进程，否则就跳到</p>
+<p>中间还会调用0040108A去做解密40121e执行</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="number">0040108</span>A &lt;unpackme#<span class="number">1.</span>ac | <span class="number">50</span>                       | push eax                                         |</span><br><span class="line"><span class="number">0040108B</span>                | <span class="number">56</span>                       | push esi                                         | esi:<span class="string">&quot;`桡&quot;</span></span><br><span class="line"><span class="number">0040108</span>C                | <span class="number">8B</span>D8                     | mov ebx,eax                                      |</span><br><span class="line"><span class="number">0040108</span>E                | <span class="number">8B</span>CE                     | mov ecx,esi                                      | esi:<span class="string">&quot;`桡&quot;</span></span><br><span class="line"><span class="number">00401090</span>                | <span class="number">8033</span> <span class="number">17</span>                  | xor byte ptr ds:[ebx],<span class="number">0x17</span>                       |</span><br><span class="line"><span class="number">00401093</span>                | <span class="number">43</span>                       | inc ebx                                          |</span><br><span class="line"><span class="number">00401094</span>                | <span class="number">3B</span>D9                     | cmp ebx,ecx                                      |</span><br><span class="line"><span class="number">00401096</span>                | <span class="number">75</span> F8                    | jne unpackme#<span class="number">1.</span>ac<span class="number">.401090</span>                         |</span><br><span class="line"><span class="number">00401098</span>                | <span class="number">58</span>                       | pop eax                                          |</span><br><span class="line"><span class="number">00401099</span>                | <span class="number">5</span>E                       | pop esi                                          | esi:<span class="string">&quot;`桡&quot;</span></span><br><span class="line"><span class="number">0040109</span>A                | C3                       | ret                                              |</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="number">0040124</span>A<span class="number">-00401280</span> ^<span class="number">0x17</span></span><br></pre></td></tr></table></figure>
+
+<p><img src="/2023/05/23/embedded-patch/image-20230523161559913.png" alt="image-20230523161559913"></p>
+<p>这里调用getmodulehadle返回一个句柄，这个句柄值其实就是模块加载的虚拟内存的基地址，之前学win32时一直不知道这个句柄具体值。。。</p>
+<p>DialogBoxParamA的第四个参数lpDialogFunc就是用来处理对话框消息的回调函数即为004010F5</p>
+<p><img src="/2023/05/23/embedded-patch/image-20230523164357610.png" alt="image-20230523164357610"></p>
+<p>发现代码段里掺杂着数据区，估计这程序是用纯汇编写的，反正我不知道还有什么其他方法可以这样掺杂(还是太菜了）</p>
+<h2 id="方法1"><a href="#方法1" class="headerlink" title="方法1"></a>方法1</h2><p>这个时候其实可以去改掉加密的字符串数据为我们想要的，然后去改掉校验和的硬编码</p>
+<h2 id="方法2"><a href="#方法2" class="headerlink" title="方法2"></a>方法2</h2><p>用内嵌补丁，在完成检查校验和，jmp到入口点40121e之前，去劫持到我们的补丁，补丁做修改操作后，再jmp到入口点</p>
+<p>看一下区段</p>
+<p><img src="/2023/05/23/embedded-patch/image-20230523165512284.png" alt="image-20230523165512284"></p>
+<p>代码段文件大小0x400，内存大小0x280(内存对齐后一般会变为0x1000)</p>
+<p>有空余部分供我们写补丁代码，</p>
+<p>直接用会汇编把数据改了就行</p>
+<p><img src="/2023/05/23/embedded-patch/image-20230523172707047.png" alt="image-20230523172707047"></p>
+<p>在去改下jmp到补丁的地方</p>
+<p><img src="/2023/05/23/embedded-patch/image-20230523173024075.png" alt="image-20230523173024075"></p>
+<p>改掉</p>
+<p><img src="/2023/05/23/embedded-patch/image-20230523173139510.png" alt="image-20230523173139510"></p>
+<p>但是这里是要经过加密的</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="number">00401007</span> - <span class="number">00401007</span>+<span class="number">0x7f</span>(<span class="number">40</span> <span class="number">1086</span>) ^<span class="number">0x7</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">&gt;&gt;&gt; hex(<span class="number">0xE9</span>^<span class="number">7</span>)</span><br><span class="line"><span class="string">&#x27;0xee&#x27;</span></span><br><span class="line">&gt;&gt;&gt; hex(<span class="number">0x05</span>^<span class="number">7</span>)</span><br><span class="line"><span class="string">&#x27;0x2&#x27;</span></span><br><span class="line">&gt;&gt;&gt; hex(<span class="number">0x02</span>^<span class="number">7</span>)</span><br><span class="line"><span class="string">&#x27;0x5&#x27;</span></span><br></pre></td></tr></table></figure>
+
+<p><img src="/2023/05/23/embedded-patch/image-20230523173624190.png" alt="image-20230523173624190"></p>
+<p>patch保存一下就好了，ok</p>
+
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+         
+          <li><a href="/">Home</a></li>
+         
+          <li><a href="/archives/">Writing</a></li>
+         
+          <li><a href="/search/">Search</a></li>
+         
+          <li><a href="/tags/">Tag</a></li>
+         
+          <li><a href="/about/">About</a></li>
+        
+      </ul>
+    </div>
+
+    <div id="toc-footer" style="display: none">
+      <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%86%85%E5%B5%8C%E8%A1%A5%E4%B8%81-Embedded-patch"><span class="toc-number">1.</span> <span class="toc-text">内嵌补丁(Embedded patch)</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%96%B9%E6%B3%951"><span class="toc-number">1.1.</span> <span class="toc-text">方法1</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%96%B9%E6%B3%952"><span class="toc-number">1.2.</span> <span class="toc-text">方法2</span></a></li></ol></li></ol>
+    </div>
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://grxer.gitee.io/2023/05/23/embedded-patch/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://grxer.gitee.io/2023/05/23/embedded-patch/&text=内嵌补丁(Embedded patch)"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://grxer.gitee.io/2023/05/23/embedded-patch/&title=内嵌补丁(Embedded patch)"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://grxer.gitee.io/2023/05/23/embedded-patch/&is_video=false&description=内嵌补丁(Embedded patch)"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=内嵌补丁(Embedded patch)&body=Check out this article: https://grxer.gitee.io/2023/05/23/embedded-patch/"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://grxer.gitee.io/2023/05/23/embedded-patch/&title=内嵌补丁(Embedded patch)"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://grxer.gitee.io/2023/05/23/embedded-patch/&title=内嵌补丁(Embedded patch)"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://grxer.gitee.io/2023/05/23/embedded-patch/&title=内嵌补丁(Embedded patch)"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://grxer.gitee.io/2023/05/23/embedded-patch/&title=内嵌补丁(Embedded patch)"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://grxer.gitee.io/2023/05/23/embedded-patch/&name=内嵌补丁(Embedded patch)&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://grxer.gitee.io/2023/05/23/embedded-patch/&t=内嵌补丁(Embedded patch)"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fas fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
+        <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fas fa-list fa-lg" aria-hidden="true"></i> TOC</a>
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fas fa-share-alt fa-lg" aria-hidden="true"></i> Share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2023-2024
+    bxz
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a href="/search/">Search</a></li><!--
+     --><!--
+       --><li><a href="/tags/">Tag</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+ 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script> 
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script> 
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"Copy to clipboard!\">";
+    btn += '<i class="far fa-clone"></i>';
+    btn += '</span>'; 
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "Copied!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Google Analytics -->
+
+<!-- Baidu Analytics -->
+
+  <script type="text/javascript">
+        var _hmt = _hmt || [];
+        (function() {
+          var hm = document.createElement("script");
+          hm.src = "https://hm.baidu.com/hm.js?a22ef0bec4e4a9c7337bea6e37ff55c1";
+          var s = document.getElementsByTagName("script")[0];
+          s.parentNode.insertBefore(hm, s);
+        })();
+        </script>
+
+<!-- Cloudflare Analytics -->
+
+<!-- Umami Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+</body>
+</html>

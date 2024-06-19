@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="baidu-site-verification" content="codeva-ROfYcqLkCh" />
+    <meta name="msvalidate.01" content="ECA3E06A0E52A2AC90C4B06F12981FB2" />
+    <meta name="description" content="算是对之前实验的补充,依旧是xp系统 几个重要dllkernel32.dll:管理内存，进程和线程相关函数 User32.dll:用户界面相关应用程序接口，创建窗口和发送消息等 GDI32.dll:画图，显示文本相关函数 Ntdll.dll:三环进零环相关 ReadProcessMemorykernel32.dll里的ReadProcessMemory为例 调用了ntdll里的导出函数 .text">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Windows内核:API调用--&gt;系统调用">
+<meta property="og:url" content="https://grxer.gitee.io/2023/11/01/Windows-Kernel-X86-api/index.html">
+<meta property="og:site_name" content="Grxer&#39;s Blog">
+<meta property="og:description" content="算是对之前实验的补充,依旧是xp系统 几个重要dllkernel32.dll:管理内存，进程和线程相关函数 User32.dll:用户界面相关应用程序接口，创建窗口和发送消息等 GDI32.dll:画图，显示文本相关函数 Ntdll.dll:三环进零环相关 ReadProcessMemorykernel32.dll里的ReadProcessMemory为例 调用了ntdll里的导出函数 .text">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://grxer.gitee.io/2023/11/01/Windows-Kernel-X86-api/image-20231103230557854.png">
+<meta property="og:image" content="https://grxer.gitee.io/2023/11/01/Windows-Kernel-X86-api/image-20231103230613180.png">
+<meta property="og:image" content="https://grxer.gitee.io/2023/11/01/Windows-Kernel-X86-api/image-20231103230641570.png">
+<meta property="og:image" content="https://grxer.gitee.io/2023/11/01/Windows-Kernel-X86-api/image-20231103230718438.png">
+<meta property="og:image" content="https://grxer.gitee.io/2023/11/01/Windows-Kernel-X86-api/image-20231103230739865.png">
+<meta property="article:published_time" content="2023-11-01T15:03:23.000Z">
+<meta property="article:modified_time" content="2024-05-05T15:22:43.771Z">
+<meta property="article:author" content="bxz">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://grxer.gitee.io/2023/11/01/Windows-Kernel-X86-api/image-20231103230557854.png">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
+    
+    <!-- title -->
+    <title>Windows内核:API调用--&gt;系统调用</title>
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+		<script type="text/x-mathjax-config">
+		  MathJax.Hub.Config({
+			tex2jax: {
+			  skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+			  inlineMath: [['$','$']]
+			}
+		  });
+		</script>
+		<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-MML-AM_CHTML' async></script>
+	
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+<body class="max-width mx-auto px3 lrt">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="Menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="Menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="Top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fas fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a href="/search/">Search</a></li><!--
+     --><!--
+       --><li><a href="/tags/">Tag</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" aria-label="Previous post" href="/2023/11/02/SEH-x86/"><i class="fas fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" aria-label="Next post" href="/2023/10/26/Cpp-disassemble-1/"><i class="fas fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="Back to top" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="Share post" href="#"><i class="fas fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://grxer.gitee.io/2023/11/01/Windows-Kernel-X86-api/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://grxer.gitee.io/2023/11/01/Windows-Kernel-X86-api/&text=Windows内核:API调用--&gt;系统调用"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://grxer.gitee.io/2023/11/01/Windows-Kernel-X86-api/&title=Windows内核:API调用--&gt;系统调用"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://grxer.gitee.io/2023/11/01/Windows-Kernel-X86-api/&is_video=false&description=Windows内核:API调用--&gt;系统调用"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Windows内核:API调用--&gt;系统调用&body=Check out this article: https://grxer.gitee.io/2023/11/01/Windows-Kernel-X86-api/"><i class="fas fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://grxer.gitee.io/2023/11/01/Windows-Kernel-X86-api/&title=Windows内核:API调用--&gt;系统调用"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://grxer.gitee.io/2023/11/01/Windows-Kernel-X86-api/&title=Windows内核:API调用--&gt;系统调用"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://grxer.gitee.io/2023/11/01/Windows-Kernel-X86-api/&title=Windows内核:API调用--&gt;系统调用"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://grxer.gitee.io/2023/11/01/Windows-Kernel-X86-api/&title=Windows内核:API调用--&gt;系统调用"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://grxer.gitee.io/2023/11/01/Windows-Kernel-X86-api/&name=Windows内核:API调用--&gt;系统调用&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://grxer.gitee.io/2023/11/01/Windows-Kernel-X86-api/&t=Windows内核:API调用--&gt;系统调用"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    <div id="toc">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%87%A0%E4%B8%AA%E9%87%8D%E8%A6%81dll"><span class="toc-number">1.</span> <span class="toc-text">几个重要dll</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#ReadProcessMemory"><span class="toc-number">2.</span> <span class="toc-text">ReadProcessMemory</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#7FFE0300h%E6%98%AF%E5%95%A5"><span class="toc-number">3.</span> <span class="toc-text">7FFE0300h是啥</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#int-0x2e%E5%92%8Csysenter%E5%8C%BA%E5%88%AB%E8%81%94%E7%B3%BB"><span class="toc-number">4.</span> <span class="toc-text">int 0x2e和sysenter区别联系</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%9B%B8%E5%90%8C%E7%82%B9"><span class="toc-number">4.1.</span> <span class="toc-text">相同点</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%8D%E5%90%8C%E7%82%B9"><span class="toc-number">4.2.</span> <span class="toc-text">不同点</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#int-2e"><span class="toc-number">4.2.1.</span> <span class="toc-text">int 2e</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#sysenter"><span class="toc-number">4.2.2.</span> <span class="toc-text">sysenter</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#KiSystemService"><span class="toc-number">5.</span> <span class="toc-text">KiSystemService</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BF%9D%E5%AD%98%E7%8E%B0%E5%9C%BA"><span class="toc-number">5.1.</span> <span class="toc-text">保存现场</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%B0%83%E7%94%A8%E5%86%85%E6%A0%B8%E5%87%BD%E6%95%B0"><span class="toc-number">5.2.</span> <span class="toc-text">调用内核函数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%B3%BB%E7%BB%9F%E6%9C%8D%E5%8A%A1%E6%8F%8F%E8%BF%B0%E7%AC%A6%E8%A1%A8"><span class="toc-number">5.3.</span> <span class="toc-text">系统服务描述符表</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Reference"><span class="toc-number">6.</span> <span class="toc-text">Reference</span></a></li></ol>
+    </div>
+  </span>
+</div>
+
+    
+    <div class="content index py4">
+        
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle" itemprop="name headline">
+        Windows内核:API调用--&gt;系统调用
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span itemprop="name">bxz</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2023-11-01T15:03:23.000Z" itemprop="datePublished">2023-11-01</time>
+        
+      
+    </div>
+
+
+      
+
+      
+
+    </div>
+  </header>
+  
+
+  <div class="content" itemprop="articleBody">
+    <p>算是对之前实验的补充,依旧是xp系统</p>
+<h2 id="几个重要dll"><a href="#几个重要dll" class="headerlink" title="几个重要dll"></a>几个重要dll</h2><p>kernel32.dll:管理内存，进程和线程相关函数</p>
+<p>User32.dll:用户界面相关应用程序接口，创建窗口和发送消息等</p>
+<p>GDI32.dll:画图，显示文本相关函数</p>
+<p>Ntdll.dll:三环进零环相关</p>
+<h2 id="ReadProcessMemory"><a href="#ReadProcessMemory" class="headerlink" title="ReadProcessMemory"></a>ReadProcessMemory</h2><p>kernel32.dll里的ReadProcessMemory为例</p>
+<p>调用了ntdll里的导出函数</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">.text:<span class="number">7</span>C8021E5 FF <span class="number">15</span> <span class="number">18</span> <span class="number">14</span> <span class="number">80</span> <span class="number">7</span>C             call    ds:__imp__NtReadVirtualMemory@<span class="number">20</span> ; NtReadVirtualMemory(x,x,x,x,x)</span><br></pre></td></tr></table></figure>
+
+<p>ntdll里</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">.text:<span class="number">7</span>C92D9E0 B8 BA <span class="number">00</span> <span class="number">00</span> <span class="number">00</span>                mov     eax, <span class="number">0B</span>Ah                       ;BA编号对应内核函数NtReadVirtualMemory</span><br><span class="line">.text:<span class="number">7</span>C92D9E5 BA <span class="number">00</span> <span class="number">03</span> FE <span class="number">7F</span>                mov     edx, <span class="number">7F</span>FE0300h</span><br><span class="line">.text:<span class="number">7</span>C92D9EA FF <span class="number">12</span>                         call    dword ptr [edx]</span><br><span class="line">.text:<span class="number">7</span>C92D9EC C2 <span class="number">14</span> <span class="number">00</span>                      retn    <span class="number">14</span>h</span><br></pre></td></tr></table></figure>
+
+<h2 id="7FFE0300h是啥"><a href="#7FFE0300h是啥" class="headerlink" title="7FFE0300h是啥"></a>7FFE0300h是啥</h2><p>_KUSER_SHARED_DATA结构体:用户态的地址<code>0x7FFE0000</code>内核态的地址<code>0xffdf0000</code>共享一张物理页，用户态是只读的，内核态是可写的</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">kd&gt; dt _KUSER_SHARED_DATA  0x7FFE0000</span><br><span class="line">...</span><br><span class="line">+0x300 SystemCall       : 0x7c92e4f0</span><br></pre></td></tr></table></figure>
+
+<p>7FFE0300h处存在两种情况:KiFastSystemCall或者KiIntSystemCall(都是ntdll导出函数)</p>
+<p>eax置0，执行<a target="_blank" rel="noopener" href="https://zh.wikipedia.org/zh-hans/CPUID">cpuid</a>指令会把处理器特征存在ecx edx，edx 第11为SEP为1则支持快速调用sysenter&#x2F;sysexit指令为KiFastSystemCall</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">kd&gt; u <span class="number">0x7c92e4f0</span></span><br><span class="line"><span class="number">7</span>c92e4f0 <span class="number">8b</span>d4            mov     edx,esp<span class="comment">//KiFastSystemCall</span></span><br><span class="line"><span class="number">7</span>c92e4f2 <span class="number">0f</span>34            sysenter</span><br><span class="line"><span class="number">7</span>c92e4f4 c3              ret</span><br></pre></td></tr></table></figure>
+
+<p>否则为KiIntSystemCall</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">.text:<span class="number">7</span>C92E500                               ; _DWORD __stdcall <span class="title function_">KiIntSystemCall</span><span class="params">()</span></span><br><span class="line">.text:7C92E500                               public _KiIntSystemCall@0</span><br><span class="line">.text:7C92E500                               _KiIntSystemCall@0 proc near            ; DATA XREF: .text:off_7C923428↑o</span><br><span class="line">.text:<span class="number">7</span>C92E500</span><br><span class="line">.text:<span class="number">7</span>C92E500                               arg_4= byte ptr  <span class="number">8</span></span><br><span class="line">.text:<span class="number">7</span>C92E500</span><br><span class="line">.text:<span class="number">7</span>C92E500 <span class="number">8</span>D <span class="number">54</span> <span class="number">24</span> <span class="number">08</span>                   lea     edx, [esp+arg_4]                ;<span class="number">32</span>位用栈传参嘛，所以这里是系统调用参数地址</span><br><span class="line">.text:<span class="number">7</span>C92E504 CD <span class="number">2</span>E                         <span class="type">int</span>     <span class="number">2</span>Eh                             ; DOS <span class="number">2</span>+ internal - EXECUTE COMMAND</span><br><span class="line">.text:<span class="number">7</span>C92E504                                                                       ; DS:SI -&gt; counted CR-terminated command <span class="built_in">string</span></span><br><span class="line">.text:<span class="number">7</span>C92E504</span><br><span class="line">.text:<span class="number">7</span>C92E506 C3                            retn</span><br></pre></td></tr></table></figure>
+
+<h2 id="int-0x2e和sysenter区别联系"><a href="#int-0x2e和sysenter区别联系" class="headerlink" title="int 0x2e和sysenter区别联系"></a>int 0x2e和sysenter区别联系</h2><h3 id="相同点"><a href="#相同点" class="headerlink" title="相同点"></a><strong>相同点</strong></h3><p>从3环到0环都需要改变cs ss esp eip</p>
+<h3 id="不同点"><a href="#不同点" class="headerlink" title="不同点"></a><strong>不同点</strong></h3><h4 id="int-2e"><a href="#int-2e" class="headerlink" title="int 2e"></a>int 2e</h4><p>通过idtr寄存器，找到中断门描述符得到CS，EIP，再通过TR寄存器找到TSS取出ss和esp</p>
+<p><img src="/2023/11/01/Windows-Kernel-X86-api/image-20231103230557854.png" alt="image-20231103230557854"></p>
+<p>到0环执行内核函数KiSystemService</p>
+<h4 id="sysenter"><a href="#sysenter" class="headerlink" title="sysenter"></a>sysenter</h4><p>通过MSR寄存器找到CS，EIP，SS，ESP(其中SS是用CS+8算出来的，这样只需要把他们的选择子相邻，减少寄存器数量)，加载到寄存器是cpu自动完成的，和操作系统没关系，操作系统负责用rdmsr和wrmst来给msr寄存器赋正确值（手册第三卷5.87）</p>
+<p><img src="/2023/11/01/Windows-Kernel-X86-api/image-20231103230613180.png" alt="image-20231103230613180"></p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">kd&gt; rdmsr <span class="number">174</span>   <span class="comment">//查看CS</span></span><br></pre></td></tr></table></figure>
+
+<p>到0环执行内核函数KiFastCallEntry</p>
+<h2 id="KiSystemService"><a href="#KiSystemService" class="headerlink" title="KiSystemService"></a>KiSystemService</h2><p>内核函数KiSystemService和KiFastCallEntry都在c:windows&#x2F;system32下，非pae分页用的是ntoskrnl.exe，pae分页是ntkrnlpa.exe</p>
+<h3 id="保存现场"><a href="#保存现场" class="headerlink" title="保存现场"></a>保存现场</h3><p>涉及到一些结构体</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">dt _Ktrap_frame 保存寄存器的结构体</span><br><span class="line">dt _KPCR：KPCR中存储了CPU本身要用的一些重要数据：GDT、IDT以及线程相关的一些信息，一个cpu核一个</span><br><span class="line">dd KeNumberProcessors 查看cpu核数</span><br><span class="line">dd KiProcessorBlock 查看每个cpu的kpcr结构体中偏移<span class="number">0x120</span>处的_KPRCB结构体的位置</span><br><span class="line">dt _ETHREAD 线程相关结构体 </span><br></pre></td></tr></table></figure>
+
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">.text:<span class="number">00466489</span> BB <span class="number">30</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span>                mov     ebx, <span class="number">30</span>h ; <span class="string">&#x27;0&#x27;</span></span><br><span class="line">.text:<span class="number">0046648</span>E <span class="number">66</span> <span class="number">8</span>E E3                      mov     fs, bx</span><br></pre></td></tr></table></figure>
+
+<p>0x30按照段描述符拆分一下 00110 0 00，0环全局描述符表的第6个 </p>
+<p><img src="/2023/11/01/Windows-Kernel-X86-api/image-20231103230641570.png" alt="image-20231103230641570"></p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">kd&gt; dq @gdtr+8*6 l1</span><br><span class="line">8003f030  ffc093df`f0000001</span><br></pre></td></tr></table></figure>
+
+<p>再拆分一下段描述符<code>ffc093df f0000001</code>得到基址<code>ffdf f000</code></p>
+<p>ffdf f000指向的就是kpcr结构体，</p>
+<blockquote>
+<p>fs在三环时指向TEB结构体</p>
+</blockquote>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">.text:00466481 arg_0= dword ptr  4</span><br><span class="line">.text:00466481</span><br><span class="line">.text:00466481 push    0                              ;push errcode,在此之前中断时cpu已经自动帮我们把ss esp eflags cs ip压栈</span><br><span class="line">.text:00466483 push    ebp</span><br><span class="line">.text:00466484 push    ebx</span><br><span class="line">.text:00466485 push    esi</span><br><span class="line">.text:00466486 push    edi</span><br><span class="line">.text:00466487 push    fs                              ; 保存到_ktrap_frame对应位置</span><br><span class="line">.text:00466489 mov     ebx, 30h ; &#x27;0&#x27;</span><br><span class="line">.text:0046648E mov     fs, bx</span><br><span class="line">.text:00466491 assume fs:nothing</span><br><span class="line">.text:00466491 push    dword ptr ds:0FFDFF000h         ; 保存kpcr结构体第一项_EXCEPTION_REGISTRATION_RECORD异常链表到ktrap_frame结构体</span><br><span class="line">.text:00466497 mov     dword ptr ds:0FFDFF000h, 0FFFFFFFFh ; 把第一项_EXCEPTION_REGISTRATION_RECORD异常链表置零</span><br><span class="line">.text:004664A1 mov     esi, ds:0FFDFF124h              ; KPCR结构体里KPCRB+4的位置是当前CPU所执行线程的_ETHREAD结构体</span><br><span class="line">.text:004664A7 push    dword ptr [esi+140h]            ; 保存_ETHREAD第一个成员_KTHREAD+0x140处为PreviousMode先前模式到fram结构体，1代表先前模式为3环，0代表0环</span><br><span class="line">.text:004664AD sub     esp, 48h                        ; esp指向_kTrap_Frame的起始位置</span><br><span class="line">.text:004664B0 mov     ebx, [esp+68h+arg_0]            ; _Ktrap_frame--&gt;SegCs</span><br><span class="line">.text:004664B4 and     ebx, 1</span><br><span class="line">.text:004664B7 mov     [esi+140h], bl                  ; _KTHREAD的PreviousMode赋值为cs寄存器特权级，1代表3环来的，0代表0环来的</span><br><span class="line">.text:004664BD mov     ebp, esp                        ; ebp=_kTrap_Frame首地址</span><br><span class="line">.text:004664BF mov     ebx, [esi+134h]                 ; ebx=KTHREAD--&gt;TrapFrame</span><br><span class="line">.text:004664C5 mov     [ebp+3Ch], ebx</span><br><span class="line">.text:004664C8 mov     [esi+134h], ebp                 ; 老的TrapFrame的值新TrapFram--&gt;Edx，然后将新的TrapFrame放到EHTREAD+134h的trapfram处</span><br><span class="line">.text:004664CE cld</span><br><span class="line">.text:004664CF mov     ebx, [ebp+60h]</span><br><span class="line">.text:004664D2 mov     edi, [ebp+68h]                  ; 原来三环的ebp放到ebx里，三环eip放到edi中</span><br><span class="line">.text:004664D5 mov     [ebp+0Ch], edx                  ; KiIntSystemCall中edx保存参数地址，存放到trapfram的DbgArgPointer</span><br><span class="line">.text:004664D8 mov     dword ptr [ebp+8], 0BADB0D00h</span><br><span class="line">.text:004664DF mov     [ebp+0], ebx                    ; 原来三环ebp放到trapfram的DbgEbp</span><br><span class="line">.text:004664E2 mov     [ebp+4], edi                    ; 原来三环eip放到trapfram的DbgEip</span><br><span class="line">.text:004664E5 test    byte ptr [esi+2Ch], 0FFh        ; _ETHREAD._KTHREAD.DebugActive</span><br><span class="line">.text:004664E9 jnz     Dr_kss_a                        ; 处于调试状态，值不等于0xff，则跳转，跳转位置主要是保存trapfram中的调试寄存器</span><br><span class="line">.text:004664E9</span><br><span class="line">.text:004664EF</span><br><span class="line">.text:004664EF loc_4664EF:                             ; CODE XREF: Dr_kss_a+10↑j</span><br><span class="line">.text:004664EF                                         ; Dr_kss_a+7C↑j</span><br><span class="line">.text:004664EF sti</span><br><span class="line">.text:004664F0 jmp     loc_4665CD                      ; jmp到_KiFastCallEntry函数里某个的位置，此时和KifastCallentry一样流程</span><br></pre></td></tr></table></figure>
+
+<h3 id="调用内核函数"><a href="#调用内核函数" class="headerlink" title="调用内核函数"></a>调用内核函数</h3><p>_KPCR.PrcbData(_KPRCB).CurrentThread(_KTHREAD)+0x0e0 处为ServiceTable，有下面两个table</p>
+<p><img src="/2023/11/01/Windows-Kernel-X86-api/image-20231103230718438.png" alt="image-20231103230718438"></p>
+<p>ServiceTable指向的是函数地址数组，每个成员四个字节</p>
+<p>Count表示调用次数</p>
+<p>ServiceLimit表示这张表有几个函数；</p>
+<p>ArgumentTable指向对应函数有<strong>几个字节</strong>的参数，每个成员一个字节</p>
+<p>通过eax索引号找到相关函数</p>
+<p><img src="/2023/11/01/Windows-Kernel-X86-api/image-20231103230739865.png" alt="image-20231103230739865"></p>
+<p>分析一下</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">.text:004665CD loc_4665CD:                             ; CODE XREF: _KiBBTUnexpectedRange+18↑j</span><br><span class="line">.text:004665CD                                         ; _KiSystemService+6F↑j</span><br><span class="line">.text:004665CD mov     edi, eax                        ; edi=传入系统服务号</span><br><span class="line">.text:004665CF shr     edi, 8                          ; 右移8位</span><br><span class="line">.text:004665D2 and     edi, 30h                        ; 基本系统调用号都是小于0x1000</span><br><span class="line">.text:004665D2                                         ; 窗口界面操作调用号大于0x1000定义在win32k.sys</span><br><span class="line">.text:004665D2                                         ; 如果12位为1，与完后edi=0x10，否则就为0</span><br><span class="line">.text:004665D5 mov     ecx, edi</span><br><span class="line">.text:004665D7 add     edi, [esi+0E0h]                 ; KPCR.PrcbData(_KPRCB).CurrentThread(_KTHREAD)+0x0e0=ServiceTable</span><br><span class="line">.text:004665D7                                         ; 如果edi是0x10(ServiceTable大小0x10)正好寻址到win32k.sys的ServiceTabl</span><br><span class="line">.text:004665DD mov     ebx, eax</span><br><span class="line">.text:004665DF and     eax, 0FFFh                      ; 保留调用号低12位，作为函数地址表的下标</span><br><span class="line">.text:004665E4 cmp     eax, [edi+8]                    ; ServiceTable.count比较</span><br><span class="line">.text:004665E7 jnb     _KiBBTUnexpectedRange           ; 大于等于跳转</span><br><span class="line">.text:004665E7</span><br><span class="line">.text:004665ED cmp     ecx, 10h                        ; 判断是哪张服务表</span><br><span class="line">.text:004665F0 jnz     short loc_46660C                ; 上图绿色那张表跳转</span><br><span class="line">.text:004665F0</span><br><span class="line">.text:004665F2 mov     ecx, ds:0FFDFF018h</span><br><span class="line">.text:004665F8 xor     ebx, ebx</span><br><span class="line">.text:004665F8</span><br><span class="line">.text:004665FA</span><br><span class="line">.text:004665FA loc_4665FA:                             ; DATA XREF: _KiTrap0E+113↓o</span><br><span class="line">.text:004665FA or      ebx, [ecx+0F70h]</span><br><span class="line">.text:00466600 jz      short loc_46660C                ; _KPRCB -&gt; +0x518 KeSystemCalls++;</span><br><span class="line">.text:00466600</span><br><span class="line">.text:00466602 push    edx</span><br><span class="line">.text:00466603 push    eax</span><br><span class="line">.text:00466604 call    ds:_KeGdiFlushUserBatch</span><br><span class="line">.text:00466604</span><br><span class="line">.text:0046660A pop     eax</span><br><span class="line">.text:0046660B pop     edx</span><br><span class="line">.text:0046660B</span><br><span class="line">.text:0046660C</span><br><span class="line">.text:0046660C loc_46660C:                             ; CODE XREF: _KiFastCallEntry+B0↑j</span><br><span class="line">.text:0046660C                                         ; _KiFastCallEntry+C0↑j</span><br><span class="line">.text:0046660C inc     dword ptr ds:0FFDFF638h         ; _KPRCB -&gt; +0x518 KeSystemCalls++;</span><br><span class="line">.text:00466612 mov     esi, edx                        ; edx=三环栈上参数地址</span><br><span class="line">.text:00466614 mov     ebx, [edi+0Ch]                  ; ebx=ServiceTabl.ParamTableBase</span><br><span class="line">.text:00466617 xor     ecx, ecx</span><br><span class="line">.text:00466619 mov     cl, [eax+ebx]                   ; cl=参数总字节数</span><br><span class="line">.text:0046661C mov     edi, [edi]                      ; edi=ServiceTable.函数数组</span><br><span class="line">.text:0046661E mov     ebx, [edi+eax*4]                ; ebx=目标函数</span><br><span class="line">.text:00466621 sub     esp, ecx                        ; 提升堆栈</span><br><span class="line">.text:00466623 shr     ecx, 2                          ; ecx/4=一次拷贝四个字节的拷贝次数</span><br><span class="line">.text:00466626 mov     edi, esp                        ; 拷贝目标地址</span><br><span class="line">.text:00466628 cmp     esi, ds:_MmUserProbeAddress     ; 和用户能访问的最大地址范围比较，判断是否越界</span><br><span class="line">.text:0046662E jnb     loc_4667DC</span><br><span class="line">.text:0046662E</span><br><span class="line">.text:00466634</span><br><span class="line">.text:00466634 loc_466634:                             ; CODE XREF: _KiFastCallEntry+2A0↓j</span><br><span class="line">.text:00466634                                         ; DATA XREF: _KiTrap0E+109↓o</span><br><span class="line">.text:00466634 rep movsd                               ; copy参数</span><br><span class="line">.text:00466636 call    ebx                             ; 调用</span><br><span class="line">.text:00466636</span><br><span class="line">.text:00466638</span><br><span class="line">.text:00466638 loc_466638:                             ; CODE XREF: _KiFastCallEntry+2AB↓j</span><br><span class="line">.text:00466638                                         ; DATA XREF: _KiTrap0E+129↓o</span><br><span class="line">.text:00466638                                         ; _KiTrap0E+149↓o</span><br><span class="line">.text:00466638 mov     esp, ebp</span><br><span class="line">.text:00466638</span><br><span class="line">.text:0046663A</span><br><span class="line">.text:0046663A loc_46663A:                             ; CODE XREF: _KiBBTUnexpectedRange+38↑j</span><br><span class="line">.text:0046663A                                         ; _KiBBTUnexpectedRange+43↑j</span><br><span class="line">.text:0046663A mov     ecx, ds:0FFDFF124h</span><br><span class="line">.text:00466640 mov     edx, [ebp+3Ch]</span><br><span class="line">.text:00466643 mov     [ecx+134h], edx</span><br><span class="line">.text:00466643</span><br><span class="line">.text:00466643 _KiFastCallEntry endp</span><br></pre></td></tr></table></figure>
+
+<h3 id="系统服务描述符表"><a href="#系统服务描述符表" class="headerlink" title="系统服务描述符表"></a>系统服务描述符表</h3><p>System Services Descriptor Table(SSDT)</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> _<span class="title">KSERVICE_TABLE_DESCRIPTOR</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    KSYSTEM_SERVICE_TABLE   ntoskrnl;  <span class="comment">// ntoskrnl.exe 的服务函数</span></span><br><span class="line">    KSYSTEM_SERVICE_TABLE   win32k;    <span class="comment">// win32k.sys 的服务函数(GDI32.dll/User32.dll 的内核支持)</span></span><br><span class="line">    KSYSTEM_SERVICE_TABLE   notUsed1;</span><br><span class="line">    KSYSTEM_SERVICE_TABLE   notUsed2;</span><br><span class="line">&#125; KSERVICE_TABLE_DESCRIPTOR, * PKSERVICE_TABLE_DESCRIPTOR;</span><br></pre></td></tr></table></figure>
+
+<p>KeServiceDescriptorTable是ntkrnlpa导出符号</p>
+<p>KeServiceDescriptorTable处只有系统服务ntkrnlpa.exe对应的SystemServiceTable	</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">kd&gt; dd KeServiceDescriptorTable</span><br><span class="line"><span class="number">80553f</span>a0  <span class="number">80502b</span>8c <span class="number">00000000</span> <span class="number">0000011</span>c <span class="number">80503000</span></span><br><span class="line"><span class="number">80553f</span>b0  <span class="number">00000000</span> <span class="number">00000000</span> <span class="number">00000000</span> <span class="number">00000000</span></span><br><span class="line"><span class="number">80553f</span>c0  <span class="number">00000000</span> <span class="number">00000000</span> <span class="number">00000000</span> <span class="number">00000000</span></span><br><span class="line"><span class="number">80553f</span>d0  <span class="number">00000000</span> <span class="number">00000000</span> <span class="number">00000000</span> <span class="number">00000000</span></span><br></pre></td></tr></table></figure>
+
+<p>win32k需要通过SSDT Shadow来访问到，这是一个未导出的结构，就可以获取到两表了</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">kd&gt; dd  KeServiceDescriptorTableShadow</span><br><span class="line"><span class="number">80553f</span>60  <span class="number">80502b</span>8c <span class="number">00000000</span> <span class="number">0000011</span>c <span class="number">80503000</span></span><br><span class="line"><span class="number">80553f</span>70  bf999b80 <span class="number">00000000</span> <span class="number">0000029b</span> bf99a890</span><br><span class="line"><span class="number">80553f</span>80  <span class="number">00000000</span> <span class="number">00000000</span> <span class="number">00000000</span> <span class="number">00000000</span></span><br><span class="line"><span class="number">80553f</span>90  <span class="number">00000000</span> <span class="number">00000000</span> <span class="number">00000000</span> <span class="number">0000000</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h2><p><a target="_blank" rel="noopener" href="https://www.braveenough.cn/2022/01/30/%E7%B3%BB%E7%BB%9F%E8%B0%83%E7%94%A8/">https://www.braveenough.cn/2022/01/30/%E7%B3%BB%E7%BB%9F%E8%B0%83%E7%94%A8/</a></p>
+
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+         
+          <li><a href="/">Home</a></li>
+         
+          <li><a href="/archives/">Writing</a></li>
+         
+          <li><a href="/search/">Search</a></li>
+         
+          <li><a href="/tags/">Tag</a></li>
+         
+          <li><a href="/about/">About</a></li>
+        
+      </ul>
+    </div>
+
+    <div id="toc-footer" style="display: none">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%87%A0%E4%B8%AA%E9%87%8D%E8%A6%81dll"><span class="toc-number">1.</span> <span class="toc-text">几个重要dll</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#ReadProcessMemory"><span class="toc-number">2.</span> <span class="toc-text">ReadProcessMemory</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#7FFE0300h%E6%98%AF%E5%95%A5"><span class="toc-number">3.</span> <span class="toc-text">7FFE0300h是啥</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#int-0x2e%E5%92%8Csysenter%E5%8C%BA%E5%88%AB%E8%81%94%E7%B3%BB"><span class="toc-number">4.</span> <span class="toc-text">int 0x2e和sysenter区别联系</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%9B%B8%E5%90%8C%E7%82%B9"><span class="toc-number">4.1.</span> <span class="toc-text">相同点</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%8D%E5%90%8C%E7%82%B9"><span class="toc-number">4.2.</span> <span class="toc-text">不同点</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#int-2e"><span class="toc-number">4.2.1.</span> <span class="toc-text">int 2e</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#sysenter"><span class="toc-number">4.2.2.</span> <span class="toc-text">sysenter</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#KiSystemService"><span class="toc-number">5.</span> <span class="toc-text">KiSystemService</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BF%9D%E5%AD%98%E7%8E%B0%E5%9C%BA"><span class="toc-number">5.1.</span> <span class="toc-text">保存现场</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%B0%83%E7%94%A8%E5%86%85%E6%A0%B8%E5%87%BD%E6%95%B0"><span class="toc-number">5.2.</span> <span class="toc-text">调用内核函数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%B3%BB%E7%BB%9F%E6%9C%8D%E5%8A%A1%E6%8F%8F%E8%BF%B0%E7%AC%A6%E8%A1%A8"><span class="toc-number">5.3.</span> <span class="toc-text">系统服务描述符表</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Reference"><span class="toc-number">6.</span> <span class="toc-text">Reference</span></a></li></ol>
+    </div>
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://grxer.gitee.io/2023/11/01/Windows-Kernel-X86-api/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://grxer.gitee.io/2023/11/01/Windows-Kernel-X86-api/&text=Windows内核:API调用--&gt;系统调用"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://grxer.gitee.io/2023/11/01/Windows-Kernel-X86-api/&title=Windows内核:API调用--&gt;系统调用"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://grxer.gitee.io/2023/11/01/Windows-Kernel-X86-api/&is_video=false&description=Windows内核:API调用--&gt;系统调用"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Windows内核:API调用--&gt;系统调用&body=Check out this article: https://grxer.gitee.io/2023/11/01/Windows-Kernel-X86-api/"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://grxer.gitee.io/2023/11/01/Windows-Kernel-X86-api/&title=Windows内核:API调用--&gt;系统调用"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://grxer.gitee.io/2023/11/01/Windows-Kernel-X86-api/&title=Windows内核:API调用--&gt;系统调用"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://grxer.gitee.io/2023/11/01/Windows-Kernel-X86-api/&title=Windows内核:API调用--&gt;系统调用"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://grxer.gitee.io/2023/11/01/Windows-Kernel-X86-api/&title=Windows内核:API调用--&gt;系统调用"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://grxer.gitee.io/2023/11/01/Windows-Kernel-X86-api/&name=Windows内核:API调用--&gt;系统调用&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://grxer.gitee.io/2023/11/01/Windows-Kernel-X86-api/&t=Windows内核:API调用--&gt;系统调用"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fas fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
+        <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fas fa-list fa-lg" aria-hidden="true"></i> TOC</a>
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fas fa-share-alt fa-lg" aria-hidden="true"></i> Share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2023-2024
+    bxz
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a href="/search/">Search</a></li><!--
+     --><!--
+       --><li><a href="/tags/">Tag</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+ 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script> 
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script> 
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"Copy to clipboard!\">";
+    btn += '<i class="far fa-clone"></i>';
+    btn += '</span>'; 
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "Copied!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Google Analytics -->
+
+<!-- Baidu Analytics -->
+
+  <script type="text/javascript">
+        var _hmt = _hmt || [];
+        (function() {
+          var hm = document.createElement("script");
+          hm.src = "https://hm.baidu.com/hm.js?a22ef0bec4e4a9c7337bea6e37ff55c1";
+          var s = document.getElementsByTagName("script")[0];
+          s.parentNode.insertBefore(hm, s);
+        })();
+        </script>
+
+<!-- Cloudflare Analytics -->
+
+<!-- Umami Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+</body>
+</html>

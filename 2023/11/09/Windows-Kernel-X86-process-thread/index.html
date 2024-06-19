@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="baidu-site-verification" content="codeva-ROfYcqLkCh" />
+    <meta name="msvalidate.01" content="ECA3E06A0E52A2AC90C4B06F12981FB2" />
+    <meta name="description" content="进程结构体EPROCESS结构体  +0x000 Pcb              : _KPROCESS  +0x018 DirectoryTableBase : [2] Uint4B 进程页目录表基址 +0x038 KernelTime       : Uint4B 0环运行时间 +0x03c UserTime         : Uint4B 三环运行时间 +0x05c Affinity">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Windows内核:进程和线程">
+<meta property="og:url" content="https://grxer.gitee.io/2023/11/09/Windows-Kernel-X86-process-thread/index.html">
+<meta property="og:site_name" content="Grxer&#39;s Blog">
+<meta property="og:description" content="进程结构体EPROCESS结构体  +0x000 Pcb              : _KPROCESS  +0x018 DirectoryTableBase : [2] Uint4B 进程页目录表基址 +0x038 KernelTime       : Uint4B 0环运行时间 +0x03c UserTime         : Uint4B 三环运行时间 +0x05c Affinity">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2023-11-09T02:32:26.000Z">
+<meta property="article:modified_time" content="2024-05-08T12:24:13.302Z">
+<meta property="article:author" content="bxz">
+<meta name="twitter:card" content="summary">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
+    
+    <!-- title -->
+    <title>Windows内核:进程和线程</title>
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+		<script type="text/x-mathjax-config">
+		  MathJax.Hub.Config({
+			tex2jax: {
+			  skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+			  inlineMath: [['$','$']]
+			}
+		  });
+		</script>
+		<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-MML-AM_CHTML' async></script>
+	
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+<body class="max-width mx-auto px3 lrt">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="Menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="Menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="Top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fas fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a href="/search/">Search</a></li><!--
+     --><!--
+       --><li><a href="/tags/">Tag</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" aria-label="Previous post" href="/2023/11/26/RTFB-Code/"><i class="fas fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" aria-label="Next post" href="/2023/11/08/SEH-x64/"><i class="fas fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="Back to top" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="Share post" href="#"><i class="fas fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://grxer.gitee.io/2023/11/09/Windows-Kernel-X86-process-thread/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://grxer.gitee.io/2023/11/09/Windows-Kernel-X86-process-thread/&text=Windows内核:进程和线程"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://grxer.gitee.io/2023/11/09/Windows-Kernel-X86-process-thread/&title=Windows内核:进程和线程"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://grxer.gitee.io/2023/11/09/Windows-Kernel-X86-process-thread/&is_video=false&description=Windows内核:进程和线程"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Windows内核:进程和线程&body=Check out this article: https://grxer.gitee.io/2023/11/09/Windows-Kernel-X86-process-thread/"><i class="fas fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://grxer.gitee.io/2023/11/09/Windows-Kernel-X86-process-thread/&title=Windows内核:进程和线程"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://grxer.gitee.io/2023/11/09/Windows-Kernel-X86-process-thread/&title=Windows内核:进程和线程"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://grxer.gitee.io/2023/11/09/Windows-Kernel-X86-process-thread/&title=Windows内核:进程和线程"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://grxer.gitee.io/2023/11/09/Windows-Kernel-X86-process-thread/&title=Windows内核:进程和线程"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://grxer.gitee.io/2023/11/09/Windows-Kernel-X86-process-thread/&name=Windows内核:进程和线程&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://grxer.gitee.io/2023/11/09/Windows-Kernel-X86-process-thread/&t=Windows内核:进程和线程"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    <div id="toc">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%BF%9B%E7%A8%8B%E7%BB%93%E6%9E%84%E4%BD%93"><span class="toc-number">1.</span> <span class="toc-text">进程结构体</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#CPU%E6%8E%A7%E5%88%B6%E5%8C%BA%E7%BB%93%E6%9E%84%E4%BD%93"><span class="toc-number">2.</span> <span class="toc-text">CPU控制区结构体</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AD%89%E5%BE%85%E9%93%BE%E8%A1%A8%E4%B8%8E%E8%B0%83%E5%BA%A6%E9%93%BE%E8%A1%A8"><span class="toc-number">3.</span> <span class="toc-text">等待链表与调度链表</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AD%89%E5%BE%85%E9%93%BE%E8%A1%A8"><span class="toc-number">3.1.</span> <span class="toc-text">等待链表</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%B0%83%E5%BA%A6%E9%93%BE%E8%A1%A8"><span class="toc-number">3.2.</span> <span class="toc-text">调度链表</span></a></li></ol></li></ol>
+    </div>
+  </span>
+</div>
+
+    
+    <div class="content index py4">
+        
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle" itemprop="name headline">
+        Windows内核:进程和线程
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span itemprop="name">bxz</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2023-11-09T02:32:26.000Z" itemprop="datePublished">2023-11-09</time>
+        
+      
+    </div>
+
+
+      
+
+      
+
+    </div>
+  </header>
+  
+
+  <div class="content" itemprop="articleBody">
+    <h2 id="进程结构体"><a href="#进程结构体" class="headerlink" title="进程结构体"></a>进程结构体</h2><p><strong>EPROCESS结构体</strong></p>
+<ul>
+<li><p>+0x000 Pcb              : _KPROCESS</p>
+<ul>
+<li>+0x018 DirectoryTableBase : [2] Uint4B 进程页目录表基址</li>
+<li>+0x038 KernelTime       : Uint4B 0环运行时间</li>
+<li>+0x03c UserTime         : Uint4B 三环运行时间</li>
+<li>+0x05c Affinity         : Uint4B 规定该进程可以跑在哪个cpu上 比如11B表示可以再0，1CPU上跑 100B表示只能在2号CPU上跑</li>
+<li>+0x062 BasePriority     : Char 该进程所有线程最起码的优先级</li>
+</ul>
+</li>
+<li><p>+0x070 CreateTime       : _LARGE_INTEGER 进程创建时间</p>
+</li>
+<li><p>+0x078 ExitTime         : _LARGE_INTEGER 进程退出时间</p>
+</li>
+<li><p>+0x084 UniqueProcessId  : Ptr32 Void 进程的编号（任务管理器中的PID）</p>
+</li>
+<li><p>+0x088 ActiveProcessLinks : _LIST_ENTRY 所有的活动进程连接在一起构成双向链表 PsActiveProcessHead全局符号指向链表头部，<strong>需要注意的是这里链表节点指向的都是EPROCESS+0x88的位置</strong></p>
+<ul>
+<li>&#96;&#96;&#96;c<br>_LIST_ENTRY<br>+0x000 Flink            : Ptr32 _LIST_ENTRY&#x2F;&#x2F;指向下一结点，尾部结点的Flink则指向头部<br>+0x004 Blink            : Ptr32 _LIST_ENTRY&#x2F;&#x2F;Blink指向前一结点，首部节点指向尾部结点<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">    ![image-20231109115500052](Windows-Kernel-X86-process-thread/image-20231109115500052.png)</span><br><span class="line"></span><br><span class="line">* +0x0bc DebugPort        : Ptr32 Void  +0x0c0 ExceptionPort    : Ptr32 Void 调试相关</span><br><span class="line"></span><br><span class="line">* +0x0c4 ObjectTable      : Ptr32 _HANDLE_TABLE 句柄表，记录了被当前进程打开的所有内核对象句柄，是用来标识某个内核对象的一个`id`，同一个对象的该`id`对于每个进程是不同的。</span><br><span class="line"></span><br><span class="line">* +0x11c VadRoot          : Ptr32 Void 一颗平衡二叉树，标识0-2G哪些地址没占用了，记录了模块映射信息。</span><br><span class="line"></span><br><span class="line">* +0x174 ImageFileName    : [16] UChar 进程镜像文件名</span><br><span class="line"></span><br><span class="line">* +0x1a0 ActiveThreads    : Uint4B 当前进程活动线程的数量</span><br><span class="line"></span><br><span class="line">* +0x1b0 Peb              : Ptr32 _PEB 进程在3环的一个结构体，里面包含了进程的模块列表、是否处于调试状态等信息，减少频繁的进入内核层查询数据</span><br><span class="line"></span><br><span class="line">  * +0x002 BeingDebugged    : UChar 当前进程被调试为1，否则为0</span><br><span class="line">  * +0x008 ImageBaseAddress : Ptr32 Void 进程基址</span><br><span class="line">  * +0x00c Ldr              : Ptr32 _PEB_LDR_DATA 当前进程加载模块的相关信息</span><br><span class="line"></span><br><span class="line">## 线程结构体</span><br><span class="line"></span><br><span class="line">**ETHREAD结构体**</span><br><span class="line"></span><br><span class="line">* +0x000 Tcb              : _KTHREAD</span><br><span class="line"></span><br><span class="line">  * +0x018 InitialStack     : Ptr32 Void 当前线程栈底</span><br><span class="line">    +0x01c StackLimit       : Ptr32 Void 当前线程栈边界(栈可以到达的最低点)</span><br><span class="line">    +0x028 KernelStack      : Ptr32 Void 当前线程栈顶 </span><br><span class="line">    </span><br><span class="line">    上面三个成员都与线程切换相关</span><br><span class="line">  * +0x020 Teb              : Ptr32 Void 线程环境块 大小4KB,位于用户地址空间 用户态fs:0指向Teb</span><br><span class="line"></span><br><span class="line">  * +0x02c DebugActive      : UChar 如果值为-1，将不能使用调试寄存器：Dr0 - Dr7</span><br><span class="line"></span><br><span class="line">  * +0x034 ApcState         : _KAPC_STATE</span><br><span class="line"></span><br><span class="line">    +0x0e8 ApcQueueLock     : Uint4B</span><br><span class="line"></span><br><span class="line">    +0x138 ApcStatePointer  : [2] Ptr32 _KAPC_STATE</span><br><span class="line"></span><br><span class="line">    +0x14c SavedApcState    : _KAPC_STATE//与APC相关</span><br><span class="line"></span><br><span class="line">  * +0x02d State            : UChar 线程状态：就绪/等待/运行 waiting/ready/running</span><br><span class="line"></span><br><span class="line">  * +0x06c BasePriority     : Char 初始值是所属进程的BasePriority值(KPROCESS-&gt;BasePriority)，可以通过KeSetBasePriorityThread()函数重新设定</span><br><span class="line"></span><br><span class="line">  * +0x070 WaitBlock        : [4] _KWAIT_BLOCK 当前线程在进行同步时等待了哪些个对象（WaitForSingleObject）</span><br><span class="line"></span><br><span class="line">  * +0x0e0 ServiceTable     : Ptr32 Void 系统服务表基址</span><br><span class="line"></span><br><span class="line">  * +0x134 TrapFrame        : Ptr32 _KTRAP_FRAME 保存进0环时的环境</span><br><span class="line"></span><br><span class="line">  * +0x140 PreviousMode     : Char 先前模式，指示程序是0环调用还是3环调用的。某些内核函数会判断程序是0环调用还是3环调用的</span><br><span class="line"></span><br><span class="line">  * +0x1b0 ThreadListEntry  : _LIST_ENTRY **和** **ETHREAD** +0x22c ThreadListEntry  : _LIST_ENTRY 一个进程所有的线程都挂在这个链表中，两个链表是一样的(之所以有两个只是为了方便)，验证两个链表是否是同一个时要注意链表节点指向结构体的偏移不同(对于ETHREAD结构体第一个链表减去0x1B0得到ETHREAD开头，第二个链表需要减去0x22c)</span><br><span class="line"></span><br><span class="line">    ![image-20231109194134624](Windows-Kernel-X86-process-thread/image-20231109194134624.png)</span><br><span class="line"></span><br><span class="line">* +0x1ec Cid              : _CLIENT_ID </span><br><span class="line"></span><br><span class="line">  * ```c</span><br><span class="line">    _CLIENT_ID</span><br><span class="line">    +0x000 UniqueProcess    : Ptr32 Void //进程ID</span><br><span class="line">    +0x004 UniqueThread     : Ptr32 Void //线程ID</span><br></pre></td></tr></table></figure></li>
+</ul>
+</li>
+<li><p>+0x220 ThreadsProcess   : Ptr32 _EPROCESS 指向自己所属进程的EPROCESS结构体地址</p>
+</li>
+</ul>
+<h2 id="CPU控制区结构体"><a href="#CPU控制区结构体" class="headerlink" title="CPU控制区结构体"></a>CPU控制区结构体</h2><p><strong>KPCR结构体</strong> 内核态fs:0指向KPCR 一个核一个kpcr，存储了<code>CPU</code>常用数据的副本(主要是为了快)，用的时候直接查kpcr，而不是线程进程结构体，每次切换线程时会把线程信息更新到当前kpcr结构体里</p>
+<ul>
+<li><p>+0x000 NtTib            : _NT_TIB</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">+<span class="number">0x000</span> ExceptionList    : Ptr32 _EXCEPTION_REGISTRATION_RECORD<span class="comment">//当前线程内核异常链表</span></span><br><span class="line">+<span class="number">0x004</span> StackBase        : Ptr32 Void<span class="comment">//当前线程内核栈的基址</span></span><br><span class="line">+<span class="number">0x008</span> StackLimit       : Ptr32 Void<span class="comment">//当前线程栈边界(栈可以到达的最低点)</span></span><br><span class="line">+<span class="number">0x00c</span> SubSystemTib     : Ptr32 Void</span><br><span class="line">+<span class="number">0x010</span> FiberData        : Ptr32 Void</span><br><span class="line">+<span class="number">0x010</span> Version          : Uint4B</span><br><span class="line">+<span class="number">0x014</span> ArbitraryUserPointer : Ptr32 Void</span><br><span class="line">+<span class="number">0x018</span> Self             : Ptr32 _NT_TIB<span class="comment">//指向NtTib自己，类似于c++的this指针</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>+0x01c SelfPcr          : Ptr32 _KPCR 指向KPCR自己，类似于c++的this指针</p>
+</li>
+<li><p>+0x020 Prcb             : Ptr32 _KPRCB 指向下面拓展结构体PrcbData的指针</p>
+</li>
+<li><p>+0x120 PrcbData         : _KPRCB</p>
+</li>
+<li><p>+0x038 IDT              : Ptr32 _KIDTENTRY IDT表基址</p>
+</li>
+<li><p>+0x03c GDT              : Ptr32 _KGDTENTRY GDT表基址</p>
+</li>
+<li><p>+0x040 TSS              : Ptr32 _KTSS 指向<code>TSS</code>的指针，每个<code>CPU</code>都有一个<code>TSS</code>。</p>
+</li>
+<li><p>+0x051 Number           : UChar CPU编号</p>
+</li>
+<li><p>+0x120 PrcbData         : _KPRCB</p>
+<ul>
+<li>+0x004 CurrentThread    : Ptr32 _KTHREAD 当前正在运行线程结构体指针</li>
+<li>+0x008 NextThread       : Ptr32 _KTHREAD 即将切换的下一个线程结构体指针</li>
+<li>+0x00c IdleThread       : Ptr32 _KTHREAD 如果没有要即将切换线程要跑的空闲线程结构体指针</li>
+</ul>
+</li>
+</ul>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">kd&gt; dd KiProcessorBlock l1</span><br><span class="line"><span class="number">80553e40</span>  ffdff120</span><br><span class="line">kd&gt; dt _KPCR ffdff120<span class="number">-0x120</span></span><br><span class="line">nt!_KPCR</span><br><span class="line">   +<span class="number">0x000</span> NtTib            : _NT_TIB</span><br><span class="line">   +<span class="number">0x01c</span> SelfPcr          : <span class="number">0xffdff000</span> _KPCR</span><br><span class="line">   +<span class="number">0x020</span> Prcb             : <span class="number">0xffdff120</span> _KPRCB</span><br><span class="line">   +<span class="number">0x024</span> Irql             : <span class="number">0</span> <span class="string">&#x27;&#x27;</span></span><br><span class="line"><span class="string">   +0x028 IRR              : 0</span></span><br><span class="line"><span class="string">   +0x02c IrrActive        : 0</span></span><br><span class="line"><span class="string">   +0x030 IDR              : 0xffffffff</span></span><br><span class="line"><span class="string">   +0x034 KdVersionBlock   : 0x80546ab8 Void</span></span><br><span class="line"><span class="string">   +0x038 IDT              : 0x8003f400 _KIDTENTRY</span></span><br><span class="line"><span class="string">   +0x03c GDT              : 0x8003f000 _KGDTENTRY</span></span><br><span class="line"><span class="string">   +0x040 TSS              : 0x80042000 _KTSS</span></span><br><span class="line"><span class="string">   +0x044 MajorVersion     : 1</span></span><br><span class="line"><span class="string">   +0x046 MinorVersion     : 1</span></span><br><span class="line"><span class="string">   +0x048 SetMember        : 1</span></span><br><span class="line"><span class="string">   +0x04c StallScaleFactor : 0xc7a</span></span><br><span class="line"><span class="string">   +0x050 DebugActive      : 0 &#x27;</span>&#x27;</span><br><span class="line">   +<span class="number">0x051</span> Number           : <span class="number">0</span> <span class="string">&#x27;&#x27;</span></span><br><span class="line"><span class="string">   +0x052 Spare0           : 0 &#x27;</span>&#x27;</span><br><span class="line">   +<span class="number">0x053</span> SecondLevelCacheAssociativity : <span class="number">0x8</span> <span class="string">&#x27;&#x27;</span></span><br><span class="line"><span class="string">   +0x054 VdmAlert         : 0</span></span><br><span class="line"><span class="string">   +0x058 KernelReserved   : [14] 0</span></span><br><span class="line"><span class="string">   +0x090 SecondLevelCacheSize : 0x80000</span></span><br><span class="line"><span class="string">   +0x094 HalReserved      : [16] 0</span></span><br><span class="line"><span class="string">   +0x0d4 InterruptMode    : 0</span></span><br><span class="line"><span class="string">   +0x0d8 Spare1           : 0 &#x27;</span>&#x27;</span><br><span class="line">   +<span class="number">0x0dc</span> KernelReserved2  : [<span class="number">17</span>] <span class="number">0</span></span><br><span class="line">   +<span class="number">0x120</span> PrcbData         : _KPRCB</span><br><span class="line">kd&gt; r idtr</span><br><span class="line">idtr=<span class="number">8003f</span>400</span><br><span class="line">kd&gt; r gdtr</span><br><span class="line">gdtr=<span class="number">8003f</span>000</span><br><span class="line">kd&gt; r tr</span><br><span class="line">tr=<span class="number">00000028</span></span><br><span class="line">kd&gt; .formats tr</span><br><span class="line">Evaluate expression:</span><br><span class="line">  Hex:     <span class="number">00000028</span></span><br><span class="line">  Decimal: <span class="number">40</span></span><br><span class="line">  Decimal (<span class="type">unsigned</span>) : <span class="number">40</span></span><br><span class="line">  Octal:   <span class="number">00000000050</span></span><br><span class="line">  Binary:  <span class="number">00000000</span> <span class="number">00000000</span> <span class="number">00000000</span> <span class="number">00101000</span> <span class="comment">//得出tss段选择子101b=5</span></span><br><span class="line">  Chars:   ...(</span><br><span class="line">  Time:    Thu Jan  <span class="number">1</span> <span class="number">08</span>:<span class="number">00</span>:<span class="number">40</span> <span class="number">1970</span></span><br><span class="line">  Float:   low <span class="number">5.60519e-044</span> high <span class="number">0</span></span><br><span class="line">  Double:  <span class="number">1.97626e-322</span></span><br><span class="line">kd&gt; dq @gdtr+<span class="number">8</span>*<span class="number">5</span> l1</span><br><span class="line"><span class="number">8003f</span>028  <span class="number">80008b</span>04`<span class="number">200020</span>ab<span class="comment">//tss基址80042000</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="等待链表与调度链表"><a href="#等待链表与调度链表" class="headerlink" title="等待链表与调度链表"></a>等待链表与调度链表</h2><h3 id="等待链表"><a href="#等待链表" class="headerlink" title="等待链表"></a>等待链表</h3><p>对<strong>EPROCESS</strong>和<strong>ETHREAD</strong>结构体进行进程断链或者线程断链，只是遍历系统进程的API遍历不到了，但是进程线程依旧可以执行，对于进程来说CPU执行与调度是基于线程的，对于线程说明CPU调度线程的时候压根不用这些链表</p>
+<p>等待链表由全局变量KiWaitListHead指定位置存储链表，指向的位置就是ETHREAD.KTHREAD+0x060 WaitListEntry**:**_LIST_ENTRY</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">kd&gt; dd KiWaitListHead</span><br><span class="line"><span class="number">80553</span>d88  <span class="number">81613b</span>90 <span class="number">813261</span>d8 <span class="number">00000011</span> <span class="number">00000000</span></span><br><span class="line"><span class="number">80553</span>d98  e57a42bd d6bf94d5 <span class="number">01000013</span> ffdff980</span><br><span class="line"><span class="number">80553</span>da8  ffdff980 <span class="number">80500</span>df0 <span class="number">00000000</span> <span class="number">000655</span>d8</span><br><span class="line"><span class="number">80553</span>db8  <span class="number">00000000</span> <span class="number">00000000</span> <span class="number">80553</span>dc0 <span class="number">80553</span>dc0</span><br><span class="line"><span class="number">80553</span>dc8  <span class="number">00000000</span> <span class="number">00000000</span> <span class="number">80553</span>dd0 <span class="number">80553</span>dd0</span><br><span class="line"><span class="number">80553</span>dd8  <span class="number">00000000</span> <span class="number">00000000</span> <span class="number">00000000</span> <span class="number">817b</span>6b30</span><br><span class="line"><span class="number">80553</span>de8  <span class="number">00000000</span> <span class="number">00000000</span> <span class="number">00040001</span> <span class="number">00000000</span></span><br><span class="line"><span class="number">80553</span>df8  <span class="number">817b</span>6ba0 <span class="number">817b</span>6ba0 <span class="number">00000001</span> <span class="number">00000000</span></span><br><span class="line">kd&gt; dt _KTHREAD <span class="number">81613b</span>90<span class="number">-0x60</span></span><br><span class="line">nt!_KTHREAD</span><br><span class="line">   +<span class="number">0x000</span> Header           : _DISPATCHER_HEADER</span><br><span class="line">   +<span class="number">0x010</span> MutantListHead   : _LIST_ENTRY [ <span class="number">0x81613b40</span> - <span class="number">0x81613b40</span> ]</span><br></pre></td></tr></table></figure>
+
+<h3 id="调度链表"><a href="#调度链表" class="headerlink" title="调度链表"></a>调度链表</h3><p>调度链表有32个圈，圈中包括正在运行的和准备运行的。，就是优先级是<code>0-31</code>，0为最低优先级，31为最高，默认优先级一般是8。</p>
+
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+         
+          <li><a href="/">Home</a></li>
+         
+          <li><a href="/archives/">Writing</a></li>
+         
+          <li><a href="/search/">Search</a></li>
+         
+          <li><a href="/tags/">Tag</a></li>
+         
+          <li><a href="/about/">About</a></li>
+        
+      </ul>
+    </div>
+
+    <div id="toc-footer" style="display: none">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%BF%9B%E7%A8%8B%E7%BB%93%E6%9E%84%E4%BD%93"><span class="toc-number">1.</span> <span class="toc-text">进程结构体</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#CPU%E6%8E%A7%E5%88%B6%E5%8C%BA%E7%BB%93%E6%9E%84%E4%BD%93"><span class="toc-number">2.</span> <span class="toc-text">CPU控制区结构体</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AD%89%E5%BE%85%E9%93%BE%E8%A1%A8%E4%B8%8E%E8%B0%83%E5%BA%A6%E9%93%BE%E8%A1%A8"><span class="toc-number">3.</span> <span class="toc-text">等待链表与调度链表</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AD%89%E5%BE%85%E9%93%BE%E8%A1%A8"><span class="toc-number">3.1.</span> <span class="toc-text">等待链表</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%B0%83%E5%BA%A6%E9%93%BE%E8%A1%A8"><span class="toc-number">3.2.</span> <span class="toc-text">调度链表</span></a></li></ol></li></ol>
+    </div>
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://grxer.gitee.io/2023/11/09/Windows-Kernel-X86-process-thread/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://grxer.gitee.io/2023/11/09/Windows-Kernel-X86-process-thread/&text=Windows内核:进程和线程"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://grxer.gitee.io/2023/11/09/Windows-Kernel-X86-process-thread/&title=Windows内核:进程和线程"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://grxer.gitee.io/2023/11/09/Windows-Kernel-X86-process-thread/&is_video=false&description=Windows内核:进程和线程"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Windows内核:进程和线程&body=Check out this article: https://grxer.gitee.io/2023/11/09/Windows-Kernel-X86-process-thread/"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://grxer.gitee.io/2023/11/09/Windows-Kernel-X86-process-thread/&title=Windows内核:进程和线程"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://grxer.gitee.io/2023/11/09/Windows-Kernel-X86-process-thread/&title=Windows内核:进程和线程"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://grxer.gitee.io/2023/11/09/Windows-Kernel-X86-process-thread/&title=Windows内核:进程和线程"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://grxer.gitee.io/2023/11/09/Windows-Kernel-X86-process-thread/&title=Windows内核:进程和线程"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://grxer.gitee.io/2023/11/09/Windows-Kernel-X86-process-thread/&name=Windows内核:进程和线程&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://grxer.gitee.io/2023/11/09/Windows-Kernel-X86-process-thread/&t=Windows内核:进程和线程"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fas fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
+        <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fas fa-list fa-lg" aria-hidden="true"></i> TOC</a>
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fas fa-share-alt fa-lg" aria-hidden="true"></i> Share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2023-2024
+    bxz
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a href="/search/">Search</a></li><!--
+     --><!--
+       --><li><a href="/tags/">Tag</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+ 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script> 
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script> 
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"Copy to clipboard!\">";
+    btn += '<i class="far fa-clone"></i>';
+    btn += '</span>'; 
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "Copied!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Google Analytics -->
+
+<!-- Baidu Analytics -->
+
+  <script type="text/javascript">
+        var _hmt = _hmt || [];
+        (function() {
+          var hm = document.createElement("script");
+          hm.src = "https://hm.baidu.com/hm.js?a22ef0bec4e4a9c7337bea6e37ff55c1";
+          var s = document.getElementsByTagName("script")[0];
+          s.parentNode.insertBefore(hm, s);
+        })();
+        </script>
+
+<!-- Cloudflare Analytics -->
+
+<!-- Umami Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+</body>
+</html>

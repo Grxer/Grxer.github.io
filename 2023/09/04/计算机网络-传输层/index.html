@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="baidu-site-verification" content="codeva-ROfYcqLkCh" />
+    <meta name="msvalidate.01" content="ECA3E06A0E52A2AC90C4B06F12981FB2" />
+    <meta name="description" content="传输层传输层协议在端系统中实现而不是路由器,简单起见把运输层分组称为报文段，网络层分组称为数据报 UDP，TCP的基本责任将两个端系统间IP的交付服务拓展到端系统上两个进程之间的交付服务 将主机间交付扩展到进程间交付被称为运输层的多路复用与多路解复用 多路复用与多路解复用 多路复用:从源主机不同套接字收集数据块，并为每个数据块封装上首部信息生成报文段，报文段投递到网络层 多路解复用:将传输层报文段">
+<meta property="og:type" content="article">
+<meta property="og:title" content="计算机网络:传输层">
+<meta property="og:url" content="https://grxer.gitee.io/2023/09/04/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C-%E4%BC%A0%E8%BE%93%E5%B1%82/index.html">
+<meta property="og:site_name" content="Grxer&#39;s Blog">
+<meta property="og:description" content="传输层传输层协议在端系统中实现而不是路由器,简单起见把运输层分组称为报文段，网络层分组称为数据报 UDP，TCP的基本责任将两个端系统间IP的交付服务拓展到端系统上两个进程之间的交付服务 将主机间交付扩展到进程间交付被称为运输层的多路复用与多路解复用 多路复用与多路解复用 多路复用:从源主机不同套接字收集数据块，并为每个数据块封装上首部信息生成报文段，报文段投递到网络层 多路解复用:将传输层报文段">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://grxer.gitee.io/2023/09/04/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C-%E4%BC%A0%E8%BE%93%E5%B1%82/image-20230905130551078.png">
+<meta property="og:image" content="https://grxer.gitee.io/2023/09/04/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C-%E4%BC%A0%E8%BE%93%E5%B1%82/image-20230906114728476.png">
+<meta property="og:image" content="https://grxer.gitee.io/2023/09/04/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C-%E4%BC%A0%E8%BE%93%E5%B1%82/image-20230906195343476.png">
+<meta property="og:image" content="https://grxer.gitee.io/2023/09/04/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C-%E4%BC%A0%E8%BE%93%E5%B1%82/image-20230906214049306.png">
+<meta property="og:image" content="https://grxer.gitee.io/2023/09/04/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C-%E4%BC%A0%E8%BE%93%E5%B1%82/image-20230906225824770.png">
+<meta property="og:image" content="https://grxer.gitee.io/2023/09/04/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C-%E4%BC%A0%E8%BE%93%E5%B1%82/image-20230906214815621.png">
+<meta property="og:image" content="https://grxer.gitee.io/2023/09/04/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C-%E4%BC%A0%E8%BE%93%E5%B1%82/image-20230907131528781.png">
+<meta property="og:image" content="https://grxer.gitee.io/2023/09/04/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C-%E4%BC%A0%E8%BE%93%E5%B1%82/image-20230907215922072.png">
+<meta property="og:image" content="https://grxer.gitee.io/2023/09/04/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C-%E4%BC%A0%E8%BE%93%E5%B1%82/image-20230907220150943.png">
+<meta property="og:image" content="https://grxer.gitee.io/2023/09/04/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C-%E4%BC%A0%E8%BE%93%E5%B1%82/image-20230908002803834.png">
+<meta property="article:published_time" content="2023-09-04T07:49:38.000Z">
+<meta property="article:modified_time" content="2024-01-24T10:41:49.250Z">
+<meta property="article:author" content="bxz">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://grxer.gitee.io/2023/09/04/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C-%E4%BC%A0%E8%BE%93%E5%B1%82/image-20230905130551078.png">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
+    
+    <!-- title -->
+    <title>计算机网络:传输层</title>
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+		<script type="text/x-mathjax-config">
+		  MathJax.Hub.Config({
+			tex2jax: {
+			  skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+			  inlineMath: [['$','$']]
+			}
+		  });
+		</script>
+		<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-MML-AM_CHTML' async></script>
+	
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+<body class="max-width mx-auto px3 lrt">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="Menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="Menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="Top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fas fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a href="/search/">Search</a></li><!--
+     --><!--
+       --><li><a href="/tags/">Tag</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" aria-label="Previous post" href="/2023/09/07/2023-ycb/"><i class="fas fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" aria-label="Next post" href="/2023/09/03/OSTEP-28-LOCK/"><i class="fas fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="Back to top" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="Share post" href="#"><i class="fas fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://grxer.gitee.io/2023/09/04/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C-%E4%BC%A0%E8%BE%93%E5%B1%82/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://grxer.gitee.io/2023/09/04/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C-%E4%BC%A0%E8%BE%93%E5%B1%82/&text=计算机网络:传输层"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://grxer.gitee.io/2023/09/04/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C-%E4%BC%A0%E8%BE%93%E5%B1%82/&title=计算机网络:传输层"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://grxer.gitee.io/2023/09/04/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C-%E4%BC%A0%E8%BE%93%E5%B1%82/&is_video=false&description=计算机网络:传输层"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=计算机网络:传输层&body=Check out this article: https://grxer.gitee.io/2023/09/04/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C-%E4%BC%A0%E8%BE%93%E5%B1%82/"><i class="fas fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://grxer.gitee.io/2023/09/04/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C-%E4%BC%A0%E8%BE%93%E5%B1%82/&title=计算机网络:传输层"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://grxer.gitee.io/2023/09/04/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C-%E4%BC%A0%E8%BE%93%E5%B1%82/&title=计算机网络:传输层"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://grxer.gitee.io/2023/09/04/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C-%E4%BC%A0%E8%BE%93%E5%B1%82/&title=计算机网络:传输层"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://grxer.gitee.io/2023/09/04/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C-%E4%BC%A0%E8%BE%93%E5%B1%82/&title=计算机网络:传输层"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://grxer.gitee.io/2023/09/04/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C-%E4%BC%A0%E8%BE%93%E5%B1%82/&name=计算机网络:传输层&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://grxer.gitee.io/2023/09/04/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C-%E4%BC%A0%E8%BE%93%E5%B1%82/&t=计算机网络:传输层"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    <div id="toc">
+      <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%BC%A0%E8%BE%93%E5%B1%82"><span class="toc-number">1.</span> <span class="toc-text">传输层</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A4%9A%E8%B7%AF%E5%A4%8D%E7%94%A8%E4%B8%8E%E5%A4%9A%E8%B7%AF%E8%A7%A3%E5%A4%8D%E7%94%A8"><span class="toc-number">1.1.</span> <span class="toc-text">多路复用与多路解复用</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#UDP"><span class="toc-number">1.2.</span> <span class="toc-text">UDP</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%8A%A5%E6%96%87"><span class="toc-number">1.2.1.</span> <span class="toc-text">报文</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%AF%E9%9D%A0%E6%95%B0%E6%8D%AE%E4%BC%A0%E8%BE%93%E5%8E%9F%E7%90%86"><span class="toc-number">1.3.</span> <span class="toc-text">可靠数据传输原理</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%B5%81%E6%B0%B4%E7%BA%BF%E5%8F%AF%E9%9D%A0%E6%95%B0%E6%8D%AE%E4%BC%A0%E8%BE%93%E5%8D%8F%E8%AE%AE"><span class="toc-number">1.4.</span> <span class="toc-text">流水线可靠数据传输协议</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%BB%91%E5%8A%A8%E7%AA%97%E5%8F%A3"><span class="toc-number">1.4.1.</span> <span class="toc-text">滑动窗口</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9B%9E%E9%80%80N%E6%AD%A5-Go-Back-N%EF%BC%8CGBN"><span class="toc-number">1.4.2.</span> <span class="toc-text">回退N步(Go-Back-N，GBN)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%80%89%E6%8B%A9%E9%87%8D%E4%BC%A0-Selective-Repeat%EF%BC%8CSR"><span class="toc-number">1.4.3.</span> <span class="toc-text">选择重传(Selective Repeat，SR)</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#TCP"><span class="toc-number">1.5.</span> <span class="toc-text">TCP</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8F%AF%E9%9D%A0%E6%95%B0%E6%8D%AE%E4%BC%A0%E8%BE%93"><span class="toc-number">1.5.1.</span> <span class="toc-text">可靠数据传输</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#TCP-3%E6%AC%A1%E6%8F%A1%E6%89%8B"><span class="toc-number">1.5.2.</span> <span class="toc-text">TCP 3次握手</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#TCP-%E5%9B%9B%E6%AC%A1%E6%8C%A5%E6%89%8B"><span class="toc-number">1.5.3.</span> <span class="toc-text">TCP 四次挥手</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#TCP%E6%8B%A5%E5%A1%9E%E6%8E%A7%E5%88%B6"><span class="toc-number">1.6.</span> <span class="toc-text">TCP拥塞控制</span></a></li></ol></li></ol>
+    </div>
+  </span>
+</div>
+
+    
+    <div class="content index py4">
+        
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle" itemprop="name headline">
+        计算机网络:传输层
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span itemprop="name">bxz</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2023-09-04T07:49:38.000Z" itemprop="datePublished">2023-09-04</time>
+        
+      
+    </div>
+
+
+      
+
+      
+
+    </div>
+  </header>
+  
+
+  <div class="content" itemprop="articleBody">
+    <h1 id="传输层"><a href="#传输层" class="headerlink" title="传输层"></a>传输层</h1><p>传输层协议在端系统中实现而不是路由器,简单起见把<strong>运输层分组称为报文段</strong>，<strong>网络层分组称为数据报</strong></p>
+<p>UDP，TCP的基本责任将两个端系统间IP的交付服务拓展到端系统上两个进程之间的交付服务</p>
+<p>将主机间交付扩展到进程间交付被称为运输层的多路复用与多路解复用</p>
+<h2 id="多路复用与多路解复用"><a href="#多路复用与多路解复用" class="headerlink" title="多路复用与多路解复用"></a>多路复用与多路解复用</h2><ul>
+<li>多路复用:从源主机不同套接字收集数据块，并为每个数据块封装上首部信息生成报文段，报文段投递到网络层</li>
+<li>多路解复用:将传输层报文段的数据交付到正确的套接字</li>
+</ul>
+<h2 id="UDP"><a href="#UDP" class="headerlink" title="UDP"></a>UDP</h2><h3 id="报文"><a href="#报文" class="headerlink" title="报文"></a>报文</h3><p><img src="/2023/09/04/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C-%E4%BC%A0%E8%BE%93%E5%B1%82/image-20230905130551078.png" alt="image-20230905130551078"></p>
+<p>端口号：通过端口号目的主机可以实现多路解复用</p>
+<p>长度：UDP报文中的字节数(UDP 报文头和 UDP 数据长度)</p>
+<p>校验值：检验数据在传输过程中是否被损坏，RFC中标准要求，发送端应该计算检验和，接收端可选</p>
+<ul>
+<li>发送方：对报文段的<strong>所有16bit字的和</strong>进行<strong>反码</strong>运算，其中和的溢出都被回卷(把进位加上，如三bit数 110+011&#x3D;010)，得到的结果就是校验值</li>
+<li>接收方：算出报文段的<strong>所有16bit字外加校验码的和，同样溢出都被回卷</strong>，结果是1111 1111 1111 1111则数据完整</li>
+</ul>
+<blockquote>
+<p>残存错误：这种检错是有限的，会出现有些数据错误但是得到的校验和是正确的情况，叫做残存错误</p>
+</blockquote>
+<h2 id="可靠数据传输原理"><a href="#可靠数据传输原理" class="headerlink" title="可靠数据传输原理"></a>可靠数据传输原理</h2><ul>
+<li><p>假设信道保证发送分组，不丢失分组，且分组按照发送顺序被接收，但是分组数据可能受损</p>
+<p><strong>简单的解决办法</strong></p>
+<p>发送方发送完一个分组后等待，接收方通过校验和来确认分组完整性，完整则回复<strong>肯定确定</strong>(Positive Acknowledgment,ACK)分组通知发送方发送下一个分组，否则发送<strong>否定确定</strong>(Negative Acknowledgment,NCK)分组通知发送方重传当前分组</p>
+<p><strong>新的问题：ack&#x2F;nck出错怎么办？</strong></p>
+<p>给ack&#x2F;nck加上校验和，给分组加个<strong>序号字段</strong>，发送方收到的反馈分组ack&#x2F;nck出错时，不管三七二十一，都重传分组，接收方根据分组序号和上次分组的序号比较结果来反馈发送方，如果接收到的序号和等待的序号不一样，证明ack&#x2F;nck分组出错了，只需要重传个ACK，并丢弃掉这个分组即可</p>
+<p><strong>不使用nck</strong></p>
+<p>接收端在接收到错误分组不发送 NAK, 而是对上次正确接收的分组发送一个ACK，发送方接收到对同一个分组的两个ACK就知道没有正确发送该ack分组的下一个分组 </p>
+<p>比如我们现在要传输p0 p1 p2 三个分组，接收方接收到正确的p0后发送ACK 0表示正确接收p0，发送方继续发送p1，如果接收方正确接收p1，发送ACK 1表示正确接收，否则发送ACK 0表示接收P1出错</p>
+<p>不使用nck简化了机制，来为后面实现流水线pipeline做准备</p>
+<p>综上所述的效果 </p>
+<p><img src="/2023/09/04/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C-%E4%BC%A0%E8%BE%93%E5%B1%82/image-20230906114728476.png" alt="image-20230906114728476"></p>
+</li>
+</ul>
+<ul>
+<li><p>假设信道可能丢失分组，分组数据可能受损</p>
+<p>发送方采用超时重传机制，发送方发送分组后启动倒计数定时器，定时器过期后没有接收到ack，再次发送分组，其中ack丢失带来的发送重复分组，可以通过序号来处理</p>
+</li>
+</ul>
+<blockquote>
+<p>凡事都要做最坏的打算</p>
+</blockquote>
+<h2 id="流水线可靠数据传输协议"><a href="#流水线可靠数据传输协议" class="headerlink" title="流水线可靠数据传输协议"></a>流水线可靠数据传输协议</h2><p>允许发送方在未得到对方确认的情况下一次发送多个分组需要的条件</p>
+<ul>
+<li>增加序号范围</li>
+<li>发送方缓存已发送未确定的多个分组：未得到确认，可能需要重传</li>
+<li>接收方缓存多个已接收的分组：上层用户取用数据的速率 ≠ 接收到的数据速率；接收到的数据可能乱序，排序交付（可靠）</li>
+</ul>
+<p>两种通用的流水线协议：回退N步(Go-Back-N，GBN)和选择重传(Selective Repeat，SR)</p>
+<h3 id="滑动窗口"><a href="#滑动窗口" class="headerlink" title="滑动窗口"></a>滑动窗口</h3><p>发送窗口：发送缓冲区内容的一个范围</p>
+<p>接收窗口：控制哪些分组可以接收。 接收窗口 &#x3D; 接收缓冲区</p>
+<h3 id="回退N步-Go-Back-N，GBN"><a href="#回退N步-Go-Back-N，GBN" class="headerlink" title="回退N步(Go-Back-N，GBN)"></a>回退N步(Go-Back-N，GBN)</h3><ul>
+<li>发送窗口尺寸 &gt; 1</li>
+<li>接收窗口尺寸 &#x3D; 1</li>
+</ul>
+<p>发送缓存</p>
+<p><img src="/2023/09/04/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C-%E4%BC%A0%E8%BE%93%E5%B1%82/image-20230906195343476.png" alt="image-20230906195343476"></p>
+<p><strong>发送方：</strong></p>
+<ul>
+<li>发送窗口未满时，产生一个分组并将其发送，并把nextseqnum++；</li>
+<li>窗口已满，发送方只需将数据返回给上层，隐式地指示上层该窗口已满，或者先缓存下来以后发送</li>
+<li>只有最早的<strong>已发送但未被确认的分组</strong>拥有的定时器</li>
+<li>接收到ack后base++；如果此时base&#x3D;&#x3D;nextseqnum则停止定时器，否则说明还有已发送但未被确认的分组，则重新开始计数器</li>
+<li>定时器超时则重新发送base~nextseqnum的所有分组</li>
+</ul>
+<p><strong>接收方：</strong></p>
+<ul>
+<li><p>接收窗口的尺寸为1，只能顺序接收，接收后直接交付上方</p>
+<p><img src="/2023/09/04/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C-%E4%BC%A0%E8%BE%93%E5%B1%82/image-20230906214049306.png" alt="image-20230906214049306"></p>
+<p>比如现在只有0可以接收，其他分组到达会被丢弃，接收后窗口滑动到1，向发送方发送ack，然后等待接收</p>
+</li>
+</ul>
+<h3 id="选择重传-Selective-Repeat，SR"><a href="#选择重传-Selective-Repeat，SR" class="headerlink" title="选择重传(Selective Repeat，SR)"></a>选择重传(Selective Repeat，SR)</h3><ul>
+<li>发送窗口尺寸 &gt; 1</li>
+<li>接收窗口尺寸 &gt; 1</li>
+</ul>
+<p>发送缓存</p>
+<p><img src="/2023/09/04/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C-%E4%BC%A0%E8%BE%93%E5%B1%82/image-20230906225824770.png" alt="image-20230906225824770"></p>
+<p><strong>发送方：</strong></p>
+<ul>
+<li>发送窗口未满时，产生一个分组并将其发送，并把nextseqnum++；</li>
+<li>窗口已满，发送方只需将数据返回给上层，隐式地指示上层该窗口已满，或者先缓存下来以后发送</li>
+<li><strong>所有已发送但未被确认的分组</strong>拥有的定时器</li>
+<li>只发送定时器超时的分组</li>
+</ul>
+<p><strong>接收方：</strong></p>
+<ul>
+<li>接收窗口的尺寸 &gt; 1，可以乱序接收</li>
+<li>低序号的分组到来，接收窗口移动</li>
+<li>高序号分组乱序到，缓存但不交付（因为要实现Reliable Data Transfer，不允许失序），不滑动，分组都收到后最后一起交付给上方</li>
+</ul>
+<p><img src="/2023/09/04/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C-%E4%BC%A0%E8%BE%93%E5%B1%82/image-20230906214815621.png" alt="image-20230906214815621"></p>
+<ul>
+<li><p>接收到分组后发送ACKn(ack+序号)，由于这个ack可能丢失，所以不管接收方接收到什么分组，即使是当前窗口很早之前的分组，也应该发送ACKn,不然会导致发送方窗口不滑动</p>
+<blockquote>
+<p>对SR协议而言，这就意味着发送方和接收方的窗口 并不总是一致 。</p>
+</blockquote>
+</li>
+</ul>
+<p><strong>窗口的最大尺寸</strong></p>
+<p>GBN: 2<sup>n</sup>-1</p>
+<p>SR:2<sup>n-1</sup></p>
+<p>具体原因可以看</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/45049991165507">https://zhuanlan.zhihu.com/p/45049991165507</a> </li>
+<li><a target="_blank" rel="noopener" href="https://www.cnblogs.com/zqybegin/p/13810647.html">https://www.cnblogs.com/zqybegin/p/13810647.html</a></li>
+</ul>
+<p>均是为了超时重传接受方能够区分到底是新数据还是老数据。</p>
+<h2 id="TCP"><a href="#TCP" class="headerlink" title="TCP"></a>TCP</h2><p><img src="/2023/09/04/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C-%E4%BC%A0%E8%BE%93%E5%B1%82/image-20230907131528781.png" alt="image-20230907131528781"></p>
+<p><strong>序号</strong>：发送报文段数据首字节在应用层交下来字节流的偏移量+字节流初始序号(初始序号在建立连接时确定，一般随机地选择初始序号)</p>
+<p><strong>确认序号</strong>(Acknowledge number)：期望从另一方收到的下一个字节的序号</p>
+<p><strong>首部长度</strong>：TCP选项字段是长度是可变的，导致报文段长度可变，4bit首部长度用来表示32bit的字为单位的TCP首部长度</p>
+<p><strong>表示字段</strong>：</p>
+<ul>
+<li>URG：紧急指针标志，为1时表示紧急指针有效，该报文应该优先传送</li>
+<li>ACK：ACK &#x3D; 1报文段为确认报文段，为0表示数据段不包含确认信息，确认号被忽略</li>
+<li>PSH &#x3D; 1 表示该报文段高优先级，接收方TCP应尽快推送给接收应用程序</li>
+<li>RST &#x3D; 1，表示 TCP 连接中出现严重错误，需要释放并重新建立连接，称为复位报文段</li>
+<li>SYN &#x3D; 1，表明这是一个请求连接报文段，称为同步报文段</li>
+<li>FIN &#x3D; 1，表示此报文段的发送方的数据已经发送完毕，并要求释放 TCP 连接，称为结束报文段</li>
+</ul>
+<p><strong>接收窗口</strong>：窗口大小的值是指，从本报文段首部中的确认号算起，接收方目前允许对方发送的数据量。用于流量控制</p>
+<p>以太网和PPP链路层协议都具有1500字节的MTU(Maximum Transmission Unit, MTU)，去除20字节ip头，20字节TCP头，最大报文段长度(Maximum Segment Size,<br>MSS)一般为1460</p>
+<h3 id="可靠数据传输"><a href="#可靠数据传输" class="headerlink" title="可靠数据传输"></a>可靠数据传输</h3><p>TCP采用了类似于GBN的单一计时器，只为最早发送但未确认的报文段设置计时器，且定时器过期只发送这一个报文段</p>
+<p>比如发送方发送了，数据流中0~1460的A报文段，1461~2921的B报文段,2922~4382的C报文段，后续报文段D，E，F，G，发送方只为0~1460的A报文段设置计时器</p>
+<p>接收方接收到A报文，B报文段丢失，接收到C报文段，对于乱序的接收TCP程序员可自行处理，丢弃或者缓存，对于收到C D E F G都会向发送方发送<strong>确认序号</strong>为B的ACK，发送方接收到三个相同冗余的ACK则立即重传B分组，不用等计时器过期，这种操作叫<strong>快速重传</strong></p>
+<p><img src="/2023/09/04/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C-%E4%BC%A0%E8%BE%93%E5%B1%82/image-20230907215922072.png" alt="image-20230907215922072"></p>
+<h3 id="TCP-3次握手"><a href="#TCP-3次握手" class="headerlink" title="TCP 3次握手"></a>TCP 3次握手</h3><p><img src="/2023/09/04/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C-%E4%BC%A0%E8%BE%93%E5%B1%82/image-20230907220150943.png" alt="image-20230907220150943"></p>
+<ol>
+<li>客户端发送SYN&#x3D;1，不包含应用层数据的tcp报文段，随机选择初始序号seq&#x3D;J，称为同步报文段或SYN 报文段</li>
+<li>服务器收到SYN报文段，服务器分配TCP缓存和变量，发送SYN&#x3D;1，ACK&#x3D;1，确认序号ack&#x3D;J+1，随机选择初始序号seq&#x3D;K的允许连接报文，称为SYNACK报文段</li>
+<li>客户端收到 SYNACK 报文段后，客户端分配TCP缓存和变量，发送SYN&#x3D;1 ACK&#x3D;1，确认序号ack&#x3D;K+1的报文确认连接，一般还会在此报文段携带数据</li>
+</ol>
+<h3 id="TCP-四次挥手"><a href="#TCP-四次挥手" class="headerlink" title="TCP 四次挥手"></a><a target="_blank" rel="noopener" href="https://juejin.cn/post/7063829623024386056">TCP 四次挥手</a></h3><p><img src="/2023/09/04/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C-%E4%BC%A0%E8%BE%93%E5%B1%82/image-20230908002803834.png" alt="image-20230908002803834"></p>
+<ol>
+<li>客户端发送FIN&#x3D;1，seq&#x3D;u的结束报文段，FIN-WAIT-1 阶段，TCP半关闭阶段</li>
+<li>服务器接收到客户端请求断开连接的 FIN 报文后，结束 ESTABLISHED 阶段，进入 CLOSE-WAIT 阶段并返回一段 TCP 报文，ACK&#x3D;1，Seq &#x3D; v，ack &#x3D; u + 1，TCP半关闭阶段，而A收到B的确认后，进入FIN-WAIT-2状态，等待B发出的连接释放报文段</li>
+<li>因为断开连接是A提出的，可能B还有数据要传输，所以不能和上一次ACK一起发，当B数据传输完毕后，B发出连接释放报文段</li>
+<li>A收到B的连接释放报文段后，对此发出确认报文段（ACK &#x3D; 1，seq&#x3D;u+1，ack&#x3D;w+1）,A进入TIME-WAIT（时间等待）状态。此时TCP未释放掉，需要经过时间等待计时器设置的时间2MSL后，A才进入CLOSE状态。</li>
+</ol>
+<blockquote>
+<p>为什么A在TIME-WAIT状态必须等待2MSL（最大报文生存时间）的时间？</p>
+<ul>
+<li>保证A、B正常进入CLOSED状态：最后一个ACK丢失可能丢失，TCP服务器进程对之前所发送的TCP连接释放报文段的超时重传，如果TCP客户进程属于关闭状态，会导致服务器反复重传无法关闭</li>
+<li>2MSL时长，可以使本次连接持续时间内所产生的所有报文段都从网络中消失，保证下一个新的TCP连接中，不会出现旧连接中的报文段</li>
+</ul>
+</blockquote>
+<h2 id="TCP拥塞控制"><a href="#TCP拥塞控制" class="headerlink" title="TCP拥塞控制"></a>TCP拥塞控制</h2><p>CongWin拥塞窗口 Threshold 慢启动动阙值</p>
+<ul>
+<li>当 CongWin &lt; Threshold, 发送端处于慢启动阶段（slow-start ）, 窗口指数性(平方增加MSS)增长</li>
+<li>当 CongWin &gt; Threshold, 发送端处于拥塞避免阶段（ congestion-avoidance ） , 窗口线性增长(+1 MSS)</li>
+<li>当收到三个重复的 ACKs(triple duplicate ACK),Threshold 设置成 CongWin&#x2F;2 ，CongWin&#x3D;Threshold+3.</li>
+<li>当超时事件发生时 timeout, Threshold&#x3D;CongWin&#x2F;2CongWin&#x3D;1 MSS ，进入 慢启动SS 阶段</li>
+</ul>
+
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+         
+          <li><a href="/">Home</a></li>
+         
+          <li><a href="/archives/">Writing</a></li>
+         
+          <li><a href="/search/">Search</a></li>
+         
+          <li><a href="/tags/">Tag</a></li>
+         
+          <li><a href="/about/">About</a></li>
+        
+      </ul>
+    </div>
+
+    <div id="toc-footer" style="display: none">
+      <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%BC%A0%E8%BE%93%E5%B1%82"><span class="toc-number">1.</span> <span class="toc-text">传输层</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A4%9A%E8%B7%AF%E5%A4%8D%E7%94%A8%E4%B8%8E%E5%A4%9A%E8%B7%AF%E8%A7%A3%E5%A4%8D%E7%94%A8"><span class="toc-number">1.1.</span> <span class="toc-text">多路复用与多路解复用</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#UDP"><span class="toc-number">1.2.</span> <span class="toc-text">UDP</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%8A%A5%E6%96%87"><span class="toc-number">1.2.1.</span> <span class="toc-text">报文</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%AF%E9%9D%A0%E6%95%B0%E6%8D%AE%E4%BC%A0%E8%BE%93%E5%8E%9F%E7%90%86"><span class="toc-number">1.3.</span> <span class="toc-text">可靠数据传输原理</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%B5%81%E6%B0%B4%E7%BA%BF%E5%8F%AF%E9%9D%A0%E6%95%B0%E6%8D%AE%E4%BC%A0%E8%BE%93%E5%8D%8F%E8%AE%AE"><span class="toc-number">1.4.</span> <span class="toc-text">流水线可靠数据传输协议</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%BB%91%E5%8A%A8%E7%AA%97%E5%8F%A3"><span class="toc-number">1.4.1.</span> <span class="toc-text">滑动窗口</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9B%9E%E9%80%80N%E6%AD%A5-Go-Back-N%EF%BC%8CGBN"><span class="toc-number">1.4.2.</span> <span class="toc-text">回退N步(Go-Back-N，GBN)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%80%89%E6%8B%A9%E9%87%8D%E4%BC%A0-Selective-Repeat%EF%BC%8CSR"><span class="toc-number">1.4.3.</span> <span class="toc-text">选择重传(Selective Repeat，SR)</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#TCP"><span class="toc-number">1.5.</span> <span class="toc-text">TCP</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8F%AF%E9%9D%A0%E6%95%B0%E6%8D%AE%E4%BC%A0%E8%BE%93"><span class="toc-number">1.5.1.</span> <span class="toc-text">可靠数据传输</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#TCP-3%E6%AC%A1%E6%8F%A1%E6%89%8B"><span class="toc-number">1.5.2.</span> <span class="toc-text">TCP 3次握手</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#TCP-%E5%9B%9B%E6%AC%A1%E6%8C%A5%E6%89%8B"><span class="toc-number">1.5.3.</span> <span class="toc-text">TCP 四次挥手</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#TCP%E6%8B%A5%E5%A1%9E%E6%8E%A7%E5%88%B6"><span class="toc-number">1.6.</span> <span class="toc-text">TCP拥塞控制</span></a></li></ol></li></ol>
+    </div>
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://grxer.gitee.io/2023/09/04/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C-%E4%BC%A0%E8%BE%93%E5%B1%82/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://grxer.gitee.io/2023/09/04/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C-%E4%BC%A0%E8%BE%93%E5%B1%82/&text=计算机网络:传输层"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://grxer.gitee.io/2023/09/04/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C-%E4%BC%A0%E8%BE%93%E5%B1%82/&title=计算机网络:传输层"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://grxer.gitee.io/2023/09/04/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C-%E4%BC%A0%E8%BE%93%E5%B1%82/&is_video=false&description=计算机网络:传输层"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=计算机网络:传输层&body=Check out this article: https://grxer.gitee.io/2023/09/04/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C-%E4%BC%A0%E8%BE%93%E5%B1%82/"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://grxer.gitee.io/2023/09/04/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C-%E4%BC%A0%E8%BE%93%E5%B1%82/&title=计算机网络:传输层"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://grxer.gitee.io/2023/09/04/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C-%E4%BC%A0%E8%BE%93%E5%B1%82/&title=计算机网络:传输层"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://grxer.gitee.io/2023/09/04/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C-%E4%BC%A0%E8%BE%93%E5%B1%82/&title=计算机网络:传输层"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://grxer.gitee.io/2023/09/04/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C-%E4%BC%A0%E8%BE%93%E5%B1%82/&title=计算机网络:传输层"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://grxer.gitee.io/2023/09/04/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C-%E4%BC%A0%E8%BE%93%E5%B1%82/&name=计算机网络:传输层&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://grxer.gitee.io/2023/09/04/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C-%E4%BC%A0%E8%BE%93%E5%B1%82/&t=计算机网络:传输层"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fas fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
+        <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fas fa-list fa-lg" aria-hidden="true"></i> TOC</a>
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fas fa-share-alt fa-lg" aria-hidden="true"></i> Share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2023-2024
+    bxz
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a href="/search/">Search</a></li><!--
+     --><!--
+       --><li><a href="/tags/">Tag</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+ 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script> 
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script> 
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"Copy to clipboard!\">";
+    btn += '<i class="far fa-clone"></i>';
+    btn += '</span>'; 
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "Copied!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Google Analytics -->
+
+<!-- Baidu Analytics -->
+
+  <script type="text/javascript">
+        var _hmt = _hmt || [];
+        (function() {
+          var hm = document.createElement("script");
+          hm.src = "https://hm.baidu.com/hm.js?a22ef0bec4e4a9c7337bea6e37ff55c1";
+          var s = document.getElementsByTagName("script")[0];
+          s.parentNode.insertBefore(hm, s);
+        })();
+        </script>
+
+<!-- Cloudflare Analytics -->
+
+<!-- Umami Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+</body>
+</html>

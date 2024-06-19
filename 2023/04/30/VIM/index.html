@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="baidu-site-verification" content="codeva-ROfYcqLkCh" />
+    <meta name="msvalidate.01" content="ECA3E06A0E52A2AC90C4B06F12981FB2" />
+    <meta name="description" content="VIM用来几天vim发现自己喜欢上了vim的模式，把所有ide能用vim插件的都改用vim了 总体来说vsc体验最好 jet全家桶ideavim还可以，vs2022 vim体验并不好，可能以后换Clion了,但是感觉clion的调试功能没有vs2022好，淦，这种东西自己舒服才是最重要的 VSCODE vimnomal模式a在光标后插入 A在行尾插入 这样我们可以用A;很方便的在行尾加分号 i在光">
+<meta property="og:type" content="article">
+<meta property="og:title" content="VIM">
+<meta property="og:url" content="https://grxer.gitee.io/2023/04/30/VIM/index.html">
+<meta property="og:site_name" content="Grxer&#39;s Blog">
+<meta property="og:description" content="VIM用来几天vim发现自己喜欢上了vim的模式，把所有ide能用vim插件的都改用vim了 总体来说vsc体验最好 jet全家桶ideavim还可以，vs2022 vim体验并不好，可能以后换Clion了,但是感觉clion的调试功能没有vs2022好，淦，这种东西自己舒服才是最重要的 VSCODE vimnomal模式a在光标后插入 A在行尾插入 这样我们可以用A;很方便的在行尾加分号 i在光">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://grxer.gitee.io/2023/04/30/VIM/image-20230430152911270.png">
+<meta property="article:published_time" content="2023-04-30T03:41:20.000Z">
+<meta property="article:modified_time" content="2023-11-26T10:32:05.886Z">
+<meta property="article:author" content="bxz">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://grxer.gitee.io/2023/04/30/VIM/image-20230430152911270.png">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
+    
+    <!-- title -->
+    <title>VIM</title>
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+		<script type="text/x-mathjax-config">
+		  MathJax.Hub.Config({
+			tex2jax: {
+			  skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+			  inlineMath: [['$','$']]
+			}
+		  });
+		</script>
+		<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-MML-AM_CHTML' async></script>
+	
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+<body class="max-width mx-auto px3 lrt">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="Menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="Menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="Top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fas fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a href="/search/">Search</a></li><!--
+     --><!--
+       --><li><a href="/tags/">Tag</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" aria-label="Previous post" href="/2023/05/04/ELF-Dynamical-link/"><i class="fas fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" aria-label="Next post" href="/2023/04/28/static-link/"><i class="fas fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="Back to top" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="Share post" href="#"><i class="fas fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://grxer.gitee.io/2023/04/30/VIM/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://grxer.gitee.io/2023/04/30/VIM/&text=VIM"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://grxer.gitee.io/2023/04/30/VIM/&title=VIM"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://grxer.gitee.io/2023/04/30/VIM/&is_video=false&description=VIM"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=VIM&body=Check out this article: https://grxer.gitee.io/2023/04/30/VIM/"><i class="fas fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://grxer.gitee.io/2023/04/30/VIM/&title=VIM"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://grxer.gitee.io/2023/04/30/VIM/&title=VIM"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://grxer.gitee.io/2023/04/30/VIM/&title=VIM"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://grxer.gitee.io/2023/04/30/VIM/&title=VIM"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://grxer.gitee.io/2023/04/30/VIM/&name=VIM&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://grxer.gitee.io/2023/04/30/VIM/&t=VIM"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    <div id="toc">
+      <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#VIM"><span class="toc-number">1.</span> <span class="toc-text">VIM</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#VSCODE-vim"><span class="toc-number">1.1.</span> <span class="toc-text">VSCODE vim</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#nomal%E6%A8%A1%E5%BC%8F"><span class="toc-number">1.1.1.</span> <span class="toc-text">nomal模式</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%85%89%E6%A0%87%E7%A7%BB%E5%8A%A8"><span class="toc-number">1.1.1.1.</span> <span class="toc-text">光标移动</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%BB%84%E5%90%88"><span class="toc-number">1.1.1.2.</span> <span class="toc-text">组合</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#VISUAL%E6%A8%A1%E5%BC%8F"><span class="toc-number">1.1.2.</span> <span class="toc-text">VISUAL模式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%85%B6%E4%BB%96"><span class="toc-number">1.1.3.</span> <span class="toc-text">其他</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#VIM-1"><span class="toc-number">1.2.</span> <span class="toc-text">VIM</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Ubuntu16%E5%AE%89%E8%A3%85cocnvim"><span class="toc-number">1.2.0.1.</span> <span class="toc-text">Ubuntu16安装cocnvim</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#vs2022"><span class="toc-number">1.3.</span> <span class="toc-text">vs2022</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#ideavim"><span class="toc-number">1.4.</span> <span class="toc-text">ideavim</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#vim%E2%80%93-gt-neovim"><span class="toc-number">1.5.</span> <span class="toc-text">vim–&gt;neovim</span></a></li></ol></li></ol>
+    </div>
+  </span>
+</div>
+
+    
+    <div class="content index py4">
+        
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle" itemprop="name headline">
+        VIM
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span itemprop="name">bxz</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2023-04-30T03:41:20.000Z" itemprop="datePublished">2023-04-30</time>
+        
+      
+    </div>
+
+
+      
+
+      
+
+    </div>
+  </header>
+  
+
+  <div class="content" itemprop="articleBody">
+    <h1 id="VIM"><a href="#VIM" class="headerlink" title="VIM"></a>VIM</h1><p>用来几天vim发现自己喜欢上了vim的模式，把所有ide能用vim插件的都改用vim了 总体来说vsc体验最好 jet全家桶ideavim还可以，vs2022 vim体验并不好，可能以后换Clion了,但是感觉clion的调试功能没有vs2022好，淦，这种东西自己舒服才是最重要的</p>
+<h2 id="VSCODE-vim"><a href="#VSCODE-vim" class="headerlink" title="VSCODE vim"></a>VSCODE vim</h2><h3 id="nomal模式"><a href="#nomal模式" class="headerlink" title="nomal模式"></a>nomal模式</h3><p>a在光标后插入 A在行尾插入 这样我们可以用A;很方便的在行尾加分号</p>
+<p>i在光标前插入 I在行首插入</p>
+<p>o下行插入 O上行插入</p>
+<p>f {char}跳到下一个char位置 F{char} 上一个</p>
+<p>; 重复上次字符查找  ,反向查找上次查找 .可以重复上一次命令</p>
+<p>d 删除(剪切) c修改 y复制 p粘贴 u撤销 </p>
+<p>x删除光标处，r修改光标处</p>
+<p>&#x3D;&#x3D;自动缩进</p>
+<p><em>“ Ctrl-u 向上移动半屏</em></p>
+<p><em>“ Ctrl-d 向下移动半屏</em></p>
+<p><em>“ Ctrl-b 向上移动一屏</em></p>
+<p><em>“ Ctrl-f 向下移动一屏</em></p>
+<p><em>“ gg 到文档开头</em></p>
+<p><em>“ G 到文档结尾</em></p>
+<p><em>“ H 到屏幕顶部</em> head</p>
+<p><em>“ M 到屏幕中间 middle</em></p>
+<p><em>“ L 到屏幕底部 last</em></p>
+<p>“ayy 复制当前行到a寄存器中</p>
+<p>“Ayy 追加当前当到a寄存器.</p>
+<p>“ap 粘贴a寄存器中的值</p>
+<p><num> j和<num> k跳转相对num行</num></num></p>
+<h4 id="光标移动"><a href="#光标移动" class="headerlink" title="光标移动"></a>光标移动</h4><p><img src="/2023/04/30/VIM/image-20230430152911270.png" alt="image-20230430152911270"></p>
+<p>w 下一个单词开头</p>
+<p>b 本单词或者上一个单词开头(back)</p>
+<p>e 本单词或下一个单词结尾(end)</p>
+<p>0 绝对行首 ^行首 $行尾</p>
+<p>gg 第一行 G最后一行</p>
+<h4 id="组合"><a href="#组合" class="headerlink" title="组合"></a>组合</h4><p>a是around i是inner 标识符:() &lt;&gt; {} 等</p>
+<p>c&#x2F;d&#x2F;y iw操作一个的单词</p>
+<p>c&#x2F;d&#x2F;y i标识符 操作被符号包裹着的单词</p>
+<p>c&#x2F;d&#x2F;y a标示符 连同符号一起操作</p>
+<p>对于大括号{}里的语句还可以用c&#x2F;d&#x2F;y iB或c&#x2F;d&#x2F;y aB来操作</p>
+<p>对于小括号()里的语句可以用c&#x2F;d&#x2F;y ib或c&#x2F;d&#x2F;y ab来操作</p>
+<p>dd yy cc操作一行 前面加数字就可以操作n行</p>
+<p>c&#x2F;d&#x2F;y f {char}一直操作到char</p>
+<p>c&#x2F;d&#x2F;y i或a e操作整个文件</p>
+<p>上面的还可以自由搭配比如de什么的</p>
+<h3 id="VISUAL模式"><a href="#VISUAL模式" class="headerlink" title="VISUAL模式"></a>VISUAL模式</h3><p>大同小异</p>
+<h3 id="其他"><a href="#其他" class="headerlink" title="其他"></a>其他</h3><p>gd 转到函数定义 (goto defination)</p>
+<p>gh 查看参数提示等 (hover悬停)</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="string">&quot;vim.highlightedyank.enable&quot;</span>: <span class="literal">true</span>,</span><br><span class="line"><span class="string">&quot;vim.showMarksInGutter&quot;</span>: <span class="literal">true</span>,</span><br><span class="line"><span class="string">&quot;vim.sneakReplacesF&quot;</span>: <span class="literal">true</span>,</span><br><span class="line"><span class="string">&quot;vim.easymotion&quot;</span>: <span class="literal">true</span>,</span><br><span class="line"><span class="string">&quot;vim.incsearch&quot;</span>: <span class="literal">true</span>,</span><br><span class="line"><span class="string">&quot;vim.useSystemClipboard&quot;</span>: <span class="literal">true</span>,</span><br><span class="line"><span class="string">&quot;vim.useCtrlKeys&quot;</span>: <span class="literal">true</span>,</span><br><span class="line"><span class="string">&quot;vim.hlsearch&quot;</span>: <span class="literal">true</span>,</span><br><span class="line"><span class="string">&quot;vim.sneak&quot;</span>: <span class="literal">true</span>,</span><br><span class="line"><span class="string">&quot;vim.insertModeKeyBindings&quot;</span>: [</span><br><span class="line">  &#123;</span><br><span class="line">    <span class="string">&quot;before&quot;</span>: [</span><br><span class="line">      <span class="string">&quot;j&quot;</span>,</span><br><span class="line">      <span class="string">&quot;k&quot;</span></span><br><span class="line">    ],</span><br><span class="line">    <span class="string">&quot;after&quot;</span>: [</span><br><span class="line">      <span class="string">&quot;&lt;Esc&gt;&quot;</span></span><br><span class="line">    ]</span><br><span class="line">  &#125;</span><br><span class="line">],</span><br><span class="line"><span class="string">&quot;vim.normalModeKeyBindingsNonRecursive&quot;</span>: [</span><br><span class="line">  &#123;</span><br><span class="line">    <span class="string">&quot;before&quot;</span>: [</span><br><span class="line">      <span class="string">&quot;&lt;leader&gt;&quot;</span>,</span><br><span class="line">      <span class="string">&quot;d&quot;</span></span><br><span class="line">    ],</span><br><span class="line">    <span class="string">&quot;after&quot;</span>: [</span><br><span class="line">      <span class="string">&quot;d&quot;</span>,</span><br><span class="line">      <span class="string">&quot;d&quot;</span></span><br><span class="line">    ]</span><br><span class="line">  &#125;,</span><br><span class="line">  &#123;</span><br><span class="line">    <span class="string">&quot;before&quot;</span>: [</span><br><span class="line">      <span class="string">&quot;&lt;C-n&gt;&quot;</span></span><br><span class="line">    ],</span><br><span class="line">    <span class="string">&quot;commands&quot;</span>: [</span><br><span class="line">      <span class="string">&quot;:nohl&quot;</span></span><br><span class="line">    ]</span><br><span class="line">  &#125;,</span><br><span class="line">  &#123;</span><br><span class="line">    <span class="string">&quot;before&quot;</span>: [</span><br><span class="line">      <span class="string">&quot;K&quot;</span></span><br><span class="line">    ],</span><br><span class="line">    <span class="string">&quot;commands&quot;</span>: [</span><br><span class="line">      <span class="string">&quot;lineBreakInsert&quot;</span></span><br><span class="line">    ],</span><br><span class="line">    <span class="string">&quot;silent&quot;</span>: <span class="literal">true</span></span><br><span class="line">  &#125;,</span><br><span class="line">  &#123;</span><br><span class="line">    <span class="string">&quot;before&quot;</span>: [</span><br><span class="line">      <span class="string">&quot;&lt;S-L&gt;&quot;</span></span><br><span class="line">    ],</span><br><span class="line">    <span class="string">&quot;commands&quot;</span>: [</span><br><span class="line">      <span class="string">&quot;:tabnext&quot;</span></span><br><span class="line">    ]</span><br><span class="line">  &#125;,</span><br><span class="line">  &#123;</span><br><span class="line">    <span class="string">&quot;before&quot;</span>: [</span><br><span class="line">      <span class="string">&quot;&lt;S-H&gt;&quot;</span></span><br><span class="line">    ],</span><br><span class="line">    <span class="string">&quot;commands&quot;</span>: [</span><br><span class="line">      <span class="string">&quot;:tabprevious&quot;</span></span><br><span class="line">    ]</span><br><span class="line">  &#125;,</span><br><span class="line">  &#123;</span><br><span class="line">    <span class="string">&quot;before&quot;</span>: [</span><br><span class="line">      <span class="string">&quot;&lt;S-Q&gt;&quot;</span></span><br><span class="line">    ],</span><br><span class="line">    <span class="string">&quot;commands&quot;</span>: [</span><br><span class="line">      <span class="string">&quot;:q!&quot;</span></span><br><span class="line">    ]</span><br><span class="line">  &#125;,</span><br><span class="line">  &#123;</span><br><span class="line">    <span class="string">&quot;before&quot;</span>: [</span><br><span class="line">      <span class="string">&quot;g&quot;</span>,</span><br><span class="line">      <span class="string">&quot;r&quot;</span></span><br><span class="line">    ],</span><br><span class="line">    <span class="string">&quot;commands&quot;</span>: [</span><br><span class="line">      <span class="string">&quot;editor.action.goToReferences&quot;</span></span><br><span class="line">    ],</span><br><span class="line">  &#125;,</span><br><span class="line">  &#123;</span><br><span class="line">    <span class="string">&quot;before&quot;</span>: [</span><br><span class="line">      <span class="string">&quot;&lt;leader&gt;&quot;</span>,</span><br><span class="line">      <span class="string">&quot;b&quot;</span></span><br><span class="line">    ],</span><br><span class="line">    <span class="string">&quot;commands&quot;</span>: [</span><br><span class="line">      <span class="string">&quot;editor.debug.action.toggleBreakpoint&quot;</span></span><br><span class="line">    ],</span><br><span class="line">  &#125;,</span><br><span class="line">  &#123;</span><br><span class="line">    <span class="string">&quot;before&quot;</span>: [</span><br><span class="line">      <span class="string">&quot;&lt;leader&gt;&quot;</span>,</span><br><span class="line">      <span class="string">&quot;f&quot;</span></span><br><span class="line">    ],</span><br><span class="line">    <span class="string">&quot;commands&quot;</span>: [</span><br><span class="line">      <span class="string">&quot;editor.action.formatDocument&quot;</span></span><br><span class="line">    ],</span><br><span class="line">  &#125;</span><br><span class="line">],</span><br><span class="line"><span class="string">&quot;vim.leader&quot;</span>: <span class="string">&quot;&lt;space&gt;&quot;</span>,</span><br><span class="line"><span class="string">&quot;vim.handleKeys&quot;</span>: &#123;</span><br><span class="line">  <span class="string">&quot;&lt;C-a&gt;&quot;</span>: <span class="literal">false</span>,</span><br><span class="line">  <span class="string">&quot;&lt;C-f&gt;&quot;</span>: <span class="literal">false</span>,</span><br><span class="line">  <span class="string">&quot;&lt;C-z&gt;&quot;</span>: <span class="literal">false</span>,</span><br><span class="line">  <span class="string">&quot;&lt;C-v&gt;&quot;</span>: <span class="literal">false</span>,</span><br><span class="line">  <span class="string">&quot;&lt;C-c&gt;&quot;</span>: <span class="literal">false</span>,</span><br><span class="line">  <span class="string">&quot;&lt;C-x&gt;&quot;</span>: <span class="literal">false</span>,</span><br><span class="line">  <span class="string">&quot;&lt;C-n&gt;&quot;</span>: <span class="literal">false</span>,</span><br><span class="line">  <span class="string">&quot;&lt;C-w&gt;&quot;</span>: <span class="literal">false</span>,</span><br><span class="line">  <span class="string">&quot;&lt;C-p&gt;&quot;</span>: <span class="literal">false</span>,</span><br><span class="line">  <span class="string">&quot;&lt;C-b&gt;&quot;</span>: <span class="literal">false</span>,</span><br><span class="line">  <span class="string">&quot;&lt;C-t&gt;&quot;</span>: <span class="literal">false</span>,</span><br><span class="line">  <span class="string">&quot;&lt;C-j&gt;&quot;</span>: <span class="literal">false</span>,</span><br><span class="line">&#125;,</span><br></pre></td></tr></table></figure>
+
+<p>ctrl o回到光标的上次，ctrl + i下次光标位置、</p>
+<p>gcc给当前行添加注释 gc3j包括当前行4行添加注释 gciB gcaB等可以自己搭配</p>
+<table>
+<thead>
+<tr>
+<th><code>y s &lt;motion&gt; &lt;desired&gt;</code></th>
+<th>Add <code>desired</code> surround around text defined by <code>&lt;motion&gt;</code></th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>d s &lt;existing&gt;</code></td>
+<td>Delete <code>existing</code> surround</td>
+</tr>
+<tr>
+<td><code>c s &lt;existing&gt; &lt;desired&gt;</code></td>
+<td>Change <code>existing</code> surround to <code>desired</code></td>
+</tr>
+</tbody></table>
+<table>
+<thead>
+<tr>
+<th><code>S &lt;desired&gt;</code></th>
+<th>Surround when in visual modes (surrounds full selection)</th>
+</tr>
+</thead>
+<tbody><tr>
+<td></td>
+<td>这样就可以用vaw方便的 S引号 方便的给一个单词加上引号</td>
+</tr>
+</tbody></table>
+<p> 然后我把这个插件”vim.sneak”: true打开了 s<char><char>可以向前跳到char char</char></char></p>
+<p>S<char><char>可以向后跳到char char分号跳到下一个	原本的s是删除一个字符并修改我用不到，可以用r修改，单词平常都是b cw或ciw来删除并修改</char></char></p>
+<p><a target="_blank" rel="noopener" href="https://github.com/VSCodeVim/Vim">https://github.com/VSCodeVim/Vim</a> 里还有好多有用的</p>
+<h2 id="VIM-1"><a href="#VIM-1" class="headerlink" title="VIM"></a>VIM</h2><p>~&#x2F;.vimrc</p>
+<p><a target="_blank" rel="noopener" href="https://vimawesome.com/">https://vimawesome.com/</a></p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">curl -fLo ~/.vim/autoload/plug.vim --create-dirs \</span><br><span class="line">    https:<span class="comment">//raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim</span></span><br></pre></td></tr></table></figure>
+
+<p>cocnvim <a target="_blank" rel="noopener" href="https://github.com/neoclide/coc.nvim">https://github.com/neoclide/coc.nvim</a></p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">nodejs &gt;= <span class="number">14.14</span></span><br><span class="line">curl -o- https:<span class="comment">//raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash</span></span><br><span class="line">使用的是 zsh 或 fish，需要将安装脚本中的 bash 替换为 zsh 或 fish</span><br><span class="line">nvm install <span class="number">16</span>    </span><br><span class="line">nvm use <span class="number">16</span></span><br></pre></td></tr></table></figure>
+
+<p>各语言支持 <a target="_blank" rel="noopener" href="https://github.com/neoclide/coc.nvim/wiki/Using-coc-extensions">https://github.com/neoclide/coc.nvim/wiki/Using-coc-extensions</a></p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">sudo apt install clangd</span><br><span class="line">sudo apt install clang-format</span><br><span class="line">:CocInstall coc-clangd</span><br><span class="line">:CocInstall coc-pyright</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="string">&quot;高亮搜索结果</span></span><br><span class="line"><span class="string">set hlsearch</span></span><br><span class="line"><span class="string">&quot;</span>智能推测搜索，搜索<span class="built_in">set</span>时大小写敏感，<span class="built_in">set</span>不敏感</span><br><span class="line"><span class="built_in">set</span> smartcase</span><br><span class="line"><span class="string">&quot;滚动上下缓存5行</span></span><br><span class="line"><span class="string">set scrolloff=5</span></span><br><span class="line"><span class="string">set clipboard=unnamedplus</span></span><br><span class="line"><span class="string">set t_Co=256</span></span><br><span class="line"><span class="string">if has(&quot;</span>termguicolors<span class="string">&quot;)</span></span><br><span class="line"><span class="string">    &quot;</span> fix bug <span class="keyword">for</span> vim</span><br><span class="line">    <span class="built_in">set</span> t_8f=[<span class="number">38</span>;<span class="number">2</span>;%lu;%lu;%lum <span class="string">&quot; 这里^[[38中的^[需要替换,使用ctrol+v然后按esc</span></span><br><span class="line"><span class="string">    set t_8b=[48;2;%lu;%lu;%lum &quot;</span> 这里^[[<span class="number">38</span>中的^[需要替换,使用ctrol+v然后按esc</span><br><span class="line">    <span class="string">&quot; enable true color</span></span><br><span class="line"><span class="string">    set termguicolors</span></span><br><span class="line"><span class="string">endif</span></span><br><span class="line"><span class="string">set hlsearch</span></span><br><span class="line"><span class="string">&quot;</span>插入模式显示绝对行号</span><br><span class="line"><span class="string">&quot;其他模式显示相对行号</span></span><br><span class="line"><span class="string">set cursorline</span></span><br><span class="line"><span class="string">set number             &quot;</span> Enable line numbering</span><br><span class="line"><span class="string">&quot; augroup numbertoggle   &quot;</span> Toggles relativenumber on and off based on mode</span><br><span class="line"><span class="string">&quot;     autocmd!</span></span><br><span class="line"><span class="string">&quot;</span>     autocmd BufEnter,FocusGained,InsertLeave * <span class="built_in">set</span> relativenumber</span><br><span class="line"><span class="string">&quot;     autocmd BufLeave,FocusLost,InsertEnter   * set norelativenumber</span></span><br><span class="line"><span class="string">&quot;</span> augroup END</span><br><span class="line"><span class="built_in">set</span> mouse=a</span><br><span class="line"><span class="string">&quot; add tab space</span></span><br><span class="line"><span class="string">set ts=2</span></span><br><span class="line"><span class="string">set softtabstop=2</span></span><br><span class="line"><span class="string">set shiftwidth=2</span></span><br><span class="line"><span class="string">set expandtab</span></span><br><span class="line"><span class="string">set cindent</span></span><br><span class="line"><span class="string">set autoindent</span></span><br><span class="line"><span class="string">inoremap jk  &lt;ESC&gt;</span></span><br><span class="line"><span class="string">nnoremap &lt;s-k&gt; gt</span></span><br><span class="line"><span class="string">nnoremap &lt;s-J&gt; gT</span></span><br><span class="line"><span class="string">nnoremap &lt;S-q&gt; :q!&lt;CR&gt;</span></span><br><span class="line"><span class="string">set incsearch</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">call plug#begin()</span></span><br><span class="line"><span class="string">Plug &#x27;voldikss/vim-floaterm&#x27;</span></span><br><span class="line"><span class="string">let g:floaterm_keymap_toggle = &#x27;jt&#x27;</span></span><br><span class="line"><span class="string">let g:floaterm_keymap_new    = &#x27;&lt;F7&gt;&#x27;</span></span><br><span class="line"><span class="string">let g:floaterm_keymap_prev   = &#x27;&lt;F8&gt;&#x27;</span></span><br><span class="line"><span class="string">let g:floaterm_keymap_next   = &#x27;&lt;F9&gt;&#x27;</span></span><br><span class="line"><span class="string">Plug &#x27;mg979/vim-visual-multi&#x27;, &#123;&#x27;branch&#x27;: &#x27;master&#x27;&#125;</span></span><br><span class="line"><span class="string">let g:VM_maps                       = &#123;&#125;</span></span><br><span class="line"><span class="string">let g:VM_maps[&#x27;Find Under&#x27;]         = &#x27;&lt;C-j&gt;&#x27;</span></span><br><span class="line"><span class="string">let g:VM_maps[&#x27;Find Subword Under&#x27;] = &#x27;&lt;C-j&gt;&#x27;</span></span><br><span class="line"><span class="string">&quot;</span>最近打开文件</span><br><span class="line">Plug <span class="string">&#x27;mhinz/vim-startify&#x27;</span></span><br><span class="line"><span class="string">&quot;任务栏美化</span></span><br><span class="line"><span class="string">Plug &#x27;vim-airline/vim-airline&#x27;</span></span><br><span class="line"><span class="string">&quot;</span>自动括号</span><br><span class="line">Plug <span class="string">&#x27;jiangmiao/auto-pairs&#x27;</span></span><br><span class="line"><span class="string">&quot;彩虹括号</span></span><br><span class="line"><span class="string">Plug &#x27;luochen1990/rainbow&#x27;</span></span><br><span class="line"><span class="string">let g:rainbow_active = 1</span></span><br><span class="line"><span class="string">Plug &#x27;preservim/nerdtree&#x27;</span></span><br><span class="line"><span class="string">map &lt;C-n&gt; :NERDTreeToggle&lt;CR&gt;</span></span><br><span class="line"><span class="string">&quot;</span>vim-sneak</span><br><span class="line">Plug <span class="string">&#x27;justinmk/vim-sneak&#x27;</span></span><br><span class="line">let g:sneak<span class="meta">#label = 1</span></span><br><span class="line"><span class="string">&quot;vim-surround</span></span><br><span class="line"><span class="string">Plug &#x27;tpope/vim-surround&#x27;</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">&quot;</span>vim-commentary</span><br><span class="line">Plug <span class="string">&#x27;tpope/vim-commentary&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="string">&quot;theme</span></span><br><span class="line"><span class="string">Plug &#x27;joshdick/onedark.vim&#x27;</span></span><br><span class="line"><span class="string">Plug &#x27;sainnhe/edge&#x27;</span></span><br><span class="line"><span class="string">Plug &#x27;rakr/vim-one&#x27;</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">&quot;</span>coc.nvim</span><br><span class="line">Plug <span class="string">&#x27;neoclide/coc.nvim&#x27;</span>, &#123;<span class="string">&#x27;branch&#x27;</span>: <span class="string">&#x27;release&#x27;</span>&#125;</span><br><span class="line"></span><br><span class="line">Plug <span class="string">&#x27;easymotion/vim-easymotion&#x27;</span></span><br><span class="line"><span class="string">&quot; 代码格式化 nvim需要单独安装python</span></span><br><span class="line"><span class="string">Plug &#x27;vim-autoformat/vim-autoformat&#x27;</span></span><br><span class="line"><span class="string">Plug &#x27;vim-scripts/argtextobj.vim&#x27;</span></span><br><span class="line"><span class="string">call plug#end()</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">&quot;</span>不知道为什么全局的配置用不了，只能牺牲一点点性能</span><br><span class="line"><span class="string">&quot; clang-format -style=google -dump-config &gt; .clang-format 把谷歌风格生成到文件里</span></span><br><span class="line"><span class="string">&quot;</span> 自动拷贝根目录下的 .clang-format 文件到当前目录</span><br><span class="line"><span class="string">&quot;</span></span><br><span class="line"><span class="string">&quot;</span> augroup copy_clang_format</span><br><span class="line"><span class="string">&quot;   autocmd!</span></span><br><span class="line"><span class="string">&quot;</span>   autocmd BufNewFile,BufRead *.c,*.cpp execute <span class="string">&#x27;silent! !cp /home/grxer/.clang-format &#x27;</span> . expand(<span class="string">&#x27;%:p:h&#x27;</span>) . <span class="string">&#x27;/.clang-format&#x27;</span></span><br><span class="line"><span class="string">&quot; augroup END</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">&quot;</span>把格式换该行绑定到f4</span><br><span class="line">noremap &lt;F4&gt; :AutoformatLine&lt;CR&gt;</span><br><span class="line"></span><br><span class="line"><span class="string">&quot; 设置主体</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">if has(&quot;</span>termguicolors<span class="string">&quot;)</span></span><br><span class="line"><span class="string">    set termguicolors</span></span><br><span class="line"><span class="string">endif</span></span><br><span class="line"><span class="string">&quot;</span> 晚上<span class="number">10</span>点到早上<span class="number">7</span>点用黑色</span><br><span class="line"><span class="string">&quot; if strftime(&quot;</span>%H<span class="string">&quot;) &gt;= 23 || strftime(&quot;</span>%H<span class="string">&quot;) &lt;= 7</span></span><br><span class="line"><span class="string">    let g:current_colorscheme = &quot;</span>onedark<span class="string">&quot;</span></span><br><span class="line"><span class="string">    &quot;</span> let g:onedark_terminal_italics=<span class="number">1</span></span><br><span class="line">    let g:oedark_hide_endofbuffer=<span class="number">1</span></span><br><span class="line">    let g:onedark_termcolors=<span class="number">1</span></span><br><span class="line">    <span class="built_in">set</span> background=dark</span><br><span class="line">    colorscheme onedark</span><br><span class="line"><span class="string">&quot;else</span></span><br><span class="line"><span class="string">&quot;</span>    <span class="keyword">if</span> (empty($TMUX))</span><br><span class="line"><span class="string">&quot;      if (has(&quot;</span>nvim<span class="string">&quot;))</span></span><br><span class="line"><span class="string">&quot;</span>        <span class="string">&quot;For Neovim 0.1.3 and 0.1.4 &lt; https://github.com/neovim/neovim/pull/2198 &gt;</span></span><br><span class="line"><span class="string">&quot;</span>        let $NVIM_TUI_ENABLE_TRUE_COLOR=<span class="number">1</span></span><br><span class="line"><span class="string">&quot;      endif</span></span><br><span class="line"><span class="string">&quot;</span>      <span class="string">&quot;For Neovim &gt; 0.1.5 and Vim &gt; patch 7.4.1799 &lt; https://github.com/vim/vim/commit/61be73bb0f965a895bfb064ea3e55476ac175162 &gt;</span></span><br><span class="line"><span class="string">&quot;</span>      <span class="string">&quot;Based on Vim patch 7.4.1770 (`guicolors` option) &lt; https://github.com/vim/vim/commit/8a633e3427b47286869aa4b96f2bfc1fe65b25cd &gt;</span></span><br><span class="line"><span class="string">&quot;</span>      <span class="string">&quot; &lt; https://github.com/neovim/neovim/wiki/Following-HEAD#20160511 &gt;</span></span><br><span class="line"><span class="string">&quot;</span>      <span class="keyword">if</span> (has(<span class="string">&quot;termguicolors&quot;</span>))</span><br><span class="line"><span class="string">&quot;        set termguicolors</span></span><br><span class="line"><span class="string">&quot;</span>      endif</span><br><span class="line"><span class="string">&quot;    endif</span></span><br><span class="line"><span class="string">&quot;</span>    let g:current_colorscheme = <span class="string">&quot;one&quot;</span></span><br><span class="line"><span class="string">&quot;    set background=light</span></span><br><span class="line"><span class="string">&quot;</span>    let g:one_allow_italics = <span class="number">1</span> </span><br><span class="line"><span class="string">&quot;    colorscheme one</span></span><br><span class="line"><span class="string">&quot;</span>endif</span><br><span class="line"></span><br><span class="line"><span class="string">&quot; 切换主题函数</span></span><br><span class="line"><span class="string">function! ToggleColorscheme()</span></span><br><span class="line"><span class="string">  if g:current_colorscheme == &quot;</span>onedark<span class="string">&quot;</span></span><br><span class="line"><span class="string">    let g:current_colorscheme = &quot;</span>one<span class="string">&quot;</span></span><br><span class="line"><span class="string">    set background=light</span></span><br><span class="line"><span class="string">    let g:one_allow_italics = 1 </span></span><br><span class="line"><span class="string">    &quot;</span>Credit joshdick</span><br><span class="line">    <span class="string">&quot;Use 24-bit (true-color) mode in Vim/Neovim when outside tmux.</span></span><br><span class="line"><span class="string">    &quot;</span>If yo<span class="string">u&#x27;re using tmux version 2.2 or later, you can remove the outermost $TMUX check and use tmux&#x27;</span>s <span class="number">24</span>-bit color support</span><br><span class="line">    <span class="string">&quot;(see &lt; http://sunaku.github.io/tmux-24bit-color.html#usage &gt; for more information.)</span></span><br><span class="line"><span class="string">    if (empty($TMUX))</span></span><br><span class="line"><span class="string">      if (has(&quot;</span>nvim<span class="string">&quot;))</span></span><br><span class="line"><span class="string">        &quot;</span>For Neovim <span class="number">0.1</span><span class="number">.3</span> and <span class="number">0.1</span><span class="number">.4</span> &lt; https:<span class="comment">//github.com/neovim/neovim/pull/2198 &gt;</span></span><br><span class="line">        let $NVIM_TUI_ENABLE_TRUE_COLOR=<span class="number">1</span></span><br><span class="line">      endif</span><br><span class="line">      <span class="string">&quot;For Neovim &gt; 0.1.5 and Vim &gt; patch 7.4.1799 &lt; https://github.com/vim/vim/commit/61be73bb0f965a895bfb064ea3e55476ac175162 &gt;</span></span><br><span class="line"><span class="string">      &quot;</span>Based on Vim patch <span class="number">7.4</span><span class="number">.1770</span> (`guicolors` option) &lt; https:<span class="comment">//github.com/vim/vim/commit/8a633e3427b47286869aa4b96f2bfc1fe65b25cd &gt;</span></span><br><span class="line">      <span class="string">&quot; &lt; https://github.com/neovim/neovim/wiki/Following-HEAD#20160511 &gt;</span></span><br><span class="line"><span class="string">      if (has(&quot;</span>termguicolors<span class="string">&quot;))</span></span><br><span class="line"><span class="string">        set termguicolors</span></span><br><span class="line"><span class="string">      endif</span></span><br><span class="line"><span class="string">    endif</span></span><br><span class="line"><span class="string">    colorscheme one </span></span><br><span class="line"><span class="string">  else</span></span><br><span class="line"><span class="string">    let g:current_colorscheme = &quot;</span>onedark<span class="string">&quot;</span></span><br><span class="line"><span class="string">    let g:onedark_terminal_italics=1</span></span><br><span class="line"><span class="string">    let g:oedark_hide_endofbuffer=1</span></span><br><span class="line"><span class="string">    let g:onedark_termcolors=1</span></span><br><span class="line"><span class="string">    set background=dark</span></span><br><span class="line"><span class="string">    &quot;</span>Use <span class="number">24</span>-bit (<span class="literal">true</span>-color) mode in Vim/Neovim when outside tmux.</span><br><span class="line">    <span class="string">&quot;If you&#x27;re using tmux version 2.2 or later, you can remove the outermost $TMUX check and use tmux&#x27;s 24-bit color support</span></span><br><span class="line"><span class="string">    &quot;</span>(see &lt; http:<span class="comment">//sunaku.github.io/tmux-24bit-color.html#usage &gt; for more information.)</span></span><br><span class="line">    <span class="keyword">if</span> (empty($TMUX))</span><br><span class="line">      <span class="keyword">if</span> (has(<span class="string">&quot;nvim&quot;</span>))</span><br><span class="line">        <span class="string">&quot;For Neovim 0.1.3 and 0.1.4 &lt; https://github.com/neovim/neovim/pull/2198 &gt;</span></span><br><span class="line"><span class="string">        let $NVIM_TUI_ENABLE_TRUE_COLOR=1</span></span><br><span class="line"><span class="string">      endif</span></span><br><span class="line"><span class="string">      &quot;</span>For Neovim &gt; <span class="number">0.1</span><span class="number">.5</span> and Vim &gt; patch <span class="number">7.4</span><span class="number">.1799</span> &lt; https:<span class="comment">//github.com/vim/vim/commit/61be73bb0f965a895bfb064ea3e55476ac175162 &gt;</span></span><br><span class="line">      <span class="string">&quot;Based on Vim patch 7.4.1770 (`guicolors` option) &lt; https://github.com/vim/vim/commit/8a633e3427b47286869aa4b96f2bfc1fe65b25cd &gt;</span></span><br><span class="line"><span class="string">      &quot;</span> &lt; https:<span class="comment">//github.com/neovim/neovim/wiki/Following-HEAD#20160511 &gt;</span></span><br><span class="line">      <span class="keyword">if</span> (has(<span class="string">&quot;termguicolors&quot;</span>))</span><br><span class="line">        <span class="built_in">set</span> termguicolors</span><br><span class="line">      endif</span><br><span class="line">    endif</span><br><span class="line">    colorscheme onedark </span><br><span class="line">  endif</span><br><span class="line">endfunction</span><br><span class="line"></span><br><span class="line"><span class="string">&quot; 设置快捷键切换主题</span></span><br><span class="line"><span class="string">nnoremap &lt;C-F6&gt; :call ToggleColorscheme()&lt;CR&gt;</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">&quot;</span> <span class="string">&quot;cocnvim配置</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">&quot;</span>用tab和shitft tab来切换提示，回车补全</span><br><span class="line"><span class="string">&quot; Use tab for trigger completion with characters ahead and navigate</span></span><br><span class="line"><span class="string">&quot;</span> NOTE: There<span class="number">&#x27;</span>s always complete item selected by <span class="keyword">default</span>, you may want to enable</span><br><span class="line"><span class="string">&quot; no select by `&quot;</span>suggest.noselect<span class="string">&quot;: true` in your configuration file</span></span><br><span class="line"><span class="string">&quot;</span> NOTE: Use command <span class="string">&#x27;:verbose imap &lt;tab&gt;&#x27;</span> to make sure tab is not mapped by</span><br><span class="line"><span class="string">&quot; other plugin before putting this into your config</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">&quot;</span>将选择下一个提示改为tab</span><br><span class="line"><span class="string">&quot; inoremap &lt;silent&gt;&lt;expr&gt; &lt;TAB&gt;</span></span><br><span class="line"><span class="string">&quot;</span>       \ coc<span class="meta">#pum#visible() ? coc#pum#next(1) :</span></span><br><span class="line"><span class="string">&quot;       \ CheckBackspace() ? &quot;</span>\&lt;Tab&gt;<span class="string">&quot; :</span></span><br><span class="line"><span class="string">&quot;</span>       \ coc<span class="meta">#refresh()</span></span><br><span class="line"></span><br><span class="line"><span class="string">&quot;将shift tab改为上一个补全</span></span><br><span class="line"><span class="string">inoremap &lt;expr&gt;&lt;S-TAB&gt; coc#pum#visible() ? coc#pum#prev(1) : &quot;</span>\&lt;C-h&gt;<span class="string">&quot;</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">&quot;</span> Make &lt;CR&gt; to accept selected completion item or notify coc.nvim to format</span><br><span class="line"><span class="string">&quot; &lt;C-g&gt;u breaks current undo, please make your own choice</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">&quot;</span>回车补全</span><br><span class="line"><span class="string">&quot; inoremap &lt;silent&gt;&lt;expr&gt; &lt;CR&gt; coc#pum#visible() ? coc#pum#confirm()</span></span><br><span class="line"><span class="string">                              &quot;</span> \: <span class="string">&quot;\&lt;C-g&gt;u\&lt;CR&gt;\&lt;c-r&gt;=coc#on_enter()\&lt;CR&gt;&quot;</span></span><br><span class="line"><span class="string">&quot;tab补全修改为 ctrl j和ctrl k左右移动参数</span></span><br><span class="line"><span class="string">inoremap &lt;silent&gt;&lt;expr&gt; &lt;TAB&gt;</span></span><br><span class="line"><span class="string">      \ pumvisible() ? &quot;</span>\&lt;C-y&gt;<span class="string">&quot; :</span></span><br><span class="line"><span class="string">      \ CheckBackspace() ? &quot;</span>\&lt;Tab&gt;<span class="string">&quot; :</span></span><br><span class="line"><span class="string">      \ &quot;</span>\&lt;TAB&gt;<span class="string">&quot;</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">function! CheckBackspace() abort</span></span><br><span class="line"><span class="string">  let col = col(&#x27;.&#x27;) - 1</span></span><br><span class="line"><span class="string">  return !col || getline(&#x27;.&#x27;)[col - 1]  =~# &#x27;\s&#x27;</span></span><br><span class="line"><span class="string">endfunction</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">&quot;</span>cocnvim config</span><br><span class="line"></span><br><span class="line"><span class="string">&quot; Having longer updatetime (default is 4000 ms = 4s) leads to noticeable</span></span><br><span class="line"><span class="string">&quot;</span> delays and poor user experience</span><br><span class="line"><span class="string">&quot; 使用提示更快</span></span><br><span class="line"><span class="string">set updatetime=200</span></span><br><span class="line"><span class="string">&quot;</span> Always show the signcolumn, otherwise it would shift the text each time</span><br><span class="line"><span class="string">&quot; diagnostics appear/become resolved</span></span><br><span class="line"><span class="string">set signcolumn=yes</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">&quot;</span>ctrl o 提示补全</span><br><span class="line">inoremap &lt;silent&gt;&lt;expr&gt; &lt;c-o&gt; coc<span class="meta">#refresh()</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="string">&quot;用空格+和空格-查找代码报错</span></span><br><span class="line"><span class="string">nmap &lt;silent&gt; &lt;space&gt;- &lt;Plug&gt;(coc-diagnostic-prev)</span></span><br><span class="line"><span class="string">nmap &lt;silent&gt; &lt;space&gt;= &lt;Plug&gt;(coc-diagnostic-next)</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">&quot;</span>转到函数声明定义引用等</span><br><span class="line"><span class="string">&quot; GoTo code navigation</span></span><br><span class="line"><span class="string">nmap &lt;silent&gt; gd &lt;Plug&gt;(coc-definition)</span></span><br><span class="line"><span class="string">nmap &lt;silent&gt; gy &lt;Plug&gt;(coc-type-definition)</span></span><br><span class="line"><span class="string">nmap &lt;silent&gt; gi &lt;Plug&gt;(coc-implementation)</span></span><br><span class="line"><span class="string">nmap &lt;silent&gt; gr &lt;Plug&gt;(coc-references)</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">&quot;</span>g+h显示函数等的帮助文档</span><br><span class="line">nnoremap &lt;silent&gt; gh :call ShowDocumentation()&lt;CR&gt;</span><br><span class="line"></span><br><span class="line">function! ShowDocumentation()</span><br><span class="line">  <span class="keyword">if</span> CocAction(<span class="string">&#x27;hasProvider&#x27;</span>, <span class="string">&#x27;hover&#x27;</span>)</span><br><span class="line">    call CocActionAsync(<span class="string">&#x27;doHover&#x27;</span>)</span><br><span class="line">  <span class="keyword">else</span></span><br><span class="line">    call feedkeys(<span class="string">&#x27;K&#x27;</span>, <span class="string">&#x27;in&#x27;</span>)</span><br><span class="line">  endif</span><br><span class="line">endfunction</span><br><span class="line"></span><br><span class="line"><span class="string">&quot;高亮光标处所有一样的词</span></span><br><span class="line"><span class="string">&quot;</span> Highlight the symbol and its references when holding the cursor</span><br><span class="line">autocmd CursorHold * silent call CocActionAsync(<span class="string">&#x27;highlight&#x27;</span>)</span><br><span class="line"></span><br><span class="line"><span class="string">&quot;重命名变量 leader默认是\ 把他改为了空格</span></span><br><span class="line"><span class="string">&quot;</span> Symbol renaming</span><br><span class="line">let mapleader=<span class="string">&quot; &quot;</span></span><br><span class="line">nmap &lt;leader&gt;rn &lt;Plug&gt;(coc-rename)</span><br><span class="line"></span><br><span class="line"><span class="string">&quot;空格f空格 格式化化代码，不过tab缩进是2 不知道怎么改 </span></span><br><span class="line"><span class="string">&quot;</span> Formatting selected code</span><br><span class="line"><span class="string">&quot; xmap &lt;leader&gt;f  &lt;Plug&gt;(coc-format-selected)</span></span><br><span class="line"><span class="string">&quot;</span> nmap &lt;leader&gt;f  &lt;Plug&gt;(coc-format-selected)</span><br><span class="line"></span><br><span class="line"><span class="string">&quot; Applying code actions to the selected code block</span></span><br><span class="line"><span class="string">&quot;</span> Example: `&lt;leader&gt;aap` <span class="keyword">for</span> current paragraph</span><br><span class="line">xmap &lt;leader&gt;a  &lt;Plug&gt;(coc-codeaction-selected)</span><br><span class="line">nmap &lt;leader&gt;a  &lt;Plug&gt;(coc-codeaction-selected)</span><br><span class="line"></span><br><span class="line"><span class="string">&quot;快速选中函数里的或类类的东西,a和i的区别就是选中和不选中函数或类名字</span></span><br><span class="line"><span class="string">&quot;</span> Map function and class text objects</span><br><span class="line"><span class="string">&quot; NOTE: Requires &#x27;textDocument.documentSymbol&#x27; support from the language server</span></span><br><span class="line"><span class="string">xmap if &lt;Plug&gt;(coc-funcobj-i)</span></span><br><span class="line"><span class="string">omap if &lt;Plug&gt;(coc-funcobj-i)</span></span><br><span class="line"><span class="string">xmap af &lt;Plug&gt;(coc-funcobj-a)</span></span><br><span class="line"><span class="string">omap af &lt;Plug&gt;(coc-funcobj-a)</span></span><br><span class="line"><span class="string">xmap ic &lt;Plug&gt;(coc-classobj-i)</span></span><br><span class="line"><span class="string">omap ic &lt;Plug&gt;(coc-classobj-i)</span></span><br><span class="line"><span class="string">xmap ac &lt;Plug&gt;(coc-classobj-a)</span></span><br><span class="line"><span class="string">omap ac &lt;Plug&gt;(coc-classobj-a)</span></span><br></pre></td></tr></table></figure>
+
+<p>PlugInstall</p>
+<h4 id="Ubuntu16安装cocnvim"><a href="#Ubuntu16安装cocnvim" class="headerlink" title="Ubuntu16安装cocnvim"></a>Ubuntu16安装cocnvim</h4><p>先添加源升级vim8</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">sudo add-apt-repository ppa:jonathonf/vim</span><br><span class="line">sudo apt-get update</span><br><span class="line">sudo apt-get install vim</span><br></pre></td></tr></table></figure>
+
+<p>clangd添加源安装</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">vim  /etc/apt/sources.<span class="built_in">list</span>添加下面的源</span><br><span class="line">deb http:<span class="comment">//apt.llvm.org/xenial/ llvm-toolchain-xenial main</span></span><br><span class="line">deb-src http:<span class="comment">//apt.llvm.org/xenial/ llvm-toolchain-xenial main</span></span><br><span class="line">如果签名错误 W: GPG error: https:<span class="comment">//apt.llvm.org/xenial llvm-toolchain-xenial InRelease: The following signatures couldn&#x27;t be verified because the public key is not available: NO_PUBKEY 15CF4D18AF4F7421</span></span><br><span class="line">执行</span><br><span class="line">wget -O - https:<span class="comment">//apt.llvm.org/llvm-snapshot.gpg.key|sudo apt-key add -</span></span><br><span class="line">sudo apt-get update</span><br><span class="line">sudo apt-get install clangd</span><br></pre></td></tr></table></figure>
+
+<p>卸载</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">sudo apt install ppa-purge &amp;&amp; sudo ppa-purge ppa:jonathonf/vim</span><br></pre></td></tr></table></figure>
+
+<h2 id="vs2022"><a href="#vs2022" class="headerlink" title="vs2022"></a>vs2022</h2><figure class="highlight c"><table><tr><td class="code"><pre><span class="line">inoremap jk &lt;ESC&gt;</span><br><span class="line">nmap &lt;C-O&gt; :vsc View.NavigateBackward&lt;CR&gt;</span><br><span class="line">nmap &lt;C-I&gt; :vsc View.NavigateForward&lt;CR&gt;</span><br><span class="line">nmap gd :vsc Edit.GoToDefinition&lt;CR&gt;</span><br><span class="line">nmap gh :vsc Edit.QuickInfo&lt;CR&gt;</span><br><span class="line">nnoremap &lt;s-k&gt; gt</span><br><span class="line">nnoremap &lt;s-J&gt; gT</span><br><span class="line">nnoremap &lt;S-q&gt; :q!&lt;CR&gt;</span><br></pre></td></tr></table></figure>
+
+<h2 id="ideavim"><a href="#ideavim" class="headerlink" title="ideavim"></a>ideavim</h2><figure class="highlight c"><table><tr><td class="code"><pre><span class="line">inoremap jk &lt;ESC&gt;</span><br><span class="line"><span class="built_in">set</span> sneak</span><br><span class="line"><span class="built_in">set</span> surround</span><br><span class="line"><span class="built_in">set</span> commentary</span><br><span class="line"><span class="built_in">set</span> argtextobj</span><br><span class="line"><span class="built_in">set</span> hlsearch</span><br><span class="line"><span class="built_in">set</span> smartcase</span><br><span class="line"><span class="built_in">set</span> scrolloff=<span class="number">5</span></span><br><span class="line"><span class="built_in">set</span> cursorline</span><br><span class="line"><span class="built_in">set</span> expandtab</span><br><span class="line"><span class="built_in">set</span> cindent</span><br><span class="line"><span class="built_in">set</span> autoindento</span><br><span class="line">let mapleader=<span class="string">&quot; &quot;</span></span><br><span class="line">Plug <span class="string">&#x27;preservim/nerdtree&#x27;</span></span><br><span class="line">Plug <span class="string">&#x27;vim-easymotion&#x27;</span></span><br><span class="line"><span class="built_in">map</span> &lt;C-n&gt; :NERDTreeToggle&lt;CR&gt;</span><br><span class="line"><span class="built_in">set</span> clipboard+=unnamed</span><br><span class="line"><span class="built_in">set</span> incsearch</span><br><span class="line"><span class="built_in">map</span> &lt;Leader&gt; &lt;Plug&gt;(easymotion-prefix)</span><br><span class="line"><span class="built_in">map</span> &lt;leader&gt;rn &lt;Action&gt;(RenameElement)</span><br><span class="line"><span class="built_in">map</span> gp &lt;Action&gt;(ParameterInfo)  </span><br><span class="line"><span class="built_in">map</span> gh &lt;Action&gt;(ShowErrorDescription)</span><br><span class="line"><span class="built_in">map</span> gi &lt;Action&gt;(QuickImplementations)</span><br><span class="line"><span class="built_in">map</span> gm &lt;Action&gt;(QuickJavaDoc)</span><br><span class="line"><span class="built_in">set</span> noerrorbells</span><br><span class="line"><span class="built_in">set</span> visualbell</span><br><span class="line"><span class="built_in">set</span> showmode</span><br><span class="line">nnoremap &lt;s-k&gt; gt</span><br><span class="line">nnoremap &lt;s-J&gt; gT</span><br><span class="line">nnoremap &lt;S-q&gt; :q!&lt;CR&gt;</span><br><span class="line">nnoremap == :&lt;C-u&gt;action ReformatCode&lt;CR&gt;</span><br></pre></td></tr></table></figure>
+
+<h2 id="vim–-gt-neovim"><a href="#vim–-gt-neovim" class="headerlink" title="vim–&gt;neovim"></a>vim–&gt;neovim</h2><p>9.0</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">sudo snap install nvim  --classic</span><br></pre></td></tr></table></figure>
+
+<p><a target="_blank" rel="noopener" href="https://neovim.io/doc/user/nvim.html#nvim-from-vim">https://neovim.io/doc/user/nvim.html#nvim-from-vim</a></p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">sudo apt install neovim</span><br><span class="line">mkdir -p ~/.config/nvim/</span><br><span class="line">touch init.vim    </span><br></pre></td></tr></table></figure>
+
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">nvim init.vim</span><br><span class="line">:exe <span class="string">&#x27;edit &#x27;</span>.stdpath(<span class="string">&#x27;config&#x27;</span>)<span class="number">.&#x27;</span>/init.vim<span class="number">&#x27;</span></span><br><span class="line">:write ++p</span><br></pre></td></tr></table></figure>
+
+<p>复制到init.vim</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="built_in">set</span> runtimepath^=~/.vim runtimepath+=~/.vim/after</span><br><span class="line">let &amp;packpath = &amp;runtimepath</span><br><span class="line">source ~/.vimrc</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">cd ~/.local/share/nvim</span><br><span class="line">ln -s ~/.vim/plugged/ ./plugged</span><br></pre></td></tr></table></figure>
+
+<p>创建个符号链接vi启动nvim</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">cd /usr/bin</span><br><span class="line">sudo rm vi</span><br><span class="line">sudo ln -s nvim vi</span><br></pre></td></tr></table></figure>
+
+
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+         
+          <li><a href="/">Home</a></li>
+         
+          <li><a href="/archives/">Writing</a></li>
+         
+          <li><a href="/search/">Search</a></li>
+         
+          <li><a href="/tags/">Tag</a></li>
+         
+          <li><a href="/about/">About</a></li>
+        
+      </ul>
+    </div>
+
+    <div id="toc-footer" style="display: none">
+      <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#VIM"><span class="toc-number">1.</span> <span class="toc-text">VIM</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#VSCODE-vim"><span class="toc-number">1.1.</span> <span class="toc-text">VSCODE vim</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#nomal%E6%A8%A1%E5%BC%8F"><span class="toc-number">1.1.1.</span> <span class="toc-text">nomal模式</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%85%89%E6%A0%87%E7%A7%BB%E5%8A%A8"><span class="toc-number">1.1.1.1.</span> <span class="toc-text">光标移动</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%BB%84%E5%90%88"><span class="toc-number">1.1.1.2.</span> <span class="toc-text">组合</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#VISUAL%E6%A8%A1%E5%BC%8F"><span class="toc-number">1.1.2.</span> <span class="toc-text">VISUAL模式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%85%B6%E4%BB%96"><span class="toc-number">1.1.3.</span> <span class="toc-text">其他</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#VIM-1"><span class="toc-number">1.2.</span> <span class="toc-text">VIM</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Ubuntu16%E5%AE%89%E8%A3%85cocnvim"><span class="toc-number">1.2.0.1.</span> <span class="toc-text">Ubuntu16安装cocnvim</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#vs2022"><span class="toc-number">1.3.</span> <span class="toc-text">vs2022</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#ideavim"><span class="toc-number">1.4.</span> <span class="toc-text">ideavim</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#vim%E2%80%93-gt-neovim"><span class="toc-number">1.5.</span> <span class="toc-text">vim–&gt;neovim</span></a></li></ol></li></ol>
+    </div>
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://grxer.gitee.io/2023/04/30/VIM/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://grxer.gitee.io/2023/04/30/VIM/&text=VIM"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://grxer.gitee.io/2023/04/30/VIM/&title=VIM"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://grxer.gitee.io/2023/04/30/VIM/&is_video=false&description=VIM"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=VIM&body=Check out this article: https://grxer.gitee.io/2023/04/30/VIM/"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://grxer.gitee.io/2023/04/30/VIM/&title=VIM"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://grxer.gitee.io/2023/04/30/VIM/&title=VIM"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://grxer.gitee.io/2023/04/30/VIM/&title=VIM"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://grxer.gitee.io/2023/04/30/VIM/&title=VIM"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://grxer.gitee.io/2023/04/30/VIM/&name=VIM&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://grxer.gitee.io/2023/04/30/VIM/&t=VIM"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fas fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
+        <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fas fa-list fa-lg" aria-hidden="true"></i> TOC</a>
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fas fa-share-alt fa-lg" aria-hidden="true"></i> Share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2023-2024
+    bxz
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a href="/search/">Search</a></li><!--
+     --><!--
+       --><li><a href="/tags/">Tag</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+ 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script> 
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script> 
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"Copy to clipboard!\">";
+    btn += '<i class="far fa-clone"></i>';
+    btn += '</span>'; 
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "Copied!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Google Analytics -->
+
+<!-- Baidu Analytics -->
+
+  <script type="text/javascript">
+        var _hmt = _hmt || [];
+        (function() {
+          var hm = document.createElement("script");
+          hm.src = "https://hm.baidu.com/hm.js?a22ef0bec4e4a9c7337bea6e37ff55c1";
+          var s = document.getElementsByTagName("script")[0];
+          s.parentNode.insertBefore(hm, s);
+        })();
+        </script>
+
+<!-- Cloudflare Analytics -->
+
+<!-- Umami Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+</body>
+</html>

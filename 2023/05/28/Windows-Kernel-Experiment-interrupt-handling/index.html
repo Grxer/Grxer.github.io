@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="baidu-site-verification" content="codeva-ROfYcqLkCh" />
+    <meta name="msvalidate.01" content="ECA3E06A0E52A2AC90C4B06F12981FB2" />
+    <meta name="description" content="Windows内核实验:中断现场(Interrupt Handling)!!!windbg调试器给我们的信息可能是不准确的，中断断下来后，调试子系统需要通过串口发送给调试器，这期间有些寄存器的值就变了，比较准确的方法就是在r0里写汇编，返回给我们数据 #include &lt;stdio.h&gt;#include &lt;stdlib.h&gt;#include &lt;windows.h&amp;gt">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Windows内核实验:中断现场(Interrupt Handling)">
+<meta property="og:url" content="https://grxer.gitee.io/2023/05/28/Windows-Kernel-Experiment-interrupt-handling/index.html">
+<meta property="og:site_name" content="Grxer&#39;s Blog">
+<meta property="og:description" content="Windows内核实验:中断现场(Interrupt Handling)!!!windbg调试器给我们的信息可能是不准确的，中断断下来后，调试子系统需要通过串口发送给调试器，这期间有些寄存器的值就变了，比较准确的方法就是在r0里写汇编，返回给我们数据 #include &lt;stdio.h&gt;#include &lt;stdlib.h&gt;#include &lt;windows.h&amp;gt">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://grxer.gitee.io/2023/05/28/Windows-Kernel-Experiment-interrupt-handling/image-20230528174545899.png">
+<meta property="og:image" content="https://grxer.gitee.io/2023/05/28/Windows-Kernel-Experiment-interrupt-handling/image-20230528172940147.png">
+<meta property="og:image" content="https://grxer.gitee.io/2023/05/28/Windows-Kernel-Experiment-interrupt-handling/image-20230528175556760.png">
+<meta property="og:image" content="https://grxer.gitee.io/2023/05/28/Windows-Kernel-Experiment-interrupt-handling/image-20230528225918572.png">
+<meta property="og:image" content="https://grxer.gitee.io/2023/05/28/Windows-Kernel-Experiment-interrupt-handling/image-20230527235756049.png">
+<meta property="og:image" content="https://grxer.gitee.io/2023/05/28/Windows-Kernel-Experiment-interrupt-handling/image-20230528001616020.png">
+<meta property="og:image" content="https://grxer.gitee.io/2023/05/28/Windows-Kernel-Experiment-interrupt-handling/image-20230528001515527.png">
+<meta property="article:published_time" content="2023-05-28T10:36:37.000Z">
+<meta property="article:modified_time" content="2023-10-16T15:03:16.307Z">
+<meta property="article:author" content="bxz">
+<meta property="article:tag" content="Windows Kernel Experiment">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://grxer.gitee.io/2023/05/28/Windows-Kernel-Experiment-interrupt-handling/image-20230528174545899.png">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
+    
+    <!-- title -->
+    <title>Windows内核实验:中断现场(Interrupt Handling)</title>
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+		<script type="text/x-mathjax-config">
+		  MathJax.Hub.Config({
+			tex2jax: {
+			  skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+			  inlineMath: [['$','$']]
+			}
+		  });
+		</script>
+		<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-MML-AM_CHTML' async></script>
+	
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+<body class="max-width mx-auto px3 lrt">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="Menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="Menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="Top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fas fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a href="/search/">Search</a></li><!--
+     --><!--
+       --><li><a href="/tags/">Tag</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" aria-label="Previous post" href="/2023/05/29/Windows-Kernel-Experiment-Open-interrupt-API-call/"><i class="fas fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" aria-label="Next post" href="/2023/05/26/Windows-Kernel-Experiment-Interrupt-Privilege-Escalation/"><i class="fas fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="Back to top" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="Share post" href="#"><i class="fas fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://grxer.gitee.io/2023/05/28/Windows-Kernel-Experiment-interrupt-handling/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://grxer.gitee.io/2023/05/28/Windows-Kernel-Experiment-interrupt-handling/&text=Windows内核实验:中断现场(Interrupt Handling)"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://grxer.gitee.io/2023/05/28/Windows-Kernel-Experiment-interrupt-handling/&title=Windows内核实验:中断现场(Interrupt Handling)"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://grxer.gitee.io/2023/05/28/Windows-Kernel-Experiment-interrupt-handling/&is_video=false&description=Windows内核实验:中断现场(Interrupt Handling)"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Windows内核实验:中断现场(Interrupt Handling)&body=Check out this article: https://grxer.gitee.io/2023/05/28/Windows-Kernel-Experiment-interrupt-handling/"><i class="fas fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://grxer.gitee.io/2023/05/28/Windows-Kernel-Experiment-interrupt-handling/&title=Windows内核实验:中断现场(Interrupt Handling)"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://grxer.gitee.io/2023/05/28/Windows-Kernel-Experiment-interrupt-handling/&title=Windows内核实验:中断现场(Interrupt Handling)"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://grxer.gitee.io/2023/05/28/Windows-Kernel-Experiment-interrupt-handling/&title=Windows内核实验:中断现场(Interrupt Handling)"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://grxer.gitee.io/2023/05/28/Windows-Kernel-Experiment-interrupt-handling/&title=Windows内核实验:中断现场(Interrupt Handling)"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://grxer.gitee.io/2023/05/28/Windows-Kernel-Experiment-interrupt-handling/&name=Windows内核实验:中断现场(Interrupt Handling)&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://grxer.gitee.io/2023/05/28/Windows-Kernel-Experiment-interrupt-handling/&t=Windows内核实验:中断现场(Interrupt Handling)"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    <div id="toc">
+      <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Windows%E5%86%85%E6%A0%B8%E5%AE%9E%E9%AA%8C-%E4%B8%AD%E6%96%AD%E7%8E%B0%E5%9C%BA-Interrupt-Handling"><span class="toc-number">1.</span> <span class="toc-text">Windows内核实验:中断现场(Interrupt Handling)</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#ds%E4%B8%BA%E4%BB%80%E4%B9%88%E8%BF%98%E6%98%AF23%EF%BC%8C%E6%B2%A1%E6%9C%89%E6%8F%90%E5%8D%87%E5%88%B0%E5%86%85%E6%A0%B8"><span class="toc-number">1.0.1.</span> <span class="toc-text">ds为什么还是23，没有提升到内核?</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#eflags%E5%8F%98%E5%8C%96"><span class="toc-number">1.0.2.</span> <span class="toc-text">eflags变化?</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#cs%E6%AE%B5%E9%80%89%E6%8B%A9%E5%AD%90%E4%B8%BA%E4%BB%80%E4%B9%88%E4%BC%9A%E6%98%AF8%EF%BC%9F"><span class="toc-number">1.0.3.</span> <span class="toc-text">cs段选择子为什么会是8？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#ss%E5%92%8Csp%E6%98%AF%E6%80%8E%E4%B9%88%E6%9D%A5%E7%9A%84%E5%91%A2%EF%BC%9F"><span class="toc-number">1.0.4.</span> <span class="toc-text">ss和sp是怎么来的呢？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88esp%E6%A0%88%E9%A1%B6%E6%8F%90%E5%8D%87%E4%BA%860x14%EF%BC%8C%E6%A0%88%E9%87%8C%E5%8E%8B%E4%BA%865%E4%B8%AA%E4%BB%80%E4%B9%88"><span class="toc-number">1.0.5.</span> <span class="toc-text">为什么esp栈顶提升了0x14，栈里压了5个什么</span></a></li></ol></li></ol></li></ol>
+    </div>
+  </span>
+</div>
+
+    
+    <div class="content index py4">
+        
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle" itemprop="name headline">
+        Windows内核实验:中断现场(Interrupt Handling)
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span itemprop="name">bxz</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2023-05-28T10:36:37.000Z" itemprop="datePublished">2023-05-28</time>
+        
+      
+    </div>
+
+
+      
+
+      
+    <div class="article-tag">
+        <i class="fas fa-tag"></i>
+        <a class="tag-link-link" href="/tags/Windows-Kernel-Experiment/" rel="tag">Windows Kernel Experiment</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content" itemprop="articleBody">
+    <h1 id="Windows内核实验-中断现场-Interrupt-Handling"><a href="#Windows内核实验-中断现场-Interrupt-Handling" class="headerlink" title="Windows内核实验:中断现场(Interrupt Handling)"></a>Windows内核实验:中断现场(Interrupt Handling)</h1><p><strong>!!!windbg调试器给我们的信息可能是不准确的，中断断下来后，调试子系统需要通过串口发送给调试器，这期间有些寄存器的值就变了，比较准确的方法就是在r0里写汇编，返回给我们数据</strong></p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;windows.h&gt;</span></span></span><br><span class="line">DWORD g_eax[<span class="number">2</span>], g_ebx[<span class="number">2</span>], g_ecx[<span class="number">2</span>], g_edx[<span class="number">2</span>], g_esi[<span class="number">2</span>], g_edi[<span class="number">2</span>], g_esp[<span class="number">2</span>], g_ebp[<span class="number">2</span>];</span><br><span class="line">WORD g_cs[<span class="number">2</span>], g_ds[<span class="number">2</span>], g_es[<span class="number">2</span>], g_fs[<span class="number">2</span>], g_gs[<span class="number">2</span>], g_ss[<span class="number">2</span>];</span><br><span class="line">DWORD g_eflags,g_eflags0;</span><br><span class="line"><span class="type">void</span> __declspec(naked) IdtEntry() &#123;</span><br><span class="line">    __asm &#123;</span><br><span class="line">        pushfd</span><br><span class="line">        pop[g_eflags]</span><br><span class="line">        mov[g_eax + <span class="number">4</span>], eax</span><br><span class="line">        mov[g_ebx + <span class="number">4</span>], ebx</span><br><span class="line">        mov[g_ecx + <span class="number">4</span>], ecx</span><br><span class="line">        mov[g_edx + <span class="number">4</span>], edx</span><br><span class="line">        mov[g_esi + <span class="number">4</span>], esi</span><br><span class="line">        mov[g_edi + <span class="number">4</span>], edi</span><br><span class="line">        mov[g_esp + <span class="number">4</span>], esp</span><br><span class="line">        mov[g_ebp + <span class="number">4</span>], ebp</span><br><span class="line">        mov[g_cs + <span class="number">2</span>], cs</span><br><span class="line">        mov[g_ds + <span class="number">2</span>], ds</span><br><span class="line">        mov[g_es + <span class="number">2</span>], es</span><br><span class="line">        mov[g_fs + <span class="number">2</span>], fs</span><br><span class="line">        mov[g_gs + <span class="number">2</span>], gs</span><br><span class="line">        mov[g_ss + <span class="number">2</span>], ss</span><br><span class="line">        iretd</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="type">void</span> <span class="title function_">interrupt</span><span class="params">()</span> &#123;</span><br><span class="line">    __asm &#123;</span><br><span class="line">        pushfd</span><br><span class="line">        pop [g_eflags0]</span><br><span class="line">        mov[g_eax], eax</span><br><span class="line">        mov[g_ebx], ebx</span><br><span class="line">        mov[g_ecx], ecx</span><br><span class="line">        mov[g_edx], edx</span><br><span class="line">        mov[g_esi], esi</span><br><span class="line">        mov[g_edi], edi</span><br><span class="line">        mov[g_esp], esp</span><br><span class="line">        mov[g_ebp], ebp</span><br><span class="line">        mov[g_cs], cs</span><br><span class="line">        mov[g_ds], ds</span><br><span class="line">        mov[g_es], es</span><br><span class="line">        mov[g_fs], fs</span><br><span class="line">        mov[g_gs], gs</span><br><span class="line">        mov[g_ss], ss</span><br><span class="line">        <span class="type">int</span> <span class="number">0x20</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="keyword">if</span> (<span class="number">0x401040</span> != IdtEntry) &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;IdtRntry address wrong&quot;</span>);</span><br><span class="line">        system(<span class="string">&quot;pause&quot;</span>);</span><br><span class="line">        <span class="built_in">exit</span>(<span class="number">-1</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    interrupt();</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;eax:%x\t ebx:%x\t ecx:%x\t edx:%x\t esi:%x\t edi:%x\t esp:%x\t ebp:%x\t\n&quot;</span>,</span><br><span class="line">        g_eax[<span class="number">0</span>], g_ebx[<span class="number">0</span>], g_ecx[<span class="number">0</span>], g_edx[<span class="number">0</span>], g_esi[<span class="number">0</span>], g_edi[<span class="number">0</span>], g_esp[<span class="number">0</span>], g_ebp[<span class="number">0</span>]);</span><br><span class="line"></span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;eax:%x\t ebx:%x\t ecx:%x\t edx:%x\t esi:%x\t edi:%x\t esp:%x\t ebp:%x\t\n&quot;</span>,</span><br><span class="line">        g_eax[<span class="number">1</span>], g_ebx[<span class="number">1</span>], g_ecx[<span class="number">1</span>], g_edx[<span class="number">1</span>], g_esi[<span class="number">1</span>], g_edi[<span class="number">1</span>], g_esp[<span class="number">1</span>], g_ebp[<span class="number">1</span>]);</span><br><span class="line"></span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;cs:%x\t ds:%x\t es:%x\t fs:%x\t gs:%x\t ss:%x\t\n&quot;</span>,</span><br><span class="line">        g_cs[<span class="number">0</span>], g_ds[<span class="number">0</span>], g_es[<span class="number">0</span>], g_fs[<span class="number">0</span>], g_gs[<span class="number">0</span>], g_ss[<span class="number">0</span>]);</span><br><span class="line"></span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;cs:%x\t ds:%x\t es:%x\t fs:%x\t gs:%x\t ss:%x\t\n&quot;</span>,</span><br><span class="line">        g_cs[<span class="number">1</span>], g_ds[<span class="number">1</span>], g_es[<span class="number">1</span>], g_fs[<span class="number">1</span>], g_gs[<span class="number">1</span>], g_ss[<span class="number">1</span>]);</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;efalgs0:0x%x\nefalgs0x%x&quot;</span>,g_eflags0,g_eflags);</span><br><span class="line">    system(<span class="string">&quot;pause&quot;</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">eax:<span class="number">401040</span>       ebx:<span class="number">7f</span>fd9000    ecx:b2ede300    edx:<span class="number">7</span>c92eb94    esi:<span class="number">419</span>cf0</span><br><span class="line"> edi:<span class="number">154</span>d58      esp:<span class="number">12f</span>f7c      ebp:<span class="number">12f</span>fc0</span><br><span class="line">eax:<span class="number">401040</span>       ebx:<span class="number">7f</span>fd9000    ecx:b2ede300    edx:<span class="number">7</span>c92eb94    esi:<span class="number">419</span>cf0</span><br><span class="line"> edi:<span class="number">154</span>d58      esp:b2cdfdcc    ebp:<span class="number">12f</span>fc0</span><br><span class="line">cs:<span class="number">1b</span>    ds:<span class="number">23</span>   es:<span class="number">23</span>   fs:<span class="number">3b</span>   gs:<span class="number">0</span>    ss:<span class="number">23</span></span><br><span class="line">cs:<span class="number">8</span>     ds:<span class="number">23</span>   es:<span class="number">23</span>   fs:<span class="number">3b</span>   gs:<span class="number">0</span>    ss:<span class="number">10</span></span><br><span class="line">efalgs0:<span class="number">0x246</span></span><br><span class="line">efalgs0x46</span><br></pre></td></tr></table></figure>
+
+<p>中断前后变得只有，eflags:0x246–&gt;0x46  esp:12ff7c-&gt;b2d13dcc  cs:1b–&gt;8 ss:23–&gt;10</p>
+<p>1b(0001 1011) –&gt; 8(1000)</p>
+<p>23(0010 0011) –&gt; 10(0001 0000)</p>
+<h3 id="ds为什么还是23，没有提升到内核"><a href="#ds为什么还是23，没有提升到内核" class="headerlink" title="ds为什么还是23，没有提升到内核?"></a><strong>ds为什么还是23，没有提升到内核?</strong></h3><figure class="highlight c"><table><tr><td class="code"><pre><span class="line">kd&gt; dg <span class="number">23</span></span><br><span class="line">                                  P Si Gr Pr Lo</span><br><span class="line">Sel    Base     Limit     Type    l ze an es ng Flags</span><br><span class="line">---- -------- -------- ---------- - -- -- -- -- --------</span><br><span class="line"><span class="number">0023</span> <span class="number">00000000</span> ffffffff Data RW Ac <span class="number">3</span> Bg Pg P  Nl <span class="number">00000</span>cf3</span><br></pre></td></tr></table></figure>
+
+<p>可以看到ds是一个平坦段，可以访问整个4gb，分段保护机制其实是在弱化，只是提供了进程隔离，具体访问保护是由分页机制来提供的</p>
+<h3 id="eflags变化"><a href="#eflags变化" class="headerlink" title="eflags变化?"></a><strong>eflags变化?</strong></h3><p>第九位变为0了，也就是IF位置零，中断处理过程关中断</p>
+<h3 id="cs段选择子为什么会是8？"><a href="#cs段选择子为什么会是8？" class="headerlink" title="cs段选择子为什么会是8？"></a><strong>cs段选择子为什么会是8？</strong></h3><p>和我们构造的<strong>中断门</strong>有关系 他的16-31位为中断处理程序目标代码段选择子 即为下面的0008</p>
+<p>eq 8003f500  0040ee00&#96;00081040</p>
+<p>dg x命令显示段选择子x所指向的段描述符</p>
+<h3 id="ss和sp是怎么来的呢？"><a href="#ss和sp是怎么来的呢？" class="headerlink" title="ss和sp是怎么来的呢？"></a><strong>ss和sp是怎么来的呢？</strong></h3><p>从tss段里取出来的，TR寄存器中存放着指向当前任务TSS段的段选择子</p>
+<p>str [g_tr] 把当前任务（任务状态段TSS）的选择器存储到指定的位置上看下是0x28 右移3位所以是gdt表第5个即为tss段描述符</p>
+<p><img src="/2023/05/28/Windows-Kernel-Experiment-interrupt-handling/image-20230528174545899.png" alt="image-20230528174545899"></p>
+<p>TYPE的B是指任务是否处于忙状态(当前正在执行或被挂起等待执行)，忙为1</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">kd&gt; r gdtr</span><br><span class="line">gdtr=<span class="number">8003f</span>000</span><br><span class="line">kd&gt; dq <span class="number">8003f</span>000+<span class="number">8</span>*<span class="number">5</span> l1</span><br><span class="line"><span class="number">8003f</span>028  <span class="number">80008b</span>04`<span class="number">200020</span>ab</span><br></pre></td></tr></table></figure>
+
+<p>type为1011</p>
+<p><img src="/2023/05/28/Windows-Kernel-Experiment-interrupt-handling/image-20230528172940147.png" alt="image-20230528172940147"></p>
+<p>这个基地址就是任务状态段TSS(Task state segment)所在处，即为下面的结构</p>
+<p>其中红色的叫做静态字段，在任务创建是设置，一般不会改变</p>
+<p>绿色的叫做动态字段，时常更新</p>
+<p><img src="/2023/05/28/Windows-Kernel-Experiment-interrupt-handling/image-20230528175556760.png" alt="image-20230528175556760"></p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;windows.h&gt;</span></span></span><br><span class="line">DWORD g_eax[<span class="number">2</span>], g_ebx[<span class="number">2</span>], g_ecx[<span class="number">2</span>], g_edx[<span class="number">2</span>], g_esi[<span class="number">2</span>], g_edi[<span class="number">2</span>], g_esp[<span class="number">2</span>], g_ebp[<span class="number">2</span>];</span><br><span class="line">WORD g_cs[<span class="number">2</span>], g_ds[<span class="number">2</span>], g_es[<span class="number">2</span>], g_fs[<span class="number">2</span>], g_gs[<span class="number">2</span>], g_ss[<span class="number">2</span>];</span><br><span class="line">WORD g_tr;</span><br><span class="line">DWORD g_80042004, g_80042008;</span><br><span class="line"><span class="type">void</span> __declspec(naked) IdtEntry() &#123;</span><br><span class="line">    __asm &#123;</span><br><span class="line">        mov[g_esp], esp</span><br><span class="line">        mov[g_ss], ss</span><br><span class="line">        mov eax, ds:[<span class="number">0x80042004</span>]</span><br><span class="line">        mov[g_80042004], eax</span><br><span class="line">        mov eax, ds:[<span class="number">0x80042008</span>]</span><br><span class="line">        mov[g_80042008],eax</span><br><span class="line">        iretd</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="type">void</span> <span class="title function_">interrupt</span><span class="params">()</span> &#123;</span><br><span class="line">    __asm &#123;</span><br><span class="line">        <span class="type">int</span> <span class="number">0x20</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="keyword">if</span> (<span class="number">0x401040</span> != IdtEntry) &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;IdtRntry address wrong&quot;</span>);</span><br><span class="line">        system(<span class="string">&quot;pause&quot;</span>);</span><br><span class="line">        <span class="built_in">exit</span>(<span class="number">-1</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    interrupt();</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;esp: 0x%x\tss: 0x%x\n&quot;</span>, g_esp[<span class="number">0</span>], g_ss[<span class="number">0</span>]);</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;esp0: 0x%x\tss0: 0x%hx&quot;</span>,g_80042004,g_80042008);</span><br><span class="line">    system(<span class="string">&quot;pause&quot;</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">esp:  <span class="number">0xb29d3dcc</span>         ss: <span class="number">0x10</span></span><br><span class="line">esp0: <span class="number">0xb29d3de0</span>        ss0: <span class="number">0x10</span></span><br></pre></td></tr></table></figure>
+
+<p>可以验证到，就是从tss里面去取内核栈	</p>
+<h3 id="为什么esp栈顶提升了0x14，栈里压了5个什么"><a href="#为什么esp栈顶提升了0x14，栈里压了5个什么" class="headerlink" title="为什么esp栈顶提升了0x14，栈里压了5个什么"></a><strong>为什么esp栈顶提升了0x14，栈里压了5个什么</strong></h3><figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;windows.h&gt;</span></span></span><br><span class="line">DWORD g_eax[<span class="number">2</span>], g_ebx[<span class="number">2</span>], g_ecx[<span class="number">2</span>], g_edx[<span class="number">2</span>], g_esi[<span class="number">2</span>], g_edi[<span class="number">2</span>], g_esp[<span class="number">2</span>], g_ebp[<span class="number">2</span>];</span><br><span class="line">WORD g_cs[<span class="number">2</span>], g_ds[<span class="number">2</span>], g_es[<span class="number">2</span>], g_fs[<span class="number">2</span>], g_gs[<span class="number">2</span>], g_ss[<span class="number">2</span>];</span><br><span class="line">DWORD g_eflags;</span><br><span class="line">DWORD g_stack[<span class="number">5</span>];</span><br><span class="line"><span class="type">void</span> __declspec(naked) IdtEntry() &#123;</span><br><span class="line">    __asm &#123;</span><br><span class="line">        mov eax, dword ptr ss:[esp]</span><br><span class="line">        mov dword ptr [g_stack], eax</span><br><span class="line">        mov eax, dword ptr ss:[esp+<span class="number">4</span>]</span><br><span class="line">        mov dword ptr [g_stack + <span class="number">4</span>], eax</span><br><span class="line">        mov eax, dword ptr ss:[esp+<span class="number">8</span>]</span><br><span class="line">        mov dword ptr [g_stack + <span class="number">8</span>], eax</span><br><span class="line">        mov eax, dword ptr ss:[esp+<span class="number">12</span>]</span><br><span class="line">        mov dword ptr [g_stack +<span class="number">12</span>], eax</span><br><span class="line">        mov eax, dword ptr ss:[esp+<span class="number">16</span>]</span><br><span class="line">        mov dword ptr [g_stack+<span class="number">16</span>], eax</span><br><span class="line">        iretd</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="type">void</span> <span class="title function_">interrupt</span><span class="params">()</span> &#123;</span><br><span class="line">    __asm &#123;</span><br><span class="line">        pushfd</span><br><span class="line">        pop [g_eflags]</span><br><span class="line">        mov [g_ss],ss</span><br><span class="line">        mov [g_esp],esp</span><br><span class="line">        mov [g_cs],cs</span><br><span class="line">        <span class="type">int</span> <span class="number">0x20</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="keyword">if</span> (<span class="number">0x401040</span> != IdtEntry) &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;IdtRntry address wrong&quot;</span>);</span><br><span class="line">        system(<span class="string">&quot;pause&quot;</span>);</span><br><span class="line">        <span class="built_in">exit</span>(<span class="number">-1</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    interrupt();</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;cs: 0x%x\teflags: 0x%hx\t&quot;</span>,g_cs[<span class="number">0</span>],g_eflags);</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;esp: 0x%x\tss: 0x%x\n&quot;</span>, g_esp[<span class="number">0</span>], g_ss[<span class="number">0</span>]);</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">size_t</span> i = <span class="number">0</span>; i &lt; <span class="number">5</span>; i++) &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;stack[%d]:0x%x\n&quot;</span>,i,g_stack[i]);</span><br><span class="line">    &#125;</span><br><span class="line">    system(<span class="string">&quot;pause&quot;</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">cs: <span class="number">0x1b</span>        eflags: <span class="number">0x246</span>   esp: <span class="number">0x12ff78</span>   ss: <span class="number">0x23</span></span><br><span class="line"><span class="built_in">stack</span>[<span class="number">0</span>]:<span class="number">0x4010aa</span></span><br><span class="line"><span class="built_in">stack</span>[<span class="number">1</span>]:<span class="number">0x1b</span></span><br><span class="line"><span class="built_in">stack</span>[<span class="number">2</span>]:<span class="number">0x246</span></span><br><span class="line"><span class="built_in">stack</span>[<span class="number">3</span>]:<span class="number">0x12ff78</span></span><br><span class="line"><span class="built_in">stack</span>[<span class="number">4</span>]:<span class="number">0x23</span></span><br><span class="line">请按任意键继续. . .</span><br></pre></td></tr></table></figure>
+
+<p>栈里第一个是返回地址，后面分别是三环的cs eflags esp ss，和之前理论是一样的(出错码是可选的)，iret时会弹出来</p>
+<p><img src="/2023/05/28/Windows-Kernel-Experiment-interrupt-handling/image-20230528225918572.png" alt="image-20230528225918572"></p>
+<blockquote>
+<p>栈顶的返回地址怎么来调试验证?</p>
+<p>直接在IdtEntry里写上int3 ，</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="type">void</span> __declspec(naked) IdtEntry() &#123;</span><br><span class="line">    __asm &#123;</span><br><span class="line">        <span class="type">int</span> <span class="number">3</span></span><br><span class="line">        iretd</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="type">void</span> <span class="title function_">interrupt</span><span class="params">()</span> &#123;</span><br><span class="line">    __asm &#123;</span><br><span class="line">        push eax</span><br><span class="line">        pop eax</span><br><span class="line">        <span class="type">int</span> <span class="number">0x20</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>不挂调试器会报错，挂了调试器会在int3处断下来</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">Break instruction exception - code 80000003 (first chance)</span><br><span class="line">00401040 cc              int     3</span><br><span class="line"><span class="meta prompt_">kd&gt; </span><span class="language-bash">r esp</span></span><br><span class="line">esp=b2cf3dcc</span><br><span class="line"><span class="meta prompt_">kd&gt; </span><span class="language-bash">dps b2cf3dcc l5</span></span><br><span class="line">b2cf3dcc  00401061</span><br><span class="line">b2cf3dd0  0000001b</span><br><span class="line">b2cf3dd4  00000246</span><br><span class="line">b2cf3dd8  0012ff78</span><br><span class="line">b2cf3ddc  00000023</span><br><span class="line"><span class="meta prompt_">kd&gt; </span><span class="language-bash">ub 00401061 l4</span></span><br><span class="line">0040105b 756d            jne     004010ca</span><br><span class="line">0040105d 50              push    eax</span><br><span class="line">0040105e 58              pop     eax</span><br><span class="line">0040105f cd20            int     20h</span><br></pre></td></tr></table></figure>
+
+<p>返回地址确实是int  20h中断后的下一条指令</p>
+</blockquote>
+<p><img src="/2023/05/28/Windows-Kernel-Experiment-interrupt-handling/image-20230527235756049.png" alt="image-20230527235756049"></p>
+<p>cs和ss选择子的RPL(CPL)都变为0，代表当前正在执行的程序或任务的特权级别为内核权限</p>
+<p>windbg</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">kd&gt; </span><span class="language-bash">r gdtr</span></span><br><span class="line">gdtr=8003f000</span><br><span class="line"><span class="meta prompt_">kd&gt; </span><span class="language-bash">r gdtl</span></span><br><span class="line">gdtl=000003ff</span><br><span class="line"><span class="meta prompt_">kd&gt; </span><span class="language-bash">dq 8003f000 l20</span></span><br><span class="line">8003f000  00000000`00000000 00cf9b00`0000ffff</span><br><span class="line">8003f010  00cf9300`0000ffff 00cffb00`0000ffff</span><br><span class="line">8003f020  00cff300`0000ffff 80008b04`200020ab</span><br><span class="line">8003f030  ffc093df`f0000001 0040f300`00000fff</span><br><span class="line">8003f040  0000f200`0400ffff 00000000`00000000</span><br><span class="line">8003f050  80008955`17000068 80008955`17680068</span><br><span class="line">8003f060  00009302`2f30ffff 0000920b`80003fff</span><br><span class="line">8003f070  ff0092ff`700003ff 80009a40`0000ffff</span><br><span class="line">8003f080  80009240`0000ffff 00009200`00000000</span><br><span class="line">8003f090  00000000`00000000 00000000`00000000</span><br><span class="line">8003f0a0  8200891e`a9400068 00000000`00000000</span><br><span class="line">8003f0b0  00000000`00000000 00000000`00000000</span><br><span class="line">8003f0c0  00000000`00000000 00000000`00000000</span><br><span class="line">8003f0d0  00000000`00000000 00000000`00000000</span><br><span class="line">8003f0e0  f8009f71`a000ffff 00009200`0000ffff</span><br><span class="line">8003f0f0  8000984f`ccd403b7 00009200`0000ffff</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>GDT中第一个表项（0号）的描述符保留不用，称为空描述符</p>
+</blockquote>
+<p><img src="/2023/05/28/Windows-Kernel-Experiment-interrupt-handling/image-20230528001616020.png" alt="image-20230528001616020"></p>
+<p>按照上图解析</p>
+<p><img src="/2023/05/28/Windows-Kernel-Experiment-interrupt-handling/image-20230528001515527.png" alt="image-20230528001515527"></p>
+
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+         
+          <li><a href="/">Home</a></li>
+         
+          <li><a href="/archives/">Writing</a></li>
+         
+          <li><a href="/search/">Search</a></li>
+         
+          <li><a href="/tags/">Tag</a></li>
+         
+          <li><a href="/about/">About</a></li>
+        
+      </ul>
+    </div>
+
+    <div id="toc-footer" style="display: none">
+      <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Windows%E5%86%85%E6%A0%B8%E5%AE%9E%E9%AA%8C-%E4%B8%AD%E6%96%AD%E7%8E%B0%E5%9C%BA-Interrupt-Handling"><span class="toc-number">1.</span> <span class="toc-text">Windows内核实验:中断现场(Interrupt Handling)</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#ds%E4%B8%BA%E4%BB%80%E4%B9%88%E8%BF%98%E6%98%AF23%EF%BC%8C%E6%B2%A1%E6%9C%89%E6%8F%90%E5%8D%87%E5%88%B0%E5%86%85%E6%A0%B8"><span class="toc-number">1.0.1.</span> <span class="toc-text">ds为什么还是23，没有提升到内核?</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#eflags%E5%8F%98%E5%8C%96"><span class="toc-number">1.0.2.</span> <span class="toc-text">eflags变化?</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#cs%E6%AE%B5%E9%80%89%E6%8B%A9%E5%AD%90%E4%B8%BA%E4%BB%80%E4%B9%88%E4%BC%9A%E6%98%AF8%EF%BC%9F"><span class="toc-number">1.0.3.</span> <span class="toc-text">cs段选择子为什么会是8？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#ss%E5%92%8Csp%E6%98%AF%E6%80%8E%E4%B9%88%E6%9D%A5%E7%9A%84%E5%91%A2%EF%BC%9F"><span class="toc-number">1.0.4.</span> <span class="toc-text">ss和sp是怎么来的呢？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88esp%E6%A0%88%E9%A1%B6%E6%8F%90%E5%8D%87%E4%BA%860x14%EF%BC%8C%E6%A0%88%E9%87%8C%E5%8E%8B%E4%BA%865%E4%B8%AA%E4%BB%80%E4%B9%88"><span class="toc-number">1.0.5.</span> <span class="toc-text">为什么esp栈顶提升了0x14，栈里压了5个什么</span></a></li></ol></li></ol></li></ol>
+    </div>
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://grxer.gitee.io/2023/05/28/Windows-Kernel-Experiment-interrupt-handling/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://grxer.gitee.io/2023/05/28/Windows-Kernel-Experiment-interrupt-handling/&text=Windows内核实验:中断现场(Interrupt Handling)"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://grxer.gitee.io/2023/05/28/Windows-Kernel-Experiment-interrupt-handling/&title=Windows内核实验:中断现场(Interrupt Handling)"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://grxer.gitee.io/2023/05/28/Windows-Kernel-Experiment-interrupt-handling/&is_video=false&description=Windows内核实验:中断现场(Interrupt Handling)"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Windows内核实验:中断现场(Interrupt Handling)&body=Check out this article: https://grxer.gitee.io/2023/05/28/Windows-Kernel-Experiment-interrupt-handling/"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://grxer.gitee.io/2023/05/28/Windows-Kernel-Experiment-interrupt-handling/&title=Windows内核实验:中断现场(Interrupt Handling)"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://grxer.gitee.io/2023/05/28/Windows-Kernel-Experiment-interrupt-handling/&title=Windows内核实验:中断现场(Interrupt Handling)"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://grxer.gitee.io/2023/05/28/Windows-Kernel-Experiment-interrupt-handling/&title=Windows内核实验:中断现场(Interrupt Handling)"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://grxer.gitee.io/2023/05/28/Windows-Kernel-Experiment-interrupt-handling/&title=Windows内核实验:中断现场(Interrupt Handling)"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://grxer.gitee.io/2023/05/28/Windows-Kernel-Experiment-interrupt-handling/&name=Windows内核实验:中断现场(Interrupt Handling)&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://grxer.gitee.io/2023/05/28/Windows-Kernel-Experiment-interrupt-handling/&t=Windows内核实验:中断现场(Interrupt Handling)"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fas fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
+        <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fas fa-list fa-lg" aria-hidden="true"></i> TOC</a>
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fas fa-share-alt fa-lg" aria-hidden="true"></i> Share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2023-2024
+    bxz
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a href="/search/">Search</a></li><!--
+     --><!--
+       --><li><a href="/tags/">Tag</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+ 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script> 
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script> 
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"Copy to clipboard!\">";
+    btn += '<i class="far fa-clone"></i>';
+    btn += '</span>'; 
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "Copied!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Google Analytics -->
+
+<!-- Baidu Analytics -->
+
+  <script type="text/javascript">
+        var _hmt = _hmt || [];
+        (function() {
+          var hm = document.createElement("script");
+          hm.src = "https://hm.baidu.com/hm.js?a22ef0bec4e4a9c7337bea6e37ff55c1";
+          var s = document.getElementsByTagName("script")[0];
+          s.parentNode.insertBefore(hm, s);
+        })();
+        </script>
+
+<!-- Cloudflare Analytics -->
+
+<!-- Umami Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+</body>
+</html>

